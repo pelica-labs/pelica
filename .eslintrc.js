@@ -17,5 +17,6 @@ module.exports = {
   rules: {
     "simple-import-sort/sort": "warn",
     "prettier/prettier": "warn",
+    "react/prop-types": "off",
   },
 };
