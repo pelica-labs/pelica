@@ -1,4 +1,5 @@
 import { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geocoding";
+import SearchIcon from "@material-ui/icons/SearchOutlined";
 import classnames from "classnames";
 import React, { useEffect, useRef, useState } from "react";
 
@@ -109,6 +110,10 @@ export const PlaceAutocomplete: React.FC<Props> = ({ value, onChange }) => {
 
   return (
     <div className="relative bg-white rounded shadow w-64 flex flex-col">
+      {!isFocused && !search.length && (
+        <SearchIcon fontSize="small" className="absolute left-0 ml-3 mt-3 text-gray-600" />
+      )}
+
       <input
         ref={input}
         type="text"
