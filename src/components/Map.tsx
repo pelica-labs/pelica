@@ -1,13 +1,13 @@
 import { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geocoding";
+import { Style } from "@mapbox/mapbox-sdk/services/styles";
 import produce from "immer";
 import mapboxgl from "mapbox-gl";
 import Head from "next/head";
 import React, { useEffect, useRef, useState } from "react";
 
-import { registerAccessToken } from "../lib/mapbox";
-
 type Props = {
-  selectedPlace?: GeocodeFeature;
+  selectedPlace?: GeocodeFeature | null;
+  selectedStyle?: Style | null;
 };
 
 type MapState = {
@@ -16,7 +16,11 @@ type MapState = {
   zoom: number;
 };
 
-export const Map: React.FC<Props> = ({ selectedPlace }) => {
+const styleToUrl = (style: Style): string => {
+  return `mapbox://styles/${style.owner}/${style.id}`;
+};
+
+export const Map: React.FC<Props> = ({ selectedPlace, selectedStyle }) => {
   const map = useRef<mapboxgl.Map>();
   const container = useRef<HTMLDivElement>();
   const [state, setState] = useState<MapState>({
@@ -29,17 +33,17 @@ export const Map: React.FC<Props> = ({ selectedPlace }) => {
    * Initialize map
    */
   useEffect(() => {
-    registerAccessToken();
+    mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN;
 
     map.current = new mapboxgl.Map({
       container: container.current,
-      style: "mapbox://styles/mapbox/streets-v11",
+      style: selectedStyle ? styleToUrl(selectedStyle) : "mapbox://styles/mapbox/streets-v11",
       center: [state.longitude, state.latitude],
       zoom: state.zoom,
+      logoPosition: "bottom-right",
     });
 
     map.current.on("moveend", (event) => {
-      console.log("Move end");
       setState(
         produce((state) => {
           const { lng, lat } = event.target.getCenter();
@@ -92,6 +96,17 @@ export const Map: React.FC<Props> = ({ selectedPlace }) => {
       zoom: 9,
     });
   }, [selectedPlace]);
+
+  /**
+   * Update style
+   */
+  useEffect(() => {
+    if (!selectedStyle) {
+      return;
+    }
+
+    map.current.setStyle(styleToUrl(selectedStyle));
+  }, [selectedStyle]);
 
   return (
     <>

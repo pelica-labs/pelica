@@ -1,9 +1,12 @@
-import { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geocoding";
+import MapboxClient from "@mapbox/mapbox-sdk";
+import MapboxGeocoding, { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geocoding";
 import SearchIcon from "@material-ui/icons/SearchOutlined";
 import classnames from "classnames";
 import React, { useEffect, useRef, useState } from "react";
 
-import { geocoding } from "../lib/mapbox";
+const mapbox = MapboxClient({ accessToken: process.env.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN });
+
+const mapboxGeocoding = MapboxGeocoding(mapbox);
 
 type Props = {
   value?: GeocodeFeature;
@@ -27,7 +30,7 @@ export const PlaceAutocomplete: React.FC<Props> = ({ value, onChange }) => {
       return;
     }
 
-    geocoding
+    mapboxGeocoding
       .forwardGeocode({ query: search, mode: "mapbox.places" })
       .send()
       .then((res) => {

@@ -18,7 +18,8 @@
     "mapbox-gl": "^1.12.0",
     "next": "9.5.3",
     "react": "16.13.1",
-    "react-dom": "16.13.1"
+    "react-dom": "16.13.1",
+    "swr": "^0.3.5"
   },
   "devDependencies": {
     "@types/mapbox-gl": "^1.12.2",
