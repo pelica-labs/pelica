@@ -1,33 +1,26 @@
-import { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geocoding";
 import { Style } from "@mapbox/mapbox-sdk/services/styles";
-import produce from "immer";
 import mapboxgl from "mapbox-gl";
 import Head from "next/head";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
+
+import { useMap } from "./MapContext";
 
 type Props = {
-  selectedPlace?: GeocodeFeature | null;
-  selectedStyle?: Style | null;
-};
-
-type MapState = {
-  latitude: number;
-  longitude: number;
-  zoom: number;
+  style?: Style;
+  disableSync?: boolean;
+  disableInteractions?: boolean;
 };
 
 const styleToUrl = (style: Style): string => {
   return `mapbox://styles/${style.owner}/${style.id}`;
 };
 
-export const Map: React.FC<Props> = ({ selectedPlace, selectedStyle }) => {
+export const Map: React.FC<Props> = ({ style, disableInteractions = false, disableSync = false }) => {
   const map = useRef<mapboxgl.Map>();
   const container = useRef<HTMLDivElement>();
-  const [state, setState] = useState<MapState>({
-    longitude: -74.5,
-    latitude: 40,
-    zoom: 9,
-  });
+  const { state, move } = useMap();
+
+  const resolvedStyle = style ?? state.style;
 
   /**
    * Initialize map
@@ -37,24 +30,28 @@ export const Map: React.FC<Props> = ({ selectedPlace, selectedStyle }) => {
 
     map.current = new mapboxgl.Map({
       container: container.current,
-      style: selectedStyle ? styleToUrl(selectedStyle) : "mapbox://styles/mapbox/streets-v11",
-      center: [state.longitude, state.latitude],
+      style: resolvedStyle ? styleToUrl(resolvedStyle) : "mapbox://styles/mapbox/streets-v11",
+      center: [state.coordinates.longitude, state.coordinates.latitude],
       zoom: state.zoom,
       logoPosition: "bottom-right",
+      attributionControl: false,
     });
+
+    if (disableInteractions) {
+      map.current.dragPan.disable();
+      map.current.scrollZoom.disable();
+    }
 
     map.current.on("moveend", (event) => {
-      setState(
-        produce((state) => {
-          const { lng, lat } = event.target.getCenter();
-          const zoom = event.target.getZoom();
+      const { lng, lat } = event.target.getCenter();
+      const zoom = event.target.getZoom();
 
-          state.longitude = lng;
-          state.latitude = lat;
-          state.zoom = zoom;
-        })
-      );
+      move(lat, lng, zoom);
     });
+
+    return () => {
+      map.current.remove();
+    };
   }, []);
 
   /**
@@ -65,48 +62,56 @@ export const Map: React.FC<Props> = ({ selectedPlace, selectedStyle }) => {
       return;
     }
 
+    if (disableSync) {
+      return;
+    }
+
     const { lng, lat } = map.current.getCenter();
     const zoom = map.current.getZoom();
-    if (lng === state.longitude && lat === state.latitude && zoom === state.zoom) {
+    if (lng === state.coordinates.longitude && lat === state.coordinates.latitude && zoom === state.zoom) {
       return;
     }
 
     map.current.flyTo({
       center: {
-        lng: state.longitude,
-        lat: state.latitude,
+        lng: state.coordinates.longitude,
+        lat: state.coordinates.latitude,
       },
       zoom: state.zoom,
     });
-  }, [state.latitude, state.longitude]);
+  }, [state.coordinates.latitude, state.coordinates.longitude]);
 
   /**
    * Fly to selected place
    */
   useEffect(() => {
-    if (!selectedPlace) {
+    if (!state.place) {
+      return;
+    }
+
+    if (disableSync) {
       return;
     }
 
     map.current.flyTo({
       center: {
-        lng: selectedPlace.center[0],
-        lat: selectedPlace.center[1],
+        lng: state.place.center[0],
+        lat: state.place.center[1],
       },
       zoom: 9,
     });
-  }, [selectedPlace]);
+  }, [state.place]);
 
   /**
    * Update style
    */
   useEffect(() => {
-    if (!selectedStyle) {
+    if (!resolvedStyle) {
       return;
     }
 
-    map.current.setStyle(styleToUrl(selectedStyle));
-  }, [selectedStyle]);
+    map.current.setStyle(styleToUrl(resolvedStyle));
+  }, [resolvedStyle]);
 
   return (
     <>
