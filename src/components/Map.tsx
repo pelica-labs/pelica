@@ -20,20 +20,30 @@ const styleToUrl = (style: Style): string => {
   return `mapbox://styles/${style.owner}/${style.id}`;
 };
 
-const markersToData = (markers: MarkerState[]): GeoJSON.FeatureCollection<GeoJSON.Geometry> => {
-  return {
-    type: "FeatureCollection",
-    features: markers.map((marker) => {
-      return {
-        type: "Feature",
-        geometry: {
-          type: "Point",
-          coordinates: [marker.coordinates.longitude, marker.coordinates.latitude],
-        },
-        properties: {},
-      };
-    }),
-  };
+const markersToFeatures = (markers: MarkerState[]): GeoJSON.Feature<GeoJSON.Geometry>[] => {
+  if (markers.length < 2) {
+    return [];
+  }
+
+  const features: GeoJSON.Feature<GeoJSON.Geometry>[] = [];
+  for (let i = 1; i < markers.length; i++) {
+    const previousMarker = markers[i - 1];
+    const marker = markers[i];
+
+    features.push({
+      type: "Feature",
+      geometry: {
+        type: "LineString",
+        coordinates: [
+          [previousMarker.coordinates.longitude, previousMarker.coordinates.latitude],
+          [marker.coordinates.longitude, marker.coordinates.latitude],
+        ],
+      },
+      properties: {},
+    });
+  }
+
+  return features;
 };
 
 export const Map: React.FC<Props> = ({ style, disableInteractions = false, disableSync = false }) => {
@@ -77,19 +87,18 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
         if (!map.current?.getSource(MapSource.Drawing)) {
           map.current?.addSource(MapSource.Drawing, {
             type: "geojson",
-            data: markersToData(state.markers),
+            data: { type: "FeatureCollection", features: markersToFeatures(state.markers) },
           });
         }
 
         if (!map.current?.getLayer(MapSource.Drawing)) {
           map.current?.addLayer({
             id: MapSource.Drawing,
-            type: "circle",
+            type: "line",
             source: MapSource.Drawing,
-            filter: ["==", ["geometry-type"], "Point"],
             paint: {
-              "circle-radius": 3,
-              "circle-color": "red",
+              "line-color": "#FF4747",
+              "line-width": ["case", ["==", ["geometry-type"], "LineString"], 1, 4],
             },
           });
         }
@@ -125,7 +134,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
       }
 
       addMarker(event.lngLat.lat, event.lngLat.lng);
-    }, 5);
+    }, 1);
 
     const onMouseDown = () => {
       if (state.editor.mode !== "drawing") {
@@ -238,7 +247,10 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
   useEffect(() => {
     const drawings = map.current?.getSource(MapSource.Drawing) as GeoJSONSource;
 
-    drawings?.setData(markersToData(state.markers));
+    drawings?.setData({
+      type: "FeatureCollection",
+      features: markersToFeatures(state.markers),
+    });
   }, [state.markers]);
 
   /**
