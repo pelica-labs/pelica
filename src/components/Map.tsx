@@ -3,7 +3,7 @@ import mapboxgl from "mapbox-gl";
 import Head from "next/head";
 import React, { useEffect, useRef } from "react";
 
-import { useMap } from "./MapContext";
+import { useMap } from "~/components/MapContext";
 
 type Props = {
   style?: Style;

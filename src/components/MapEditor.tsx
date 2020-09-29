@@ -1,9 +1,9 @@
 import React from "react";
 
-import { Map } from "./Map";
-import { MapContextProvider } from "./MapContext";
-import { PlaceAutocomplete } from "./PlaceAutocomplete";
-import { Toolbar } from "./Toolbar";
+import { Map } from "~/components/Map";
+import { MapContextProvider } from "~/components/MapContext";
+import { PlaceAutocomplete } from "~/components/PlaceAutocomplete";
+import { Toolbar } from "~/components/Toolbar";
 
 export const MapEditor: React.FC = () => {
   return (

@@ -3,8 +3,8 @@ import classnames from "classnames";
 import React from "react";
 import useSWR from "swr";
 
-import { Map } from "./Map";
-import { useMap } from "./MapContext";
+import { Map } from "~/components/Map";
+import { useMap } from "~/components/MapContext";
 
 type StylesResponse = {
   styles: Style[];

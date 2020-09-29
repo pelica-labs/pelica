@@ -1,9 +1,9 @@
 import classnames from "classnames";
 import React from "react";
 
-import { ChevronLeftIcon, FireIcon, HandIcon, PencilIcon } from "./Icon";
-import { useMap } from "./MapContext";
-import { StyleSelector } from "./StyleSelector";
+import { ChevronLeftIcon, FireIcon, HandIcon, PencilIcon } from "~/components/Icon";
+import { useMap } from "~/components/MapContext";
+import { StyleSelector } from "~/components/StyleSelector";
 
 export const Toolbar: React.FC = () => {
   const { state, toggleStyles, toggleDrawing } = useMap();

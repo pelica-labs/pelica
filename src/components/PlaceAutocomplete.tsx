@@ -3,8 +3,8 @@ import MapboxGeocoding, { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geo
 import classnames from "classnames";
 import React, { useEffect, useRef, useState } from "react";
 
-import { CloseIcon, SearchIcon } from "./Icon";
-import { useMap } from "./MapContext";
+import { CloseIcon, SearchIcon } from "~/components/Icon";
+import { useMap } from "~/components/MapContext";
 
 const mapbox = MapboxClient({ accessToken: process.env.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN });
 
