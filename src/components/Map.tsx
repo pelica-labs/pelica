@@ -49,7 +49,7 @@ const markersToFeatures = (markers: MarkerState[]): GeoJSON.Feature<GeoJSON.Geom
 export const Map: React.FC<Props> = ({ style, disableInteractions = false, disableSync = false }) => {
   const map = useRef<mapboxgl.Map>();
   const container = useRef<HTMLDivElement>(null);
-  const { state, move, addMarker, togglePainting } = useMap();
+  const { state, move, addMarker, togglePainting, closePanes } = useMap();
   const [metaIsPressed, setMetaIsPressed] = useState(false);
 
   const resolvedStyle = style ?? state.style;
@@ -98,7 +98,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
             type: "line",
             source: MapSource.Drawing,
             paint: {
-              "line-color": "#FF4747",
+              "line-color": state.editor.color,
               "line-width": ["case", ["==", ["geometry-type"], "LineString"], 1, 4],
             },
           });
@@ -186,16 +186,22 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
       }
     };
 
+    const onMouseClick = () => {
+      closePanes();
+    };
+
     map.current?.on("moveend", onMoveEnd);
     map.current?.on("mousemove", onMouseMove);
     map.current?.on("mousedown", onMouseDown);
     map.current?.on("mouseup", onMouseUp);
+    map.current?.on("click", onMouseClick);
 
     return () => {
       map.current?.off("moveend", onMoveEnd);
       map.current?.off("mousemove", onMouseMove);
       map.current?.off("mousedown", onMouseDown);
       map.current?.off("mouseup", onMouseUp);
+      map.current?.on("click", onMouseClick);
     };
   }, [state.editor, metaIsPressed]);
 

@@ -120,6 +120,13 @@ const makeContext = (state: MapState, setState: React.Dispatch<React.SetStateAct
         state.markers = [];
       });
     },
+
+    closePanes() {
+      update((state: MapState) => {
+        state.editor.isShowingStyles = false;
+        state.editor.isShowingColors = false;
+      });
+    },
   };
 };
 
