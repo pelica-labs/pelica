@@ -22,6 +22,24 @@ export const PlaceAutocomplete: React.FC = () => {
   const [isHoveringResults, setIsHoveringResults] = useState(false);
 
   /**
+   * Keyboard shortcut
+   */
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      // Cmd-P
+      if (event.keyCode === 80 && event.metaKey) {
+        event.preventDefault();
+        input.current?.focus();
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown, false);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown, false);
+    };
+  }, []);
+
+  /**
    * Perform geocoding query when input changes
    */
   useEffect(() => {
@@ -46,10 +64,13 @@ export const PlaceAutocomplete: React.FC = () => {
     setIsFocused(true);
   };
 
-  const onBlur = () => {
+  const onBlur = (event: FocusEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
     setTimeout(() => {
       setIsFocused(false);
-    }, 500);
+    }, 300);
   };
 
   /**
@@ -76,20 +97,23 @@ export const PlaceAutocomplete: React.FC = () => {
 
     // enter
     if (event.keyCode === 13) {
-      onPlaceSelection(places[selectionIndex]);
+      onPlaceSelection(event, places[selectionIndex]);
     }
   };
 
   /**
    * Handles result selection
    */
-  const onPlaceSelection = (place: GeocodeFeature) => {
+  const onPlaceSelection = (event: React.MouseEvent | React.KeyboardEvent, place: GeocodeFeature) => {
+    event.preventDefault();
+    event.stopPropagation();
+
     setSearch(place.place_name);
     setPlaces([]);
 
     setPlace(place);
 
-    input.current?.blur();
+    setIsFocused(false);
   };
 
   /**
@@ -120,7 +144,7 @@ export const PlaceAutocomplete: React.FC = () => {
         className="p-2 bg-gray-900 text-gray-200 w-full outline-none border-2 h-12 border-transparent rounded-sm focus:border-green-700"
         type="text"
         value={search}
-        onBlur={() => onBlur()}
+        onBlur={(event) => onBlur(event)}
         onChange={(event) => setSearch(event.target.value)}
         onFocus={() => onFocus()}
         onKeyUp={(event) => onKeyUp(event)}
@@ -152,7 +176,7 @@ export const PlaceAutocomplete: React.FC = () => {
               <li key={place.id}>
                 <a
                   className={linkClasses}
-                  onClick={() => onPlaceSelection(place)}
+                  onClick={(event) => onPlaceSelection(event, place)}
                   onMouseEnter={() => onPlaceHover(index)}
                 >
                   {place.place_name}

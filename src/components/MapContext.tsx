@@ -3,6 +3,15 @@ import { Style } from "@mapbox/mapbox-sdk/services/styles";
 import produce from "immer";
 import React, { createContext, useContext, useState } from "react";
 
+export type MarkerState = {
+  coordinates: {
+    latitude: number;
+    longitude: number;
+  };
+};
+
+type EditorMode = "moving" | "drawing";
+
 type MapState = {
   coordinates: {
     latitude: number;
@@ -12,10 +21,11 @@ type MapState = {
   place?: GeocodeFeature | null;
   style?: Style | null;
   editor: {
-    isMoving: boolean;
-    isDrawing: boolean;
+    mode: EditorMode;
     isShowingStyles: boolean;
+    isDrawing: boolean;
   };
+  markers: MarkerState[];
 };
 
 type MapContext = ReturnType<typeof makeContext>;
@@ -68,10 +78,31 @@ const makeContext = (state: MapState, setState: React.Dispatch<React.SetStateAct
       );
     },
 
-    toggleDrawing() {
+    setEditorMode(mode: EditorMode) {
       setState(
         produce((state: MapState) => {
-          state.editor.isDrawing = !state.editor.isDrawing;
+          state.editor.mode = mode;
+        })
+      );
+    },
+
+    toggleDrawing(drawing?: boolean) {
+      setState(
+        produce((state: MapState) => {
+          state.editor.isDrawing = drawing ?? !state.editor.isDrawing;
+        })
+      );
+    },
+
+    addMarker(latitude: number, longitude: number) {
+      setState(
+        produce((state: MapState) => {
+          state.markers.push({
+            coordinates: {
+              latitude,
+              longitude,
+            },
+          });
         })
       );
     },
@@ -86,10 +117,11 @@ export const MapContextProvider: React.FC = ({ children }) => {
     },
     zoom: 9,
     editor: {
-      isMoving: true,
       isDrawing: false,
+      mode: "moving",
       isShowingStyles: false,
     },
+    markers: [],
   });
 
   const context = makeContext(state, setState);

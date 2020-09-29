@@ -13,6 +13,7 @@
     "@types/classnames": "^2.2.10",
     "classnames": "^2.2.6",
     "immer": "^7.0.9",
+    "lodash": "^4.17.20",
     "mapbox-gl": "^1.12.0",
     "next": "9.5.3",
     "react": "16.13.1",
@@ -20,6 +21,7 @@
     "swr": "^0.3.5"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.161",
     "@types/mapbox-gl": "^1.12.2",
     "@types/mapbox__mapbox-sdk": "^0.6.2",
     "@types/node": "^14.11.2",
