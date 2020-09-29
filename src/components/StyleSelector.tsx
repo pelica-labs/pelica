@@ -30,12 +30,12 @@ export const StyleSelector: React.FC = () => {
           });
 
           return (
-            <div key={style.id} onClick={() => setStyle(style)} className={containerClasses}>
+            <div key={style.id} className={containerClasses} onClick={() => setStyle(style)}>
               <span className="text-xs uppercase text-gray-200 w-32 inline-flex overflow-x-hidden whitespace-no-wrap">
                 {style.name}
               </span>
               <div className="w-32 h-32 mt-1 border border-gray-700">
-                <Map style={style} disableInteractions disableSync />
+                <Map disableInteractions disableSync style={style} />
               </div>
             </div>
           );

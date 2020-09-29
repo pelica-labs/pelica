@@ -18,5 +18,13 @@ module.exports = {
     "simple-import-sort/sort": "warn",
     "prettier/prettier": "warn",
     "react/prop-types": "off",
+    "react/jsx-sort-props": [
+      "warn",
+      {
+        callbacksLast: true,
+        shorthandFirst: true,
+        reservedFirst: true,
+      },
+    ],
   },
 };

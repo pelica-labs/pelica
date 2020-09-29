@@ -115,13 +115,13 @@ export const PlaceAutocomplete: React.FC = () => {
 
       <input
         ref={input}
+        className="p-2 bg-gray-900 text-gray-200 w-full outline-none border-2 h-12 border-transparent rounded-sm focus:border-green-700"
         type="text"
         value={search}
-        onKeyUp={(event) => onKeyUp(event)}
-        onFocus={() => onFocus()}
         onBlur={() => onBlur()}
         onChange={(event) => setSearch(event.target.value)}
-        className="p-2 bg-gray-900 text-gray-200 w-full outline-none border-2 h-12 border-transparent rounded-sm focus:border-green-700"
+        onFocus={() => onFocus()}
+        onKeyUp={(event) => onKeyUp(event)}
       />
 
       {!!state.place && (
