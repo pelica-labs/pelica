@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Button } from "~/components/Button";
-import { ChevronLeftIcon, FireIcon, HandIcon, PencilIcon } from "~/components/Icon";
+import { ChevronLeftIcon, FireIcon, HandIcon, PaintIcon, PencilIcon } from "~/components/Icon";
 import { useMap } from "~/components/MapContext";
 import { StyleSelector } from "~/components/StyleSelector";
 
@@ -34,6 +34,15 @@ export const Toolbar: React.FC = () => {
         >
           <HandIcon className="w-4 h-4" />
           <span className="ml-2 text-sm">Move</span>
+        </Button>
+
+        <Button
+          active={state.editor.mode === "painting"}
+          className="bg-gray-900 text-gray-200 mt-2"
+          onClick={() => setEditorMode("painting")}
+        >
+          <PaintIcon className="w-4 h-4" />
+          <span className="ml-2 text-sm">Paint</span>
         </Button>
 
         <Button

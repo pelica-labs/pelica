@@ -49,7 +49,7 @@ const markersToFeatures = (markers: MarkerState[]): GeoJSON.Feature<GeoJSON.Geom
 export const Map: React.FC<Props> = ({ style, disableInteractions = false, disableSync = false }) => {
   const map = useRef<mapboxgl.Map>();
   const container = useRef<HTMLDivElement>(null);
-  const { state, move, addMarker, toggleDrawing } = useMap();
+  const { state, move, addMarker, togglePainting } = useMap();
 
   const resolvedStyle = style ?? state.style;
 
@@ -121,6 +121,10 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
    * Handle interactions
    */
   useEffect(() => {
+    if (disableInteractions) {
+      return;
+    }
+
     const onMoveEnd = (event: MapMouseEvent) => {
       const { lng, lat } = event.target.getCenter();
       const zoom = event.target.getZoom();
@@ -129,7 +133,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
     };
 
     const onMouseMove = throttle((event: MapMouseEvent) => {
-      if (!state.editor.isDrawing) {
+      if (!state.editor.isPainting) {
         return;
       }
 
@@ -137,19 +141,19 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
     }, 1);
 
     const onMouseDown = () => {
-      if (state.editor.mode !== "drawing") {
-        return;
+      if (state.editor.mode === "painting") {
+        togglePainting();
       }
-
-      if (disableInteractions) {
-        return;
-      }
-
-      toggleDrawing();
     };
 
-    const onMouseUp = () => {
-      toggleDrawing(false);
+    const onMouseUp = (event: MapMouseEvent) => {
+      if (state.editor.mode === "painting") {
+        togglePainting(false);
+      }
+
+      if (state.editor.mode === "drawing") {
+        addMarker(event.lngLat.lat, event.lngLat.lng);
+      }
     };
 
     map.current?.on("moveend", onMoveEnd);
@@ -235,7 +239,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
     if (state.editor.mode === "moving") {
       map.current?.dragPan.enable();
       map.current?.scrollZoom.enable();
-    } else if (state.editor.mode === "drawing") {
+    } else if (state.editor.mode === "drawing" || state.editor.mode === "painting") {
       map.current?.dragPan.disable();
       map.current?.scrollZoom.disable();
     }
@@ -265,7 +269,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
       return;
     }
 
-    if (state.editor.mode === "drawing") {
+    if (state.editor.mode === "drawing" || state.editor.mode === "painting") {
       map.current.getCanvas().style.cursor = "crosshair";
     } else if (state.editor.mode === "moving") {
       map.current.getCanvas().style.cursor = "pointer";

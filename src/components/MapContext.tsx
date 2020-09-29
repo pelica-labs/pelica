@@ -10,7 +10,7 @@ export type MarkerState = {
   };
 };
 
-type EditorMode = "moving" | "drawing";
+type EditorMode = "moving" | "drawing" | "painting";
 
 type MapState = {
   coordinates: {
@@ -23,7 +23,7 @@ type MapState = {
   editor: {
     mode: EditorMode;
     isShowingStyles: boolean;
-    isDrawing: boolean;
+    isPainting: boolean;
   };
   markers: MarkerState[];
 };
@@ -86,10 +86,10 @@ const makeContext = (state: MapState, setState: React.Dispatch<React.SetStateAct
       );
     },
 
-    toggleDrawing(drawing?: boolean) {
+    togglePainting(painting?: boolean) {
       setState(
         produce((state: MapState) => {
-          state.editor.isDrawing = drawing ?? !state.editor.isDrawing;
+          state.editor.isPainting = painting ?? !state.editor.isPainting;
         })
       );
     },
@@ -117,7 +117,7 @@ export const MapContextProvider: React.FC = ({ children }) => {
     },
     zoom: 9,
     editor: {
-      isDrawing: false,
+      isPainting: false,
       mode: "moving",
       isShowingStyles: false,
     },
