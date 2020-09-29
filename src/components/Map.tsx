@@ -2,7 +2,7 @@ import { Style } from "@mapbox/mapbox-sdk/services/styles";
 import throttle from "lodash/throttle";
 import mapboxgl, { GeoJSONSource, LngLatBoundsLike, MapMouseEvent } from "mapbox-gl";
 import Head from "next/head";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { MarkerState, useMap } from "~/components/MapContext";
 
@@ -50,6 +50,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
   const map = useRef<mapboxgl.Map>();
   const container = useRef<HTMLDivElement>(null);
   const { state, move, addMarker, togglePainting } = useMap();
+  const [metaIsPressed, setMetaIsPressed] = useState(false);
 
   const resolvedStyle = style ?? state.style;
 
@@ -118,6 +119,23 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
   }, []);
 
   /**
+   * Sync meta-key state
+   */
+  useEffect(() => {
+    const onKeyPress = (event: KeyboardEvent) => {
+      setMetaIsPressed(event.metaKey);
+    };
+
+    window.addEventListener("keydown", onKeyPress, false);
+    window.addEventListener("keyup", onKeyPress, false);
+
+    return () => {
+      window.removeEventListener("keydown", onKeyPress, false);
+      window.removeEventListener("keyup", onKeyPress, false);
+    };
+  }, []);
+
+  /**
    * Handle interactions
    */
   useEffect(() => {
@@ -133,6 +151,10 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
     };
 
     const onMouseMove = throttle((event: MapMouseEvent) => {
+      if (metaIsPressed) {
+        return;
+      }
+
       if (!state.editor.isPainting) {
         return;
       }
@@ -141,12 +163,20 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
     }, 1);
 
     const onMouseDown = () => {
+      if (metaIsPressed) {
+        return;
+      }
+
       if (state.editor.mode === "painting") {
         togglePainting();
       }
     };
 
     const onMouseUp = (event: MapMouseEvent) => {
+      if (metaIsPressed) {
+        return;
+      }
+
       if (state.editor.mode === "painting") {
         togglePainting(false);
       }
@@ -167,7 +197,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
       map.current?.off("mousedown", onMouseDown);
       map.current?.off("mouseup", onMouseUp);
     };
-  }, [state.editor]);
+  }, [state.editor, metaIsPressed]);
 
   /**
    * Update map when local state changes
@@ -236,14 +266,14 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
    * Update interactivity
    */
   useEffect(() => {
-    if (state.editor.mode === "moving") {
+    if (state.editor.mode === "moving" || metaIsPressed) {
       map.current?.dragPan.enable();
       map.current?.scrollZoom.enable();
     } else if (state.editor.mode === "drawing" || state.editor.mode === "painting") {
       map.current?.dragPan.disable();
       map.current?.scrollZoom.disable();
     }
-  }, [state.editor.mode]);
+  }, [state.editor.mode, metaIsPressed]);
 
   /**
    * Sync markers
@@ -269,12 +299,14 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
       return;
     }
 
-    if (state.editor.mode === "drawing" || state.editor.mode === "painting") {
+    if (metaIsPressed) {
+      map.current.getCanvas().style.cursor = "pointer";
+    } else if (state.editor.mode === "drawing" || state.editor.mode === "painting") {
       map.current.getCanvas().style.cursor = "crosshair";
     } else if (state.editor.mode === "moving") {
       map.current.getCanvas().style.cursor = "pointer";
     }
-  }, [state.editor.mode]);
+  }, [state.editor.mode, metaIsPressed]);
 
   return (
     <>
