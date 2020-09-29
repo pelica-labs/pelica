@@ -64,7 +64,7 @@ export const PlaceAutocomplete: React.FC = () => {
     setIsFocused(true);
   };
 
-  const onBlur = (event: FocusEvent) => {
+  const onBlur = (event: React.FocusEvent) => {
     event.preventDefault();
     event.stopPropagation();
 
