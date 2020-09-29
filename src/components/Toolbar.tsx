@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { Button } from "~/components/Button";
 import { ChevronLeftIcon, FireIcon, HandIcon, KabaddiIcon, PaintIcon, PencilIcon, ShareIcon } from "~/components/Icon";
@@ -11,6 +11,29 @@ export const Toolbar: React.FC = () => {
   const onExport = () => {
     alert("TODO");
   };
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.metaKey && event.keyCode === 49) {
+        event.preventDefault();
+        setEditorMode("moving");
+      }
+      if (event.metaKey && event.keyCode === 50) {
+        event.preventDefault();
+        setEditorMode("painting");
+      }
+      if (event.metaKey && event.keyCode === 51) {
+        event.preventDefault();
+        setEditorMode("drawing");
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown, false);
+
+    return () => {
+      window.removeEventListener("keydown", onKeyDown, false);
+    };
+  }, []);
 
   return (
     <div className="flex flex-row-reverse items-start">
