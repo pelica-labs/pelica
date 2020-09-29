@@ -21,8 +21,10 @@ type MapState = {
   place?: GeocodeFeature | null;
   style?: Style | null;
   editor: {
+    color: string;
     mode: EditorMode;
     isShowingStyles: boolean;
+    isShowingColors: boolean;
     isPainting: boolean;
   };
   markers: MarkerState[];
@@ -67,6 +69,26 @@ const makeContext = (state: MapState, setState: React.Dispatch<React.SetStateAct
     toggleStyles() {
       update((state: MapState) => {
         state.editor.isShowingStyles = !state.editor.isShowingStyles;
+
+        if (state.editor.isShowingStyles) {
+          state.editor.isShowingColors = false;
+        }
+      });
+    },
+
+    setColor(color: string) {
+      update((state: MapState) => {
+        state.editor.color = color;
+      });
+    },
+
+    toggleColors() {
+      update((state: MapState) => {
+        state.editor.isShowingColors = !state.editor.isShowingColors;
+
+        if (state.editor.isShowingColors) {
+          state.editor.isShowingStyles = false;
+        }
       });
     },
 
@@ -109,9 +131,11 @@ export const MapContextProvider: React.FC = ({ children }) => {
     },
     zoom: 9,
     editor: {
+      color: "black",
       mode: "moving",
       isPainting: false,
       isShowingStyles: false,
+      isShowingColors: false,
     },
     markers: [],
   });

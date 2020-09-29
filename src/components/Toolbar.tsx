@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { SketchPicker } from "react-color";
 
 import { Button } from "~/components/Button";
 import { ChevronLeftIcon, FireIcon, HandIcon, KabaddiIcon, PaintIcon, PencilIcon, ShareIcon } from "~/components/Icon";
@@ -6,7 +7,7 @@ import { useMap } from "~/components/MapContext";
 import { StyleSelector } from "~/components/StyleSelector";
 
 export const Toolbar: React.FC = () => {
-  const { state, toggleStyles, setEditorMode, clearMarkers } = useMap();
+  const { state, toggleStyles, setColor, toggleColors, setEditorMode, clearMarkers } = useMap();
 
   const onExport = () => {
     alert("TODO");
@@ -41,13 +42,32 @@ export const Toolbar: React.FC = () => {
         <div className="relative">
           <Button
             active={state.editor.isShowingStyles}
-            className="bg-gray-900 text-gray-200"
+            className="bg-gray-900 text-gray-200 w-full"
             onClick={() => toggleStyles()}
           >
             <FireIcon className="w-4 h-4" />
             <span className="ml-2 text-sm">Styles</span>
           </Button>
           {state.editor.isShowingStyles && (
+            <div className="absolute top-0 left-0 mt-1 -ml-8 rounded-full p-1 bg-gray-900 text-gray-200">
+              <ChevronLeftIcon className="w-4 h-4" />
+            </div>
+          )}
+        </div>
+
+        <div className="relative mt-2">
+          <Button
+            active={state.editor.isShowingColors}
+            className="bg-gray-900 text-gray-200 w-full"
+            onClick={() => toggleColors()}
+          >
+            <div
+              className="w-4 h-4 rounded-full border border-gray-200"
+              style={{ backgroundColor: state.editor.color }}
+            />
+            <span className="ml-2 text-sm">Color</span>
+          </Button>
+          {state.editor.isShowingColors && (
             <div className="absolute top-0 left-0 mt-1 -ml-8 rounded-full p-1 bg-gray-900 text-gray-200">
               <ChevronLeftIcon className="w-4 h-4" />
             </div>
@@ -100,6 +120,16 @@ export const Toolbar: React.FC = () => {
       {state.editor.isShowingStyles && (
         <div className="mr-10 overflow-y-auto rounded" style={{ maxHeight: "calc(100vh - 16px)" }}>
           <StyleSelector />
+        </div>
+      )}
+
+      {state.editor.isShowingColors && (
+        <div className="mr-10 overflow-y-auto rounded" style={{ maxHeight: "calc(100vh - 16px)" }}>
+          <SketchPicker
+            color={state.editor.color}
+            styles={{ default: { picker: { backgroundColor: "rgba(26, 32, 44)" } } }}
+            onChange={(event) => setColor(event.hex)}
+          />
         </div>
       )}
     </div>
