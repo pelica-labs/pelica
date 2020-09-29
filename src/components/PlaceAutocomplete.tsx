@@ -1,4 +1,3 @@
-import MapboxClient from "@mapbox/mapbox-sdk";
 import MapboxGeocoding, { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geocoding";
 import classnames from "classnames";
 import React, { useEffect, useRef, useState } from "react";
@@ -6,12 +5,15 @@ import React, { useEffect, useRef, useState } from "react";
 import { CloseIcon, SearchIcon } from "~/components/Icon";
 import { useMap } from "~/components/MapContext";
 
-const mapbox = MapboxClient({ accessToken: process.env.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN });
+const accessToken = process.env.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN;
+if (!accessToken) {
+  throw new Error("Missing Mapbox public token");
+}
 
-const mapboxGeocoding = MapboxGeocoding(mapbox);
+const mapboxGeocoding = MapboxGeocoding({ accessToken });
 
 export const PlaceAutocomplete: React.FC = () => {
-  const input = useRef<HTMLInputElement>();
+  const input = useRef<HTMLInputElement>(null);
   const { state, setPlace } = useMap();
   const [search, setSearch] = useState(state.place?.place_name ?? "");
   const [places, setPlaces] = useState<GeocodeFeature[]>([]);
@@ -87,7 +89,7 @@ export const PlaceAutocomplete: React.FC = () => {
 
     setPlace(place);
 
-    input.current.blur();
+    input.current?.blur();
   };
 
   /**
@@ -106,7 +108,7 @@ export const PlaceAutocomplete: React.FC = () => {
 
     setPlace(null);
 
-    input.current.focus();
+    input.current?.focus();
   };
 
   return (

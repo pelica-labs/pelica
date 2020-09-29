@@ -1,10 +1,12 @@
-import MapboxClient from "@mapbox/mapbox-sdk";
 import MapboxStyles from "@mapbox/mapbox-sdk/services/styles";
 import { NextApiHandler } from "next";
 
-const mapbox = MapboxClient({ accessToken: process.env.MAPBOX_SECRET_TOKEN });
+const accessToken = process.env.MAPBOX_SECRET_TOKEN;
+if (!accessToken) {
+  throw new Error("Missing Mapbox secret token");
+}
 
-const mapboxStyles = MapboxStyles(mapbox);
+const mapboxStyles = MapboxStyles({ accessToken });
 
 const Styles: NextApiHandler = async (req, res) => {
   const styles = await mapboxStyles.listStyles({}).send();

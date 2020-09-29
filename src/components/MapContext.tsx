@@ -20,9 +20,9 @@ type MapState = {
 
 type MapContext = ReturnType<typeof makeContext>;
 
-const MapContext = createContext<MapContext>(null);
+const MapContext = createContext<MapContext | null>(null);
 
-function makeContext(state: MapState, setState: React.Dispatch<React.SetStateAction<MapState>>) {
+const makeContext = (state: MapState, setState: React.Dispatch<React.SetStateAction<MapState>>) => {
   return {
     state,
 
@@ -44,7 +44,7 @@ function makeContext(state: MapState, setState: React.Dispatch<React.SetStateAct
       );
     },
 
-    setPlace(place?: GeocodeFeature) {
+    setPlace(place: GeocodeFeature | null) {
       setState(
         produce((state: MapState) => {
           state.place = place;
@@ -76,7 +76,7 @@ function makeContext(state: MapState, setState: React.Dispatch<React.SetStateAct
       );
     },
   };
-}
+};
 
 export const MapContextProvider: React.FC = ({ children }) => {
   const [state, setState] = useState<MapState>({
@@ -98,5 +98,11 @@ export const MapContextProvider: React.FC = ({ children }) => {
 };
 
 export const useMap = (): MapContext => {
-  return useContext(MapContext);
+  const context = useContext(MapContext);
+
+  if (!context) {
+    throw new Error("Missing map context");
+  }
+
+  return context;
 };

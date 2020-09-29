@@ -17,7 +17,7 @@ const styleToUrl = (style: Style): string => {
 
 export const Map: React.FC<Props> = ({ style, disableInteractions = false, disableSync = false }) => {
   const map = useRef<mapboxgl.Map>();
-  const container = useRef<HTMLDivElement>();
+  const container = useRef<HTMLDivElement>(null);
   const { state, move } = useMap();
 
   const resolvedStyle = style ?? state.style;
@@ -26,7 +26,16 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
    * Initialize map
    */
   useEffect(() => {
-    mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN;
+    const accessToken = process.env.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN;
+    if (!accessToken) {
+      throw new Error("Missing Mapbox public token");
+    }
+
+    if (!container.current) {
+      return;
+    }
+
+    mapboxgl.accessToken = accessToken;
 
     map.current = new mapboxgl.Map({
       container: container.current,
@@ -50,7 +59,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
     });
 
     return () => {
-      map.current.remove();
+      map.current?.remove();
     };
   }, []);
 
@@ -93,7 +102,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
       return;
     }
 
-    map.current.flyTo({
+    map.current?.flyTo({
       center: {
         lng: state.place.center[0],
         lat: state.place.center[1],
@@ -110,7 +119,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
       return;
     }
 
-    map.current.setStyle(styleToUrl(resolvedStyle));
+    map.current?.setStyle(styleToUrl(resolvedStyle));
   }, [resolvedStyle]);
 
   return (
