@@ -10,7 +10,17 @@ export const Toolbar: React.FC = () => {
   const { state, toggleStyles, setColor, toggleColors, setEditorMode, clearMarkers } = useMap();
 
   const onExport = () => {
-    alert("TODO");
+    const canvas = document.querySelector("canvas");
+    if (!canvas) {
+      return;
+    }
+
+    const image = new Image();
+    image.src = canvas.toDataURL();
+
+    const newTab = window.open("", "_blank");
+    newTab?.document.write(image.outerHTML);
+    newTab?.focus();
   };
 
   useEffect(() => {

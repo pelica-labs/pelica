@@ -76,6 +76,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
       zoom: state.zoom,
       logoPosition: "bottom-right",
       attributionControl: false,
+      preserveDrawingBuffer: true,
     });
 
     map.current?.on("load", () => {
