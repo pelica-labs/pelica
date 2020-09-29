@@ -1,6 +1,6 @@
 import { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geocoding";
 import { Style } from "@mapbox/mapbox-sdk/services/styles";
-import produce from "immer";
+import { produce } from "immer";
 import React, { createContext, useContext, useState } from "react";
 
 export type MarkerState = {
@@ -33,78 +33,70 @@ type MapContext = ReturnType<typeof makeContext>;
 const MapContext = createContext<MapContext | null>(null);
 
 const makeContext = (state: MapState, setState: React.Dispatch<React.SetStateAction<MapState>>) => {
+  const update = (fn: (state: MapState) => void) => setState(produce(fn));
+
   return {
     state,
 
     move(latitude: number, longitude: number, zoom: number) {
-      setState(
-        produce((state: MapState) => {
-          state.coordinates.latitude = latitude;
-          state.coordinates.longitude = longitude;
-          state.zoom = zoom;
-        })
-      );
+      update((state: MapState) => {
+        state.coordinates.latitude = latitude;
+        state.coordinates.longitude = longitude;
+        state.zoom = zoom;
+      });
     },
 
     setZoom(zoom: number) {
-      setState(
-        produce((state: MapState) => {
-          state.zoom = zoom;
-        })
-      );
+      update((state: MapState) => {
+        state.zoom = zoom;
+      });
     },
 
     setPlace(place: GeocodeFeature | null) {
-      setState(
-        produce((state: MapState) => {
-          state.place = place;
-        })
-      );
+      update((state: MapState) => {
+        state.place = place;
+      });
     },
 
     setStyle(style: Style) {
-      setState(
-        produce((state: MapState) => {
-          state.style = style;
-        })
-      );
+      update((state: MapState) => {
+        state.style = style;
+      });
     },
 
     toggleStyles() {
-      setState(
-        produce((state: MapState) => {
-          state.editor.isShowingStyles = !state.editor.isShowingStyles;
-        })
-      );
+      update((state: MapState) => {
+        state.editor.isShowingStyles = !state.editor.isShowingStyles;
+      });
     },
 
     setEditorMode(mode: EditorMode) {
-      setState(
-        produce((state: MapState) => {
-          state.editor.mode = mode;
-        })
-      );
+      update((state: MapState) => {
+        state.editor.mode = mode;
+      });
     },
 
     togglePainting(painting?: boolean) {
-      setState(
-        produce((state: MapState) => {
-          state.editor.isPainting = painting ?? !state.editor.isPainting;
-        })
-      );
+      update((state: MapState) => {
+        state.editor.isPainting = painting ?? !state.editor.isPainting;
+      });
     },
 
     addMarker(latitude: number, longitude: number) {
-      setState(
-        produce((state: MapState) => {
-          state.markers.push({
-            coordinates: {
-              latitude,
-              longitude,
-            },
-          });
-        })
-      );
+      update((state: MapState) => {
+        state.markers.push({
+          coordinates: {
+            latitude,
+            longitude,
+          },
+        });
+      });
+    },
+
+    clearMarkers() {
+      update((state: MapState) => {
+        state.markers = [];
+      });
     },
   };
 };
@@ -117,8 +109,8 @@ export const MapContextProvider: React.FC = ({ children }) => {
     },
     zoom: 9,
     editor: {
-      isPainting: false,
       mode: "moving",
+      isPainting: false,
       isShowingStyles: false,
     },
     markers: [],

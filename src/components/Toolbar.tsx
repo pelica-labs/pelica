@@ -1,12 +1,12 @@
 import React from "react";
 
 import { Button } from "~/components/Button";
-import { ChevronLeftIcon, FireIcon, HandIcon, PaintIcon, PencilIcon, ShareIcon } from "~/components/Icon";
+import { ChevronLeftIcon, FireIcon, HandIcon, KabaddiIcon, PaintIcon, PencilIcon, ShareIcon } from "~/components/Icon";
 import { useMap } from "~/components/MapContext";
 import { StyleSelector } from "~/components/StyleSelector";
 
 export const Toolbar: React.FC = () => {
-  const { state, toggleStyles, setEditorMode } = useMap();
+  const { state, toggleStyles, setEditorMode, clearMarkers } = useMap();
 
   const onExport = () => {
     alert("TODO");
@@ -56,6 +56,11 @@ export const Toolbar: React.FC = () => {
         >
           <PencilIcon className="w-4 h-4" />
           <span className="ml-2 text-sm">Draw</span>
+        </Button>
+
+        <Button className="bg-gray-900 text-gray-200 mt-2" onClick={() => clearMarkers()}>
+          <KabaddiIcon className="w-4 h-4" />
+          <span className="ml-2 text-sm">Clear</span>
         </Button>
 
         <Button
