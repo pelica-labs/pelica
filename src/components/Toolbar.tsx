@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { SketchPicker as ColorPicker } from "react-color";
 
 import { Button } from "~/components/Button";
@@ -12,18 +12,21 @@ import {
   PaintIcon,
   RulerCompassIcon,
   ShareIcon,
+  UploadIcon,
 } from "~/components/Icon";
 import { StrokeWidthPicker } from "~/components/StrokeWidthPicker";
 import { StyleSelector } from "~/components/StyleSelector";
 import { useStore } from "~/lib/state";
 
 export const Toolbar: React.FC = () => {
+  const ref = useRef<HTMLInputElement>(null);
   const editor = useStore((store) => store.editor);
   const togglePane = useStore((store) => store.togglePane);
   const setStrokeColor = useStore((store) => store.setStrokeColor);
   const clearRoutes = useStore((store) => store.clearRoutes);
   const setEditorMode = useStore((store) => store.setEditorMode);
   const toggleMatchMap = useStore((store) => store.toggleMatchMap);
+  const pushRoute = useStore((store) => store.pushRoute);
 
   const onExport = () => {
     const canvas = document.querySelector("canvas");
@@ -37,6 +40,38 @@ export const Toolbar: React.FC = () => {
     const newTab = window.open("", "_blank");
     newTab?.document.write(image.outerHTML);
     newTab?.focus();
+  };
+
+  const onFileUpload = (files: FileList | null) => {
+    if (!files || !files.length) {
+      return;
+    }
+    console.log(files[0]);
+
+    const reader = new FileReader();
+    reader.onload = (file) => {
+      const xml = file.target?.result as string;
+      if (!xml) {
+        return;
+      }
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(xml, "application/xml");
+      const markers = doc.querySelectorAll("trkpt");
+
+      pushRoute({
+        markers: Array.from(markers).map((node) => {
+          return {
+            strokeColor: editor.strokeColor,
+            strokeWidth: editor.strokeWidth,
+            coordinates: {
+              latitude: parseFloat(node.getAttribute("lat") as string),
+              longitude: parseFloat(node.getAttribute("lon") as string),
+            },
+          };
+        }),
+      });
+    };
+    reader.readAsText(files[0]);
   };
 
   useEffect(() => {
@@ -151,6 +186,17 @@ export const Toolbar: React.FC = () => {
         >
           {editor.matchMap ? <CheckboxIcon className="w-4 h-4" /> : <EmptyCheckboxIcon className="w-4 h-4" />}
           <span className="ml-2 text-sm">Match map</span>
+        </Button>
+
+        <Button
+          className="bg-gray-900 text-gray-200 mt-2"
+          onClick={() => {
+            ref.current?.click();
+          }}
+        >
+          <UploadIcon className="w-4 h-4" />
+          <input ref={ref} className="hidden" type="file" onChange={(event) => onFileUpload(event.target.files)} />
+          <span className="ml-2 text-sm">Upload GPX</span>
         </Button>
       </nav>
 

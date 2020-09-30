@@ -124,6 +124,12 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
       });
     },
 
+    pushRoute(route: RouteState) {
+      set((state) => {
+        state.routes.push(route);
+      });
+    },
+
     startRoute() {
       set((state) => {
         state.currentRoute = {
