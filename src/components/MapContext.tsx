@@ -4,13 +4,21 @@ import { produce } from "immer";
 import React, { createContext, useContext, useState } from "react";
 
 export type MarkerState = {
+  color: string;
+  strokeWidth: number;
   coordinates: {
     latitude: number;
     longitude: number;
   };
 };
 
+export type RouteState = {
+  markers: MarkerState[];
+};
+
 type EditorMode = "moving" | "drawing" | "painting";
+
+type EditorPane = "styles" | "colors" | "strokeWidth";
 
 type MapState = {
   coordinates: {
@@ -22,12 +30,12 @@ type MapState = {
   style?: Style | null;
   editor: {
     color: string;
+    strokeWidth: number;
     mode: EditorMode;
-    isShowingStyles: boolean;
-    isShowingColors: boolean;
+    pane: EditorPane | null;
     isPainting: boolean;
   };
-  markers: MarkerState[];
+  routes: RouteState[];
 };
 
 type MapContext = ReturnType<typeof makeContext>;
@@ -66,29 +74,21 @@ const makeContext = (state: MapState, setState: React.Dispatch<React.SetStateAct
       });
     },
 
-    toggleStyles() {
-      update((state: MapState) => {
-        state.editor.isShowingStyles = !state.editor.isShowingStyles;
-
-        if (state.editor.isShowingStyles) {
-          state.editor.isShowingColors = false;
-        }
-      });
-    },
-
     setColor(color: string) {
       update((state: MapState) => {
         state.editor.color = color;
       });
     },
 
-    toggleColors() {
+    setStrokeWidth(strokeWidth: number) {
       update((state: MapState) => {
-        state.editor.isShowingColors = !state.editor.isShowingColors;
+        state.editor.strokeWidth = strokeWidth;
+      });
+    },
 
-        if (state.editor.isShowingColors) {
-          state.editor.isShowingStyles = false;
-        }
+    togglePane(pane: EditorPane) {
+      update((state: MapState) => {
+        state.editor.pane = state.editor.pane !== pane ? pane : null;
       });
     },
 
@@ -104,27 +104,46 @@ const makeContext = (state: MapState, setState: React.Dispatch<React.SetStateAct
       });
     },
 
+    addRoute() {
+      const route = {
+        markers: [],
+      };
+
+      update((state: MapState) => {
+        state.routes.push(route);
+      });
+
+      return route;
+    },
+
     addMarker(latitude: number, longitude: number) {
       update((state: MapState) => {
-        state.markers.push({
+        let lastRoute = state.routes[state.routes.length - 1];
+        if (!lastRoute) {
+          lastRoute = { markers: [] };
+          state.routes.push(lastRoute);
+        }
+
+        lastRoute.markers.push({
           coordinates: {
             latitude,
             longitude,
           },
+          color: state.editor.color,
+          strokeWidth: state.editor.strokeWidth,
         });
       });
     },
 
-    clearMarkers() {
+    clearRoutes() {
       update((state: MapState) => {
-        state.markers = [];
+        state.routes = [];
       });
     },
 
     closePanes() {
       update((state: MapState) => {
-        state.editor.isShowingStyles = false;
-        state.editor.isShowingColors = false;
+        state.editor.pane = null;
       });
     },
   };
@@ -139,12 +158,12 @@ export const MapContextProvider: React.FC = ({ children }) => {
     zoom: 9,
     editor: {
       color: "black",
+      strokeWidth: 3,
       mode: "moving",
       isPainting: false,
-      isShowingStyles: false,
-      isShowingColors: false,
+      pane: null,
     },
-    markers: [],
+    routes: [],
   });
 
   const context = makeContext(state, setState);

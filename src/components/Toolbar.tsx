@@ -1,13 +1,14 @@
 import React, { useEffect } from "react";
-import { SketchPicker } from "react-color";
+import { SketchPicker as ColorPicker } from "react-color";
 
 import { Button } from "~/components/Button";
-import { ChevronLeftIcon, FireIcon, HandIcon, KabaddiIcon, PaintIcon, PencilIcon, ShareIcon } from "~/components/Icon";
+import { FireIcon, HandIcon, KabaddiIcon, LineWidthIcon, PaintIcon, PencilIcon, ShareIcon } from "~/components/Icon";
 import { useMap } from "~/components/MapContext";
+import { StrokeWidthPicker } from "~/components/StrokeWidthPicker";
 import { StyleSelector } from "~/components/StyleSelector";
 
 export const Toolbar: React.FC = () => {
-  const { state, toggleStyles, setColor, toggleColors, setEditorMode, clearMarkers } = useMap();
+  const { state, setColor, togglePane, setEditorMode, clearRoutes: clearMarkers } = useMap();
 
   const onExport = () => {
     const canvas = document.querySelector("canvas");
@@ -51,25 +52,20 @@ export const Toolbar: React.FC = () => {
       <nav className="flex flex-col">
         <div className="relative">
           <Button
-            active={state.editor.isShowingStyles}
+            active={state.editor.pane === "styles"}
             className="bg-gray-900 text-gray-200 w-full"
-            onClick={() => toggleStyles()}
+            onClick={() => togglePane("styles")}
           >
             <FireIcon className="w-4 h-4" />
             <span className="ml-2 text-sm">Styles</span>
           </Button>
-          {state.editor.isShowingStyles && (
-            <div className="absolute top-0 left-0 mt-1 -ml-8 rounded-full p-1 bg-gray-900 text-gray-200">
-              <ChevronLeftIcon className="w-4 h-4" />
-            </div>
-          )}
         </div>
 
         <div className="relative mt-2">
           <Button
-            active={state.editor.isShowingColors}
+            active={state.editor.pane === "colors"}
             className="bg-gray-900 text-gray-200 w-full"
-            onClick={() => toggleColors()}
+            onClick={() => togglePane("colors")}
           >
             <div
               className="w-4 h-4 rounded-full border border-gray-200"
@@ -77,11 +73,17 @@ export const Toolbar: React.FC = () => {
             />
             <span className="ml-2 text-sm">Color</span>
           </Button>
-          {state.editor.isShowingColors && (
-            <div className="absolute top-0 left-0 mt-1 -ml-8 rounded-full p-1 bg-gray-900 text-gray-200">
-              <ChevronLeftIcon className="w-4 h-4" />
-            </div>
-          )}
+        </div>
+
+        <div className="relative mt-2">
+          <Button
+            active={state.editor.pane === "strokeWidth"}
+            className="bg-gray-900 text-gray-200 w-full"
+            onClick={() => togglePane("strokeWidth")}
+          >
+            <LineWidthIcon className="w-4 h-4" />
+            <span className="ml-2 text-sm">Width</span>
+          </Button>
         </div>
 
         <Button
@@ -127,19 +129,19 @@ export const Toolbar: React.FC = () => {
         </Button>
       </nav>
 
-      {state.editor.isShowingStyles && (
-        <div className="mr-10 overflow-y-auto rounded" style={{ maxHeight: "calc(100vh - 16px)" }}>
-          <StyleSelector />
-        </div>
-      )}
+      {!!state.editor.pane && (
+        <div className="mr-2 overflow-y-auto rounded" style={{ maxHeight: "calc(100vh - 1rem)" }}>
+          {state.editor.pane === "styles" && <StyleSelector />}
 
-      {state.editor.isShowingColors && (
-        <div className="mr-10 overflow-y-auto rounded" style={{ maxHeight: "calc(100vh - 16px)" }}>
-          <SketchPicker
-            color={state.editor.color}
-            styles={{ default: { picker: { backgroundColor: "rgba(26, 32, 44)" } } }}
-            onChange={(event) => setColor(event.hex)}
-          />
+          {state.editor.pane === "colors" && (
+            <ColorPicker
+              color={state.editor.color}
+              styles={{ default: { picker: { backgroundColor: "rgba(26, 32, 44)" } } }}
+              onChange={(event) => setColor(event.hex)}
+            />
+          )}
+
+          {state.editor.pane === "strokeWidth" && <StrokeWidthPicker />}
         </div>
       )}
     </div>

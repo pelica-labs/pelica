@@ -4,7 +4,7 @@ import mapboxgl, { GeoJSONSource, LngLatBoundsLike, MapMouseEvent } from "mapbox
 import Head from "next/head";
 import React, { useEffect, useRef, useState } from "react";
 
-import { MarkerState, useMap } from "~/components/MapContext";
+import { MarkerState, RouteState, useMap } from "~/components/MapContext";
 
 enum MapSource {
   Drawing = "drawing",
@@ -18,6 +18,10 @@ type Props = {
 
 const styleToUrl = (style: Style): string => {
   return `mapbox://styles/${style.owner}/${style.id}`;
+};
+
+const routesToFeatures = (routes: RouteState[]): GeoJSON.Feature<GeoJSON.Geometry>[] => {
+  return routes.flatMap((route) => markersToFeatures(route.markers));
 };
 
 const markersToFeatures = (markers: MarkerState[]): GeoJSON.Feature<GeoJSON.Geometry>[] => {
@@ -39,7 +43,10 @@ const markersToFeatures = (markers: MarkerState[]): GeoJSON.Feature<GeoJSON.Geom
           [marker.coordinates.longitude, marker.coordinates.latitude],
         ],
       },
-      properties: {},
+      properties: {
+        color: marker.color,
+        strokeWidth: marker.strokeWidth,
+      },
     });
   }
 
@@ -49,7 +56,7 @@ const markersToFeatures = (markers: MarkerState[]): GeoJSON.Feature<GeoJSON.Geom
 export const Map: React.FC<Props> = ({ style, disableInteractions = false, disableSync = false }) => {
   const map = useRef<mapboxgl.Map>();
   const container = useRef<HTMLDivElement>(null);
-  const { state, move, addMarker, togglePainting, closePanes } = useMap();
+  const { state, move, addMarker, togglePainting, closePanes, addRoute } = useMap();
   const [metaIsPressed, setMetaIsPressed] = useState(false);
 
   const resolvedStyle = style ?? state.style;
@@ -89,7 +96,10 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
         if (!map.current?.getSource(MapSource.Drawing)) {
           map.current?.addSource(MapSource.Drawing, {
             type: "geojson",
-            data: { type: "FeatureCollection", features: markersToFeatures(state.markers) },
+            data: {
+              type: "FeatureCollection",
+              features: routesToFeatures(state.routes),
+            },
           });
         }
 
@@ -99,8 +109,8 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
             type: "line",
             source: MapSource.Drawing,
             paint: {
-              "line-color": state.editor.color,
-              "line-width": ["case", ["==", ["geometry-type"], "LineString"], 1, 4],
+              "line-color": ["get", "color"],
+              "line-width": ["get", "strokeWidth"],
             },
           });
         }
@@ -173,7 +183,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
       }
     };
 
-    const onMouseUp = (event: MapMouseEvent) => {
+    const onMouseUp = () => {
       if (metaIsPressed) {
         return;
       }
@@ -181,28 +191,32 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
       if (state.editor.mode === "painting") {
         togglePainting(false);
       }
-
-      if (state.editor.mode === "drawing") {
-        addMarker(event.lngLat.lat, event.lngLat.lng);
-      }
     };
 
-    const onMouseClick = () => {
+    const onClick = (event: MapMouseEvent) => {
       closePanes();
+
+      if (state.editor.mode === "drawing") {
+        if (event.originalEvent.altKey) {
+          addRoute();
+        }
+
+        addMarker(event.lngLat.lat, event.lngLat.lng);
+      }
     };
 
     map.current?.on("moveend", onMoveEnd);
     map.current?.on("mousemove", onMouseMove);
     map.current?.on("mousedown", onMouseDown);
     map.current?.on("mouseup", onMouseUp);
-    map.current?.on("click", onMouseClick);
+    map.current?.on("click", onClick);
 
     return () => {
       map.current?.off("moveend", onMoveEnd);
       map.current?.off("mousemove", onMouseMove);
       map.current?.off("mousedown", onMouseDown);
       map.current?.off("mouseup", onMouseUp);
-      map.current?.on("click", onMouseClick);
+      map.current?.off("click", onClick);
     };
   }, [state.editor, metaIsPressed]);
 
@@ -283,16 +297,16 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
   }, [state.editor.mode, metaIsPressed]);
 
   /**
-   * Sync markers
+   * Sync routes
    */
   useEffect(() => {
     const drawings = map.current?.getSource(MapSource.Drawing) as GeoJSONSource;
 
     drawings?.setData({
       type: "FeatureCollection",
-      features: markersToFeatures(state.markers),
+      features: routesToFeatures(state.routes),
     });
-  }, [state.markers]);
+  }, [state.routes]);
 
   /**
    * Sync cursor
