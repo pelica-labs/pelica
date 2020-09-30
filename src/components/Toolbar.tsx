@@ -2,7 +2,15 @@ import React, { useEffect } from "react";
 import { SketchPicker as ColorPicker } from "react-color";
 
 import { Button } from "~/components/Button";
-import { FireIcon, HandIcon, KabaddiIcon, LineWidthIcon, PaintIcon, PencilIcon, ShareIcon } from "~/components/Icon";
+import {
+  EraserIcon,
+  FireIcon,
+  HandIcon,
+  LineWidthIcon,
+  PaintIcon,
+  RulerCompassIcon,
+  ShareIcon,
+} from "~/components/Icon";
 import { useMap } from "~/components/MapContext";
 import { StrokeWidthPicker } from "~/components/StrokeWidthPicker";
 import { StyleSelector } from "~/components/StyleSelector";
@@ -101,7 +109,7 @@ export const Toolbar: React.FC = () => {
           onClick={() => setEditorMode("painting")}
         >
           <PaintIcon className="w-4 h-4" />
-          <span className="ml-2 text-sm">Paint</span>
+          <span className="ml-2 text-sm">Free drawing</span>
         </Button>
 
         <Button
@@ -109,12 +117,12 @@ export const Toolbar: React.FC = () => {
           className="bg-gray-900 text-gray-200 mt-2"
           onClick={() => setEditorMode("drawing")}
         >
-          <PencilIcon className="w-4 h-4" />
-          <span className="ml-2 text-sm">Draw</span>
+          <RulerCompassIcon className="w-4 h-4" />
+          <span className="ml-2 text-sm">Trace</span>
         </Button>
 
         <Button className="bg-gray-900 text-gray-200 mt-2" onClick={() => clearMarkers()}>
-          <KabaddiIcon className="w-4 h-4" />
+          <EraserIcon className="w-4 h-4" />
           <span className="ml-2 text-sm">Clear</span>
         </Button>
 
