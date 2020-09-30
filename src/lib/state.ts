@@ -156,6 +156,14 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
         return;
       }
 
+      if (currentRoute.markers.length > 100) {
+        console.warn("Route has more than 100 points, skipping map matching for now");
+        set((state) => {
+          state.routes.push(currentRoute);
+        });
+        return;
+      }
+
       const res = await mapboxMapMatching
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
