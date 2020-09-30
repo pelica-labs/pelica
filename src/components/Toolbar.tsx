@@ -27,6 +27,7 @@ export const Toolbar: React.FC = () => {
   const setEditorMode = useStore((store) => store.setEditorMode);
   const toggleMatchMap = useStore((store) => store.toggleMatchMap);
   const pushRoute = useStore((store) => store.pushRoute);
+  const move = useStore((store) => store.move);
 
   const onExport = () => {
     const canvas = document.querySelector("canvas");
@@ -56,20 +57,21 @@ export const Toolbar: React.FC = () => {
       }
       const parser = new DOMParser();
       const doc = parser.parseFromString(xml, "application/xml");
-      const markers = doc.querySelectorAll("trkpt");
+      const markers = Array.from(doc.querySelectorAll("trkpt")).map((node) => {
+        return {
+          strokeColor: editor.strokeColor,
+          strokeWidth: editor.strokeWidth,
+          coordinates: {
+            latitude: parseFloat(node.getAttribute("lat") as string),
+            longitude: parseFloat(node.getAttribute("lon") as string),
+          },
+        };
+      });
 
       pushRoute({
-        markers: Array.from(markers).map((node) => {
-          return {
-            strokeColor: editor.strokeColor,
-            strokeWidth: editor.strokeWidth,
-            coordinates: {
-              latitude: parseFloat(node.getAttribute("lat") as string),
-              longitude: parseFloat(node.getAttribute("lon") as string),
-            },
-          };
-        }),
+        markers,
       });
+      move(markers[0].coordinates.latitude, markers[0].coordinates.longitude, 6);
     };
     reader.readAsText(files[0]);
   };
