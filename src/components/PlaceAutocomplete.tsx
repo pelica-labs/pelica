@@ -1,16 +1,10 @@
-import MapboxGeocoding, { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geocoding";
+import { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geocoding";
 import classnames from "classnames";
 import React, { useEffect, useRef, useState } from "react";
 
 import { CloseIcon, SearchIcon } from "~/components/Icon";
+import { mapboxGeocoding } from "~/lib/mapbox";
 import { useStore } from "~/lib/state";
-
-const accessToken = process.env.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN;
-if (!accessToken) {
-  throw new Error("Missing Mapbox public token");
-}
-
-const mapboxGeocoding = MapboxGeocoding({ accessToken });
 
 export const PlaceAutocomplete: React.FC = () => {
   const input = useRef<HTMLInputElement>(null);

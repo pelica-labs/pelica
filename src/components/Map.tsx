@@ -108,11 +108,16 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
 
       const applySourcesAndLayers = () => {
         if (!map.current?.getSource(MapSource.Routes)) {
+          const routesToDraw: RouteState[] = [...routes];
+          if (currentRoute) {
+            routesToDraw.push(currentRoute);
+          }
+
           map.current?.addSource(MapSource.Routes, {
             type: "geojson",
             data: {
               type: "FeatureCollection",
-              features: routesToFeatures(routes),
+              features: routesToFeatures(routesToDraw),
             },
           });
         }
@@ -192,7 +197,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
         return;
       }
 
-      if (editor.mode === "painting") {
+      if (editor.mode === "freeDraw") {
         startRoute();
         togglePainting();
       }
@@ -203,7 +208,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
         return;
       }
 
-      if (editor.mode === "painting") {
+      if (editor.mode === "freeDraw") {
         togglePainting(false);
         endRoute();
       }
@@ -212,7 +217,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
     const onClick = (event: MapMouseEvent) => {
       closePanes();
 
-      if (editor.mode === "drawing") {
+      if (editor.mode === "trace") {
         if (!currentRoute) {
           startRoute();
         } else if (event.originalEvent.altKey) {
@@ -237,7 +242,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
       map.current?.off("mouseup", onMouseUp);
       map.current?.off("click", onClick);
     };
-  }, [editor, altIsPressed]);
+  }, [editor, currentRoute, altIsPressed]);
 
   /**
    * Update map when local state changes
@@ -309,7 +314,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
     if (editor.mode === "moving" || altIsPressed) {
       map.current?.dragPan.enable();
       map.current?.scrollZoom.enable();
-    } else if (editor.mode === "drawing" || editor.mode === "painting") {
+    } else if (editor.mode === "trace" || editor.mode === "freeDraw") {
       map.current?.dragPan.disable();
       map.current?.scrollZoom.disable();
     }
@@ -320,12 +325,16 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
    */
   useEffect(() => {
     const drawings = map.current?.getSource(MapSource.Routes) as GeoJSONSource;
+    const routesToDraw: RouteState[] = [...routes];
+    if (currentRoute) {
+      routesToDraw.push(currentRoute);
+    }
 
     drawings?.setData({
       type: "FeatureCollection",
-      features: routesToFeatures(routes),
+      features: routesToFeatures(routesToDraw),
     });
-  }, [routes]);
+  }, [routes, currentRoute]);
 
   /**
    * Sync cursor
@@ -341,7 +350,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
 
     if (altIsPressed) {
       map.current.getCanvas().style.cursor = "pointer";
-    } else if (editor.mode === "drawing" || editor.mode === "painting") {
+    } else if (editor.mode === "trace" || editor.mode === "freeDraw") {
       map.current.getCanvas().style.cursor = "crosshair";
     } else if (editor.mode === "moving") {
       map.current.getCanvas().style.cursor = "pointer";

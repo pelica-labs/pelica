@@ -40,15 +40,15 @@ export const Toolbar: React.FC = () => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.metaKey && event.keyCode === 49) {
         event.preventDefault();
-        setEditorMode("moving");
+        setEditorMode("move");
       }
       if (event.metaKey && event.keyCode === 50) {
         event.preventDefault();
-        setEditorMode("painting");
+        setEditorMode("freeDraw");
       }
       if (event.metaKey && event.keyCode === 51) {
         event.preventDefault();
-        setEditorMode("drawing");
+        setEditorMode("trace");
       }
     };
 
@@ -99,27 +99,27 @@ export const Toolbar: React.FC = () => {
         </div>
 
         <Button
-          active={editor.mode === "moving"}
+          active={editor.mode === "move"}
           className="bg-gray-900 text-gray-200 mt-2"
-          onClick={() => setEditorMode("moving")}
+          onClick={() => setEditorMode("move")}
         >
           <HandIcon className="w-4 h-4" />
           <span className="ml-2 text-sm">Move</span>
         </Button>
 
         <Button
-          active={editor.mode === "painting"}
+          active={editor.mode === "freeDraw"}
           className="bg-gray-900 text-gray-200 mt-2"
-          onClick={() => setEditorMode("painting")}
+          onClick={() => setEditorMode("freeDraw")}
         >
           <PaintIcon className="w-4 h-4" />
           <span className="ml-2 text-sm">Free drawing</span>
         </Button>
 
         <Button
-          active={editor.mode === "drawing"}
+          active={editor.mode === "trace"}
           className="bg-gray-900 text-gray-200 mt-2"
-          onClick={() => setEditorMode("drawing")}
+          onClick={() => setEditorMode("trace")}
         >
           <RulerCompassIcon className="w-4 h-4" />
           <span className="ml-2 text-sm">Trace</span>

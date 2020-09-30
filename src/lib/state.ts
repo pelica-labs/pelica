@@ -1,6 +1,9 @@
 import { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geocoding";
+import { Tracepoint } from "@mapbox/mapbox-sdk/services/map-matching";
 import { Style } from "@mapbox/mapbox-sdk/services/styles";
+import { GetState } from "zustand";
 
+import { mapboxMapMatching } from "~/lib/mapbox";
 import { createStore, immer } from "~/lib/zustand";
 
 export type MapState = {
@@ -35,13 +38,13 @@ export type MarkerState = {
   };
 };
 
-export type EditorMode = "moving" | "drawing" | "painting";
+export type EditorMode = "move" | "trace" | "freeDraw";
 
 export type EditorPane = "styles" | "colors" | "strokeWidth";
 
 type MapStore = ReturnType<typeof makeStore> & MapState;
 
-const makeStore = (set: (fn: (draft: MapState) => void) => void) => {
+const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<MapState>) => {
   return {
     coordinates: {
       latitude: 40,
@@ -51,11 +54,11 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void) => {
     editor: {
       strokeColor: "black",
       strokeWidth: 3,
-      mode: "moving" as EditorMode,
+      mode: "move" as EditorMode,
       isPainting: false,
       pane: null,
     },
-    currentRoute: null,
+    currentRoute: null as RouteState | null,
     routes: [],
 
     move(latitude: number, longitude: number, zoom: number) {
@@ -98,7 +101,7 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void) => {
 
     setEditorMode(mode: EditorMode) {
       set((state) => {
-        if (state.editor.mode === "drawing" && state.currentRoute) {
+        if (state.editor.mode === "trace" && state.currentRoute) {
           state.routes.push(state.currentRoute);
           state.currentRoute = null;
         }
@@ -121,26 +124,70 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void) => {
       });
     },
 
-    endRoute() {
-      set((state) => {
-        if (!state.currentRoute) {
-          return;
-        }
+    async endRoute() {
+      const currentRoute = get().currentRoute;
+      if (!currentRoute || currentRoute.markers.length === 0) {
+        return;
+      }
 
-        state.routes.push(state.currentRoute);
+      const color = currentRoute.markers[0].strokeColor;
+      const width = currentRoute.markers[0].strokeWidth;
+
+      set((state) => {
         state.currentRoute = null;
+      });
+
+      if (currentRoute.markers.length < 2) {
+        return;
+      }
+
+      const res = await mapboxMapMatching
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        .getMatch({
+          profile: "walking",
+          points: currentRoute.markers.map((marker) => {
+            return {
+              coordinates: [marker.coordinates.longitude, marker.coordinates.latitude],
+            };
+          }),
+        })
+        .send();
+
+      if (!res.body.tracepoints) {
+        set((state) => {
+          state.routes.push(currentRoute);
+        });
+        return;
+      }
+
+      const improvedRoute: MarkerState[] = (res.body.tracepoints as Tracepoint[])
+        .filter((tracepoint) => tracepoint !== null)
+        .map((tracepoint) => {
+          return {
+            strokeWidth: width,
+            strokeColor: color,
+            coordinates: {
+              longitude: tracepoint.location[0],
+              latitude: tracepoint.location[1],
+            },
+          };
+        });
+
+      set((state) => {
+        state.routes.push({
+          markers: improvedRoute,
+        });
       });
     },
 
     addMarker(latitude: number, longitude: number) {
       set((state) => {
-        let lastRoute = state.routes[state.routes.length - 1];
-        if (!lastRoute) {
-          lastRoute = { markers: [] };
-          state.routes.push(lastRoute);
+        if (!state.currentRoute) {
+          return;
         }
 
-        lastRoute.markers.push({
+        state.currentRoute.markers.push({
           coordinates: {
             latitude,
             longitude,
@@ -167,7 +214,7 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void) => {
 };
 
 export const useStore = createStore<MapStore>(
-  immer((set) => {
-    return makeStore(set);
+  immer((set, get) => {
+    return makeStore(set, get);
   })
 );
