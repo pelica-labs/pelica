@@ -138,9 +138,6 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
         return;
       }
 
-      const color = currentRoute.markers[0].strokeColor;
-      const width = currentRoute.markers[0].strokeWidth;
-
       set((state) => {
         state.currentRoute = null;
       });
@@ -186,10 +183,10 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
 
       const improvedRoute: MarkerState[] = (res.body.tracepoints as Tracepoint[])
         .filter((tracepoint) => tracepoint !== null)
-        .map((tracepoint) => {
+        .map((tracepoint, i) => {
           return {
-            strokeWidth: width,
-            strokeColor: color,
+            strokeWidth: currentRoute.markers[i].strokeWidth,
+            strokeColor: currentRoute.markers[i].strokeColor,
             coordinates: {
               longitude: tracepoint.location[0],
               latitude: tracepoint.location[1],
