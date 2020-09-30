@@ -57,7 +57,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
   const map = useRef<mapboxgl.Map>();
   const container = useRef<HTMLDivElement>(null);
   const { state, move, addMarker, togglePainting, closePanes, addRoute } = useMap();
-  const [metaIsPressed, setMetaIsPressed] = useState(false);
+  const [altIsPressed, setAltIsPressed] = useState(false);
 
   const resolvedStyle = style ?? state.style;
 
@@ -130,11 +130,11 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
   }, []);
 
   /**
-   * Sync meta-key state
+   * Sync alt key state
    */
   useEffect(() => {
     const onKeyPress = (event: KeyboardEvent) => {
-      setMetaIsPressed(event.metaKey);
+      setAltIsPressed(event.altKey);
     };
 
     window.addEventListener("keydown", onKeyPress, false);
@@ -162,7 +162,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
     };
 
     const onMouseMove = throttle((event: MapMouseEvent) => {
-      if (metaIsPressed) {
+      if (altIsPressed) {
         return;
       }
 
@@ -171,20 +171,21 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
       }
 
       addMarker(event.lngLat.lat, event.lngLat.lng);
-    }, 1);
+    }, 1000 / 30);
 
     const onMouseDown = () => {
-      if (metaIsPressed) {
+      if (altIsPressed) {
         return;
       }
 
       if (state.editor.mode === "painting") {
+        addRoute();
         togglePainting();
       }
     };
 
     const onMouseUp = () => {
-      if (metaIsPressed) {
+      if (altIsPressed) {
         return;
       }
 
@@ -218,7 +219,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
       map.current?.off("mouseup", onMouseUp);
       map.current?.off("click", onClick);
     };
-  }, [state.editor, metaIsPressed]);
+  }, [state.editor, altIsPressed]);
 
   /**
    * Update map when local state changes
@@ -287,14 +288,14 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
    * Update interactivity
    */
   useEffect(() => {
-    if (state.editor.mode === "moving" || metaIsPressed) {
+    if (state.editor.mode === "moving" || altIsPressed) {
       map.current?.dragPan.enable();
       map.current?.scrollZoom.enable();
     } else if (state.editor.mode === "drawing" || state.editor.mode === "painting") {
       map.current?.dragPan.disable();
       map.current?.scrollZoom.disable();
     }
-  }, [state.editor.mode, metaIsPressed]);
+  }, [state.editor.mode, altIsPressed]);
 
   /**
    * Sync routes
@@ -320,14 +321,14 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
       return;
     }
 
-    if (metaIsPressed) {
+    if (altIsPressed) {
       map.current.getCanvas().style.cursor = "pointer";
     } else if (state.editor.mode === "drawing" || state.editor.mode === "painting") {
       map.current.getCanvas().style.cursor = "crosshair";
     } else if (state.editor.mode === "moving") {
       map.current.getCanvas().style.cursor = "pointer";
     }
-  }, [state.editor.mode, metaIsPressed]);
+  }, [state.editor.mode, altIsPressed]);
 
   return (
     <>
