@@ -18,6 +18,7 @@ export type MapState = {
     pane: EditorPane | null;
     isPainting: boolean;
   };
+  currentRoute: RouteState | null;
   routes: RouteState[];
 };
 
@@ -54,6 +55,7 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void) => {
       isPainting: false,
       pane: null,
     },
+    currentRoute: null,
     routes: [],
 
     move(latitude: number, longitude: number, zoom: number) {
@@ -96,6 +98,11 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void) => {
 
     setEditorMode(mode: EditorMode) {
       set((state) => {
+        if (state.editor.mode === "drawing" && state.currentRoute) {
+          state.routes.push(state.currentRoute);
+          state.currentRoute = null;
+        }
+
         state.editor.mode = mode;
       });
     },
@@ -106,11 +113,22 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void) => {
       });
     },
 
-    addRoute() {
+    startRoute() {
       set((state) => {
-        state.routes.push({
+        state.currentRoute = {
           markers: [],
-        });
+        };
+      });
+    },
+
+    endRoute() {
+      set((state) => {
+        if (!state.currentRoute) {
+          return;
+        }
+
+        state.routes.push(state.currentRoute);
+        state.currentRoute = null;
       });
     },
 
@@ -136,6 +154,7 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void) => {
     clearRoutes() {
       set((state) => {
         state.routes = [];
+        state.currentRoute = null;
       });
     },
 

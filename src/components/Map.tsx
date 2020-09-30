@@ -7,7 +7,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { MarkerState, RouteState, useStore } from "~/lib/state";
 
 enum MapSource {
-  Drawing = "drawing",
+  Routes = "routes",
 }
 
 type Props = {
@@ -63,11 +63,13 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
   const mapStyle = useStore((store) => store.style);
   const editor = useStore((store) => store.editor);
   const routes = useStore((store) => store.routes);
+  const currentRoute = useStore((store) => store.currentRoute);
   const move = useStore((store) => store.move);
   const addMarker = useStore((store) => store.addMarker);
   const togglePainting = useStore((store) => store.togglePainting);
   const closePanes = useStore((store) => store.closePanes);
-  const addRoute = useStore((store) => store.addRoute);
+  const startRoute = useStore((store) => store.startRoute);
+  const endRoute = useStore((store) => store.endRoute);
 
   const [altIsPressed, setAltIsPressed] = useState(false);
 
@@ -105,8 +107,8 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
       }
 
       const applySourcesAndLayers = () => {
-        if (!map.current?.getSource(MapSource.Drawing)) {
-          map.current?.addSource(MapSource.Drawing, {
+        if (!map.current?.getSource(MapSource.Routes)) {
+          map.current?.addSource(MapSource.Routes, {
             type: "geojson",
             data: {
               type: "FeatureCollection",
@@ -115,11 +117,11 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
           });
         }
 
-        if (!map.current?.getLayer(MapSource.Drawing)) {
+        if (!map.current?.getLayer(MapSource.Routes)) {
           map.current?.addLayer({
-            id: MapSource.Drawing,
+            id: MapSource.Routes,
             type: "line",
-            source: MapSource.Drawing,
+            source: MapSource.Routes,
             paint: {
               "line-color": ["get", "color"],
               "line-width": ["get", "strokeWidth"],
@@ -191,7 +193,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
       }
 
       if (editor.mode === "painting") {
-        addRoute();
+        startRoute();
         togglePainting();
       }
     };
@@ -203,6 +205,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
 
       if (editor.mode === "painting") {
         togglePainting(false);
+        endRoute();
       }
     };
 
@@ -210,8 +213,11 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
       closePanes();
 
       if (editor.mode === "drawing") {
-        if (event.originalEvent.altKey) {
-          addRoute();
+        if (!currentRoute) {
+          startRoute();
+        } else if (event.originalEvent.altKey) {
+          endRoute();
+          startRoute();
         }
 
         addMarker(event.lngLat.lat, event.lngLat.lng);
@@ -313,7 +319,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
    * Sync routes
    */
   useEffect(() => {
-    const drawings = map.current?.getSource(MapSource.Drawing) as GeoJSONSource;
+    const drawings = map.current?.getSource(MapSource.Routes) as GeoJSONSource;
 
     drawings?.setData({
       type: "FeatureCollection",
