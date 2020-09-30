@@ -3,7 +3,7 @@ import classnames from "classnames";
 import React, { useEffect, useRef, useState } from "react";
 
 import { CloseIcon, SearchIcon } from "~/components/Icon";
-import { useMap } from "~/components/MapContext";
+import { useStore } from "~/lib/state";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN;
 if (!accessToken) {
@@ -14,8 +14,9 @@ const mapboxGeocoding = MapboxGeocoding({ accessToken });
 
 export const PlaceAutocomplete: React.FC = () => {
   const input = useRef<HTMLInputElement>(null);
-  const { state, setPlace } = useMap();
-  const [search, setSearch] = useState(state.place?.place_name ?? "");
+  const place = useStore((store) => store.place);
+  const setPlace = useStore((store) => store.setPlace);
+  const [search, setSearch] = useState(place?.place_name ?? "");
   const [places, setPlaces] = useState<GeocodeFeature[]>([]);
   const [isFocused, setIsFocused] = useState(false);
   const [selectionIndex, setSelectionIndex] = useState(0);
@@ -150,7 +151,7 @@ export const PlaceAutocomplete: React.FC = () => {
         onKeyUp={(event) => onKeyUp(event)}
       />
 
-      {!!state.place && (
+      {!!place && (
         <button
           className="absolute flex justify-center items-center mt-3 mr-2 right-0 bg-gray-900 hover:bg-gray-800 outline-none rounded-full w-6 h-6 text-gray-600"
           onClick={() => onClearClick()}

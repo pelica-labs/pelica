@@ -4,7 +4,7 @@ import mapboxgl, { GeoJSONSource, LngLatBoundsLike, MapMouseEvent } from "mapbox
 import Head from "next/head";
 import React, { useEffect, useRef, useState } from "react";
 
-import { MarkerState, RouteState, useMap } from "~/components/MapContext";
+import { MarkerState, RouteState, useStore } from "~/lib/state";
 
 enum MapSource {
   Drawing = "drawing",
@@ -44,7 +44,7 @@ const markersToFeatures = (markers: MarkerState[]): GeoJSON.Feature<GeoJSON.Geom
         ],
       },
       properties: {
-        color: marker.color,
+        color: marker.strokeColor,
         strokeWidth: marker.strokeWidth,
       },
     });
@@ -56,10 +56,22 @@ const markersToFeatures = (markers: MarkerState[]): GeoJSON.Feature<GeoJSON.Geom
 export const Map: React.FC<Props> = ({ style, disableInteractions = false, disableSync = false }) => {
   const map = useRef<mapboxgl.Map>();
   const container = useRef<HTMLDivElement>(null);
-  const { state, move, addMarker, togglePainting, closePanes, addRoute } = useMap();
+
+  const coordinates = useStore((store) => store.coordinates);
+  const zoom = useStore((store) => store.zoom);
+  const place = useStore((store) => store.place);
+  const mapStyle = useStore((store) => store.style);
+  const editor = useStore((store) => store.editor);
+  const routes = useStore((store) => store.routes);
+  const move = useStore((store) => store.move);
+  const addMarker = useStore((store) => store.addMarker);
+  const togglePainting = useStore((store) => store.togglePainting);
+  const closePanes = useStore((store) => store.closePanes);
+  const addRoute = useStore((store) => store.addRoute);
+
   const [altIsPressed, setAltIsPressed] = useState(false);
 
-  const resolvedStyle = style ?? state.style;
+  const resolvedStyle = style ?? mapStyle;
 
   /**
    * Initialize map
@@ -79,8 +91,8 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
     map.current = new mapboxgl.Map({
       container: container.current,
       style: resolvedStyle ? styleToUrl(resolvedStyle) : "mapbox://styles/mapbox/streets-v11",
-      center: [state.coordinates.longitude, state.coordinates.latitude],
-      zoom: state.zoom,
+      center: [coordinates.longitude, coordinates.latitude],
+      zoom,
       logoPosition: "bottom-right",
       attributionControl: false,
       preserveDrawingBuffer: true,
@@ -98,7 +110,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
             type: "geojson",
             data: {
               type: "FeatureCollection",
-              features: routesToFeatures(state.routes),
+              features: routesToFeatures(routes),
             },
           });
         }
@@ -166,7 +178,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
         return;
       }
 
-      if (!state.editor.isPainting) {
+      if (!editor.isPainting) {
         return;
       }
 
@@ -178,7 +190,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
         return;
       }
 
-      if (state.editor.mode === "painting") {
+      if (editor.mode === "painting") {
         addRoute();
         togglePainting();
       }
@@ -189,7 +201,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
         return;
       }
 
-      if (state.editor.mode === "painting") {
+      if (editor.mode === "painting") {
         togglePainting(false);
       }
     };
@@ -197,7 +209,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
     const onClick = (event: MapMouseEvent) => {
       closePanes();
 
-      if (state.editor.mode === "drawing") {
+      if (editor.mode === "drawing") {
         if (event.originalEvent.altKey) {
           addRoute();
         }
@@ -219,7 +231,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
       map.current?.off("mouseup", onMouseUp);
       map.current?.off("click", onClick);
     };
-  }, [state.editor, altIsPressed]);
+  }, [editor, altIsPressed]);
 
   /**
    * Update map when local state changes
@@ -235,24 +247,24 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
 
     const { lng, lat } = map.current.getCenter();
     const zoom = map.current.getZoom();
-    if (lng === state.coordinates.longitude && lat === state.coordinates.latitude && zoom === state.zoom) {
+    if (lng === coordinates.longitude && lat === coordinates.latitude && zoom === zoom) {
       return;
     }
 
     map.current.flyTo({
       center: {
-        lng: state.coordinates.longitude,
-        lat: state.coordinates.latitude,
+        lng: coordinates.longitude,
+        lat: coordinates.latitude,
       },
-      zoom: state.zoom,
+      zoom: zoom,
     });
-  }, [state.coordinates.latitude, state.coordinates.longitude]);
+  }, [coordinates.latitude, coordinates.longitude]);
 
   /**
    * Fly to selected place
    */
   useEffect(() => {
-    if (!state.place) {
+    if (!place) {
       return;
     }
 
@@ -260,18 +272,18 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
       return;
     }
 
-    if (state.place.bbox) {
-      map.current?.fitBounds(state.place.bbox as LngLatBoundsLike, { padding: 10 });
+    if (place.bbox) {
+      map.current?.fitBounds(place.bbox as LngLatBoundsLike, { padding: 10 });
     } else {
       map.current?.flyTo({
         center: {
-          lng: state.place.center[0],
-          lat: state.place.center[1],
+          lng: place.center[0],
+          lat: place.center[1],
         },
         zoom: 14,
       });
     }
-  }, [state.place]);
+  }, [place]);
 
   /**
    * Update style
@@ -288,14 +300,14 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
    * Update interactivity
    */
   useEffect(() => {
-    if (state.editor.mode === "moving" || altIsPressed) {
+    if (editor.mode === "moving" || altIsPressed) {
       map.current?.dragPan.enable();
       map.current?.scrollZoom.enable();
-    } else if (state.editor.mode === "drawing" || state.editor.mode === "painting") {
+    } else if (editor.mode === "drawing" || editor.mode === "painting") {
       map.current?.dragPan.disable();
       map.current?.scrollZoom.disable();
     }
-  }, [state.editor.mode, altIsPressed]);
+  }, [editor.mode, altIsPressed]);
 
   /**
    * Sync routes
@@ -305,9 +317,9 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
 
     drawings?.setData({
       type: "FeatureCollection",
-      features: routesToFeatures(state.routes),
+      features: routesToFeatures(routes),
     });
-  }, [state.routes]);
+  }, [routes]);
 
   /**
    * Sync cursor
@@ -323,12 +335,12 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
 
     if (altIsPressed) {
       map.current.getCanvas().style.cursor = "pointer";
-    } else if (state.editor.mode === "drawing" || state.editor.mode === "painting") {
+    } else if (editor.mode === "drawing" || editor.mode === "painting") {
       map.current.getCanvas().style.cursor = "crosshair";
-    } else if (state.editor.mode === "moving") {
+    } else if (editor.mode === "moving") {
       map.current.getCanvas().style.cursor = "pointer";
     }
-  }, [state.editor.mode, altIsPressed]);
+  }, [editor.mode, altIsPressed]);
 
   return (
     <>

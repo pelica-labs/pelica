@@ -1,13 +1,12 @@
 import React from "react";
 
 import { Map } from "~/components/Map";
-import { MapContextProvider } from "~/components/MapContext";
 import { PlaceAutocomplete } from "~/components/PlaceAutocomplete";
 import { Toolbar } from "~/components/Toolbar";
 
 export const MapEditor: React.FC = () => {
   return (
-    <MapContextProvider>
+    <>
       <Map />
 
       <div className="fixed top-0 left-0 mt-2 ml-2">
@@ -17,6 +16,6 @@ export const MapEditor: React.FC = () => {
       <div className="fixed top-0 right-0 mt-2 mr-2">
         <Toolbar />
       </div>
-    </MapContextProvider>
+    </>
   );
 };

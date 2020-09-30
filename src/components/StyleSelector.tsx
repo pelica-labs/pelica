@@ -4,14 +4,15 @@ import React from "react";
 import useSWR from "swr";
 
 import { Map } from "~/components/Map";
-import { useMap } from "~/components/MapContext";
+import { useStore } from "~/lib/state";
 
 type StylesResponse = {
   styles: Style[];
 };
 
 export const StyleSelector: React.FC = () => {
-  const { state, setStyle } = useMap();
+  const selectedStyle = useStore((store) => store.style);
+  const setStyle = useStore((store) => store.setStyle);
   const { data } = useSWR<StylesResponse>("/api/styles");
 
   if (!data) {
@@ -23,7 +24,7 @@ export const StyleSelector: React.FC = () => {
     <div className="bg-gray-900 text-white rounded shadow flex flex-col p-2 pt-1">
       <div className="flex flex-row flex-wrap max-w-lg">
         {data.styles.map((style) => {
-          const isSelectedStyle = state.style?.id === style.id;
+          const isSelectedStyle = selectedStyle?.id === style.id;
           const containerClasses = classnames({
             "flex flex-col items-center p-2 mb-1 rounded font-medium cursor-pointer hover:bg-green-900 w-1/3": true,
             "bg-green-700": isSelectedStyle,
