@@ -3,6 +3,8 @@ import { SketchPicker as ColorPicker } from "react-color";
 
 import { Button } from "~/components/Button";
 import {
+  CheckboxIcon,
+  EmptyCheckboxIcon,
   EraserIcon,
   FireIcon,
   HandIcon,
@@ -21,6 +23,7 @@ export const Toolbar: React.FC = () => {
   const setStrokeColor = useStore((store) => store.setStrokeColor);
   const clearRoutes = useStore((store) => store.clearRoutes);
   const setEditorMode = useStore((store) => store.setEditorMode);
+  const toggleMatchMap = useStore((store) => store.toggleMatchMap);
 
   const onExport = () => {
     const canvas = document.querySelector("canvas");
@@ -138,6 +141,16 @@ export const Toolbar: React.FC = () => {
         >
           <ShareIcon className="w-4 h-4" />
           <span className="ml-2 text-sm">Export</span>
+        </Button>
+
+        <Button
+          className="bg-gray-900 text-gray-200 mt-2"
+          onClick={() => {
+            toggleMatchMap();
+          }}
+        >
+          {editor.matchMap ? <CheckboxIcon className="w-4 h-4" /> : <EmptyCheckboxIcon className="w-4 h-4" />}
+          <span className="ml-2 text-sm">Match map</span>
         </Button>
       </nav>
 

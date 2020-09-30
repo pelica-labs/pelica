@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@mapbox/mapbox-sdk": "^0.11.0",
+    "@turf/simplify": "^5.1.5",
     "@types/classnames": "^2.2.10",
     "classnames": "^2.2.6",
     "immer": "^7.0.9",

@@ -20,6 +20,7 @@ export type MapState = {
     mode: EditorMode;
     pane: EditorPane | null;
     isPainting: boolean;
+    matchMap: boolean;
   };
   currentRoute: RouteState | null;
   routes: RouteState[];
@@ -57,6 +58,7 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
       mode: "move" as EditorMode,
       isPainting: false,
       pane: null,
+      matchMap: true,
     },
     currentRoute: null as RouteState | null,
     routes: [],
@@ -116,6 +118,12 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
       });
     },
 
+    toggleMatchMap() {
+      set((state) => {
+        state.editor.matchMap = !state.editor.matchMap;
+      });
+    },
+
     startRoute() {
       set((state) => {
         state.currentRoute = {
@@ -136,6 +144,13 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
       set((state) => {
         state.currentRoute = null;
       });
+
+      if (!get().editor.matchMap) {
+        set((state) => {
+          state.routes.push(currentRoute);
+        });
+        return;
+      }
 
       if (currentRoute.markers.length < 2) {
         return;

@@ -4,7 +4,9 @@ import mapboxgl, { GeoJSONSource, LngLatBoundsLike, MapMouseEvent } from "mapbox
 import Head from "next/head";
 import React, { useEffect, useRef, useState } from "react";
 
-import { MarkerState, RouteState, useStore } from "~/lib/state";
+import { routesToFeatures } from "~/lib/geo";
+import { styleToUrl } from "~/lib/mapbox";
+import { RouteState, useStore } from "~/lib/state";
 
 enum MapSource {
   Routes = "routes",
@@ -14,43 +16,6 @@ type Props = {
   style?: Style;
   disableSync?: boolean;
   disableInteractions?: boolean;
-};
-
-const styleToUrl = (style: Style): string => {
-  return `mapbox://styles/${style.owner}/${style.id}`;
-};
-
-const routesToFeatures = (routes: RouteState[]): GeoJSON.Feature<GeoJSON.Geometry>[] => {
-  return routes.flatMap((route) => markersToFeatures(route.markers));
-};
-
-const markersToFeatures = (markers: MarkerState[]): GeoJSON.Feature<GeoJSON.Geometry>[] => {
-  if (markers.length < 2) {
-    return [];
-  }
-
-  const features: GeoJSON.Feature<GeoJSON.Geometry>[] = [];
-  for (let i = 1; i < markers.length; i++) {
-    const previousMarker = markers[i - 1];
-    const marker = markers[i];
-
-    features.push({
-      type: "Feature",
-      geometry: {
-        type: "LineString",
-        coordinates: [
-          [previousMarker.coordinates.longitude, previousMarker.coordinates.latitude],
-          [marker.coordinates.longitude, marker.coordinates.latitude],
-        ],
-      },
-      properties: {
-        color: marker.strokeColor,
-        strokeWidth: marker.strokeWidth,
-      },
-    });
-  }
-
-  return features;
 };
 
 export const Map: React.FC<Props> = ({ style, disableInteractions = false, disableSync = false }) => {
@@ -311,7 +276,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
    * Update interactivity
    */
   useEffect(() => {
-    if (editor.mode === "moving" || altIsPressed) {
+    if (editor.mode === "move" || altIsPressed) {
       map.current?.dragPan.enable();
       map.current?.scrollZoom.enable();
     } else if (editor.mode === "trace" || editor.mode === "freeDraw") {
@@ -352,7 +317,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
       map.current.getCanvas().style.cursor = "pointer";
     } else if (editor.mode === "trace" || editor.mode === "freeDraw") {
       map.current.getCanvas().style.cursor = "crosshair";
-    } else if (editor.mode === "moving") {
+    } else if (editor.mode === "move") {
       map.current.getCanvas().style.cursor = "pointer";
     }
   }, [editor.mode, altIsPressed]);
