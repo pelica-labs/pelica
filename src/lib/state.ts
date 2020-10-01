@@ -45,6 +45,8 @@ export type PinState = {
     latitude: number;
     longitude: number;
   };
+  strokeColor: string;
+  strokeWidth: number;
 };
 
 export type EditorMode = "move" | "trace" | "freeDraw" | "pin";
@@ -237,12 +239,16 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
       },
 
       addPin(latitude: number, longitude: number) {
+        const editor = get().editor;
+
         set((state) => {
           state.pins.push({
             coordinates: {
               latitude,
               longitude,
             },
+            strokeColor: editor.strokeColor,
+            strokeWidth: editor.strokeWidth,
           });
         });
       },

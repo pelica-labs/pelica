@@ -108,7 +108,10 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
                     type: "Point",
                     coordinates: [pin.coordinates.longitude, pin.coordinates.latitude],
                   },
-                  properties: {},
+                  properties: {
+                    strokeColor: pin.strokeColor,
+                    strokeWidth: pin.strokeWidth,
+                  },
                 };
               }),
             },
@@ -120,6 +123,11 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
             id: MapSource.Pins,
             type: "circle",
             source: MapSource.Pins,
+            paint: {
+              "circle-color": ["get", "strokeColor"],
+              "circle-stroke-color": ["get", "strokeColor"],
+              "circle-stroke-width": ["get", "strokeWidth"],
+            },
           });
         }
       };
@@ -344,7 +352,10 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
             type: "Point",
             coordinates: [pin.coordinates.longitude, pin.coordinates.latitude],
           },
-          properties: {},
+          properties: {
+            strokeColor: pin.strokeColor,
+            strokeWidth: pin.strokeWidth,
+          },
         };
       }),
     });
