@@ -148,7 +148,7 @@ export const Toolbar: React.FC = () => {
           <span className="ml-2 text-sm">Trace</span>
         </Button>
 
-        <Button className="bg-gray-900 text-gray-200 mt-2" onClick={() => dispatch.clearRoutes()}>
+        <Button className="bg-gray-900 text-gray-200 mt-2" onClick={() => dispatch.clear()}>
           <EraserIcon className="w-4 h-4" />
           <span className="ml-2 text-sm">Clear</span>
         </Button>

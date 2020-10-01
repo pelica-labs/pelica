@@ -253,9 +253,10 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
         });
       },
 
-      clearRoutes() {
+      clear() {
         set((state) => {
           state.routes = [];
+          state.pins = [];
           state.currentRoute = null;
         });
       },
