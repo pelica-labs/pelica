@@ -12,8 +12,9 @@ export const Button: React.FC<Props> = ({ active = false, color = "green", class
     ...(className && {
       [className]: true,
     }),
-    [`hover:bg-${color}-900`]: !active,
+    [`hover:bg-${color}-900`]: !active && !attributes.disabled,
     [`bg-${color}-700`]: active,
+    ["opacity-50 cursor-auto"]: attributes.disabled,
   });
 
   return <button className={buttonClasses} {...attributes} />;

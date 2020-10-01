@@ -4,6 +4,7 @@ import { SketchPicker as ColorPicker } from "react-color";
 import { Button } from "~/components/Button";
 import {
   CheckboxIcon,
+  DownloadIcon,
   EmptyCheckboxIcon,
   EraserIcon,
   FireIcon,
@@ -22,6 +23,7 @@ import { useStore } from "~/lib/state";
 export const Toolbar: React.FC = () => {
   const ref = useRef<HTMLInputElement>(null);
   const editor = useStore((store) => store.editor);
+  const routes = useStore((store) => store.routes);
   const dispatch = useStore((store) => store.dispatch);
 
   useEffect(() => {
@@ -188,6 +190,17 @@ export const Toolbar: React.FC = () => {
             }}
           />
           <span className="ml-2 text-sm">Upload GPX</span>
+        </Button>
+
+        <Button
+          className="bg-gray-900 text-gray-200 mt-2"
+          disabled={!routes.length}
+          onClick={() => {
+            dispatch.downloadGpx();
+          }}
+        >
+          <DownloadIcon className="w-4 h-4" />
+          <span className="ml-2 text-sm">Download GPX</span>
         </Button>
       </nav>
 

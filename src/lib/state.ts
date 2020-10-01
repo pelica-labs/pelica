@@ -4,8 +4,16 @@ import { Style } from "@mapbox/mapbox-sdk/services/styles";
 import chunk from "lodash/chunk";
 import { GetState } from "zustand";
 
+import { generateGpx, parseGpx } from "~/lib/gpx";
 import { mapboxMapMatching } from "~/lib/mapbox";
 import { createStore, immer } from "~/lib/zustand";
+
+export type PointState = {
+  coordinates: {
+    latitude: number;
+    longitude: number;
+  };
+};
 
 export type MapState = {
   coordinates: {
@@ -272,22 +280,16 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
           if (!xml) {
             return;
           }
-          const parser = new DOMParser();
-          const doc = parser.parseFromString(xml, "application/xml");
-          const markers = Array.from(doc.querySelectorAll("trkpt")).map((node) => {
+
+          const markers = parseGpx(xml).map((point) => {
             return {
+              ...point,
               strokeColor: editor.strokeColor,
               strokeWidth: editor.strokeWidth,
-              coordinates: {
-                latitude: parseFloat(node.getAttribute("lat") as string),
-                longitude: parseFloat(node.getAttribute("lon") as string),
-              },
             };
           });
 
-          this.pushRoute({
-            markers,
-          });
+          this.pushRoute({ markers });
           this.move(markers[0].coordinates.latitude, markers[0].coordinates.longitude, 6);
         };
 
@@ -300,10 +302,24 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
           return;
         }
 
-        const tag = document.createElement("a");
-        tag.href = canvas.toDataURL();
-        tag.download = "pelica";
-        tag.click();
+        const a = document.createElement("a");
+        a.href = canvas.toDataURL();
+        a.download = "pelica";
+        a.click();
+      },
+
+      downloadGpx() {
+        const routes = get().routes;
+        if (!routes.length) {
+          return;
+        }
+
+        const gpx = generateGpx(routes);
+
+        const a = document.createElement("a");
+        a.href = "data:application/gpx+xml," + encodeURIComponent(gpx);
+        a.download = "pelica.gpx";
+        a.click();
       },
     },
   };
