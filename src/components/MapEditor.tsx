@@ -3,8 +3,11 @@ import React from "react";
 import { Map } from "~/components/Map";
 import { PlaceAutocomplete } from "~/components/PlaceAutocomplete";
 import { Toolbar } from "~/components/Toolbar";
+import { useKeyboard } from "~/lib/keyboard";
 
 export const MapEditor: React.FC = () => {
+  useKeyboard();
+
   return (
     <>
       <Map />

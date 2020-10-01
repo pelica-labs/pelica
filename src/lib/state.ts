@@ -3,8 +3,10 @@ import { Tracepoint } from "@mapbox/mapbox-sdk/services/map-matching";
 import { Style } from "@mapbox/mapbox-sdk/services/styles";
 import produce from "immer";
 import { chunk } from "lodash";
-import create, { GetState, State, StateCreator } from "zustand";
+import { useEffect } from "react";
+import create, { GetState, State, StateCreator, StateSelector, StateSliceListener } from "zustand";
 import { devtools } from "zustand/middleware";
+import shallow from "zustand/shallow";
 
 import { Action, BrushAction } from "~/lib/actions";
 import { Coordinates } from "~/lib/geometry";
@@ -17,8 +19,10 @@ export type MapState = {
     longitude: number;
   };
   zoom: number;
+
   place: GeocodeFeature | null;
   style: Style | null;
+
   editor: {
     strokeColor: string;
     strokeWidth: number;
@@ -27,9 +31,17 @@ export type MapState = {
     isPainting: boolean;
     matchMap: boolean;
   };
+
   traceStart: Coordinates | null;
   currentBrush: BrushAction | null;
   actions: Action[];
+
+  keyboard: {
+    ctrlKey: boolean;
+    shiftKey: boolean;
+    altKey: boolean;
+    metaKey: boolean;
+  };
 };
 
 export type EditorMode = "move" | "trace" | "brush" | "pin";
@@ -58,6 +70,13 @@ const initialState: MapState = {
   actions: [],
   currentBrush: null,
   traceStart: null,
+
+  keyboard: {
+    ctrlKey: false,
+    shiftKey: false,
+    altKey: false,
+    metaKey: false,
+  },
 };
 
 const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<MapState>) => {
@@ -334,6 +353,12 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
         // a.download = "pelica.gpx";
         // a.click();
       },
+
+      updateKeyboard(event: MapState["keyboard"]) {
+        set((state) => {
+          state.keyboard = event;
+        });
+      },
     },
   };
 };
@@ -347,3 +372,27 @@ const immer = <T extends State>(config: StateCreator<T, (fn: (draft: T) => void)
 ) => config((fn) => set(produce(fn) as (state: T) => T), get, api);
 
 export const useStore = create<MapStore>(devtools(immer(makeStore)));
+
+export const useStoreSubscription = <T extends MapState, StateSlice>(
+  selector: StateSelector<T, StateSlice>,
+  listener: (state: StateSlice) => void
+): void => {
+  return useEffect(() => {
+    let listenerUnsubscription: () => void | undefined;
+
+    const subscriptionUnsubscription = useStore.subscribe(
+      (state) => {
+        return (listenerUnsubscription = listener(state));
+      },
+      selector,
+      shallow
+    );
+
+    return () => {
+      subscriptionUnsubscription();
+      listenerUnsubscription?.();
+    };
+  }, []);
+};
+
+export const getState = (): MapState => useStore.getState();

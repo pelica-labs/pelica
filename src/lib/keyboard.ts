@@ -1,11 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
-export const useAltKey = (): boolean => {
-  const [altIsPressed, setAltIsPressed] = useState(false);
+import { useStore } from "~/lib/state";
+
+export const useKeyboard = (): void => {
+  const dispatch = useStore((store) => store.dispatch);
 
   useEffect(() => {
     const onKeyPress = (event: KeyboardEvent) => {
-      setAltIsPressed(event.altKey);
+      dispatch.updateKeyboard({
+        ctrlKey: event.ctrlKey,
+        shiftKey: event.shiftKey,
+        altKey: event.altKey,
+        metaKey: event.metaKey,
+      });
     };
 
     window.addEventListener("keydown", onKeyPress, false);
@@ -16,6 +23,4 @@ export const useAltKey = (): boolean => {
       window.removeEventListener("keyup", onKeyPress, false);
     };
   }, []);
-
-  return altIsPressed;
 };
