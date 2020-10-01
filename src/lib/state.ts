@@ -24,6 +24,7 @@ export type MapState = {
   };
   currentRoute: RouteState | null;
   routes: RouteState[];
+  pins: PinState[];
 };
 
 export type RouteState = {
@@ -39,7 +40,14 @@ export type MarkerState = {
   };
 };
 
-export type EditorMode = "move" | "trace" | "freeDraw";
+export type PinState = {
+  coordinates: {
+    latitude: number;
+    longitude: number;
+  };
+};
+
+export type EditorMode = "move" | "trace" | "freeDraw" | "pin";
 
 export type EditorPane = "styles" | "colors" | "strokeWidth";
 
@@ -64,6 +72,7 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
 
     currentRoute: null as RouteState | null,
     routes: [],
+    pins: [] as PinState[],
 
     dispatch: {
       move(latitude: number, longitude: number, zoom: number) {
@@ -223,6 +232,17 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
             },
             strokeColor: state.editor.strokeColor,
             strokeWidth: state.editor.strokeWidth,
+          });
+        });
+      },
+
+      addPin(latitude: number, longitude: number) {
+        set((state) => {
+          state.pins.push({
+            coordinates: {
+              latitude,
+              longitude,
+            },
           });
         });
       },

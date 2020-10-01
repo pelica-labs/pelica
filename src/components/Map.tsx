@@ -9,6 +9,7 @@ import { styleToUrl } from "~/lib/mapbox";
 import { RouteState, useStore } from "~/lib/state";
 
 enum MapSource {
+  Pins = "pins",
   Routes = "routes",
 }
 
@@ -29,6 +30,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
   const editor = useStore((store) => store.editor);
   const routes = useStore((store) => store.routes);
   const currentRoute = useStore((store) => store.currentRoute);
+  const pins = useStore((store) => store.pins);
   const dispatch = useStore((store) => store.dispatch);
 
   const [altIsPressed, setAltIsPressed] = useState(false);
@@ -91,6 +93,33 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
               "line-color": ["get", "color"],
               "line-width": ["get", "strokeWidth"],
             },
+          });
+        }
+
+        if (!map.current?.getSource(MapSource.Pins)) {
+          map.current?.addSource(MapSource.Pins, {
+            type: "geojson",
+            data: {
+              type: "FeatureCollection",
+              features: pins.map((pin) => {
+                return {
+                  type: "Feature",
+                  geometry: {
+                    type: "Point",
+                    coordinates: [pin.coordinates.longitude, pin.coordinates.latitude],
+                  },
+                  properties: {},
+                };
+              }),
+            },
+          });
+        }
+
+        if (!map.current?.getLayer(MapSource.Pins)) {
+          map.current?.addLayer({
+            id: MapSource.Pins,
+            type: "circle",
+            source: MapSource.Pins,
           });
         }
       };
@@ -186,6 +215,10 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
         }
 
         dispatch.addMarker(event.lngLat.lat, event.lngLat.lng);
+      }
+
+      if (editor.mode === "pin") {
+        dispatch.addPin(event.lngLat.lat, event.lngLat.lng);
       }
     };
 
@@ -284,17 +317,38 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
    * Sync routes
    */
   useEffect(() => {
-    const drawings = map.current?.getSource(MapSource.Routes) as GeoJSONSource;
+    const routesSource = map.current?.getSource(MapSource.Routes) as GeoJSONSource;
     const routesToDraw: RouteState[] = [...routes];
     if (currentRoute) {
       routesToDraw.push(currentRoute);
     }
 
-    drawings?.setData({
+    routesSource?.setData({
       type: "FeatureCollection",
       features: routesToFeatures(routesToDraw),
     });
   }, [routes, currentRoute]);
+
+  /**
+   * Sync pins
+   */
+  useEffect(() => {
+    const pinsSource = map.current?.getSource(MapSource.Pins) as GeoJSONSource;
+
+    pinsSource?.setData({
+      type: "FeatureCollection",
+      features: pins.map((pin) => {
+        return {
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: [pin.coordinates.longitude, pin.coordinates.latitude],
+          },
+          properties: {},
+        };
+      }),
+    });
+  }, [pins]);
 
   /**
    * Sync cursor
@@ -310,7 +364,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
 
     if (altIsPressed) {
       map.current.getCanvas().style.cursor = "pointer";
-    } else if (editor.mode === "trace" || editor.mode === "freeDraw") {
+    } else if (editor.mode === "trace" || editor.mode === "freeDraw" || editor.mode === "pin") {
       map.current.getCanvas().style.cursor = "crosshair";
     } else if (editor.mode === "move") {
       map.current.getCanvas().style.cursor = "pointer";

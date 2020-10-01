@@ -10,6 +10,7 @@ import {
   HandIcon,
   LineWidthIcon,
   PaintIcon,
+  PinIcon,
   RulerCompassIcon,
   ShareIcon,
   UploadIcon,
@@ -58,6 +59,10 @@ export const Toolbar: React.FC = () => {
       if (event.metaKey && event.keyCode === 51) {
         event.preventDefault();
         dispatch.setEditorMode("trace");
+      }
+      if (event.metaKey && event.keyCode === 52) {
+        event.preventDefault();
+        dispatch.setEditorMode("pin");
       }
     };
 
@@ -123,6 +128,15 @@ export const Toolbar: React.FC = () => {
         >
           <PaintIcon className="w-4 h-4" />
           <span className="ml-2 text-sm">Free drawing</span>
+        </Button>
+
+        <Button
+          active={editor.mode === "pin"}
+          className="bg-gray-900 text-gray-200 mt-2"
+          onClick={() => dispatch.setEditorMode("pin")}
+        >
+          <PinIcon className="w-4 h-4" />
+          <span className="ml-2 text-sm">Pin</span>
         </Button>
 
         <Button
