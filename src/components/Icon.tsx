@@ -132,3 +132,10 @@ export const PinIcon = icon(
 export const DownloadIcon = icon(
   <path d="M13 5v6h1.17L12 13.17L9.83 11H11V5h2m2-2H9v6H5l7 7l7-7h-4V3m4 15H5v2h14v-2z" fill="currentColor"></path>
 );
+
+export const UndoIcon = icon(
+  <path
+    d="M12.5 8c-2.65 0-5.05 1-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88c3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"
+    fill="currentColor"
+  />
+);

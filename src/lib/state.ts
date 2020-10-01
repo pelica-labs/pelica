@@ -4,16 +4,11 @@ import { Style } from "@mapbox/mapbox-sdk/services/styles";
 import chunk from "lodash/chunk";
 import { GetState } from "zustand";
 
-import { generateGpx, parseGpx } from "~/lib/gpx";
+import { Action, BrushAction } from "~/lib/actions";
+import { Coordinates } from "~/lib/geometry";
+import { parseGpx } from "~/lib/gpx";
 import { mapboxMapMatching } from "~/lib/mapbox";
 import { createStore, immer } from "~/lib/zustand";
-
-export type PointState = {
-  coordinates: {
-    latitude: number;
-    longitude: number;
-  };
-};
 
 export type MapState = {
   coordinates: {
@@ -21,8 +16,8 @@ export type MapState = {
     longitude: number;
   };
   zoom: number;
-  place?: GeocodeFeature | null;
-  style?: Style | null;
+  place: GeocodeFeature | null;
+  style: Style | null;
   editor: {
     strokeColor: string;
     strokeWidth: number;
@@ -31,34 +26,12 @@ export type MapState = {
     isPainting: boolean;
     matchMap: boolean;
   };
-  currentRoute: RouteState | null;
-  routes: RouteState[];
-  pins: PinState[];
+  traceStart: Coordinates | null;
+  currentBrush: BrushAction | null;
+  actions: Action[];
 };
 
-export type RouteState = {
-  markers: MarkerState[];
-};
-
-export type MarkerState = {
-  strokeColor: string;
-  strokeWidth: number;
-  coordinates: {
-    latitude: number;
-    longitude: number;
-  };
-};
-
-export type PinState = {
-  coordinates: {
-    latitude: number;
-    longitude: number;
-  };
-  strokeColor: string;
-  strokeWidth: number;
-};
-
-export type EditorMode = "move" | "trace" | "freeDraw" | "pin";
+export type EditorMode = "move" | "trace" | "brush" | "pin";
 
 export type EditorPane = "styles" | "colors" | "strokeWidth";
 
@@ -81,9 +54,12 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
       matchMap: true,
     },
 
-    currentRoute: null as RouteState | null,
-    routes: [],
-    pins: [] as PinState[],
+    place: null as GeocodeFeature | null,
+    style: null as Style | null,
+
+    actions: [] as Action[],
+    currentBrush: null as BrushAction | null,
+    traceStart: null as Coordinates | null,
 
     dispatch: {
       move(latitude: number, longitude: number, zoom: number) {
@@ -126,18 +102,7 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
 
       setEditorMode(mode: EditorMode) {
         set((state) => {
-          if (state.editor.mode === "trace" && state.currentRoute) {
-            state.routes.push(state.currentRoute);
-            state.currentRoute = null;
-          }
-
           state.editor.mode = mode;
-        });
-      },
-
-      togglePainting(painting?: boolean) {
-        set((state) => {
-          state.editor.isPainting = painting ?? !state.editor.isPainting;
         });
       },
 
@@ -147,43 +112,62 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
         });
       },
 
-      pushRoute(route: RouteState) {
-        set((state) => {
-          state.routes.push(route);
-        });
-      },
+      startBrush() {
+        const editor = get().editor;
 
-      startRoute() {
         set((state) => {
-          state.currentRoute = {
-            markers: [],
+          state.editor.isPainting = true;
+          state.currentBrush = {
+            name: "brush",
+            line: {
+              points: [],
+              style: {
+                strokeColor: editor.strokeColor,
+                strokeWidth: editor.strokeWidth,
+              },
+            },
           };
         });
       },
 
-      async endRoute() {
-        const currentRoute = get().currentRoute;
+      brush(latitude: number, longitude: number) {
+        set((state) => {
+          if (state.currentBrush?.name !== "brush") {
+            return;
+          }
+
+          state.currentBrush.line.points.push({ latitude, longitude });
+        });
+      },
+
+      async endBrush() {
+        const currentAction = get().currentBrush;
         const matchMap = get().editor.matchMap;
 
-        if (!currentRoute || currentRoute.markers.length === 0) {
+        if (currentAction?.name !== "brush") {
+          return;
+        }
+
+        if (currentAction.line.points.length === 0) {
           return;
         }
 
         set((state) => {
-          state.currentRoute = null;
+          state.editor.isPainting = false;
+          state.currentBrush = null;
         });
 
         if (!matchMap) {
           set((state) => {
-            state.routes.push(currentRoute);
+            state.actions.push(currentAction);
           });
           return;
         }
 
         const chunks = await Promise.all(
-          chunk(currentRoute.markers, 100).map(async (markers) => {
-            if (markers.length < 2) {
-              return markers;
+          chunk(currentAction.line.points, 100).map(async (points) => {
+            if (points.length < 2) {
+              return points;
             }
 
             const res = await mapboxMapMatching
@@ -191,77 +175,100 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
               // @ts-ignore
               .getMatch({
                 profile: "walking",
-                points: markers.map((marker) => {
+                points: points.map((point) => {
                   return {
-                    coordinates: [marker.coordinates.longitude, marker.coordinates.latitude],
+                    coordinates: [point.longitude, point.latitude],
                   };
                 }),
               })
               .send();
 
             if (!res.body.tracepoints) {
-              return markers;
+              return points;
             }
 
             return (res.body.tracepoints as Tracepoint[])
               .filter((tracepoint) => tracepoint !== null)
-              .map((tracepoint, i) => {
+              .map((tracepoint) => {
                 return {
-                  strokeWidth: markers[i].strokeWidth,
-                  strokeColor: markers[i].strokeColor,
-                  coordinates: {
-                    longitude: tracepoint.location[0],
-                    latitude: tracepoint.location[1],
-                  },
+                  longitude: tracepoint.location[0],
+                  latitude: tracepoint.location[1],
                 };
               });
           })
         );
 
         set((state) => {
-          state.routes.push({
-            markers: chunks.flat(),
-          });
-        });
-      },
-
-      addMarker(latitude: number, longitude: number) {
-        set((state) => {
-          if (!state.currentRoute) {
-            return;
-          }
-
-          state.currentRoute.markers.push({
-            coordinates: {
-              latitude,
-              longitude,
+          state.actions.push({
+            ...currentAction,
+            line: {
+              ...currentAction.line,
+              points: chunks.flat(),
             },
-            strokeColor: state.editor.strokeColor,
-            strokeWidth: state.editor.strokeWidth,
           });
         });
       },
 
-      addPin(latitude: number, longitude: number) {
+      trace(latitude: number, longitude: number) {
+        const editor = get().editor;
+        const traceStart = get().traceStart;
+
+        if (!traceStart) {
+          set((state) => {
+            state.traceStart = { latitude, longitude };
+          });
+          return;
+        }
+
+        set((state) => {
+          state.traceStart = { latitude, longitude };
+
+          state.actions.push({
+            name: "trace",
+            line: {
+              from: traceStart,
+              to: { latitude, longitude },
+              style: {
+                strokeColor: editor.strokeColor,
+                strokeWidth: editor.strokeWidth,
+              },
+            },
+          });
+        });
+      },
+
+      pin(latitude: number, longitude: number) {
         const editor = get().editor;
 
         set((state) => {
-          state.pins.push({
-            coordinates: {
-              latitude,
-              longitude,
+          state.actions.push({
+            name: "pin",
+            point: {
+              coordinates: { latitude, longitude },
+              style: {
+                strokeColor: editor.strokeColor,
+                strokeWidth: editor.strokeWidth,
+              },
             },
-            strokeColor: editor.strokeColor,
-            strokeWidth: editor.strokeWidth,
           });
+        });
+      },
+
+      undo() {
+        set((state) => {
+          if (!state.actions.length) {
+            return;
+          }
+
+          state.actions.pop();
         });
       },
 
       clear() {
         set((state) => {
-          state.routes = [];
-          state.pins = [];
-          state.currentRoute = null;
+          state.actions = [];
+          state.currentBrush = null;
+          state.traceStart = null;
         });
       },
 
@@ -271,7 +278,7 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
         });
       },
 
-      importRoute(file: File) {
+      importGpx(file: File) {
         const editor = get().editor;
 
         const reader = new FileReader();
@@ -281,22 +288,27 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
             return;
           }
 
-          const markers = parseGpx(xml).map((point) => {
-            return {
-              ...point,
-              strokeColor: editor.strokeColor,
-              strokeWidth: editor.strokeWidth,
-            };
-          });
+          const points = parseGpx(xml);
 
-          this.pushRoute({ markers });
-          this.move(markers[0].coordinates.latitude, markers[0].coordinates.longitude, 6);
+          set((state) => {
+            state.actions.push({
+              name: "importGpx",
+              line: {
+                points,
+                style: {
+                  strokeColor: editor.strokeColor,
+                  strokeWidth: editor.strokeWidth,
+                },
+              },
+            });
+          });
+          this.move(points[0].latitude, points[0].longitude, 6);
         };
 
         reader.readAsText(file);
       },
 
-      export() {
+      downloadImage() {
         const canvas = document.querySelector("canvas");
         if (!canvas) {
           return;
@@ -314,12 +326,12 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
           return;
         }
 
-        const gpx = generateGpx(routes);
+        // const gpx = generateGpx(routes);
 
-        const a = document.createElement("a");
-        a.href = "data:application/gpx+xml," + encodeURIComponent(gpx);
-        a.download = "pelica.gpx";
-        a.click();
+        // const a = document.createElement("a");
+        // a.href = "data:application/gpx+xml," + encodeURIComponent(gpx);
+        // a.download = "pelica.gpx";
+        // a.click();
       },
     },
   };

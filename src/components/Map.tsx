@@ -1,17 +1,15 @@
 import { Style } from "@mapbox/mapbox-sdk/services/styles";
-import throttle from "lodash/throttle";
-import mapboxgl, { GeoJSONSource, LngLatBoundsLike, MapMouseEvent } from "mapbox-gl";
+import { throttle } from "lodash";
+import mapboxgl, { LngLatBoundsLike, MapMouseEvent } from "mapbox-gl";
 import Head from "next/head";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 
-import { pinsToFeatures, routesToFeatures } from "~/lib/geo";
+import { applyActions } from "~/lib/actions";
+import { useAltKey } from "~/lib/altKey";
+import { applyLayers } from "~/lib/layers";
 import { styleToUrl } from "~/lib/mapbox";
-import { RouteState, useStore } from "~/lib/state";
-
-enum MapSource {
-  Pins = "pins",
-  Routes = "routes",
-}
+import { applySources } from "~/lib/sources";
+import { useStore } from "~/lib/state";
 
 type Props = {
   style?: Style;
@@ -28,12 +26,11 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
   const place = useStore((store) => store.place);
   const mapStyle = useStore((store) => store.style);
   const editor = useStore((store) => store.editor);
-  const routes = useStore((store) => store.routes);
-  const currentRoute = useStore((store) => store.currentRoute);
-  const pins = useStore((store) => store.pins);
+  const currentAction = useStore((store) => store.currentBrush);
+  const actions = useStore((store) => store.actions);
   const dispatch = useStore((store) => store.dispatch);
 
-  const [altIsPressed, setAltIsPressed] = useState(false);
+  const altIsPressed = useAltKey();
 
   const resolvedStyle = style ?? mapStyle;
 
@@ -41,13 +38,13 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
    * Initialize map
    */
   useEffect(() => {
+    if (!container.current) {
+      return;
+    }
+
     const accessToken = process.env.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN;
     if (!accessToken) {
       throw new Error("Missing Mapbox public token");
-    }
-
-    if (!container.current) {
-      return;
     }
 
     mapboxgl.accessToken = accessToken;
@@ -62,91 +59,25 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
       preserveDrawingBuffer: true,
     });
 
-    map.current?.on("load", () => {
+    map.current.on("load", ({ target: map }) => {
       if (disableInteractions) {
-        map.current?.dragPan.disable();
-        map.current?.scrollZoom.disable();
+        map.dragPan.disable();
+        map.scrollZoom.disable();
       }
 
-      const applySourcesAndLayers = () => {
-        if (!map.current?.getSource(MapSource.Routes)) {
-          const routesToDraw: RouteState[] = [...routes];
-          if (currentRoute) {
-            routesToDraw.push(currentRoute);
-          }
-
-          map.current?.addSource(MapSource.Routes, {
-            type: "geojson",
-            data: {
-              type: "FeatureCollection",
-              features: routesToFeatures(routesToDraw),
-            },
-          });
-        }
-
-        if (!map.current?.getLayer(MapSource.Routes)) {
-          map.current?.addLayer({
-            id: MapSource.Routes,
-            type: "line",
-            source: MapSource.Routes,
-            paint: {
-              "line-color": ["get", "color"],
-              "line-width": ["get", "strokeWidth"],
-            },
-          });
-        }
-
-        if (!map.current?.getSource(MapSource.Pins)) {
-          map.current?.addSource(MapSource.Pins, {
-            type: "geojson",
-            data: {
-              type: "FeatureCollection",
-              features: pinsToFeatures(pins),
-            },
-          });
-        }
-
-        if (!map.current?.getLayer(MapSource.Pins)) {
-          map.current?.addLayer({
-            id: MapSource.Pins,
-            type: "circle",
-            source: MapSource.Pins,
-            paint: {
-              "circle-color": ["get", "strokeColor"],
-              "circle-stroke-color": ["get", "strokeColor"],
-              "circle-stroke-width": ["get", "strokeWidth"],
-            },
-          });
-        }
-      };
-
       if (!disableInteractions) {
-        applySourcesAndLayers();
-        map.current?.on("styledata", () => {
-          applySourcesAndLayers();
+        applySources(map);
+        applyLayers(map);
+
+        map.on("styledata", () => {
+          applySources(map);
+          applyLayers(map);
         });
       }
     });
 
     return () => {
       map.current?.remove();
-    };
-  }, []);
-
-  /**
-   * Sync alt key state
-   */
-  useEffect(() => {
-    const onKeyPress = (event: KeyboardEvent) => {
-      setAltIsPressed(event.altKey);
-    };
-
-    window.addEventListener("keydown", onKeyPress, false);
-    window.addEventListener("keyup", onKeyPress, false);
-
-    return () => {
-      window.removeEventListener("keydown", onKeyPress, false);
-      window.removeEventListener("keyup", onKeyPress, false);
     };
   }, []);
 
@@ -174,7 +105,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
         return;
       }
 
-      dispatch.addMarker(event.lngLat.lat, event.lngLat.lng);
+      dispatch.brush(event.lngLat.lat, event.lngLat.lng);
     }, 1000 / 30);
 
     const onMouseDown = () => {
@@ -182,9 +113,8 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
         return;
       }
 
-      if (editor.mode === "freeDraw") {
-        dispatch.startRoute();
-        dispatch.togglePainting();
+      if (editor.mode === "brush") {
+        dispatch.startBrush();
       }
     };
 
@@ -193,28 +123,24 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
         return;
       }
 
-      if (editor.mode === "freeDraw") {
-        dispatch.togglePainting(false);
-        dispatch.endRoute();
+      if (editor.mode === "brush") {
+        dispatch.endBrush();
       }
     };
 
     const onClick = (event: MapMouseEvent) => {
+      if (altIsPressed) {
+        return;
+      }
+
       dispatch.closePanes();
 
       if (editor.mode === "trace") {
-        if (!currentRoute) {
-          dispatch.startRoute();
-        } else if (event.originalEvent.altKey) {
-          dispatch.endRoute();
-          dispatch.startRoute();
-        }
-
-        dispatch.addMarker(event.lngLat.lat, event.lngLat.lng);
+        dispatch.trace(event.lngLat.lat, event.lngLat.lng);
       }
 
       if (editor.mode === "pin") {
-        dispatch.addPin(event.lngLat.lat, event.lngLat.lng);
+        dispatch.pin(event.lngLat.lat, event.lngLat.lng);
       }
     };
 
@@ -231,7 +157,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
       map.current?.off("mouseup", onMouseUp);
       map.current?.off("click", onClick);
     };
-  }, [editor, currentRoute, altIsPressed]);
+  }, [editor, altIsPressed]);
 
   /**
    * Update map when local state changes
@@ -258,7 +184,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
       },
       zoom: zoom,
     });
-  }, [coordinates.latitude, coordinates.longitude]);
+  }, [coordinates.latitude, coordinates.longitude, zoom]);
 
   /**
    * Fly to selected place
@@ -303,39 +229,27 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
     if (editor.mode === "move" || altIsPressed) {
       map.current?.dragPan.enable();
       map.current?.scrollZoom.enable();
-    } else if (editor.mode === "trace" || editor.mode === "freeDraw") {
+    } else if (editor.mode === "trace" || editor.mode === "brush") {
       map.current?.dragPan.disable();
       map.current?.scrollZoom.disable();
     }
   }, [editor.mode, altIsPressed]);
 
   /**
-   * Sync routes
+   * Sync actions
    */
   useEffect(() => {
-    const routesSource = map.current?.getSource(MapSource.Routes) as GeoJSONSource;
-    const routesToDraw: RouteState[] = [...routes];
-    if (currentRoute) {
-      routesToDraw.push(currentRoute);
+    if (!map.current) {
+      return;
     }
 
-    routesSource?.setData({
-      type: "FeatureCollection",
-      features: routesToFeatures(routesToDraw),
-    });
-  }, [routes, currentRoute]);
+    const allActions = [...actions];
+    if (currentAction) {
+      allActions.push(currentAction);
+    }
 
-  /**
-   * Sync pins
-   */
-  useEffect(() => {
-    const pinsSource = map.current?.getSource(MapSource.Pins) as GeoJSONSource;
-
-    pinsSource?.setData({
-      type: "FeatureCollection",
-      features: pinsToFeatures(pins),
-    });
-  }, [pins]);
+    applyActions(map.current, allActions);
+  }, [actions, currentAction]);
 
   /**
    * Sync cursor
@@ -351,7 +265,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
 
     if (altIsPressed) {
       map.current.getCanvas().style.cursor = "pointer";
-    } else if (editor.mode === "trace" || editor.mode === "freeDraw" || editor.mode === "pin") {
+    } else if (editor.mode === "trace" || editor.mode === "brush" || editor.mode === "pin") {
       map.current.getCanvas().style.cursor = "crosshair";
     } else if (editor.mode === "move") {
       map.current.getCanvas().style.cursor = "pointer";

@@ -14,6 +14,7 @@ import {
   PinIcon,
   RulerCompassIcon,
   ShareIcon,
+  UndoIcon,
   UploadIcon,
 } from "~/components/Icon";
 import { StrokeWidthPicker } from "~/components/StrokeWidthPicker";
@@ -23,7 +24,8 @@ import { useStore } from "~/lib/state";
 export const Toolbar: React.FC = () => {
   const ref = useRef<HTMLInputElement>(null);
   const editor = useStore((store) => store.editor);
-  const routes = useStore((store) => store.routes);
+  const actions = useStore((store) => store.actions);
+  // const routes = useStore((store) => store.routes);
   const dispatch = useStore((store) => store.dispatch);
 
   useEffect(() => {
@@ -34,7 +36,7 @@ export const Toolbar: React.FC = () => {
       }
       if (event.metaKey && event.keyCode === 50) {
         event.preventDefault();
-        dispatch.setEditorMode("freeDraw");
+        dispatch.setEditorMode("brush");
       }
       if (event.metaKey && event.keyCode === 51) {
         event.preventDefault();
@@ -43,6 +45,10 @@ export const Toolbar: React.FC = () => {
       if (event.metaKey && event.keyCode === 52) {
         event.preventDefault();
         dispatch.setEditorMode("pin");
+      }
+      if (event.metaKey && event.keyCode === 90) {
+        event.preventDefault();
+        dispatch.undo();
       }
     };
 
@@ -56,47 +62,52 @@ export const Toolbar: React.FC = () => {
   return (
     <div className="flex flex-row-reverse items-start">
       <nav className="flex flex-col">
-        <div className="relative">
-          <Button
-            active={editor.pane === "styles"}
-            className="bg-gray-900 text-gray-200 w-full"
-            onClick={() => {
-              dispatch.togglePane("styles");
-            }}
-          >
-            <FireIcon className="w-4 h-4" />
-            <span className="ml-2 text-sm">Styles</span>
-          </Button>
-        </div>
+        <Button
+          className="bg-gray-900 text-gray-200"
+          disabled={!actions.length}
+          onClick={() => {
+            dispatch.undo();
+          }}
+        >
+          <UndoIcon className="w-4 h-4" />
+          <span className="ml-2 text-sm">Undo</span>
+        </Button>
 
-        <div className="relative mt-2">
-          <Button
-            active={editor.pane === "colors"}
-            className="bg-gray-900 text-gray-200 w-full"
-            onClick={() => {
-              dispatch.togglePane("colors");
-            }}
-          >
-            <div
-              className="w-4 h-4 rounded-full border border-gray-200"
-              style={{ backgroundColor: editor.strokeColor }}
-            />
-            <span className="ml-2 text-sm">Color</span>
-          </Button>
-        </div>
+        <Button
+          active={editor.pane === "styles"}
+          className="bg-gray-900 text-gray-200 mt-2"
+          onClick={() => {
+            dispatch.togglePane("styles");
+          }}
+        >
+          <FireIcon className="w-4 h-4" />
+          <span className="ml-2 text-sm">Styles</span>
+        </Button>
 
-        <div className="relative mt-2">
-          <Button
-            active={editor.pane === "strokeWidth"}
-            className="bg-gray-900 text-gray-200 w-full"
-            onClick={() => {
-              dispatch.togglePane("strokeWidth");
-            }}
-          >
-            <LineWidthIcon className="w-4 h-4" />
-            <span className="ml-2 text-sm">Width</span>
-          </Button>
-        </div>
+        <Button
+          active={editor.pane === "colors"}
+          className="bg-gray-900 text-gray-200 mt-2"
+          onClick={() => {
+            dispatch.togglePane("colors");
+          }}
+        >
+          <div
+            className="w-4 h-4 rounded-full border border-gray-200"
+            style={{ backgroundColor: editor.strokeColor }}
+          />
+          <span className="ml-2 text-sm">Color</span>
+        </Button>
+
+        <Button
+          active={editor.pane === "strokeWidth"}
+          className="bg-gray-900 text-gray-200 mt-2"
+          onClick={() => {
+            dispatch.togglePane("strokeWidth");
+          }}
+        >
+          <LineWidthIcon className="w-4 h-4" />
+          <span className="ml-2 text-sm">Width</span>
+        </Button>
 
         <Button
           active={editor.mode === "move"}
@@ -110,10 +121,10 @@ export const Toolbar: React.FC = () => {
         </Button>
 
         <Button
-          active={editor.mode === "freeDraw"}
+          active={editor.mode === "brush"}
           className="bg-gray-900 text-gray-200 mt-2"
           onClick={() => {
-            dispatch.setEditorMode("freeDraw");
+            dispatch.setEditorMode("brush");
           }}
         >
           <PaintIcon className="w-4 h-4" />
@@ -155,7 +166,7 @@ export const Toolbar: React.FC = () => {
         <Button
           className="bg-gray-900 text-gray-200 mt-2"
           onClick={() => {
-            dispatch.export();
+            dispatch.downloadImage();
           }}
         >
           <ShareIcon className="w-4 h-4" />
@@ -185,7 +196,7 @@ export const Toolbar: React.FC = () => {
             type="file"
             onChange={(event) => {
               if (event.target.files?.length) {
-                dispatch.importRoute(event.target.files[0]);
+                dispatch.importGpx(event.target.files[0]);
               }
             }}
           />
@@ -194,7 +205,7 @@ export const Toolbar: React.FC = () => {
 
         <Button
           className="bg-gray-900 text-gray-200 mt-2"
-          disabled={!routes.length}
+          disabled={!actions.length}
           onClick={() => {
             dispatch.downloadGpx();
           }}
