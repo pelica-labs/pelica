@@ -1,14 +1,15 @@
 import { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geocoding";
 import { Tracepoint } from "@mapbox/mapbox-sdk/services/map-matching";
 import { Style } from "@mapbox/mapbox-sdk/services/styles";
-import chunk from "lodash/chunk";
-import { GetState } from "zustand";
+import produce from "immer";
+import { chunk } from "lodash";
+import create, { GetState, State, StateCreator } from "zustand";
+import { devtools } from "zustand/middleware";
 
 import { Action, BrushAction } from "~/lib/actions";
 import { Coordinates } from "~/lib/geometry";
 import { parseGpx } from "~/lib/gpx";
 import { mapboxMapMatching } from "~/lib/mapbox";
-import { createStore, immer } from "~/lib/zustand";
 
 export type MapState = {
   coordinates: {
@@ -35,31 +36,33 @@ export type EditorMode = "move" | "trace" | "brush" | "pin";
 
 export type EditorPane = "styles" | "colors" | "strokeWidth";
 
-type MapStore = ReturnType<typeof makeStore> & MapState;
+const initialState: MapState = {
+  coordinates: {
+    latitude: 40,
+    longitude: -74.5,
+  },
+  zoom: 9,
+
+  editor: {
+    strokeColor: "#1824a2",
+    strokeWidth: 2,
+    mode: "move",
+    isPainting: false,
+    pane: null,
+    matchMap: true,
+  },
+
+  place: null,
+  style: null,
+
+  actions: [],
+  currentBrush: null,
+  traceStart: null,
+};
 
 const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<MapState>) => {
   return {
-    coordinates: {
-      latitude: 40,
-      longitude: -74.5,
-    },
-    zoom: 9,
-
-    editor: {
-      strokeColor: "black",
-      strokeWidth: 3,
-      mode: "move" as EditorMode,
-      isPainting: false,
-      pane: null,
-      matchMap: true,
-    },
-
-    place: null as GeocodeFeature | null,
-    style: null as Style | null,
-
-    actions: [] as Action[],
-    currentBrush: null as BrushAction | null,
-    traceStart: null as Coordinates | null,
+    ...initialState,
 
     dispatch: {
       move(latitude: number, longitude: number, zoom: number) {
@@ -321,13 +324,11 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
       },
 
       downloadGpx() {
-        const routes = get().routes;
-        if (!routes.length) {
-          return;
-        }
-
+        // const routes = get().routes;
+        // if (!routes.length) {
+        //   return;
+        // }
         // const gpx = generateGpx(routes);
-
         // const a = document.createElement("a");
         // a.href = "data:application/gpx+xml," + encodeURIComponent(gpx);
         // a.download = "pelica.gpx";
@@ -337,8 +338,12 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
   };
 };
 
-export const useStore = createStore<MapStore>(
-  immer((set, get) => {
-    return makeStore(set, get);
-  })
-);
+type MapStore = ReturnType<typeof makeStore>;
+
+const immer = <T extends State>(config: StateCreator<T, (fn: (draft: T) => void) => void>): StateCreator<T> => (
+  set,
+  get,
+  api
+) => config((fn) => set(produce(fn) as (state: T) => T), get, api);
+
+export const useStore = create<MapStore>(devtools(immer(makeStore)));

@@ -7,7 +7,7 @@ export const applyLayers = (map: mapboxgl.Map): void => {
       type: "line",
       source: MapSource.Routes,
       paint: {
-        "line-color": ["get", "color"],
+        "line-color": ["get", "strokeColor"],
         "line-width": ["get", "strokeWidth"],
       },
     });
