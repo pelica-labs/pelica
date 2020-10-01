@@ -24,28 +24,6 @@ export const Toolbar: React.FC = () => {
   const editor = useStore((store) => store.editor);
   const dispatch = useStore((store) => store.dispatch);
 
-  const onExport = () => {
-    const canvas = document.querySelector("canvas");
-    if (!canvas) {
-      return;
-    }
-
-    const image = new Image();
-    image.src = canvas.toDataURL();
-
-    const newTab = window.open("", "_blank");
-    newTab?.document.write(image.outerHTML);
-    newTab?.focus();
-  };
-
-  const onFileUpload = (files: FileList | null) => {
-    if (!files || !files.length) {
-      return;
-    }
-
-    dispatch.importRoute(files[0]);
-  };
-
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.metaKey && event.keyCode === 49) {
@@ -80,7 +58,9 @@ export const Toolbar: React.FC = () => {
           <Button
             active={editor.pane === "styles"}
             className="bg-gray-900 text-gray-200 w-full"
-            onClick={() => dispatch.togglePane("styles")}
+            onClick={() => {
+              dispatch.togglePane("styles");
+            }}
           >
             <FireIcon className="w-4 h-4" />
             <span className="ml-2 text-sm">Styles</span>
@@ -91,7 +71,9 @@ export const Toolbar: React.FC = () => {
           <Button
             active={editor.pane === "colors"}
             className="bg-gray-900 text-gray-200 w-full"
-            onClick={() => dispatch.togglePane("colors")}
+            onClick={() => {
+              dispatch.togglePane("colors");
+            }}
           >
             <div
               className="w-4 h-4 rounded-full border border-gray-200"
@@ -105,7 +87,9 @@ export const Toolbar: React.FC = () => {
           <Button
             active={editor.pane === "strokeWidth"}
             className="bg-gray-900 text-gray-200 w-full"
-            onClick={() => dispatch.togglePane("strokeWidth")}
+            onClick={() => {
+              dispatch.togglePane("strokeWidth");
+            }}
           >
             <LineWidthIcon className="w-4 h-4" />
             <span className="ml-2 text-sm">Width</span>
@@ -115,7 +99,9 @@ export const Toolbar: React.FC = () => {
         <Button
           active={editor.mode === "move"}
           className="bg-gray-900 text-gray-200 mt-2"
-          onClick={() => dispatch.setEditorMode("move")}
+          onClick={() => {
+            dispatch.setEditorMode("move");
+          }}
         >
           <HandIcon className="w-4 h-4" />
           <span className="ml-2 text-sm">Move</span>
@@ -124,31 +110,42 @@ export const Toolbar: React.FC = () => {
         <Button
           active={editor.mode === "freeDraw"}
           className="bg-gray-900 text-gray-200 mt-2"
-          onClick={() => dispatch.setEditorMode("freeDraw")}
+          onClick={() => {
+            dispatch.setEditorMode("freeDraw");
+          }}
         >
           <PaintIcon className="w-4 h-4" />
           <span className="ml-2 text-sm">Free drawing</span>
         </Button>
 
         <Button
+          active={editor.mode === "trace"}
+          className="bg-gray-900 text-gray-200 mt-2"
+          onClick={() => {
+            dispatch.setEditorMode("trace");
+          }}
+        >
+          <RulerCompassIcon className="w-4 h-4" />
+          <span className="ml-2 text-sm">Trace</span>
+        </Button>
+
+        <Button
           active={editor.mode === "pin"}
           className="bg-gray-900 text-gray-200 mt-2"
-          onClick={() => dispatch.setEditorMode("pin")}
+          onClick={() => {
+            dispatch.setEditorMode("pin");
+          }}
         >
           <PinIcon className="w-4 h-4" />
           <span className="ml-2 text-sm">Pin</span>
         </Button>
 
         <Button
-          active={editor.mode === "trace"}
           className="bg-gray-900 text-gray-200 mt-2"
-          onClick={() => dispatch.setEditorMode("trace")}
+          onClick={() => {
+            dispatch.clear();
+          }}
         >
-          <RulerCompassIcon className="w-4 h-4" />
-          <span className="ml-2 text-sm">Trace</span>
-        </Button>
-
-        <Button className="bg-gray-900 text-gray-200 mt-2" onClick={() => dispatch.clear()}>
           <EraserIcon className="w-4 h-4" />
           <span className="ml-2 text-sm">Clear</span>
         </Button>
@@ -156,7 +153,7 @@ export const Toolbar: React.FC = () => {
         <Button
           className="bg-gray-900 text-gray-200 mt-2"
           onClick={() => {
-            onExport();
+            dispatch.export();
           }}
         >
           <ShareIcon className="w-4 h-4" />
@@ -180,7 +177,16 @@ export const Toolbar: React.FC = () => {
           }}
         >
           <UploadIcon className="w-4 h-4" />
-          <input ref={ref} className="hidden" type="file" onChange={(event) => onFileUpload(event.target.files)} />
+          <input
+            ref={ref}
+            className="hidden"
+            type="file"
+            onChange={(event) => {
+              if (event.target.files?.length) {
+                dispatch.importRoute(event.target.files[0]);
+              }
+            }}
+          />
           <span className="ml-2 text-sm">Upload GPX</span>
         </Button>
       </nav>

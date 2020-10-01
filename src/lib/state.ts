@@ -297,6 +297,18 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
 
         reader.readAsText(file);
       },
+
+      export() {
+        const canvas = document.querySelector("canvas");
+        if (!canvas) {
+          return;
+        }
+
+        const tag = document.createElement("a");
+        tag.href = canvas.toDataURL();
+        tag.download = "pelica";
+        tag.click();
+      },
     },
   };
 };
