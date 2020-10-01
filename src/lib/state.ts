@@ -1,6 +1,7 @@
 import { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geocoding";
 import { Tracepoint } from "@mapbox/mapbox-sdk/services/map-matching";
 import { Style } from "@mapbox/mapbox-sdk/services/styles";
+import chunk from "lodash/chunk";
 import { GetState } from "zustand";
 
 import { mapboxMapMatching } from "~/lib/mapbox";
@@ -154,6 +155,8 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
 
       async endRoute() {
         const currentRoute = get().currentRoute;
+        const matchMap = get().editor.matchMap;
+
         if (!currentRoute || currentRoute.markers.length === 0) {
           return;
         }
@@ -162,61 +165,54 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
           state.currentRoute = null;
         });
 
-        if (!get().editor.matchMap) {
+        if (!matchMap) {
           set((state) => {
             state.routes.push(currentRoute);
           });
           return;
         }
 
-        if (currentRoute.markers.length < 2) {
-          return;
-        }
+        const chunks = await Promise.all(
+          chunk(currentRoute.markers, 100).map(async (markers) => {
+            if (markers.length < 2) {
+              return markers;
+            }
 
-        if (currentRoute.markers.length > 100) {
-          console.warn("Route has more than 100 points, skipping map matching for now");
-          set((state) => {
-            state.routes.push(currentRoute);
-          });
-          return;
-        }
+            const res = await mapboxMapMatching
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              .getMatch({
+                profile: "walking",
+                points: markers.map((marker) => {
+                  return {
+                    coordinates: [marker.coordinates.longitude, marker.coordinates.latitude],
+                  };
+                }),
+              })
+              .send();
 
-        const res = await mapboxMapMatching
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          .getMatch({
-            profile: "walking",
-            points: currentRoute.markers.map((marker) => {
-              return {
-                coordinates: [marker.coordinates.longitude, marker.coordinates.latitude],
-              };
-            }),
+            if (!res.body.tracepoints) {
+              return markers;
+            }
+
+            return (res.body.tracepoints as Tracepoint[])
+              .filter((tracepoint) => tracepoint !== null)
+              .map((tracepoint, i) => {
+                return {
+                  strokeWidth: markers[i].strokeWidth,
+                  strokeColor: markers[i].strokeColor,
+                  coordinates: {
+                    longitude: tracepoint.location[0],
+                    latitude: tracepoint.location[1],
+                  },
+                };
+              });
           })
-          .send();
-
-        if (!res.body.tracepoints) {
-          set((state) => {
-            state.routes.push(currentRoute);
-          });
-          return;
-        }
-
-        const improvedRoute: MarkerState[] = (res.body.tracepoints as Tracepoint[])
-          .filter((tracepoint) => tracepoint !== null)
-          .map((tracepoint, i) => {
-            return {
-              strokeWidth: currentRoute.markers[i].strokeWidth,
-              strokeColor: currentRoute.markers[i].strokeColor,
-              coordinates: {
-                longitude: tracepoint.location[0],
-                latitude: tracepoint.location[1],
-              },
-            };
-          });
+        );
 
         set((state) => {
           state.routes.push({
-            markers: improvedRoute,
+            markers: chunks.flat(),
           });
         });
       },
