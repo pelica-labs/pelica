@@ -1,4 +1,4 @@
-import { MarkerState, RouteState } from "~/lib/state";
+import { MarkerState, PinState, RouteState } from "~/lib/state";
 
 export const routesToFeatures = (routes: RouteState[]): GeoJSON.Feature<GeoJSON.Geometry>[] => {
   return routes.flatMap((route) => markersToFeatures(route.markers));
@@ -31,4 +31,20 @@ export const markersToFeatures = (markers: MarkerState[]): GeoJSON.Feature<GeoJS
   }
 
   return features;
+};
+
+export const pinsToFeatures = (pins: PinState[]): GeoJSON.Feature<GeoJSON.Geometry>[] => {
+  return pins.map((pin) => {
+    return {
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: [pin.coordinates.longitude, pin.coordinates.latitude],
+      },
+      properties: {
+        strokeColor: pin.strokeColor,
+        strokeWidth: pin.strokeWidth,
+      },
+    };
+  });
 };

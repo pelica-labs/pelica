@@ -4,7 +4,7 @@ import mapboxgl, { GeoJSONSource, LngLatBoundsLike, MapMouseEvent } from "mapbox
 import Head from "next/head";
 import React, { useEffect, useRef, useState } from "react";
 
-import { routesToFeatures } from "~/lib/geo";
+import { pinsToFeatures, routesToFeatures } from "~/lib/geo";
 import { styleToUrl } from "~/lib/mapbox";
 import { RouteState, useStore } from "~/lib/state";
 
@@ -101,19 +101,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
             type: "geojson",
             data: {
               type: "FeatureCollection",
-              features: pins.map((pin) => {
-                return {
-                  type: "Feature",
-                  geometry: {
-                    type: "Point",
-                    coordinates: [pin.coordinates.longitude, pin.coordinates.latitude],
-                  },
-                  properties: {
-                    strokeColor: pin.strokeColor,
-                    strokeWidth: pin.strokeWidth,
-                  },
-                };
-              }),
+              features: pinsToFeatures(pins),
             },
           });
         }
@@ -345,19 +333,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
 
     pinsSource?.setData({
       type: "FeatureCollection",
-      features: pins.map((pin) => {
-        return {
-          type: "Feature",
-          geometry: {
-            type: "Point",
-            coordinates: [pin.coordinates.longitude, pin.coordinates.latitude],
-          },
-          properties: {
-            strokeColor: pin.strokeColor,
-            strokeWidth: pin.strokeWidth,
-          },
-        };
-      }),
+      features: pinsToFeatures(pins),
     });
   }, [pins]);
 
