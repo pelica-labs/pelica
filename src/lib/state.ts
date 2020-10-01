@@ -52,6 +52,7 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
       longitude: -74.5,
     },
     zoom: 9,
+
     editor: {
       strokeColor: "black",
       strokeWidth: 3,
@@ -60,181 +61,215 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
       pane: null,
       matchMap: true,
     },
+
     currentRoute: null as RouteState | null,
     routes: [],
 
-    move(latitude: number, longitude: number, zoom: number) {
-      set((state) => {
-        state.coordinates.latitude = latitude;
-        state.coordinates.longitude = longitude;
-        state.zoom = zoom;
-      });
-    },
-
-    setPlace(place: GeocodeFeature | null) {
-      set((state) => {
-        state.place = place;
-      });
-    },
-
-    setStyle(style: Style) {
-      set((state) => {
-        state.style = style;
-      });
-    },
-
-    setStrokeColor(strokeColor: string) {
-      set((state) => {
-        state.editor.strokeColor = strokeColor;
-      });
-    },
-
-    setStrokeWidth(strokeWidth: number) {
-      set((state) => {
-        state.editor.strokeWidth = strokeWidth;
-      });
-    },
-
-    togglePane(pane: EditorPane) {
-      set((state) => {
-        state.editor.pane = state.editor.pane !== pane ? pane : null;
-      });
-    },
-
-    setEditorMode(mode: EditorMode) {
-      set((state) => {
-        if (state.editor.mode === "trace" && state.currentRoute) {
-          state.routes.push(state.currentRoute);
-          state.currentRoute = null;
-        }
-
-        state.editor.mode = mode;
-      });
-    },
-
-    togglePainting(painting?: boolean) {
-      set((state) => {
-        state.editor.isPainting = painting ?? !state.editor.isPainting;
-      });
-    },
-
-    toggleMatchMap() {
-      set((state) => {
-        state.editor.matchMap = !state.editor.matchMap;
-      });
-    },
-
-    pushRoute(route: RouteState) {
-      set((state) => {
-        state.routes.push(route);
-      });
-    },
-
-    startRoute() {
-      set((state) => {
-        state.currentRoute = {
-          markers: [],
-        };
-      });
-    },
-
-    async endRoute() {
-      const currentRoute = get().currentRoute;
-      if (!currentRoute || currentRoute.markers.length === 0) {
-        return;
-      }
-
-      set((state) => {
-        state.currentRoute = null;
-      });
-
-      if (!get().editor.matchMap) {
+    dispatch: {
+      move(latitude: number, longitude: number, zoom: number) {
         set((state) => {
-          state.routes.push(currentRoute);
+          state.coordinates.latitude = latitude;
+          state.coordinates.longitude = longitude;
+          state.zoom = zoom;
         });
-        return;
-      }
+      },
 
-      if (currentRoute.markers.length < 2) {
-        return;
-      }
-
-      if (currentRoute.markers.length > 100) {
-        console.warn("Route has more than 100 points, skipping map matching for now");
+      setPlace(place: GeocodeFeature | null) {
         set((state) => {
-          state.routes.push(currentRoute);
+          state.place = place;
         });
-        return;
-      }
+      },
 
-      const res = await mapboxMapMatching
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        .getMatch({
-          profile: "walking",
-          points: currentRoute.markers.map((marker) => {
-            return {
-              coordinates: [marker.coordinates.longitude, marker.coordinates.latitude],
-            };
-          }),
-        })
-        .send();
-
-      if (!res.body.tracepoints) {
+      setStyle(style: Style) {
         set((state) => {
-          state.routes.push(currentRoute);
+          state.style = style;
         });
-        return;
-      }
+      },
 
-      const improvedRoute: MarkerState[] = (res.body.tracepoints as Tracepoint[])
-        .filter((tracepoint) => tracepoint !== null)
-        .map((tracepoint, i) => {
-          return {
-            strokeWidth: currentRoute.markers[i].strokeWidth,
-            strokeColor: currentRoute.markers[i].strokeColor,
-            coordinates: {
-              longitude: tracepoint.location[0],
-              latitude: tracepoint.location[1],
-            },
+      setStrokeColor(strokeColor: string) {
+        set((state) => {
+          state.editor.strokeColor = strokeColor;
+        });
+      },
+
+      setStrokeWidth(strokeWidth: number) {
+        set((state) => {
+          state.editor.strokeWidth = strokeWidth;
+        });
+      },
+
+      togglePane(pane: EditorPane) {
+        set((state) => {
+          state.editor.pane = state.editor.pane !== pane ? pane : null;
+        });
+      },
+
+      setEditorMode(mode: EditorMode) {
+        set((state) => {
+          if (state.editor.mode === "trace" && state.currentRoute) {
+            state.routes.push(state.currentRoute);
+            state.currentRoute = null;
+          }
+
+          state.editor.mode = mode;
+        });
+      },
+
+      togglePainting(painting?: boolean) {
+        set((state) => {
+          state.editor.isPainting = painting ?? !state.editor.isPainting;
+        });
+      },
+
+      toggleMatchMap() {
+        set((state) => {
+          state.editor.matchMap = !state.editor.matchMap;
+        });
+      },
+
+      pushRoute(route: RouteState) {
+        set((state) => {
+          state.routes.push(route);
+        });
+      },
+
+      startRoute() {
+        set((state) => {
+          state.currentRoute = {
+            markers: [],
           };
         });
+      },
 
-      set((state) => {
-        state.routes.push({
-          markers: improvedRoute,
-        });
-      });
-    },
-
-    addMarker(latitude: number, longitude: number) {
-      set((state) => {
-        if (!state.currentRoute) {
+      async endRoute() {
+        const currentRoute = get().currentRoute;
+        if (!currentRoute || currentRoute.markers.length === 0) {
           return;
         }
 
-        state.currentRoute.markers.push({
-          coordinates: {
-            latitude,
-            longitude,
-          },
-          strokeColor: state.editor.strokeColor,
-          strokeWidth: state.editor.strokeWidth,
+        set((state) => {
+          state.currentRoute = null;
         });
-      });
-    },
 
-    clearRoutes() {
-      set((state) => {
-        state.routes = [];
-        state.currentRoute = null;
-      });
-    },
+        if (!get().editor.matchMap) {
+          set((state) => {
+            state.routes.push(currentRoute);
+          });
+          return;
+        }
 
-    closePanes() {
-      set((state) => {
-        state.editor.pane = null;
-      });
+        if (currentRoute.markers.length < 2) {
+          return;
+        }
+
+        if (currentRoute.markers.length > 100) {
+          console.warn("Route has more than 100 points, skipping map matching for now");
+          set((state) => {
+            state.routes.push(currentRoute);
+          });
+          return;
+        }
+
+        const res = await mapboxMapMatching
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          .getMatch({
+            profile: "walking",
+            points: currentRoute.markers.map((marker) => {
+              return {
+                coordinates: [marker.coordinates.longitude, marker.coordinates.latitude],
+              };
+            }),
+          })
+          .send();
+
+        if (!res.body.tracepoints) {
+          set((state) => {
+            state.routes.push(currentRoute);
+          });
+          return;
+        }
+
+        const improvedRoute: MarkerState[] = (res.body.tracepoints as Tracepoint[])
+          .filter((tracepoint) => tracepoint !== null)
+          .map((tracepoint, i) => {
+            return {
+              strokeWidth: currentRoute.markers[i].strokeWidth,
+              strokeColor: currentRoute.markers[i].strokeColor,
+              coordinates: {
+                longitude: tracepoint.location[0],
+                latitude: tracepoint.location[1],
+              },
+            };
+          });
+
+        set((state) => {
+          state.routes.push({
+            markers: improvedRoute,
+          });
+        });
+      },
+
+      addMarker(latitude: number, longitude: number) {
+        set((state) => {
+          if (!state.currentRoute) {
+            return;
+          }
+
+          state.currentRoute.markers.push({
+            coordinates: {
+              latitude,
+              longitude,
+            },
+            strokeColor: state.editor.strokeColor,
+            strokeWidth: state.editor.strokeWidth,
+          });
+        });
+      },
+
+      clearRoutes() {
+        set((state) => {
+          state.routes = [];
+          state.currentRoute = null;
+        });
+      },
+
+      closePanes() {
+        set((state) => {
+          state.editor.pane = null;
+        });
+      },
+
+      importRoute(file: File) {
+        const editor = get().editor;
+
+        const reader = new FileReader();
+        reader.onload = (file) => {
+          const xml = file.target?.result as string;
+          if (!xml) {
+            return;
+          }
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(xml, "application/xml");
+          const markers = Array.from(doc.querySelectorAll("trkpt")).map((node) => {
+            return {
+              strokeColor: editor.strokeColor,
+              strokeWidth: editor.strokeWidth,
+              coordinates: {
+                latitude: parseFloat(node.getAttribute("lat") as string),
+                longitude: parseFloat(node.getAttribute("lon") as string),
+              },
+            };
+          });
+
+          this.pushRoute({
+            markers,
+          });
+          this.move(markers[0].coordinates.latitude, markers[0].coordinates.longitude, 6);
+        };
+
+        reader.readAsText(file);
+      },
     },
   };
 };

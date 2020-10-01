@@ -21,13 +21,7 @@ import { useStore } from "~/lib/state";
 export const Toolbar: React.FC = () => {
   const ref = useRef<HTMLInputElement>(null);
   const editor = useStore((store) => store.editor);
-  const togglePane = useStore((store) => store.togglePane);
-  const setStrokeColor = useStore((store) => store.setStrokeColor);
-  const clearRoutes = useStore((store) => store.clearRoutes);
-  const setEditorMode = useStore((store) => store.setEditorMode);
-  const toggleMatchMap = useStore((store) => store.toggleMatchMap);
-  const pushRoute = useStore((store) => store.pushRoute);
-  const move = useStore((store) => store.move);
+  const dispatch = useStore((store) => store.dispatch);
 
   const onExport = () => {
     const canvas = document.querySelector("canvas");
@@ -47,48 +41,23 @@ export const Toolbar: React.FC = () => {
     if (!files || !files.length) {
       return;
     }
-    console.log(files[0]);
 
-    const reader = new FileReader();
-    reader.onload = (file) => {
-      const xml = file.target?.result as string;
-      if (!xml) {
-        return;
-      }
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(xml, "application/xml");
-      const markers = Array.from(doc.querySelectorAll("trkpt")).map((node) => {
-        return {
-          strokeColor: editor.strokeColor,
-          strokeWidth: editor.strokeWidth,
-          coordinates: {
-            latitude: parseFloat(node.getAttribute("lat") as string),
-            longitude: parseFloat(node.getAttribute("lon") as string),
-          },
-        };
-      });
-
-      pushRoute({
-        markers,
-      });
-      move(markers[0].coordinates.latitude, markers[0].coordinates.longitude, 6);
-    };
-    reader.readAsText(files[0]);
+    dispatch.importRoute(files[0]);
   };
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.metaKey && event.keyCode === 49) {
         event.preventDefault();
-        setEditorMode("move");
+        dispatch.setEditorMode("move");
       }
       if (event.metaKey && event.keyCode === 50) {
         event.preventDefault();
-        setEditorMode("freeDraw");
+        dispatch.setEditorMode("freeDraw");
       }
       if (event.metaKey && event.keyCode === 51) {
         event.preventDefault();
-        setEditorMode("trace");
+        dispatch.setEditorMode("trace");
       }
     };
 
@@ -106,7 +75,7 @@ export const Toolbar: React.FC = () => {
           <Button
             active={editor.pane === "styles"}
             className="bg-gray-900 text-gray-200 w-full"
-            onClick={() => togglePane("styles")}
+            onClick={() => dispatch.togglePane("styles")}
           >
             <FireIcon className="w-4 h-4" />
             <span className="ml-2 text-sm">Styles</span>
@@ -117,7 +86,7 @@ export const Toolbar: React.FC = () => {
           <Button
             active={editor.pane === "colors"}
             className="bg-gray-900 text-gray-200 w-full"
-            onClick={() => togglePane("colors")}
+            onClick={() => dispatch.togglePane("colors")}
           >
             <div
               className="w-4 h-4 rounded-full border border-gray-200"
@@ -131,7 +100,7 @@ export const Toolbar: React.FC = () => {
           <Button
             active={editor.pane === "strokeWidth"}
             className="bg-gray-900 text-gray-200 w-full"
-            onClick={() => togglePane("strokeWidth")}
+            onClick={() => dispatch.togglePane("strokeWidth")}
           >
             <LineWidthIcon className="w-4 h-4" />
             <span className="ml-2 text-sm">Width</span>
@@ -141,7 +110,7 @@ export const Toolbar: React.FC = () => {
         <Button
           active={editor.mode === "move"}
           className="bg-gray-900 text-gray-200 mt-2"
-          onClick={() => setEditorMode("move")}
+          onClick={() => dispatch.setEditorMode("move")}
         >
           <HandIcon className="w-4 h-4" />
           <span className="ml-2 text-sm">Move</span>
@@ -150,7 +119,7 @@ export const Toolbar: React.FC = () => {
         <Button
           active={editor.mode === "freeDraw"}
           className="bg-gray-900 text-gray-200 mt-2"
-          onClick={() => setEditorMode("freeDraw")}
+          onClick={() => dispatch.setEditorMode("freeDraw")}
         >
           <PaintIcon className="w-4 h-4" />
           <span className="ml-2 text-sm">Free drawing</span>
@@ -159,13 +128,13 @@ export const Toolbar: React.FC = () => {
         <Button
           active={editor.mode === "trace"}
           className="bg-gray-900 text-gray-200 mt-2"
-          onClick={() => setEditorMode("trace")}
+          onClick={() => dispatch.setEditorMode("trace")}
         >
           <RulerCompassIcon className="w-4 h-4" />
           <span className="ml-2 text-sm">Trace</span>
         </Button>
 
-        <Button className="bg-gray-900 text-gray-200 mt-2" onClick={() => clearRoutes()}>
+        <Button className="bg-gray-900 text-gray-200 mt-2" onClick={() => dispatch.clearRoutes()}>
           <EraserIcon className="w-4 h-4" />
           <span className="ml-2 text-sm">Clear</span>
         </Button>
@@ -183,7 +152,7 @@ export const Toolbar: React.FC = () => {
         <Button
           className="bg-gray-900 text-gray-200 mt-2"
           onClick={() => {
-            toggleMatchMap();
+            dispatch.toggleMatchMap();
           }}
         >
           {editor.matchMap ? <CheckboxIcon className="w-4 h-4" /> : <EmptyCheckboxIcon className="w-4 h-4" />}
@@ -211,7 +180,7 @@ export const Toolbar: React.FC = () => {
               color={editor.strokeColor}
               styles={{ default: { picker: { backgroundColor: "rgba(26, 32, 44)" } } }}
               onChangeComplete={(event) => {
-                setStrokeColor(event.hex);
+                dispatch.setStrokeColor(event.hex);
               }}
             />
           )}

@@ -29,12 +29,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
   const editor = useStore((store) => store.editor);
   const routes = useStore((store) => store.routes);
   const currentRoute = useStore((store) => store.currentRoute);
-  const move = useStore((store) => store.move);
-  const addMarker = useStore((store) => store.addMarker);
-  const togglePainting = useStore((store) => store.togglePainting);
-  const closePanes = useStore((store) => store.closePanes);
-  const startRoute = useStore((store) => store.startRoute);
-  const endRoute = useStore((store) => store.endRoute);
+  const dispatch = useStore((store) => store.dispatch);
 
   const [altIsPressed, setAltIsPressed] = useState(false);
 
@@ -142,7 +137,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
       const { lng, lat } = event.target.getCenter();
       const zoom = event.target.getZoom();
 
-      move(lat, lng, zoom);
+      dispatch.move(lat, lng, zoom);
     };
 
     const onMouseMove = throttle((event: MapMouseEvent) => {
@@ -154,7 +149,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
         return;
       }
 
-      addMarker(event.lngLat.lat, event.lngLat.lng);
+      dispatch.addMarker(event.lngLat.lat, event.lngLat.lng);
     }, 1000 / 30);
 
     const onMouseDown = () => {
@@ -163,8 +158,8 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
       }
 
       if (editor.mode === "freeDraw") {
-        startRoute();
-        togglePainting();
+        dispatch.startRoute();
+        dispatch.togglePainting();
       }
     };
 
@@ -174,23 +169,23 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
       }
 
       if (editor.mode === "freeDraw") {
-        togglePainting(false);
-        endRoute();
+        dispatch.togglePainting(false);
+        dispatch.endRoute();
       }
     };
 
     const onClick = (event: MapMouseEvent) => {
-      closePanes();
+      dispatch.closePanes();
 
       if (editor.mode === "trace") {
         if (!currentRoute) {
-          startRoute();
+          dispatch.startRoute();
         } else if (event.originalEvent.altKey) {
-          endRoute();
-          startRoute();
+          dispatch.endRoute();
+          dispatch.startRoute();
         }
 
-        addMarker(event.lngLat.lat, event.lngLat.lng);
+        dispatch.addMarker(event.lngLat.lat, event.lngLat.lng);
       }
     };
 

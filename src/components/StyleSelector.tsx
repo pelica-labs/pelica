@@ -12,7 +12,7 @@ type StylesResponse = {
 
 export const StyleSelector: React.FC = () => {
   const selectedStyle = useStore((store) => store.style);
-  const setStyle = useStore((store) => store.setStyle);
+  const dispatch = useStore((store) => store.dispatch);
   const { data } = useSWR<StylesResponse>("/api/styles");
 
   if (!data) {
@@ -31,7 +31,7 @@ export const StyleSelector: React.FC = () => {
           });
 
           return (
-            <div key={style.id} className={containerClasses} onClick={() => setStyle(style)}>
+            <div key={style.id} className={containerClasses} onClick={() => dispatch.setStyle(style)}>
               <span className="text-xs uppercase text-gray-200 w-32 inline-flex overflow-x-hidden whitespace-no-wrap">
                 {style.name}
               </span>

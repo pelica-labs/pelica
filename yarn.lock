@@ -1258,9 +1258,9 @@
     "@types/geojson" "*"
 
 "@types/mapbox__mapbox-sdk@*", "@types/mapbox__mapbox-sdk@^0.6.2":
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/@types/mapbox__mapbox-sdk/-/mapbox__mapbox-sdk-0.6.2.tgz#46797c3b060fab15bca4386567fd9eba73db16b7"
-  integrity sha512-syi0u//jaZNnQHqV9XOWeomCtcnD0zOiuWyfZOJLlsqeKfomfZLxMPVViq7n6JJDlQFvJ8VPeYT4D0WqiP5vLA==
+  version "0.6.3"
+  resolved "https://registry.yarnpkg.com/@types/mapbox__mapbox-sdk/-/mapbox__mapbox-sdk-0.6.3.tgz#d99c024a9eadf2b84bc25cdd96058dbe939746b1"
+  integrity sha512-p/7AKpD0LW7gricjfAT1OUejT+Vhz8S/InWDzrlOrcMXC5Ydh9bsR8ofS1wH01za53qNdyew6g3f0QOG0PBtWw==
   dependencies:
     "@types/geojson" "*"
     "@types/mapbox-gl" "*"

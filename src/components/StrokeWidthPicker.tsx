@@ -7,8 +7,7 @@ import { useStore } from "~/lib/state";
 export const StrokeWidthPicker: React.FC = () => {
   const strokeWidth = useStore((store) => store.editor.strokeWidth);
   const color = useStore((store) => store.editor.strokeColor);
-  const setStrokeWidth = useStore((store) => store.setStrokeWidth);
-  const togglePane = useStore((store) => store.togglePane);
+  const dispatch = useStore((store) => store.dispatch);
 
   return (
     <div className="bg-gray-900 text-white rounded shadow flex flex-col">
@@ -25,8 +24,8 @@ export const StrokeWidthPicker: React.FC = () => {
             key={value}
             className={linkClasses}
             onClick={() => {
-              setStrokeWidth(value);
-              togglePane("strokeWidth");
+              dispatch.setStrokeWidth(value);
+              dispatch.togglePane("strokeWidth");
             }}
           >
             <span className="mr-3">
