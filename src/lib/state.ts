@@ -29,7 +29,6 @@ export type MapState = {
     strokeWidth: number;
     mode: EditorMode;
     pane: EditorPane | null;
-    isPainting: boolean;
     matchMap: boolean;
   };
 
@@ -60,7 +59,6 @@ const initialState: MapState = {
     strokeColor: "#1824a2",
     strokeWidth: 2,
     mode: "move",
-    isPainting: false,
     pane: null,
     matchMap: true,
   },

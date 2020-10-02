@@ -14,6 +14,61 @@ export const Map: React.FC = () => {
   const container = useRef<HTMLDivElement>(null);
   const dispatch = useStore((store) => store.dispatch);
 
+  const onMoveEnd = (event: MapMouseEvent) => {
+    const { lng, lat } = event.target.getCenter();
+    const zoom = event.target.getZoom();
+
+    dispatch.move(lat, lng, zoom);
+  };
+
+  const onMouseMove = throttle((event: MapMouseEvent) => {
+    const { keyboard, currentBrush } = getState();
+
+    if (keyboard.altKey || !currentBrush) {
+      return;
+    }
+
+    dispatch.brush(event.lngLat.lat, event.lngLat.lng);
+  }, 1000 / 30);
+
+  const onMouseDown = () => {
+    const { keyboard, editor } = getState();
+
+    if (keyboard.altKey || editor.mode !== "brush") {
+      return;
+    }
+
+    dispatch.startBrush();
+  };
+
+  const onMouseUp = () => {
+    const { keyboard, editor } = getState();
+
+    if (keyboard.altKey || editor.mode !== "brush") {
+      return;
+    }
+
+    dispatch.endBrush();
+  };
+
+  const onClick = (event: MapMouseEvent) => {
+    const { keyboard, editor } = getState();
+
+    if (keyboard.altKey) {
+      return;
+    }
+
+    dispatch.closePanes();
+
+    if (editor.mode === "trace") {
+      dispatch.trace(event.lngLat.lat, event.lngLat.lng);
+    }
+
+    if (editor.mode === "pin") {
+      dispatch.pin(event.lngLat.lat, event.lngLat.lng);
+    }
+  };
+
   /**
    * Initialize map
    */
@@ -44,6 +99,12 @@ export const Map: React.FC = () => {
       applySources(map);
       applyLayers(map);
 
+      map.on("moveend", onMoveEnd);
+      map.on("mousemove", onMouseMove);
+      map.on("mousedown", onMouseDown);
+      map.on("mouseup", onMouseUp);
+      map.on("click", onClick);
+
       map.on("styledata", () => {
         applySources(map);
         applyLayers(map);
@@ -52,88 +113,6 @@ export const Map: React.FC = () => {
 
     return () => {
       map.current?.remove();
-    };
-  }, []);
-
-  /**
-   * Sync interactions
-   */
-  useEffect(() => {
-    const onMoveEnd = (event: MapMouseEvent) => {
-      const { lng, lat } = event.target.getCenter();
-      const zoom = event.target.getZoom();
-
-      dispatch.move(lat, lng, zoom);
-    };
-
-    const onMouseMove = throttle((event: MapMouseEvent) => {
-      const { keyboard, editor } = getState();
-
-      if (keyboard.altKey) {
-        return;
-      }
-
-      if (!editor.isPainting) {
-        return;
-      }
-
-      dispatch.brush(event.lngLat.lat, event.lngLat.lng);
-    }, 1000 / 30);
-
-    const onMouseDown = () => {
-      const { keyboard, editor } = getState();
-
-      if (keyboard.altKey) {
-        return;
-      }
-
-      if (editor.mode === "brush") {
-        dispatch.startBrush();
-      }
-    };
-
-    const onMouseUp = () => {
-      const { keyboard, editor } = getState();
-
-      if (keyboard.altKey) {
-        return;
-      }
-
-      if (editor.mode === "brush") {
-        dispatch.endBrush();
-      }
-    };
-
-    const onClick = (event: MapMouseEvent) => {
-      const { keyboard, editor } = getState();
-
-      if (keyboard.altKey) {
-        return;
-      }
-
-      dispatch.closePanes();
-
-      if (editor.mode === "trace") {
-        dispatch.trace(event.lngLat.lat, event.lngLat.lng);
-      }
-
-      if (editor.mode === "pin") {
-        dispatch.pin(event.lngLat.lat, event.lngLat.lng);
-      }
-    };
-
-    map.current?.on("moveend", onMoveEnd);
-    map.current?.on("mousemove", onMouseMove);
-    map.current?.on("mousedown", onMouseDown);
-    map.current?.on("mouseup", onMouseUp);
-    map.current?.on("click", onClick);
-
-    return () => {
-      map.current?.off("moveend", onMoveEnd);
-      map.current?.off("mousemove", onMouseMove);
-      map.current?.off("mousedown", onMouseDown);
-      map.current?.off("mouseup", onMouseUp);
-      map.current?.off("click", onClick);
     };
   }, []);
 
@@ -225,14 +204,14 @@ export const Map: React.FC = () => {
    */
   useStoreSubscription(
     (store) => ({ actions: store.actions, currentBrush: store.currentBrush }),
-    (state) => {
-      if (!state || !map.current) {
+    ({ actions, currentBrush }) => {
+      if (!map.current) {
         return;
       }
 
-      const allActions = [...state.actions];
-      if (state.currentBrush) {
-        allActions.push(state.currentBrush);
+      const allActions = [...actions];
+      if (currentBrush) {
+        allActions.push(currentBrush);
       }
 
       applyActions(map.current, allActions);
