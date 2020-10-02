@@ -1,9 +1,10 @@
 import { Style } from "@mapbox/mapbox-sdk/services/styles";
 import classnames from "classnames";
-import React from "react";
+import { keyBy, mapValues } from "lodash";
+import React, { useEffect, useState } from "react";
 import useSWR from "swr";
 
-import { Map } from "~/components/Map";
+import { staticImage } from "~/lib/mapbox";
 import { useStore } from "~/lib/state";
 
 type StylesResponse = {
@@ -11,9 +12,30 @@ type StylesResponse = {
 };
 
 export const StyleSelector: React.FC = () => {
+  const [previews, setPreviews] = useState<Record<string, string>>({});
   const selectedStyle = useStore((store) => store.style);
   const dispatch = useStore((store) => store.dispatch);
   const { data } = useSWR<StylesResponse>("/api/styles");
+
+  useEffect(() => {
+    if (!data) {
+      return;
+    }
+
+    const { coordinates, zoom } = useStore.getState();
+
+    const stylesById = keyBy(data.styles, (style) => style.id);
+    const previews = mapValues(stylesById, (style) => {
+      return staticImage({
+        coordinates,
+        zoom,
+        style,
+        size: 256,
+      });
+    });
+
+    setPreviews(previews);
+  }, [data]);
 
   if (!data) {
     // @todo spinner
@@ -21,12 +43,12 @@ export const StyleSelector: React.FC = () => {
   }
 
   return (
-    <div className="bg-gray-900 text-white rounded shadow flex flex-col p-2 pt-1">
-      <div className="flex flex-row flex-wrap max-w-lg">
+    <div className="bg-gray-900 text-white rounded shadow flex flex-col p-1">
+      <div className="flex flex-row flex-wrap max-w-xl">
         {data.styles.map((style) => {
           const isSelectedStyle = selectedStyle?.id === style.id;
           const containerClasses = classnames({
-            "flex flex-col items-center p-2 mb-1 rounded font-medium cursor-pointer hover:bg-green-900 w-1/3": true,
+            "flex flex-col items-center p-2 rounded font-medium cursor-pointer hover:bg-green-900": true,
             "bg-green-700": isSelectedStyle,
           });
 
@@ -36,7 +58,7 @@ export const StyleSelector: React.FC = () => {
                 {style.name}
               </span>
               <div className="w-32 h-32 mt-1 border border-gray-700">
-                <Map disableInteractions disableSync style={style} />
+                {previews[style.id] && <img src={previews[style.id]} />}
               </div>
             </div>
           );

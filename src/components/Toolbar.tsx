@@ -25,7 +25,6 @@ export const Toolbar: React.FC = () => {
   const ref = useRef<HTMLInputElement>(null);
   const editor = useStore((store) => store.editor);
   const actions = useStore((store) => store.actions);
-  // const routes = useStore((store) => store.routes);
   const dispatch = useStore((store) => store.dispatch);
 
   useEffect(() => {

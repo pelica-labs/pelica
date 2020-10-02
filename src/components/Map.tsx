@@ -1,4 +1,3 @@
-import { Style } from "@mapbox/mapbox-sdk/services/styles";
 import { throttle } from "lodash";
 import mapboxgl, { LngLatBoundsLike, MapMouseEvent } from "mapbox-gl";
 import Head from "next/head";
@@ -10,13 +9,7 @@ import { styleToUrl } from "~/lib/mapbox";
 import { applySources } from "~/lib/sources";
 import { getState, useStore, useStoreSubscription } from "~/lib/state";
 
-type Props = {
-  style?: Style;
-  disableSync?: boolean;
-  disableInteractions?: boolean;
-};
-
-export const Map: React.FC<Props> = ({ style, disableInteractions = false, disableSync = false }) => {
+export const Map: React.FC = () => {
   const map = useRef<mapboxgl.Map>();
   const container = useRef<HTMLDivElement>(null);
   const dispatch = useStore((store) => store.dispatch);
@@ -34,12 +27,12 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
       throw new Error("Missing Mapbox public token");
     }
 
-    const { coordinates, zoom } = getState();
+    const { coordinates, zoom, style } = getState();
 
     map.current = new mapboxgl.Map({
       accessToken,
       container: container.current,
-      style: style ? styleToUrl(style) : "mapbox://styles/mapbox/streets-v11",
+      style: styleToUrl(style),
       center: [coordinates.longitude, coordinates.latitude],
       zoom,
       logoPosition: "bottom-right",
@@ -48,20 +41,13 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
     });
 
     map.current.on("load", ({ target: map }) => {
-      if (disableInteractions) {
-        map.dragPan.disable();
-        map.scrollZoom.disable();
-      }
+      applySources(map);
+      applyLayers(map);
 
-      if (!disableInteractions) {
+      map.on("styledata", () => {
         applySources(map);
         applyLayers(map);
-
-        map.on("styledata", () => {
-          applySources(map);
-          applyLayers(map);
-        });
-      }
+      });
     });
 
     return () => {
@@ -73,10 +59,6 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
    * Sync interactions
    */
   useEffect(() => {
-    if (disableInteractions) {
-      return;
-    }
-
     const onMoveEnd = (event: MapMouseEvent) => {
       const { lng, lat } = event.target.getCenter();
       const zoom = event.target.getZoom();
@@ -161,10 +143,6 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
   useStoreSubscription(
     (store) => store.coordinates,
     (coordinates) => {
-      if (!coordinates || disableSync) {
-        return;
-      }
-
       map.current?.flyTo({
         center: {
           lng: coordinates.longitude,
@@ -180,10 +158,6 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
   useStoreSubscription(
     (store) => store.zoom,
     (zoom) => {
-      if (!zoom || disableSync) {
-        return;
-      }
-
       map.current?.zoomTo(zoom);
     }
   );
@@ -194,7 +168,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
   useStoreSubscription(
     (store) => store.place,
     (place) => {
-      if (!place || disableSync) {
+      if (!place) {
         return;
       }
 
@@ -218,7 +192,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
   useStoreSubscription(
     (store) => store.style,
     (style) => {
-      if (!style || disableSync) {
+      if (!style) {
         return;
       }
 
@@ -271,7 +245,7 @@ export const Map: React.FC<Props> = ({ style, disableInteractions = false, disab
   useStoreSubscription(
     (store) => ({ editorMode: store.editor.mode, altKey: store.keyboard.altKey }),
     ({ editorMode, altKey }) => {
-      if (!map.current || disableInteractions) {
+      if (!map.current) {
         return null;
       }
 

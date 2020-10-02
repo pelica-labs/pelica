@@ -4,14 +4,14 @@ import { Style } from "@mapbox/mapbox-sdk/services/styles";
 import produce from "immer";
 import { chunk } from "lodash";
 import { useEffect } from "react";
-import create, { GetState, State, StateCreator, StateSelector, StateSliceListener } from "zustand";
+import create, { GetState, State, StateCreator, StateSelector } from "zustand";
 import { devtools } from "zustand/middleware";
 import shallow from "zustand/shallow";
 
 import { Action, BrushAction } from "~/lib/actions";
 import { Coordinates } from "~/lib/geometry";
 import { parseGpx } from "~/lib/gpx";
-import { mapboxMapMatching } from "~/lib/mapbox";
+import { defaultStyle, mapboxMapMatching } from "~/lib/mapbox";
 
 export type MapState = {
   coordinates: {
@@ -20,8 +20,9 @@ export type MapState = {
   };
   zoom: number;
 
+  style: Style;
+
   place: GeocodeFeature | null;
-  style: Style | null;
 
   editor: {
     strokeColor: string;
@@ -65,7 +66,7 @@ const initialState: MapState = {
   },
 
   place: null,
-  style: null,
+  style: defaultStyle as Style,
 
   actions: [],
   currentBrush: null,
@@ -378,20 +379,17 @@ export const useStoreSubscription = <T extends MapState, StateSlice>(
   listener: (state: StateSlice) => void
 ): void => {
   return useEffect(() => {
-    let listenerUnsubscription: () => void | undefined;
-
-    const subscriptionUnsubscription = useStore.subscribe(
+    return useStore.subscribe(
       (state) => {
-        return (listenerUnsubscription = listener(state));
+        if (state) {
+          listener(state);
+        }
       },
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       selector,
       shallow
     );
-
-    return () => {
-      subscriptionUnsubscription();
-      listenerUnsubscription?.();
-    };
   }, []);
 };
 

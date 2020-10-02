@@ -1,5 +1,7 @@
-import MapboxStyles, { Style } from "@mapbox/mapbox-sdk/services/styles";
+import MapboxStyles from "@mapbox/mapbox-sdk/services/styles";
 import { NextApiHandler } from "next";
+
+import { defaultStyle } from "~/lib/mapbox";
 
 const accessToken = process.env.MAPBOX_SECRET_TOKEN;
 if (!accessToken) {
@@ -7,12 +9,6 @@ if (!accessToken) {
 }
 
 const mapboxStyles = MapboxStyles({ accessToken });
-
-const defaultStyle: Partial<Style> = {
-  id: "streets-v11",
-  owner: "mapbox",
-  name: "Default",
-};
 
 const Styles: NextApiHandler = async (req, res) => {
   const styles = await mapboxStyles.listStyles({}).send();
