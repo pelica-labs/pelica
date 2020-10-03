@@ -29,7 +29,7 @@ export type MapState = {
     strokeWidth: number;
     mode: EditorMode;
     pane: EditorPane | null;
-    matchMap: boolean;
+    smartMatching: boolean;
   };
 
   traceStart: Coordinates | null;
@@ -60,7 +60,7 @@ const initialState: MapState = {
     strokeWidth: 2,
     mode: "move",
     pane: null,
-    matchMap: true,
+    smartMatching: true,
   },
 
   place: null,
@@ -127,9 +127,9 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
         });
       },
 
-      toggleMatchMap() {
+      toggleSmartMatching() {
         set((state) => {
-          state.editor.matchMap = !state.editor.matchMap;
+          state.editor.smartMatching = !state.editor.smartMatching;
         });
       },
 
@@ -163,7 +163,7 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
 
       async endBrush() {
         const currentAction = get().currentBrush;
-        const matchMap = get().editor.matchMap;
+        const matchMap = get().editor.smartMatching;
 
         if (currentAction?.name !== "brush") {
           return;

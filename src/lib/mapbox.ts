@@ -21,7 +21,7 @@ export const mapboxMapMatching = MapboxMapMatching(config);
 export const defaultStyle: Partial<Style> = {
   id: "streets-v11",
   owner: "mapbox",
-  name: "Default",
+  name: "default",
 };
 
 export const styleToUrl = (style: Style): string => {

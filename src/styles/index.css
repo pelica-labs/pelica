@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "../../node_modules/rc-slider/assets/index.css";
+
 html, body, #__next {
   height: 100%;
 }

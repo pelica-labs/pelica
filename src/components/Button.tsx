@@ -4,14 +4,22 @@ import React, { ButtonHTMLAttributes } from "react";
 type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
   active?: boolean;
   color?: string;
+  rounded?: boolean;
 };
 
-export const Button: React.FC<Props> = ({ active = false, color = "green", className, ...attributes }) => {
+export const Button: React.FC<Props> = ({
+  rounded = true,
+  active = false,
+  color = "green",
+  className,
+  ...attributes
+}) => {
   const buttonClasses = classnames({
-    "flex items-center py-1 px-2 rounded shadow": true,
+    "flex items-center py-1 px-2 shadow": true,
     ...(className && {
       [className]: true,
     }),
+    "rounded": rounded,
     [`hover:bg-${color}-900`]: !active && !attributes.disabled,
     [`bg-${color}-700`]: active,
     ["opacity-50 cursor-auto"]: attributes.disabled,

@@ -1,200 +1,235 @@
 import React, { useRef } from "react";
-import { SketchPicker as ColorPicker } from "react-color";
 
 import { Button } from "~/components/Button";
+import { ColorPicker } from "~/components/ColorPicker";
 import {
   CheckboxIcon,
   DownloadIcon,
   EmptyCheckboxIcon,
   EraserIcon,
   FireIcon,
-  HandIcon,
-  LineWidthIcon,
-  PaintIcon,
-  PinIcon,
-  RulerCompassIcon,
   ShareIcon,
   UndoIcon,
   UploadIcon,
 } from "~/components/Icon";
-import { StrokeWidthPicker } from "~/components/StrokeWidthPicker";
 import { StyleSelector } from "~/components/StyleSelector";
+import { WidthSlider } from "~/components/WidthSlider";
 import { useStore } from "~/lib/state";
 
 export const Sidebar: React.FC = () => {
   const ref = useRef<HTMLInputElement>(null);
+  const style = useStore((store) => store.style);
   const editor = useStore((store) => store.editor);
   const actions = useStore((store) => store.actions);
   const dispatch = useStore((store) => store.dispatch);
 
+  const displayColorPicker = ["brush", "trace", "pin"].includes(editor.mode);
+  const displayWidthPicker = ["brush", "trace", "pin"].includes(editor.mode);
+  const displaySmartMatching = ["brush", "trace"].includes(editor.mode);
+
   return (
-    <div className="bg-gray-900 text-gray-200 w-64 h-full">
-      <Button
-        className="bg-gray-900 text-gray-200"
-        disabled={!actions.length}
-        onClick={() => {
-          dispatch.undo();
-        }}
-      >
-        <UndoIcon className="w-4 h-4" />
-        <span className="ml-2 text-sm">Undo</span>
-      </Button>
-
-      <Button
-        active={editor.pane === "styles"}
-        className="bg-gray-900 text-gray-200 mt-2"
-        onClick={() => {
-          dispatch.togglePane("styles");
-        }}
-      >
-        <FireIcon className="w-4 h-4" />
-        <span className="ml-2 text-sm">Styles</span>
-      </Button>
-
-      <Button
-        active={editor.pane === "colors"}
-        className="bg-gray-900 text-gray-200 mt-2"
-        onClick={() => {
-          dispatch.togglePane("colors");
-        }}
-      >
-        <div className="w-4 h-4 rounded-full border border-gray-200" style={{ backgroundColor: editor.strokeColor }} />
-        <span className="ml-2 text-sm">Color</span>
-      </Button>
-
-      <Button
-        active={editor.pane === "strokeWidth"}
-        className="bg-gray-900 text-gray-200 mt-2"
-        onClick={() => {
-          dispatch.togglePane("strokeWidth");
-        }}
-      >
-        <LineWidthIcon className="w-4 h-4" />
-        <span className="ml-2 text-sm">Width</span>
-      </Button>
-
-      <Button
-        active={editor.mode === "move"}
-        className="bg-gray-900 text-gray-200 mt-2"
-        onClick={() => {
-          dispatch.setEditorMode("move");
-        }}
-      >
-        <HandIcon className="w-4 h-4" />
-        <span className="ml-2 text-sm">Move</span>
-      </Button>
-
-      <Button
-        active={editor.mode === "brush"}
-        className="bg-gray-900 text-gray-200 mt-2"
-        onClick={() => {
-          dispatch.setEditorMode("brush");
-        }}
-      >
-        <PaintIcon className="w-4 h-4" />
-        <span className="ml-2 text-sm">Free drawing</span>
-      </Button>
-
-      <Button
-        active={editor.mode === "trace"}
-        className="bg-gray-900 text-gray-200 mt-2"
-        onClick={() => {
-          dispatch.setEditorMode("trace");
-        }}
-      >
-        <RulerCompassIcon className="w-4 h-4" />
-        <span className="ml-2 text-sm">Trace</span>
-      </Button>
-
-      <Button
-        active={editor.mode === "pin"}
-        className="bg-gray-900 text-gray-200 mt-2"
-        onClick={() => {
-          dispatch.setEditorMode("pin");
-        }}
-      >
-        <PinIcon className="w-4 h-4" />
-        <span className="ml-2 text-sm">Pin</span>
-      </Button>
-
-      <Button
-        className="bg-gray-900 text-gray-200 mt-2"
-        onClick={() => {
-          dispatch.clear();
-        }}
-      >
-        <EraserIcon className="w-4 h-4" />
-        <span className="ml-2 text-sm">Clear</span>
-      </Button>
-
-      <Button
-        className="bg-gray-900 text-gray-200 mt-2"
-        onClick={() => {
-          dispatch.downloadImage();
-        }}
-      >
-        <ShareIcon className="w-4 h-4" />
-        <span className="ml-2 text-sm">Export</span>
-      </Button>
-
-      <Button
-        className="bg-gray-900 text-gray-200 mt-2"
-        onClick={() => {
-          dispatch.toggleMatchMap();
-        }}
-      >
-        {editor.matchMap ? <CheckboxIcon className="w-4 h-4" /> : <EmptyCheckboxIcon className="w-4 h-4" />}
-        <span className="ml-2 text-sm">Match map</span>
-      </Button>
-
-      <Button
-        className="bg-gray-900 text-gray-200 mt-2"
-        onClick={() => {
-          ref.current?.click();
-        }}
-      >
-        <UploadIcon className="w-4 h-4" />
-        <input
-          ref={ref}
-          className="hidden"
-          type="file"
-          onChange={(event) => {
-            if (event.target.files?.length) {
-              dispatch.importGpx(event.target.files[0]);
-            }
-          }}
-        />
-        <span className="ml-2 text-sm">Upload GPX</span>
-      </Button>
-
-      <Button
-        className="bg-gray-900 text-gray-200 mt-2"
-        disabled={!actions.length}
-        onClick={() => {
-          dispatch.downloadGpx();
-        }}
-      >
-        <DownloadIcon className="w-4 h-4" />
-        <span className="ml-2 text-sm">Download GPX</span>
-      </Button>
-
-      {!!editor.pane && (
-        <div className="mr-2 overflow-y-auto rounded" style={{ maxHeight: "calc(100vh - 1rem)" }}>
-          {editor.pane === "styles" && <StyleSelector />}
-
-          {editor.pane === "colors" && (
-            <ColorPicker
-              color={editor.strokeColor}
-              styles={{ default: { picker: { backgroundColor: "rgba(26, 32, 44)" } } }}
-              onChangeComplete={(event) => {
-                dispatch.setStrokeColor(event.hex);
-              }}
-            />
-          )}
-
-          {editor.pane === "strokeWidth" && <StrokeWidthPicker />}
+    <div className="relative flex items-end">
+      {editor.pane === "styles" && (
+        <div
+          className="fixed right-0 overflow-y-auto rounded bg-transparent m-1"
+          style={{ maxHeight: "calc(100vh - 1rem)", right: 256 }}
+        >
+          <StyleSelector />
         </div>
       )}
+
+      <div className="flex flex-col justify-between bg-gray-900 text-gray-200 w-64 h-full pb-1">
+        <div>
+          <div className="flex justify-between items-center px-3 h-8 py-2 bg-gray-800">
+            <span className="text-xs uppercase text-gray-300 font-light tracking-wide leading-none">Design</span>
+            <div className="flex">
+              <Button
+                className="bg-gray-900 text-gray-200"
+                disabled={!actions.length}
+                onClick={() => {
+                  dispatch.undo();
+                }}
+              >
+                <UndoIcon className="w-3 h-3" />
+              </Button>
+              <Button
+                className="bg-gray-900 text-gray-200 ml-2"
+                onClick={() => {
+                  dispatch.clear();
+                }}
+              >
+                <EraserIcon className="w-3 h-3" />
+              </Button>
+            </div>
+          </div>
+
+          <div className="flex justify-between items-center border-t border-b border-gray-700">
+            <Button
+              active={editor.mode === "move"}
+              className="bg-gray-900 text-gray-200 py-2 flex-1 justify-center"
+              rounded={false}
+              onClick={() => {
+                dispatch.setEditorMode("move");
+              }}
+            >
+              <span className="text-xs">Move</span>
+            </Button>
+
+            <Button
+              active={editor.mode === "brush"}
+              className="bg-gray-900 text-gray-200 py-2 flex-1 justify-center"
+              rounded={false}
+              onClick={() => {
+                dispatch.setEditorMode("brush");
+              }}
+            >
+              <span className="text-xs">Brush</span>
+            </Button>
+
+            <Button
+              active={editor.mode === "trace"}
+              className="bg-gray-900 text-gray-200 py-2 flex-1 justify-center"
+              rounded={false}
+              onClick={() => {
+                dispatch.setEditorMode("trace");
+              }}
+            >
+              <span className="text-xs">Trace</span>
+            </Button>
+
+            <Button
+              active={editor.mode === "pin"}
+              className="bg-gray-900 text-gray-200 py-2 flex-1 justify-center"
+              rounded={false}
+              onClick={() => {
+                dispatch.setEditorMode("pin");
+              }}
+            >
+              <span className="text-xs">Pin</span>
+            </Button>
+          </div>
+
+          {displayColorPicker && (
+            <div className="mt-4 px-2 pb-2 mb-2 border-b border-gray-700">
+              <div className="flex items-center px-1">
+                <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Color</span>
+                <div
+                  className="ml-2 w-3 h-3 rounded-full border border-gray-200"
+                  style={{ backgroundColor: editor.strokeColor }}
+                />
+              </div>
+              <div className="mt-4">
+                <ColorPicker />
+              </div>
+            </div>
+          )}
+
+          {displayWidthPicker && (
+            <div className="mt-4 px-3 pb-3 mb-2 border-b border-gray-700">
+              <div className="flex items-center">
+                <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Width</span>
+                <div className="ml-2 flex justify-center items-center w-3 h-3 rounded-full">
+                  <div
+                    className="rounded-full bg-gray-200"
+                    style={{ width: editor.strokeWidth, height: editor.strokeWidth }}
+                  />
+                </div>
+              </div>
+              <div className="mt-4 px-1">
+                <WidthSlider />
+              </div>
+            </div>
+          )}
+
+          {displaySmartMatching && (
+            <div className="mt-2 px-3 pb-2 mb-2 border-b border-gray-700">
+              <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Routes</span>
+
+              <Button
+                className="bg-gray-900 text-gray-200 mt-2"
+                onClick={() => {
+                  dispatch.toggleSmartMatching();
+                }}
+              >
+                {editor.smartMatching ? (
+                  <CheckboxIcon className="w-3 h-3" />
+                ) : (
+                  <EmptyCheckboxIcon className="w-3 h-3" />
+                )}
+                <span className="ml-2 text-xs">Smart matching</span>
+              </Button>
+            </div>
+          )}
+        </div>
+
+        <div>
+          <div className="flex justify-between items-center px-3 py-2 h-8 bg-gray-800">
+            <span className="text-xs uppercase text-gray-300 font-light tracking-wide leading-none">Map</span>
+          </div>
+          <div className="mt-1 px-1">
+            <Button
+              active={editor.pane === "styles"}
+              className="bg-gray-900 text-gray-200"
+              onClick={() => {
+                dispatch.togglePane("styles");
+              }}
+            >
+              <FireIcon className="w-3 h-3" />
+              <span className="ml-2 text-xs">
+                Style<span className="text-gray-500">:</span> {style.owner} <span className="text-gray-500">/</span>{" "}
+                {style.name}
+              </span>
+            </Button>
+          </div>
+
+          <div className="flex justify-between items-center mt-8 bg-gray-800 py-2 px-3 h-8">
+            <span className="text-xs uppercase text-gray-300 font-light tracking-wide leading-none">Share</span>
+          </div>
+
+          <div className="px-1">
+            <Button
+              className="bg-gray-900 text-gray-200 mt-1"
+              onClick={() => {
+                dispatch.downloadImage();
+              }}
+            >
+              <ShareIcon className="w-3 h-3" />
+              <span className="ml-2 text-xs">Download</span>
+            </Button>
+
+            <Button
+              className="bg-gray-900 text-gray-200 mt-1"
+              onClick={() => {
+                ref.current?.click();
+              }}
+            >
+              <UploadIcon className="w-3 h-3" />
+              <input
+                ref={ref}
+                className="hidden"
+                type="file"
+                onChange={(event) => {
+                  if (event.target.files?.length) {
+                    dispatch.importGpx(event.target.files[0]);
+                  }
+                }}
+              />
+              <span className="ml-2 text-xs">Upload GPX</span>
+            </Button>
+
+            <Button
+              className="bg-gray-900 text-gray-200 mt-1"
+              disabled={!actions.length}
+              onClick={() => {
+                dispatch.downloadGpx();
+              }}
+            >
+              <DownloadIcon className="w-3 h-3" />
+              <span className="ml-2 text-xs">Download GPX</span>
+            </Button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
