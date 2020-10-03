@@ -14,7 +14,6 @@ export const PlaceAutocomplete: React.FC = () => {
   const [places, setPlaces] = useState<GeocodeFeature[]>([]);
   const [isFocused, setIsFocused] = useState(false);
   const [selectionIndex, setSelectionIndex] = useState(0);
-  const [isHoveringResults, setIsHoveringResults] = useState(false);
 
   /**
    * Keyboard shortcut
@@ -57,11 +56,14 @@ export const PlaceAutocomplete: React.FC = () => {
    */
   const onFocus = () => {
     setIsFocused(true);
+    input.current?.focus();
   };
 
-  const onBlur = (event: React.FocusEvent) => {
+  const onBlur = (event: React.FocusEvent | React.KeyboardEvent) => {
     event.preventDefault();
     event.stopPropagation();
+
+    input.current?.blur();
 
     setTimeout(() => {
       setIsFocused(false);
@@ -72,6 +74,11 @@ export const PlaceAutocomplete: React.FC = () => {
    * Handles keyboard navigation
    */
   const onKeyUp = (event: React.KeyboardEvent) => {
+    // escape
+    if (event.keyCode === 27) {
+      onBlur(event);
+    }
+
     if (!places.length) {
       return;
     }
@@ -130,13 +137,19 @@ export const PlaceAutocomplete: React.FC = () => {
     input.current?.focus();
   };
 
+  const containerClasses = classnames({
+    "relative bg-gray-900 text-gray-200 shadow flex flex-col transition-all duration-100 ease-in-out cursor-pointer": true,
+    "w-64 rounded": isFocused || search,
+    "w-12 rounded-full ": !(isFocused || search),
+  });
+
   return (
-    <div className="relative bg-gray-900 text-gray-200 rounded shadow w-64 flex flex-col">
-      {!isFocused && !search.length && <SearchIcon className="absolute left-0 ml-3 mt-4 text-gray-600 w-4 h-4" />}
+    <div className={containerClasses} onClick={() => onFocus()}>
+      {!isFocused && !search.length && <SearchIcon className="absolute left-0 ml-3 mt-3 text-gray-600 w-6 h-6" />}
 
       <input
         ref={input}
-        className="p-2 bg-gray-900 text-gray-200 w-full outline-none border-2 h-12 border-transparent rounded-sm focus:border-green-700"
+        className="p-2 bg-transparent text-gray-200 w-full outline-none border-2 h-12 border-transparent cursor-pointer rounded-sm focus:border-green-700"
         type="text"
         value={search}
         onBlur={(event) => onBlur(event)}
@@ -155,16 +168,12 @@ export const PlaceAutocomplete: React.FC = () => {
       )}
 
       {isFocused && (
-        <ul
-          className="flex flex-col text-sm"
-          onMouseEnter={() => setIsHoveringResults(true)}
-          onMouseLeave={() => setIsHoveringResults(false)}
-        >
+        <ul className="flex flex-col text-sm">
           {places.map((place, index) => {
             const isKeyboardSelected = selectionIndex === index;
             const linkClasses = classnames({
               "block px-2 py-2 cursor-pointer border-b border-gray-700 hover:bg-green-900": true,
-              "bg-green-900": !isHoveringResults && isKeyboardSelected,
+              "bg-green-900": isKeyboardSelected,
             });
 
             return (
