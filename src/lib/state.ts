@@ -148,7 +148,6 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
         const editor = get().editor;
 
         set((state) => {
-          state.editor.isPainting = true;
           state.currentBrush = {
             name: "brush",
             line: {
@@ -185,7 +184,6 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
         }
 
         set((state) => {
-          state.editor.isPainting = false;
           state.currentBrush = null;
         });
 

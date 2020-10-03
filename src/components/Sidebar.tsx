@@ -18,7 +18,6 @@ import { useStore } from "~/lib/state";
 import { theme } from "~/lib/tailwind";
 
 const computePanelOffset = (screenWidth: number) => {
-  console.log(theme);
   if (screenWidth <= parseInt(theme.screens.md)) {
     return theme.width[32];
   }
