@@ -56,7 +56,7 @@ export const Sidebar: React.FC = () => {
         <div>
           <div className="flex justify-between items-center px-3 h-8 py-2 bg-gray-800">
             <span className="text-xs uppercase text-gray-300 font-light tracking-wide leading-none">Design</span>
-            <div className="flex">
+            <div className="flex ml-2">
               <Button
                 className="bg-gray-900 text-gray-200"
                 disabled={!actions.length}
@@ -64,7 +64,7 @@ export const Sidebar: React.FC = () => {
                   dispatch.undo();
                 }}
               >
-                <UndoIcon className="w-3 h-3" />
+                <UndoIcon className="w-2 h-2 md:w-3 md:h-3" />
               </Button>
               <Button
                 className="bg-gray-900 text-gray-200 ml-2"
@@ -72,7 +72,7 @@ export const Sidebar: React.FC = () => {
                   dispatch.clear();
                 }}
               >
-                <EraserIcon className="w-3 h-3" />
+                <EraserIcon className="w-2 h-2 md:w-3 md:h-3" />
               </Button>
             </div>
           </div>
