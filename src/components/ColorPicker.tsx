@@ -17,7 +17,7 @@ export const ColorPicker: React.FC = () => {
           swatch: { width: 16, height: 16 },
           hash: { display: "none" },
           input: { display: "none" },
-          body: { padding: 0, display: "flex", alignItems: "center", marginLeft: 6 },
+          body: { padding: 0, display: "flex", alignItems: "center", flexWrap: "wrap", marginLeft: 6 },
         },
       }}
       triangle={"hide"}

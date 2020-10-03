@@ -12,6 +12,7 @@ import { Action, BrushAction } from "~/lib/actions";
 import { Coordinates } from "~/lib/geometry";
 import { parseGpx } from "~/lib/gpx";
 import { defaultStyle, mapboxMapMatching } from "~/lib/mapbox";
+import { isServer } from "~/lib/ssr";
 
 export type MapState = {
   coordinates: {
@@ -41,6 +42,11 @@ export type MapState = {
     shiftKey: boolean;
     altKey: boolean;
     metaKey: boolean;
+  };
+
+  screen: {
+    width: number;
+    height: number;
   };
 };
 
@@ -75,6 +81,11 @@ const initialState: MapState = {
     shiftKey: false,
     altKey: false,
     metaKey: false,
+  },
+
+  screen: {
+    width: isServer ? 0 : window.innerWidth,
+    height: isServer ? 0 : window.innerHeight,
   },
 };
 
@@ -356,6 +367,13 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
       updateKeyboard(event: MapState["keyboard"]) {
         set((state) => {
           state.keyboard = event;
+        });
+      },
+
+      updateScreen(width: number, height: number) {
+        set((state) => {
+          state.screen.width = width;
+          state.screen.height = height;
         });
       },
     },

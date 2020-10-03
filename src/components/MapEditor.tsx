@@ -4,9 +4,11 @@ import { Map } from "~/components/Map";
 import { PlaceAutocomplete } from "~/components/PlaceAutocomplete";
 import { Sidebar } from "~/components/Sidebar";
 import { useKeyboard } from "~/lib/keyboard";
+import { useScreen } from "~/lib/screen";
 
 export const MapEditor: React.FC = () => {
   useKeyboard();
+  useScreen();
 
   return (
     <div className="flex h-full">

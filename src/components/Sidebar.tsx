@@ -15,6 +15,20 @@ import {
 import { StyleSelector } from "~/components/StyleSelector";
 import { WidthSlider } from "~/components/WidthSlider";
 import { useStore } from "~/lib/state";
+import { theme } from "~/lib/tailwind";
+
+const computePanelOffset = (screenWidth: number) => {
+  console.log(theme);
+  if (screenWidth <= parseInt(theme.screens.md)) {
+    return theme.width[32];
+  }
+
+  if (screenWidth <= parseInt(theme.screens.lg)) {
+    return theme.width[48];
+  }
+
+  return theme.width[64];
+};
 
 export const Sidebar: React.FC = () => {
   const ref = useRef<HTMLInputElement>(null);
@@ -22,6 +36,7 @@ export const Sidebar: React.FC = () => {
   const editor = useStore((store) => store.editor);
   const actions = useStore((store) => store.actions);
   const dispatch = useStore((store) => store.dispatch);
+  const screenWidth = useStore((store) => store.screen.width);
 
   const displayColorPicker = ["brush", "trace", "pin"].includes(editor.mode);
   const displayWidthPicker = ["brush", "trace", "pin"].includes(editor.mode);
@@ -32,13 +47,13 @@ export const Sidebar: React.FC = () => {
       {editor.pane === "styles" && (
         <div
           className="fixed right-0 overflow-y-auto rounded bg-transparent m-1"
-          style={{ maxHeight: "calc(100vh - 1rem)", right: 256 }}
+          style={{ maxHeight: "calc(100vh - 1rem)", right: computePanelOffset(screenWidth) }}
         >
           <StyleSelector />
         </div>
       )}
 
-      <div className="flex flex-col justify-between bg-gray-900 text-gray-200 w-64 h-full pb-1">
+      <div className="flex flex-col justify-between bg-gray-900 text-gray-200 w-32 md:w-48 lg:w-64 h-full pb-1">
         <div>
           <div className="flex justify-between items-center px-3 h-8 py-2 bg-gray-800">
             <span className="text-xs uppercase text-gray-300 font-light tracking-wide leading-none">Design</span>
@@ -63,7 +78,7 @@ export const Sidebar: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex justify-between items-center border-t border-b border-gray-700">
+          <div className="flex justify-between items-center flex-wrap border-t border-b border-gray-700">
             <Button
               active={editor.mode === "move"}
               className="bg-gray-900 text-gray-200 py-2 flex-1 justify-center"
@@ -175,7 +190,7 @@ export const Sidebar: React.FC = () => {
               }}
             >
               <FireIcon className="w-3 h-3" />
-              <span className="ml-2 text-xs">
+              <span className="ml-2 text-xs text-left">
                 Style<span className="text-gray-500">:</span> {style.owner} <span className="text-gray-500">/</span>{" "}
                 {style.name}
               </span>
