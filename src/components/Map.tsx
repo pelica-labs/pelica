@@ -71,6 +71,10 @@ export const Map: React.FC = () => {
     }
   };
 
+  const onWindowBlur = () => {
+    onMouseUp();
+  };
+
   /**
    * Initialize map
    */
@@ -113,11 +117,16 @@ export const Map: React.FC = () => {
       map.on("styledata", () => {
         applySources(map);
         applyLayers(map);
+        applyActions(map, getState().actions);
       });
+
+      window.addEventListener("blur", onWindowBlur, false);
     });
 
     return () => {
       map.current?.remove();
+
+      window.removeEventListener("blur", onWindowBlur, false);
     };
   }, []);
 
