@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 
 import { Button } from "~/components/Button";
 import { ColorPicker } from "~/components/ColorPicker";
@@ -40,6 +40,24 @@ export const Sidebar: React.FC = () => {
   const displayColorPicker = ["brush", "trace", "pin"].includes(editor.mode);
   const displayWidthPicker = ["brush", "trace", "pin"].includes(editor.mode);
   const displaySmartMatching = ["brush", "trace"].includes(editor.mode);
+
+  /**
+   * Handle undo
+   */
+  useEffect(() => {
+    const onKeyDown = (event: React.KeyboardEvent) => {
+      if (event.metaKey && event.keyCode === 90) {
+        event.preventDefault();
+        dispatch.undo();
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown, false);
+
+    return () => {
+      window.removeEventListener("keydown", onKeyDown, false);
+    };
+  });
 
   return (
     <div className="relative flex items-end">
