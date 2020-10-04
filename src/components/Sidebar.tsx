@@ -259,47 +259,54 @@ export const Sidebar: React.FC = () => {
             <span className="text-xs uppercase text-gray-300 font-light tracking-wide leading-none">Share</span>
           </div>
 
-          <div className="px-1">
-            <Button
-              className="bg-gray-900 text-gray-200 mt-1"
-              onClick={() => {
-                dispatch.downloadImage();
-              }}
-            >
-              <ShareIcon className="w-3 h-3" />
-              <span className="ml-2 text-xs">Download</span>
-            </Button>
+          <div className="px-1 mt-1">
+            <div className="px-2 flex justify-between items-center">
+              <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Export</span>
 
-            <Button
-              className="bg-gray-900 text-gray-200 mt-1"
-              onClick={() => {
-                fileInput.current?.click();
-              }}
-            >
-              <UploadIcon className="w-3 h-3" />
-              <input
-                ref={fileInput}
-                className="hidden"
-                type="file"
-                onChange={(event) => {
-                  if (event.target.files?.length) {
-                    dispatch.importGpx(event.target.files[0]);
-                  }
+              <div className="flex items-center ml-2">
+                <Button
+                  className="bg-gray-900 text-xs"
+                  onClick={() => {
+                    dispatch.downloadImage();
+                  }}
+                >
+                  Image
+                </Button>
+
+                <span className="text-gray-500 mx-1 text-xs">/</span>
+
+                <Button
+                  className="bg-gray-900 text-xs"
+                  onClick={() => {
+                    dispatch.downloadGpx();
+                  }}
+                >
+                  GPX
+                </Button>
+              </div>
+            </div>
+
+            <div className="px-2 flex justify-between items-center">
+              <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Import</span>
+              <Button
+                className="bg-gray-900 text-gray-200 mt-1"
+                onClick={() => {
+                  fileInput.current?.click();
                 }}
-              />
-              <span className="ml-2 text-xs">Upload GPX</span>
-            </Button>
-
-            <Button
-              className="bg-gray-900 text-gray-200 mt-1"
-              disabled={!actions.length}
-              onClick={() => {
-                dispatch.downloadGpx();
-              }}
-            >
-              <DownloadIcon className="w-3 h-3" />
-              <span className="ml-2 text-xs">Download GPX</span>
-            </Button>
+              >
+                <input
+                  ref={fileInput}
+                  className="hidden"
+                  type="file"
+                  onChange={(event) => {
+                    if (event.target.files?.length) {
+                      dispatch.importGpx(event.target.files[0]);
+                    }
+                  }}
+                />
+                <span className="text-xs">GPX</span>
+              </Button>
+            </div>
           </div>
         </div>
       </div>

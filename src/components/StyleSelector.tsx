@@ -4,6 +4,7 @@ import { keyBy, mapValues } from "lodash";
 import React, { useEffect, useState } from "react";
 import useSWR from "swr";
 
+import { StylePreview } from "~/components/StylePreview";
 import { staticImage } from "~/lib/mapbox";
 import { useStore } from "~/lib/state";
 
@@ -57,9 +58,7 @@ export const StyleSelector: React.FC = () => {
               <span className="text-xs uppercase text-gray-200 w-32 inline-flex overflow-x-hidden whitespace-no-wrap">
                 {style.name}
               </span>
-              <div className="w-32 h-32 mt-1 border border-gray-700">
-                {previews[style.id] && <img src={previews[style.id]} />}
-              </div>
+              <StylePreview src={previews[style.id]} />
             </div>
           );
         })}
