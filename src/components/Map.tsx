@@ -40,8 +40,10 @@ export const Map: React.FC = () => {
   const onMoveEnd = (event: MapMouseEvent) => {
     const { lng, lat } = event.target.getCenter();
     const zoom = event.target.getZoom();
+    const bearing = event.target.getBearing();
+    const pitch = event.target.getPitch();
 
-    dispatch.move(lat, lng, zoom);
+    dispatch.move(lat, lng, zoom, bearing, pitch);
   };
 
   const onMouseMove = throttle((event: MapMouseEvent) => {
@@ -111,7 +113,7 @@ export const Map: React.FC = () => {
       throw new Error("Missing Mapbox public token");
     }
 
-    const { coordinates, zoom, style } = getState();
+    const { coordinates, zoom, style, bearing, pitch } = getState();
 
     map.current = new mapboxgl.Map({
       accessToken,
@@ -119,6 +121,8 @@ export const Map: React.FC = () => {
       style: styleToUrl(style),
       center: [coordinates.longitude, coordinates.latitude],
       zoom,
+      bearing,
+      pitch,
       logoPosition: "bottom-right",
       attributionControl: false,
       preserveDrawingBuffer: true,
@@ -175,6 +179,26 @@ export const Map: React.FC = () => {
     (store) => store.zoom,
     (zoom) => {
       map.current?.zoomTo(zoom);
+    }
+  );
+
+  /**
+   * Sync bearing
+   */
+  useStoreSubscription(
+    (store) => store.bearing,
+    (bearing) => {
+      map.current?.setBearing(bearing);
+    }
+  );
+
+  /**
+   * Sync pitch
+   */
+  useStoreSubscription(
+    (store) => store.pitch,
+    (pitch) => {
+      map.current?.setPitch(pitch);
     }
   );
 

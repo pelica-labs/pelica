@@ -23,13 +23,15 @@ export const StyleSelector: React.FC = () => {
       return;
     }
 
-    const { coordinates, zoom } = useStore.getState();
+    const { coordinates, zoom, bearing, pitch } = useStore.getState();
 
     const stylesById = keyBy(data.styles, (style) => style.id);
     const previews = mapValues(stylesById, (style) => {
       return staticImage({
         coordinates,
         zoom,
+        bearing,
+        pitch,
         style,
         size: 256,
       });

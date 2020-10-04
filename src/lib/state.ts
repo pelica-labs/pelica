@@ -20,6 +20,8 @@ export type MapState = {
     longitude: number;
   };
   zoom: number;
+  bearing: number;
+  pitch: number;
 
   style: Style;
   aspectRatio: AspectRatio;
@@ -65,6 +67,8 @@ const initialState: MapState = {
     longitude: -74.5,
   },
   zoom: 9,
+  bearing: 0,
+  pitch: 0,
 
   editor: {
     strokeColor: "#1824a2",
@@ -100,11 +104,13 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
     ...initialState,
 
     dispatch: {
-      move(latitude: number, longitude: number, zoom: number) {
+      move(latitude: number, longitude: number, zoom: number, bearing: number, pitch: number) {
         set((state) => {
           state.coordinates.latitude = latitude;
           state.coordinates.longitude = longitude;
           state.zoom = zoom;
+          state.bearing = bearing;
+          state.pitch = pitch;
         });
       },
 
@@ -117,6 +123,18 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
       setStyle(style: Style) {
         set((state) => {
           state.style = style;
+        });
+      },
+
+      resetOrientation() {
+        set((state) => {
+          state.bearing = 0;
+        });
+
+        setTimeout(() => {
+          set((state) => {
+            state.pitch = 0;
+          });
         });
       },
 
@@ -407,7 +425,7 @@ export const useStoreSubscription = <T extends MapState, StateSlice>(
   return useEffect(() => {
     return useStore.subscribe(
       (state) => {
-        if (state) {
+        if (state !== null) {
           listener(state);
         }
       },
