@@ -3,15 +3,7 @@ import React, { useEffect, useRef } from "react";
 import { AspectRatioSelector } from "~/components/AspectRatioSelector";
 import { Button } from "~/components/Button";
 import { ColorPicker } from "~/components/ColorPicker";
-import {
-  CheckboxIcon,
-  DownloadIcon,
-  EmptyCheckboxIcon,
-  EraserIcon,
-  ShareIcon,
-  UndoIcon,
-  UploadIcon,
-} from "~/components/Icon";
+import { CheckboxIcon, EmptyCheckboxIcon, EraserIcon, UndoIcon } from "~/components/Icon";
 import { StyleSelector } from "~/components/StyleSelector";
 import { WidthSlider } from "~/components/WidthSlider";
 import { useStore } from "~/lib/state";
@@ -103,7 +95,10 @@ export const Sidebar: React.FC = () => {
             <span className="text-xs uppercase text-gray-300 font-light tracking-wide leading-none">Design</span>
             <div className="flex ml-2">
               <Button
+                data-html
                 className="bg-gray-900 text-gray-200"
+                data-place="bottom"
+                data-tip="Undo last action"
                 disabled={!actions.length}
                 onClick={() => {
                   dispatch.undo();
@@ -113,6 +108,8 @@ export const Sidebar: React.FC = () => {
               </Button>
               <Button
                 className="bg-gray-900 text-gray-200 ml-2"
+                data-place="bottom"
+                data-tip="Erase all drawings"
                 onClick={() => {
                   dispatch.clear();
                 }}
@@ -263,7 +260,7 @@ export const Sidebar: React.FC = () => {
             <div className="px-2 flex justify-between items-center">
               <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Export</span>
 
-              <div className="flex items-center ml-2">
+              <div className="flex items-center flex-wrap ml-2">
                 <Button
                   className="bg-gray-900 text-xs"
                   onClick={() => {
@@ -273,7 +270,7 @@ export const Sidebar: React.FC = () => {
                   Image
                 </Button>
 
-                <span className="text-gray-500 mx-1 text-xs">/</span>
+                <span className="text-gray-500 mx-1 text-xs hidden md:block">/</span>
 
                 <Button
                   className="bg-gray-900 text-xs"

@@ -9,5 +9,12 @@ html, body, #__next {
 }
 
 button:focus {
-  outline: none !important
+  outline: none !important;
 }
+
+/* TODO: Find a way to use tailwind or something else instead of hard overriding styles */
+.__react_component_tooltip {
+  padding: 4px 8px !important;
+  opacity: 0.9 !important;
+}
+
