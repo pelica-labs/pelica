@@ -28,16 +28,18 @@ export const Map: React.FC = () => {
       return;
     }
 
+    event.preventDefault();
     dispatch.brush(event.lngLat.lat, event.lngLat.lng);
   }, 1000 / 30);
 
-  const onMouseDown = () => {
+  const onMouseDown = (event: MapMouseEvent) => {
     const { keyboard, editor } = getState();
 
     if (keyboard.altKey || editor.mode !== "brush") {
       return;
     }
 
+    event.preventDefault();
     dispatch.startBrush();
   };
 
