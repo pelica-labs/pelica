@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 
+import { AspectRatioSelector } from "~/components/AspectRatioSelector";
 import { Button } from "~/components/Button";
 import { ColorPicker } from "~/components/ColorPicker";
 import {
@@ -7,7 +8,6 @@ import {
   DownloadIcon,
   EmptyCheckboxIcon,
   EraserIcon,
-  FireIcon,
   ShareIcon,
   UndoIcon,
   UploadIcon,
@@ -30,9 +30,11 @@ const computePanelOffset = (screenWidth: number) => {
 };
 
 export const Sidebar: React.FC = () => {
-  const ref = useRef<HTMLInputElement>(null);
+  const fileInput = useRef<HTMLInputElement>(null);
+  const ratioSelector = useRef<HTMLSpanElement>(null);
   const style = useStore((store) => store.style);
   const editor = useStore((store) => store.editor);
+  const aspectRatio = useStore((store) => store.aspectRatio);
   const actions = useStore((store) => store.actions);
   const dispatch = useStore((store) => store.dispatch);
   const screenWidth = useStore((store) => store.screen.width);
@@ -60,13 +62,38 @@ export const Sidebar: React.FC = () => {
   });
 
   return (
-    <div className="relative flex items-end">
+    <div className="flex-grow relative flex items-end">
       {editor.pane === "styles" && (
         <div
-          className="fixed right-0 overflow-y-auto rounded bg-transparent m-1"
-          style={{ maxHeight: "calc(100vh - 1rem)", right: computePanelOffset(screenWidth) }}
+          className="fixed right-0 overflow-y-auto rounded bg-transparent m-1 z-10"
+          style={{
+            maxHeight: "calc(100vh - 1rem)",
+            right: computePanelOffset(screenWidth),
+          }}
         >
           <StyleSelector />
+        </div>
+      )}
+
+      {editor.pane === "aspectRatio" && (
+        <div
+          className="fixed right-0 overflow-y-auto rounded bg-transparent m-1 z-10"
+          style={{
+            maxHeight: "calc(100vh - 1rem)",
+            top: ratioSelector.current?.offsetTop,
+            right: computePanelOffset(screenWidth),
+          }}
+        >
+          <div
+            className="fixed right-0 overflow-y-auto rounded bg-transparent mr-1 z-10"
+            style={{
+              maxHeight: "calc(100vh - 1rem)",
+              top: ratioSelector.current?.offsetTop,
+              right: computePanelOffset(screenWidth),
+            }}
+          >
+            <AspectRatioSelector />
+          </div>
         </div>
       )}
 
@@ -201,15 +228,29 @@ export const Sidebar: React.FC = () => {
           <div className="mt-1 px-1">
             <Button
               active={editor.pane === "styles"}
-              className="bg-gray-900 text-gray-200"
+              className="bg-gray-900 text-gray-200 max-w-full"
               onClick={() => {
                 dispatch.togglePane("styles");
               }}
             >
-              <FireIcon className="w-3 h-3" />
-              <span className="ml-2 text-xs text-left">
-                Style<span className="text-gray-500">:</span> {style.owner} <span className="text-gray-500">/</span>{" "}
-                {style.name}
+              <span className="lg:w-24 text-left text-xs uppercase text-gray-500 font-light tracking-wide leading-none">
+                Style
+              </span>
+              <span className="ml-2 text-xs text-left truncate">{style.name}</span>
+            </Button>
+
+            <Button
+              active={editor.pane === "aspectRatio"}
+              className="bg-gray-900 text-gray-200"
+              onClick={() => {
+                dispatch.togglePane("aspectRatio");
+              }}
+            >
+              <span className="lg:w-24 text-left text-xs uppercase text-gray-500 font-light tracking-wide leading-none">
+                Aspect ratio
+              </span>
+              <span ref={ratioSelector} className="ml-2 text-xs text-left capitalize">
+                {aspectRatio}
               </span>
             </Button>
           </div>
@@ -232,12 +273,12 @@ export const Sidebar: React.FC = () => {
             <Button
               className="bg-gray-900 text-gray-200 mt-1"
               onClick={() => {
-                ref.current?.click();
+                fileInput.current?.click();
               }}
             >
               <UploadIcon className="w-3 h-3" />
               <input
-                ref={ref}
+                ref={fileInput}
                 className="hidden"
                 type="file"
                 onChange={(event) => {

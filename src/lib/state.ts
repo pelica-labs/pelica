@@ -22,6 +22,7 @@ export type MapState = {
   zoom: number;
 
   style: Style;
+  aspectRatio: AspectRatio;
 
   place: GeocodeFeature | null;
 
@@ -44,15 +45,19 @@ export type MapState = {
     metaKey: boolean;
   };
 
-  screen: {
-    width: number;
-    height: number;
-  };
+  screen: ScreenDimensions;
 };
 
 export type EditorMode = "move" | "trace" | "brush" | "pin";
 
-export type EditorPane = "styles" | "colors" | "strokeWidth";
+export type EditorPane = "styles" | "aspectRatio";
+
+export type AspectRatio = "square" | "fill";
+
+export type ScreenDimensions = {
+  width: number;
+  height: number;
+};
 
 const initialState: MapState = {
   coordinates: {
@@ -71,6 +76,7 @@ const initialState: MapState = {
 
   place: null,
   style: defaultStyle as Style,
+  aspectRatio: "fill",
 
   actions: [],
   currentBrush: null,
@@ -111,6 +117,12 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
       setStyle(style: Style) {
         set((state) => {
           state.style = style;
+        });
+      },
+
+      setAspectRatio(aspectRatio: AspectRatio) {
+        set((state) => {
+          state.aspectRatio = aspectRatio;
         });
       },
 

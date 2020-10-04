@@ -11,7 +11,7 @@ export const MapEditor: React.FC = () => {
   useScreen();
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-full justify-between">
       <Map />
       <Sidebar />
 

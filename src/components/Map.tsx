@@ -1,17 +1,40 @@
 import { throttle } from "lodash";
 import mapboxgl, { LngLatBoundsLike, MapMouseEvent } from "mapbox-gl";
 import Head from "next/head";
-import React, { useEffect, useRef } from "react";
+import React, { CSSProperties, useEffect, useRef } from "react";
 
 import { applyActions } from "~/lib/actions";
 import { applyLayers } from "~/lib/layers";
 import { styleToUrl } from "~/lib/mapbox";
 import { applySources } from "~/lib/sources";
-import { getState, useStore, useStoreSubscription } from "~/lib/state";
+import { AspectRatio, getState, ScreenDimensions, useStore, useStoreSubscription } from "~/lib/state";
+
+function computeMapDimensions(aspectRatio: AspectRatio, screen: ScreenDimensions): CSSProperties {
+  if (aspectRatio === "fill") {
+    return {
+      width: "100%",
+      height: "100%",
+      maxHeight: "none",
+      maxWidth: "none",
+    };
+  }
+
+  if (aspectRatio === "square") {
+    const smallestDimension = Math.min(screen.width, screen.height);
+
+    return {
+      maxWidth: `${smallestDimension}px`,
+      maxHeight: `${smallestDimension}px`,
+    };
+  }
+
+  throw new Error("Unknown aspect ratio");
+}
 
 export const Map: React.FC = () => {
   const map = useRef<mapboxgl.Map>();
   const container = useRef<HTMLDivElement>(null);
+  const wrapper = useRef<HTMLDivElement>(null);
   const dispatch = useStore((store) => store.dispatch);
 
   const onMoveEnd = (event: MapMouseEvent) => {
@@ -79,7 +102,7 @@ export const Map: React.FC = () => {
    * Initialize map
    */
   useEffect(() => {
-    if (!container.current) {
+    if (!wrapper.current) {
       return;
     }
 
@@ -92,7 +115,7 @@ export const Map: React.FC = () => {
 
     map.current = new mapboxgl.Map({
       accessToken,
-      container: container.current,
+      container: wrapper.current,
       style: styleToUrl(style),
       center: [coordinates.longitude, coordinates.latitude],
       zoom,
@@ -152,6 +175,34 @@ export const Map: React.FC = () => {
     (store) => store.zoom,
     (zoom) => {
       map.current?.zoomTo(zoom);
+    }
+  );
+
+  /**
+   * Handle aspect ratio & resize
+   */
+  useStoreSubscription(
+    (store) => ({ aspectRatio: store.aspectRatio, screen: store.screen }),
+    ({ aspectRatio }) => {
+      const canvas = map.current?.getCanvas();
+      if (!canvas || !wrapper.current || !container.current) {
+        return;
+      }
+
+      Object.assign(
+        wrapper.current.style,
+        computeMapDimensions(aspectRatio, {
+          width: container.current.clientWidth,
+          height: container.current.clientHeight,
+        })
+      );
+
+      canvas.style.width = "100%";
+      canvas.style.height = "100%";
+
+      setTimeout(() => {
+        map.current?.resize();
+      });
     }
   );
 
@@ -263,7 +314,9 @@ export const Map: React.FC = () => {
       <Head>
         <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
       </Head>
-      <div ref={container} className="w-full h-full" />
+      <div ref={container} className="flex justify-center items-center w-full h-full bg-gray-700">
+        <div ref={wrapper} className="w-full h-full" />
+      </div>
     </>
   );
 };
