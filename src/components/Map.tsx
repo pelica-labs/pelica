@@ -103,6 +103,9 @@ export const Map: React.FC = () => {
       map.on("mousemove", onMouseMove);
       map.on("mousedown", onMouseDown);
       map.on("mouseup", onMouseUp);
+      map.on("touchmove", onMouseMove);
+      map.on("touchstart", onMouseDown);
+      map.on("touchend", onMouseUp);
       map.on("click", onClick);
 
       map.on("styledata", () => {
@@ -192,9 +195,13 @@ export const Map: React.FC = () => {
       if (editorMode === "move" || altKey) {
         map.current.dragPan.enable();
         map.current.scrollZoom.enable();
+        map.current.touchPitch.enable();
+        map.current.touchZoomRotate.enable();
       } else if (editorMode === "trace" || editorMode === "brush") {
         map.current.dragPan.disable();
         map.current.scrollZoom.disable();
+        map.current.touchPitch.disable();
+        map.current.touchZoomRotate.disable();
       }
     }
   );

@@ -45,7 +45,7 @@ export const Sidebar: React.FC = () => {
    * Handle undo
    */
   useEffect(() => {
-    const onKeyDown = (event: React.KeyboardEvent) => {
+    const onKeyDown = (event: KeyboardEvent) => {
       if (event.metaKey && event.keyCode === 90) {
         event.preventDefault();
         dispatch.undo();
