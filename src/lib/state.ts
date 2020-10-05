@@ -1,3 +1,4 @@
+import { MapboxProfile } from "@mapbox/mapbox-sdk/lib/classes/mapi-request";
 import { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geocoding";
 import { Tracepoint } from "@mapbox/mapbox-sdk/services/map-matching";
 import { Style } from "@mapbox/mapbox-sdk/services/styles";
@@ -34,6 +35,7 @@ export type MapState = {
     mode: EditorMode;
     pane: EditorPane | null;
     smartMatching: boolean;
+    smartMatchingProfile: MapboxProfile | null;
   };
 
   traceStart: Coordinates | null;
@@ -76,6 +78,7 @@ const initialState: MapState = {
     mode: "move",
     pane: null,
     smartMatching: true,
+    smartMatchingProfile: "walking",
   },
 
   place: null,
@@ -171,6 +174,18 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
       toggleSmartMatching() {
         set((state) => {
           state.editor.smartMatching = !state.editor.smartMatching;
+
+          if (!state.editor.smartMatching) {
+            state.editor.smartMatchingProfile = null;
+          } else {
+            state.editor.smartMatchingProfile = "walking";
+          }
+        });
+      },
+
+      setSmartMatchingProfile(profile: MapboxProfile) {
+        set((state) => {
+          state.editor.smartMatchingProfile = profile;
         });
       },
 
@@ -202,14 +217,15 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
       },
 
       async endBrush() {
-        const currentAction = get().currentBrush;
-        const matchMap = get().editor.smartMatching;
+        const currentBrush = get().currentBrush;
+        const smartMatching = get().editor.smartMatching;
+        const smartMatchingProfile = get().editor.smartMatchingProfile;
 
-        if (currentAction?.name !== "brush") {
+        if (currentBrush?.name !== "brush") {
           return;
         }
 
-        if (currentAction.line.points.length === 0) {
+        if (currentBrush.line.points.length === 0) {
           return;
         }
 
@@ -217,15 +233,15 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
           state.currentBrush = null;
         });
 
-        if (!matchMap) {
+        if (!smartMatching) {
           set((state) => {
-            state.actions.push(currentAction);
+            state.actions.push(currentBrush);
           });
           return;
         }
 
         const chunks = await Promise.all(
-          chunk(currentAction.line.points, 100).map(async (points) => {
+          chunk(currentBrush.line.points, 100).map(async (points) => {
             if (points.length < 2) {
               return points;
             }
@@ -234,7 +250,7 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore
               .getMatch({
-                profile: "walking",
+                profile: smartMatchingProfile as MapboxProfile,
                 points: points.map((point) => {
                   return {
                     coordinates: [point.longitude, point.latitude],
@@ -260,9 +276,9 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
 
         set((state) => {
           state.actions.push({
-            ...currentAction,
+            ...currentBrush,
             line: {
-              ...currentAction.line,
+              ...currentBrush.line,
               points: chunks.flat(),
             },
           });

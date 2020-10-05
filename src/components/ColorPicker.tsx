@@ -2,7 +2,7 @@ import React from "react";
 import { TwitterPicker } from "react-color";
 
 import { useStore } from "~/lib/state";
-import { theme } from "~/lib/tailwind";
+import { theme } from "~/styles/tailwind.json";
 
 export const ColorPicker: React.FC = () => {
   const strokeColor = useStore((store) => store.editor.strokeColor);
@@ -13,7 +13,7 @@ export const ColorPicker: React.FC = () => {
       color={strokeColor}
       styles={{
         default: {
-          card: { backgroundColor: theme.backgroundColor.gray[900], boxShadow: "none" },
+          card: { backgroundColor: theme.colors.gray[900], boxShadow: "none" },
           swatch: { width: 16, height: 16 },
           hash: { display: "none" },
           input: { display: "none" },

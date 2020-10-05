@@ -1,3 +1,4 @@
+import { MapboxProfile } from "@mapbox/mapbox-sdk/lib/classes/mapi-request";
 import React, { useEffect, useRef } from "react";
 
 import { AspectRatioSelector } from "~/components/AspectRatioSelector";
@@ -7,7 +8,7 @@ import { CheckboxIcon, EmptyCheckboxIcon, EraserIcon, UndoIcon } from "~/compone
 import { StyleSelector } from "~/components/StyleSelector";
 import { WidthSlider } from "~/components/WidthSlider";
 import { useStore } from "~/lib/state";
-import { theme } from "~/lib/tailwind";
+import { theme } from "~/styles/tailwind.json";
 
 const computePanelOffset = (screenWidth: number) => {
   if (screenWidth <= parseInt(theme.screens.md)) {
@@ -201,19 +202,37 @@ export const Sidebar: React.FC = () => {
             <div className="mt-2 px-3 pb-2 mb-2 border-b border-gray-700">
               <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Routes</span>
 
-              <Button
-                className="bg-gray-900 text-gray-200 mt-2"
-                onClick={() => {
-                  dispatch.toggleSmartMatching();
-                }}
-              >
-                {editor.smartMatching ? (
-                  <CheckboxIcon className="w-3 h-3" />
-                ) : (
-                  <EmptyCheckboxIcon className="w-3 h-3" />
+              <div className="flex items-center mt-2">
+                <Button
+                  className="bg-gray-900 text-gray-200 mt-px"
+                  onClick={() => {
+                    dispatch.toggleSmartMatching();
+                  }}
+                >
+                  {editor.smartMatching ? (
+                    <CheckboxIcon className="w-3 h-3" />
+                  ) : (
+                    <EmptyCheckboxIcon className="w-3 h-3" />
+                  )}
+                  <span className="ml-2 text-xs">Smart matching</span>
+                </Button>
+
+                {editor.smartMatching && (
+                  <select
+                    className="ml-2 py-1 pl-1 bg-gray-900 border border-gray-500 text-xs rounded cursor-pointer"
+                    value={editor.smartMatchingProfile as string}
+                    onChange={(event) => dispatch.setSmartMatchingProfile(event.target.value as MapboxProfile)}
+                  >
+                    {["walking", "cycling", "driving"].map((profile) => {
+                      return (
+                        <option key={profile} value={profile}>
+                          {profile}
+                        </option>
+                      );
+                    })}
+                  </select>
                 )}
-                <span className="ml-2 text-xs">Smart matching</span>
-              </Button>
+              </div>
             </div>
           )}
         </div>
