@@ -22,7 +22,6 @@
     "react-color": "^2.18.1",
     "react-dom": "16.13.1",
     "react-spinners": "^0.9.0",
-    "react-tooltip": "^4.2.10",
     "swr": "^0.3.5",
     "tailwind-config": "^0.1.2",
     "zustand": "^3.1.3"
