@@ -362,7 +362,7 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
               },
             });
           });
-          this.move(points[0].latitude, points[0].longitude, 6);
+          this.move(points[0].latitude, points[0].longitude, 6, 0, 0);
         };
 
         reader.readAsText(file);
