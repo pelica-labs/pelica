@@ -2,7 +2,7 @@ import React from "react";
 import { TwitterPicker } from "react-color";
 
 import { useStore } from "~/lib/state";
-import { theme } from "~/styles/tailwind.json";
+import { theme } from "~/styles/tailwind";
 
 export const ColorPicker: React.FC = () => {
   const strokeColor = useStore((store) => store.editor.strokeColor);

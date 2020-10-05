@@ -8,7 +8,7 @@ import { CheckboxIcon, EmptyCheckboxIcon, EraserIcon, UndoIcon } from "~/compone
 import { StyleSelector } from "~/components/StyleSelector";
 import { WidthSlider } from "~/components/WidthSlider";
 import { useStore } from "~/lib/state";
-import { theme } from "~/styles/tailwind.json";
+import { theme } from "~/styles/tailwind";
 
 const computePanelOffset = (screenWidth: number) => {
   if (screenWidth <= parseInt(theme.screens.md)) {

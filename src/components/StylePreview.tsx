@@ -1,7 +1,7 @@
 import React from "react";
 import PuffLoader from "react-spinners/PuffLoader";
 
-import { theme } from "~/styles/tailwind.json";
+import { theme } from "~/styles/tailwind";
 
 type Props = {
   src: string | null;

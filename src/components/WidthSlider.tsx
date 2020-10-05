@@ -2,7 +2,7 @@ import Slider from "rc-slider";
 import React from "react";
 
 import { useStore } from "~/lib/state";
-import { theme } from "~/styles/tailwind.json";
+import { theme } from "~/styles/tailwind";
 
 export const WidthSlider: React.FC = () => {
   const strokeWidth = useStore((store) => store.editor.strokeWidth);
