@@ -3,6 +3,7 @@ import classnames from "classnames";
 import React, { useEffect, useRef, useState } from "react";
 
 import { CloseIcon, SearchIcon } from "~/components/Icon";
+import { useLocalStorage } from "~/lib/localStorage";
 import { mapboxGeocoding } from "~/lib/mapbox";
 import { useStore } from "~/lib/state";
 
@@ -14,6 +15,10 @@ export const PlaceAutocomplete: React.FC = () => {
   const [places, setPlaces] = useState<GeocodeFeature[]>([]);
   const [isFocused, setIsFocused] = useState(false);
   const [selectionIndex, setSelectionIndex] = useState(0);
+  const [recentSearches, setRecentSearches] = useLocalStorage<GeocodeFeature[]>("recentSearches", []);
+
+  const showRecentSearches = !search;
+  const results = showRecentSearches ? recentSearches : places;
 
   /**
    * Keyboard shortcut
@@ -79,7 +84,7 @@ export const PlaceAutocomplete: React.FC = () => {
       onBlur(event);
     }
 
-    if (!places.length) {
+    if (!results.length) {
       return;
     }
 
@@ -87,19 +92,19 @@ export const PlaceAutocomplete: React.FC = () => {
     if (event.keyCode === 38) {
       event.preventDefault();
       event.stopPropagation();
-      setSelectionIndex((places.length + selectionIndex - 1) % places.length);
+      setSelectionIndex((results.length + selectionIndex - 1) % results.length);
     }
 
     // down
     if (event.keyCode === 40) {
       event.preventDefault();
       event.stopPropagation();
-      setSelectionIndex((selectionIndex + 1) % places.length);
+      setSelectionIndex((selectionIndex + 1) % results.length);
     }
 
     // enter
     if (event.keyCode === 13) {
-      onPlaceSelection(event, places[selectionIndex]);
+      onPlaceSelection(event, results[selectionIndex]);
     }
   };
 
@@ -112,6 +117,13 @@ export const PlaceAutocomplete: React.FC = () => {
 
     setSearch(place.place_name);
     setPlaces([]);
+
+    const placeIndexInRecentSearches = recentSearches.findIndex((search) => search.id === place.id);
+    if (placeIndexInRecentSearches >= 0) {
+      recentSearches.splice(placeIndexInRecentSearches, 1);
+    }
+    recentSearches.unshift(place);
+    setRecentSearches(recentSearches.slice(0, 5));
 
     dispatch.setPlace(place);
 
@@ -169,7 +181,11 @@ export const PlaceAutocomplete: React.FC = () => {
 
       {isFocused && (
         <ul className="flex flex-col text-sm">
-          {places.map((place, index) => {
+          {showRecentSearches && recentSearches.length > 0 && (
+            <span className="p-2 text-xs text-gray-500 uppercase tracking-wide leading-none">Recent searches</span>
+          )}
+
+          {results.map((place, index) => {
             const isKeyboardSelected = selectionIndex === index;
             const linkClasses = classnames({
               "block px-2 py-2 cursor-pointer border-b border-gray-700 hover:bg-green-900": true,
