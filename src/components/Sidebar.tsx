@@ -219,7 +219,7 @@ export const Sidebar: React.FC = () => {
 
                 {editor.smartMatching && (
                   <select
-                    className="ml-2 py-1 pl-1 bg-gray-900 border border-gray-500 text-xs rounded cursor-pointer"
+                    className="ml-2 p-1 bg-gray-900 border border-gray-500 hover:border-green-900 text-xs rounded cursor-pointer focus:outline-none"
                     value={editor.smartMatchingProfile as string}
                     onChange={(event) => dispatch.setSmartMatchingProfile(event.target.value as MapboxProfile)}
                   >
