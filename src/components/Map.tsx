@@ -47,35 +47,35 @@ export const Map: React.FC = () => {
   };
 
   const onMouseMove = throttle((event: MapMouseEvent) => {
-    const { keyboard, currentBrush } = getState();
+    const { keyboard, currentDraw } = getState();
 
-    if (keyboard.altKey || !currentBrush) {
+    if (keyboard.altKey || !currentDraw) {
       return;
     }
 
     event.preventDefault();
-    dispatch.brush(event.lngLat.lat, event.lngLat.lng);
+    dispatch.draw(event.lngLat.lat, event.lngLat.lng);
   }, 1000 / 30);
 
   const onMouseDown = (event: MapMouseEvent) => {
     const { keyboard, editor } = getState();
 
-    if (keyboard.altKey || editor.mode !== "brush") {
+    if (keyboard.altKey || editor.mode !== "draw") {
       return;
     }
 
     event.preventDefault();
-    dispatch.startBrush();
+    dispatch.startDrawing();
   };
 
   const onMouseUp = () => {
     const { keyboard, editor } = getState();
 
-    if (keyboard.altKey || editor.mode !== "brush") {
+    if (keyboard.altKey || editor.mode !== "draw") {
       return;
     }
 
-    dispatch.endBrush();
+    dispatch.endDrawing();
   };
 
   const onClick = (event: MapMouseEvent) => {
@@ -86,10 +86,6 @@ export const Map: React.FC = () => {
     }
 
     dispatch.closePanes();
-
-    if (editor.mode === "trace") {
-      dispatch.trace(event.lngLat.lat, event.lngLat.lng);
-    }
 
     if (editor.mode === "pin") {
       dispatch.pin(event.lngLat.lat, event.lngLat.lng);
@@ -283,7 +279,7 @@ export const Map: React.FC = () => {
         map.current.scrollZoom.enable();
         map.current.touchPitch.enable();
         map.current.touchZoomRotate.enable();
-      } else if (editorMode === "trace" || editorMode === "brush") {
+      } else if (editorMode === "draw") {
         map.current.dragPan.disable();
         map.current.scrollZoom.disable();
         map.current.touchPitch.disable();
@@ -296,15 +292,15 @@ export const Map: React.FC = () => {
    * Sync actions
    */
   useStoreSubscription(
-    (store) => ({ actions: store.actions, currentBrush: store.currentBrush }),
-    ({ actions, currentBrush }) => {
+    (store) => ({ actions: store.actions, currentDraw: store.currentDraw }),
+    ({ actions, currentDraw }) => {
       if (!map.current) {
         return;
       }
 
       const allActions = [...actions];
-      if (currentBrush) {
-        allActions.push(currentBrush);
+      if (currentDraw) {
+        allActions.push(currentDraw);
       }
 
       applyActions(map.current, allActions);
@@ -325,7 +321,7 @@ export const Map: React.FC = () => {
 
       if (altKey) {
         canvasStyle.cursor = "pointer";
-      } else if (editorMode === "trace" || editorMode === "brush" || editorMode === "pin") {
+      } else if (editorMode === "draw" || editorMode === "pin") {
         canvasStyle.cursor = "crosshair";
       } else if (editorMode === "move") {
         canvasStyle.cursor = "pointer";

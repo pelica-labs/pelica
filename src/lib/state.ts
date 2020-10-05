@@ -9,8 +9,7 @@ import create, { GetState, State, StateCreator, StateSelector } from "zustand";
 import { devtools } from "zustand/middleware";
 import shallow from "zustand/shallow";
 
-import { Action, BrushAction } from "~/lib/actions";
-import { Coordinates } from "~/lib/geometry";
+import { Action, DrawAction } from "~/lib/actions";
 import { parseGpx } from "~/lib/gpx";
 import { defaultStyle, mapboxMapMatching } from "~/lib/mapbox";
 import { isServer } from "~/lib/ssr";
@@ -38,8 +37,7 @@ export type MapState = {
     smartMatchingProfile: MapboxProfile | null;
   };
 
-  traceStart: Coordinates | null;
-  currentBrush: BrushAction | null;
+  currentDraw: DrawAction | null;
   actions: Action[];
 
   keyboard: {
@@ -52,7 +50,7 @@ export type MapState = {
   screen: ScreenDimensions;
 };
 
-export type EditorMode = "move" | "trace" | "brush" | "pin";
+export type EditorMode = "move" | "draw" | "pin";
 
 export type EditorPane = "styles" | "aspectRatio";
 
@@ -86,8 +84,7 @@ const initialState: MapState = {
   aspectRatio: "fill",
 
   actions: [],
-  currentBrush: null,
-  traceStart: null,
+  currentDraw: null,
 
   keyboard: {
     ctrlKey: false,
@@ -97,8 +94,8 @@ const initialState: MapState = {
   },
 
   screen: {
-    width: isServer ? 0 : window.innerWidth,
-    height: isServer ? 0 : window.innerHeight,
+    width: isServer ? 1200 : window.innerWidth,
+    height: isServer ? 800 : window.innerHeight,
   },
 };
 
@@ -189,12 +186,12 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
         });
       },
 
-      startBrush() {
+      startDrawing() {
         const editor = get().editor;
 
         set((state) => {
-          state.currentBrush = {
-            name: "brush",
+          state.currentDraw = {
+            name: "draw",
             line: {
               points: [],
               style: {
@@ -206,42 +203,42 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
         });
       },
 
-      brush(latitude: number, longitude: number) {
+      draw(latitude: number, longitude: number) {
         set((state) => {
-          if (state.currentBrush?.name !== "brush") {
+          if (state.currentDraw?.name !== "draw") {
             return;
           }
 
-          state.currentBrush.line.points.push({ latitude, longitude });
+          state.currentDraw.line.points.push({ latitude, longitude });
         });
       },
 
-      async endBrush() {
-        const currentBrush = get().currentBrush;
+      async endDrawing() {
+        const currentDraw = get().currentDraw;
         const smartMatching = get().editor.smartMatching;
         const smartMatchingProfile = get().editor.smartMatchingProfile;
 
-        if (currentBrush?.name !== "brush") {
+        if (!currentDraw) {
           return;
         }
 
-        if (currentBrush.line.points.length === 0) {
+        if (currentDraw.line.points.length === 0) {
           return;
         }
 
         set((state) => {
-          state.currentBrush = null;
+          state.currentDraw = null;
         });
 
         if (!smartMatching) {
           set((state) => {
-            state.actions.push(currentBrush);
+            state.actions.push(currentDraw);
           });
           return;
         }
 
         const chunks = await Promise.all(
-          chunk(currentBrush.line.points, 100).map(async (points) => {
+          chunk(currentDraw.line.points, 100).map(async (points) => {
             if (points.length < 2) {
               return points;
             }
@@ -276,38 +273,10 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
 
         set((state) => {
           state.actions.push({
-            ...currentBrush,
+            ...currentDraw,
             line: {
-              ...currentBrush.line,
+              ...currentDraw.line,
               points: chunks.flat(),
-            },
-          });
-        });
-      },
-
-      trace(latitude: number, longitude: number) {
-        const editor = get().editor;
-        const traceStart = get().traceStart;
-
-        if (!traceStart) {
-          set((state) => {
-            state.traceStart = { latitude, longitude };
-          });
-          return;
-        }
-
-        set((state) => {
-          state.traceStart = { latitude, longitude };
-
-          state.actions.push({
-            name: "trace",
-            line: {
-              from: traceStart,
-              to: { latitude, longitude },
-              style: {
-                strokeColor: editor.strokeColor,
-                strokeWidth: editor.strokeWidth,
-              },
             },
           });
         });
@@ -343,8 +312,7 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
       clear() {
         set((state) => {
           state.actions = [];
-          state.currentBrush = null;
-          state.traceStart = null;
+          state.currentDraw = null;
         });
       },
 
@@ -423,6 +391,8 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
     },
   };
 };
+
+// 🧹 💨 🕳
 
 type MapStore = ReturnType<typeof makeStore>;
 

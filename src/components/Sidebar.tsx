@@ -32,9 +32,9 @@ export const Sidebar: React.FC = () => {
   const dispatch = useStore((store) => store.dispatch);
   const screenWidth = useStore((store) => store.screen.width);
 
-  const displayColorPicker = ["brush", "trace", "pin"].includes(editor.mode);
-  const displayWidthPicker = ["brush", "trace", "pin"].includes(editor.mode);
-  const displaySmartMatching = ["brush", "trace"].includes(editor.mode);
+  const displayColorPicker = ["draw", "trace", "pin"].includes(editor.mode);
+  const displayWidthPicker = ["draw", "trace", "pin"].includes(editor.mode);
+  const displaySmartMatching = ["draw", "trace"].includes(editor.mode);
 
   /**
    * Handle undo
@@ -133,25 +133,14 @@ export const Sidebar: React.FC = () => {
             </Button>
 
             <Button
-              active={editor.mode === "brush"}
+              active={editor.mode === "draw"}
               className="bg-gray-900 text-gray-200 py-2 flex-1 justify-center"
               rounded={false}
               onClick={() => {
-                dispatch.setEditorMode("brush");
+                dispatch.setEditorMode("draw");
               }}
             >
-              <span className="text-xs">Brush</span>
-            </Button>
-
-            <Button
-              active={editor.mode === "trace"}
-              className="bg-gray-900 text-gray-200 py-2 flex-1 justify-center"
-              rounded={false}
-              onClick={() => {
-                dispatch.setEditorMode("trace");
-              }}
-            >
-              <span className="text-xs">Trace</span>
+              <span className="text-xs">Draw</span>
             </Button>
 
             <Button

@@ -3,15 +3,6 @@ export type Coordinates = {
   longitude: number;
 };
 
-export type Line = {
-  from: Coordinates;
-  to: Coordinates;
-  style: {
-    strokeColor: string;
-    strokeWidth: number;
-  };
-};
-
 export type PolyLine = {
   points: Coordinates[];
   style: {

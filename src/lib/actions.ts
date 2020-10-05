@@ -1,17 +1,12 @@
 import { GeoJSONSource } from "mapbox-gl";
 
-import { joinPoints, Line, Point, PolyLine } from "~/lib/geometry";
+import { joinPoints, Point, PolyLine } from "~/lib/geometry";
 import { MapSource } from "~/lib/sources";
 
-export type Action = TraceAction | BrushAction | PinAction | ImportGpxAction;
+export type Action = DrawAction | PinAction | ImportGpxAction;
 
-export type TraceAction = {
-  name: "trace";
-  line: Line;
-};
-
-export type BrushAction = {
-  name: "brush";
+export type DrawAction = {
+  name: "draw";
   line: PolyLine;
 };
 
@@ -26,8 +21,7 @@ export type ImportGpxAction = {
 };
 
 const ActionToSource = {
-  trace: MapSource.Routes,
-  brush: MapSource.Routes,
+  draw: MapSource.Routes,
   pin: MapSource.Pins,
   importGpx: MapSource.Routes,
 };
@@ -44,21 +38,7 @@ const actionToFeature = (action: Action): GeoJSON.Feature<GeoJSON.Geometry> => {
     };
   }
 
-  if (action.name === "trace") {
-    return {
-      type: "Feature",
-      geometry: {
-        type: "LineString",
-        coordinates: [
-          [action.line.from.longitude, action.line.from.latitude],
-          [action.line.to.longitude, action.line.to.latitude],
-        ],
-      },
-      properties: action.line.style,
-    };
-  }
-
-  if (action.name === "brush") {
+  if (action.name === "draw") {
     return {
       type: "Feature",
       geometry: {
