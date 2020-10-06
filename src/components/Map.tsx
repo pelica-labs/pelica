@@ -1,6 +1,6 @@
 import * as KeyCode from "keycode-js";
 import { throttle } from "lodash";
-import mapboxgl, { LngLatBoundsLike, MapLayerMouseEvent, MapMouseEvent } from "mapbox-gl";
+import mapboxgl, { LngLatBoundsLike, MapLayerMouseEvent, MapLayerTouchEvent, MapMouseEvent } from "mapbox-gl";
 import Head from "next/head";
 import React, { CSSProperties, useEffect, useRef } from "react";
 
@@ -48,14 +48,23 @@ export const Map: React.FC = () => {
   };
 
   const onMouseMove = throttle((event: MapMouseEvent) => {
-    const { keyboard, currentDraw } = getState();
+    const { keyboard, currentDraw, draggedGeometry } = getState();
 
-    if (keyboard.altKey || !currentDraw) {
+    if (keyboard.altKey) {
       return;
     }
 
     event.preventDefault();
-    dispatch.draw(event.lngLat.lat, event.lngLat.lng);
+
+    const { lat, lng } = event.lngLat;
+
+    if (currentDraw) {
+      dispatch.draw(lat, lng);
+    }
+
+    if (draggedGeometry?.type === "Point") {
+      dispatch.dragSelectedPin({ latitude: lat, longitude: lng });
+    }
   }, 1000 / 30);
 
   const onMouseDown = (event: MapMouseEvent) => {
@@ -73,14 +82,22 @@ export const Map: React.FC = () => {
     dispatch.startDrawing();
   };
 
-  const onMouseUp = () => {
-    const { keyboard, editor } = getState();
+  const onMouseUp = (event: MapMouseEvent) => {
+    const { keyboard, editor, draggedGeometry } = getState();
 
-    if (keyboard.altKey || editor.mode !== "draw") {
+    if (keyboard.altKey) {
       return;
     }
 
-    dispatch.endDrawing();
+    if (editor.mode === "draw") {
+      dispatch.endDrawing();
+    }
+
+    if (draggedGeometry) {
+      const { lat, lng } = event.lngLat;
+
+      dispatch.endDragSelectedPin({ latitude: lat, longitude: lng });
+    }
   };
 
   const onClick = (event: MapMouseEvent) => {
@@ -118,6 +135,22 @@ export const Map: React.FC = () => {
 
     dispatch.setEditorMode("move");
     dispatch.selectGeometry(event.features[0]);
+  };
+
+  const onFeatureMouseDown = (event: MapLayerMouseEvent | MapLayerTouchEvent) => {
+    const { editor } = getState();
+
+    if (editor.mode !== "move") {
+      return;
+    }
+
+    if (!event.features?.length) {
+      return;
+    }
+
+    event.preventDefault();
+
+    dispatch.startDrag(event.features[0]);
   };
 
   const onWindowBlur = () => {
@@ -199,6 +232,9 @@ export const Map: React.FC = () => {
       map.on("click", MapSource.Routes, onFeatureClick);
       map.on("contextmenu", MapSource.Pins, onFeatureRightClick);
       map.on("contextmenu", MapSource.Routes, onFeatureRightClick);
+
+      map.on("mousedown", MapSource.Pins, onFeatureMouseDown);
+      map.on("touchstart", MapSource.Pins, onFeatureMouseDown);
 
       map.on("styledata", () => {
         applySources(map);

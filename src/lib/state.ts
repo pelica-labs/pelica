@@ -9,7 +9,7 @@ import { devtools } from "zustand/middleware";
 import shallow from "zustand/shallow";
 
 import { Action, DrawAction } from "~/lib/actions";
-import { Geometry, nextGeometryId, Point, PolyLine, Position, smartMatch } from "~/lib/geometry";
+import { Coordinates, Geometry, nextGeometryId, Point, PolyLine, Position, smartMatch } from "~/lib/geometry";
 import { parseGpx } from "~/lib/gpx";
 import { defaultStyle } from "~/lib/mapbox";
 import { MapSource } from "~/lib/sources";
@@ -41,6 +41,7 @@ export type MapState = {
   geometries: Geometry[];
   currentDraw: DrawAction | null;
   selectedGeometry: Geometry | null;
+  draggedGeometry: Geometry | null;
 
   keyboard: {
     ctrlKey: boolean;
@@ -310,7 +311,7 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
               }
             }
 
-            if (action.name === "movePin") {
+            if (action.name === "nudgePin") {
               const point = state.geometries.find((geometry) => geometry.id === action.pinId) as Point;
 
               const pointCoordinates = MercatorCoordinate.fromLngLat(
@@ -324,6 +325,12 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
 
               const { lat, lng } = pointCoordinates.toLngLat();
               point.coordinates = { latitude: lat, longitude: lng };
+            }
+
+            if (action.name === "movePin") {
+              const point = state.geometries.find((geometry) => geometry.id === action.pinId) as Point;
+
+              point.coordinates = action.coordinates;
             }
 
             if (action.name === "updatePin") {
@@ -471,6 +478,42 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
         });
       },
 
+      startDrag(feature: GeoJSON.Feature<GeoJSON.Geometry>) {
+        set((state) => {
+          const geometry = state.geometries.find((geometry) => geometry.id === feature.id) as Point;
+
+          state.draggedGeometry = geometry;
+        });
+      },
+
+      dragSelectedPin(coordinates: Coordinates) {
+        set((state) => {
+          if (!state.draggedGeometry) {
+            return;
+          }
+
+          const geometry = state.geometries.find((geometry) => geometry.id === state.draggedGeometry?.id) as Point;
+
+          geometry.coordinates = coordinates;
+        });
+      },
+
+      endDragSelectedPin(coordinates: Coordinates) {
+        set((state) => {
+          if (state.draggedGeometry?.type !== "Point") {
+            return;
+          }
+
+          state.actions.push({
+            name: "movePin",
+            pinId: state.draggedGeometry.id,
+            coordinates,
+          });
+
+          state.draggedGeometry = null;
+        });
+      },
+
       moveSelectedPin(direction: Position) {
         set((state) => {
           if (!state.selectedGeometry) {
@@ -478,7 +521,7 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
           }
 
           state.actions.push({
-            name: "movePin",
+            name: "nudgePin",
             pinId: state.selectedGeometry.id,
             direction,
             zoom: state.zoom,

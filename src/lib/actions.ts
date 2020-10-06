@@ -8,6 +8,7 @@ export type Action =
   | PinAction
   | ImportGpxAction
   | UpdateStyleAction
+  | NudgePinAction
   | MovePinAction
   | SelectGeometryAction
   | UpdatePinAction
@@ -30,11 +31,17 @@ export type ImportGpxAction = {
   line: PolyLine;
 };
 
-export type MovePinAction = {
-  name: "movePin";
+export type NudgePinAction = {
+  name: "nudgePin";
   pinId: number;
   zoom: number;
   direction: Position;
+};
+
+export type MovePinAction = {
+  name: "movePin";
+  pinId: number;
+  coordinates: Coordinates;
 };
 
 export type UpdateStyleAction = {
