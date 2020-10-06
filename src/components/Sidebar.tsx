@@ -88,7 +88,12 @@ export const Sidebar: React.FC = () => {
             right: computePanelOffset(screenWidth),
           }}
         >
-          <StyleSelector />
+          <StyleSelector
+            value={style}
+            onChange={(style) => {
+              dispatch.setStyle(style);
+            }}
+          />
         </div>
       )}
 

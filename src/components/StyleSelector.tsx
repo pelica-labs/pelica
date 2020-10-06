@@ -12,10 +12,13 @@ type StylesResponse = {
   styles: Style[];
 };
 
-export const StyleSelector: React.FC = () => {
+type Props = {
+  value: Style;
+  onChange: (value: Style) => void;
+};
+
+export const StyleSelector: React.FC<Props> = ({ value, onChange }) => {
   const [previews, setPreviews] = useState<Record<string, string>>({});
-  const selectedStyle = useStore((store) => store.style);
-  const dispatch = useStore((store) => store.dispatch);
   const { data } = useSWR<StylesResponse>("/api/styles");
 
   useEffect(() => {
@@ -49,14 +52,20 @@ export const StyleSelector: React.FC = () => {
     <div className="bg-gray-900 text-white rounded shadow flex flex-col p-1">
       <div className="flex flex-row flex-wrap max-w-xl">
         {data.styles.map((style) => {
-          const isSelectedStyle = selectedStyle?.id === style.id;
+          const isSelectedStyle = value.id === style.id;
           const containerClasses = classnames({
             "flex flex-col items-center p-2 rounded font-medium cursor-pointer hover:bg-green-900": true,
             "bg-green-700": isSelectedStyle,
           });
 
           return (
-            <div key={style.id} className={containerClasses} onClick={() => dispatch.setStyle(style)}>
+            <div
+              key={style.id}
+              className={containerClasses}
+              onClick={() => {
+                onChange(style);
+              }}
+            >
               <span className="text-xs uppercase text-gray-200 w-32 inline-flex overflow-x-hidden whitespace-no-wrap">
                 {style.name}
               </span>
