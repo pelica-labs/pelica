@@ -19,9 +19,10 @@ export const mapboxGeocoding = MapboxGeocoding(config);
 export const mapboxMapMatching = MapboxMapMatching(config);
 
 export const defaultStyle: Partial<Style> = {
-  id: "streets-v11",
-  owner: "mapbox",
-  name: "default",
+  // make this configurable
+  id: "ckfy50y250eq019qwbenxy5b0",
+  owner: "bstnfrmry",
+  name: "Default",
 };
 
 export const styleToUrl = (style: Style): string => {

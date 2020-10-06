@@ -63,8 +63,8 @@ export type ScreenDimensions = {
 
 const initialState: MapState = {
   coordinates: {
-    latitude: 40,
-    longitude: -74.5,
+    latitude: 48.856614,
+    longitude: 2.3522219,
   },
   zoom: 9,
   bearing: 0,
