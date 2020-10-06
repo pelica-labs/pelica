@@ -1,19 +1,17 @@
 import { MapboxProfile } from "@mapbox/mapbox-sdk/lib/classes/mapi-request";
 import { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geocoding";
-import { Tracepoint } from "@mapbox/mapbox-sdk/services/map-matching";
 import { Style } from "@mapbox/mapbox-sdk/services/styles";
 import produce from "immer";
-import { chunk } from "lodash";
 import { MercatorCoordinate } from "mapbox-gl";
 import { useEffect } from "react";
 import create, { GetState, State, StateCreator, StateSelector } from "zustand";
 import { devtools } from "zustand/middleware";
 import shallow from "zustand/shallow";
 
-import { Action, DrawAction, PinAction } from "~/lib/actions";
-import { Geometry, nextGeometryId, Point, Position } from "~/lib/geometry";
+import { Action, DrawAction } from "~/lib/actions";
+import { Geometry, nextGeometryId, Point, PolyLine, Position, smartMatch } from "~/lib/geometry";
 import { parseGpx } from "~/lib/gpx";
-import { defaultStyle, mapboxMapMatching } from "~/lib/mapbox";
+import { defaultStyle } from "~/lib/mapbox";
 import { MapSource } from "~/lib/sources";
 import { isServer } from "~/lib/ssr";
 
@@ -36,14 +34,13 @@ export type MapState = {
     strokeWidth: number;
     mode: EditorMode;
     pane: EditorPane | null;
-    smartMatching: boolean;
-    smartMatchingProfile: MapboxProfile | null;
+    smartMatching: SmartMatching;
   };
 
   actions: Action[];
   geometries: Geometry[];
   currentDraw: DrawAction | null;
-  selectedPin: Point | null;
+  selectedGeometry: Geometry | null;
 
   keyboard: {
     ctrlKey: boolean;
@@ -54,6 +51,13 @@ export type MapState = {
 
   screen: ScreenDimensions;
 };
+
+export type SmartMatching = {
+  enabled: boolean;
+  profile: SmartMatchingProfile | null;
+};
+
+export type SmartMatchingProfile = MapboxProfile;
 
 export type EditorMode = "move" | "draw" | "pin";
 
@@ -77,11 +81,13 @@ const initialState: MapState = {
 
   editor: {
     strokeColor: "#1824a2",
-    strokeWidth: 2,
+    strokeWidth: 5,
     mode: "move",
     pane: null,
-    smartMatching: true,
-    smartMatchingProfile: "walking",
+    smartMatching: {
+      enabled: true,
+      profile: "walking",
+    },
   },
 
   place: null,
@@ -91,7 +97,7 @@ const initialState: MapState = {
   actions: [],
   geometries: [],
   currentDraw: null,
-  selectedPin: null,
+  selectedGeometry: null,
 
   keyboard: {
     ctrlKey: false,
@@ -175,24 +181,16 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
       setEditorMode(mode: EditorMode) {
         set((state) => {
           state.editor.mode = mode;
-        });
-      },
 
-      toggleSmartMatching() {
-        set((state) => {
-          state.editor.smartMatching = !state.editor.smartMatching;
-
-          if (!state.editor.smartMatching) {
-            state.editor.smartMatchingProfile = null;
-          } else {
-            state.editor.smartMatchingProfile = "walking";
+          if (state.editor.mode !== "move") {
+            state.selectedGeometry = null;
           }
         });
       },
 
-      setSmartMatchingProfile(profile: MapboxProfile) {
+      setEditorSmartMatching(smartMatching: SmartMatching) {
         set((state) => {
-          state.editor.smartMatchingProfile = profile;
+          state.editor.smartMatching = smartMatching;
         });
       },
 
@@ -207,6 +205,9 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
               id: nextGeometryId(),
               source: MapSource.Routes,
               points: [],
+              smartPoints: [],
+              selected: false,
+              smartMatching: editor.smartMatching,
               style: {
                 strokeColor: editor.strokeColor,
                 strokeWidth: editor.strokeWidth,
@@ -228,8 +229,6 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
 
       async endDrawing() {
         const currentDraw = get().currentDraw;
-        const smartMatching = get().editor.smartMatching;
-        const smartMatchingProfile = get().editor.smartMatchingProfile;
 
         if (!currentDraw) {
           return;
@@ -239,59 +238,19 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
           return;
         }
 
-        set((state) => {
-          state.currentDraw = null;
-        });
-
-        if (!smartMatching) {
-          set((state) => {
-            state.actions.push(currentDraw);
-          });
-          return;
-        }
-
-        const chunks = await Promise.all(
-          chunk(currentDraw.line.points, 100).map(async (points) => {
-            if (points.length < 2) {
-              return points;
-            }
-
-            const res = await mapboxMapMatching
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
-              .getMatch({
-                profile: smartMatchingProfile as MapboxProfile,
-                points: points.map((point) => {
-                  return {
-                    coordinates: [point.longitude, point.latitude],
-                  };
-                }),
-              })
-              .send();
-
-            if (!res.body.tracepoints) {
-              return points;
-            }
-
-            return (res.body.tracepoints as Tracepoint[])
-              .filter((tracepoint) => tracepoint !== null)
-              .map((tracepoint) => {
-                return {
-                  longitude: tracepoint.location[0],
-                  latitude: tracepoint.location[1],
-                };
-              });
-          })
-        );
+        const smartPoints = currentDraw.line.smartMatching.enabled
+          ? await smartMatch(currentDraw.line, currentDraw.line.smartMatching.profile as SmartMatchingProfile)
+          : [];
 
         set((state) => {
           state.actions.push({
             ...currentDraw,
             line: {
               ...currentDraw.line,
-              points: chunks.flat(),
+              smartPoints,
             },
           });
+          state.currentDraw = null;
         });
       },
 
@@ -299,7 +258,7 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
         const editor = get().editor;
 
         set((state) => {
-          const pin = {
+          state.actions.push({
             name: "pin",
             point: {
               type: "Point",
@@ -312,17 +271,15 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
                 strokeWidth: editor.strokeWidth,
               },
             },
-          } as PinAction;
-
-          state.actions.push(pin);
-          // state.selectedPin = pin.point;
+          });
         });
       },
 
       applyActions() {
         set((state) => {
-          state.style = defaultStyle as Style;
           state.geometries = [];
+          state.style = defaultStyle as Style;
+          state.selectedGeometry = null;
 
           const allActions = [...state.actions];
           if (state.currentDraw) {
@@ -342,14 +299,14 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
               state.geometries.push({ ...action.line });
             }
 
-            if (action.name === "selectPin") {
-              if (state.selectedPin) {
-                state.selectedPin.selected = false;
+            if (action.name === "selectGeometry") {
+              if (state.selectedGeometry) {
+                state.selectedGeometry.selected = false;
               }
 
-              state.selectedPin = state.geometries.find((geometry) => geometry.id === action.pinId) as Point;
-              if (state.selectedPin) {
-                state.selectedPin.selected = true;
+              state.selectedGeometry = state.geometries.find((geometry) => geometry.id === action.geometryId) as Point;
+              if (state.selectedGeometry) {
+                state.selectedGeometry.selected = true;
               }
             }
 
@@ -378,11 +335,27 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
               };
             }
 
+            if (action.name === "updateLine") {
+              const line = state.geometries.find((geometry) => geometry.id === action.lineId) as PolyLine;
+
+              line.style = {
+                strokeWidth: action.strokeWidth,
+                strokeColor: action.strokeColor,
+              };
+            }
+
+            if (action.name === "updateLineSmartMatching") {
+              const line = state.geometries.find((geometry) => geometry.id === action.lineId) as PolyLine;
+
+              line.smartMatching = action.smartMatching;
+              line.smartPoints = action.smartPoints;
+            }
+
             if (action.name === "deleteGeometry") {
               const geometryIndex = state.geometries.findIndex((geometry) => geometry.id === action.geometryId);
               if (geometryIndex >= 0) {
                 state.geometries.splice(geometryIndex, 1);
-                state.selectedPin = null;
+                state.selectedGeometry = null;
               }
             }
 
@@ -435,7 +408,10 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
                 type: "PolyLine",
                 id: nextGeometryId(),
                 source: MapSource.Routes,
+                smartMatching: { enabled: false, profile: null },
+                selected: false,
                 points,
+                smartPoints: [],
                 style: {
                   strokeColor: editor.strokeColor,
                   strokeWidth: editor.strokeWidth,
@@ -486,24 +462,24 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
         });
       },
 
-      selectPin(feature: GeoJSON.Feature<GeoJSON.Geometry>) {
+      selectGeometry(feature: GeoJSON.Feature<GeoJSON.Geometry>) {
         set((state) => {
           state.actions.push({
-            name: "selectPin",
-            pinId: feature.id as number,
+            name: "selectGeometry",
+            geometryId: feature.id as number,
           });
         });
       },
 
       moveSelectedPin(direction: Position) {
         set((state) => {
-          if (!state.selectedPin) {
+          if (!state.selectedGeometry) {
             return;
           }
 
           state.actions.push({
             name: "movePin",
-            pinId: state.selectedPin.id,
+            pinId: state.selectedGeometry.id,
             direction,
             zoom: state.zoom,
           });
@@ -512,28 +488,68 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
 
       deleteSelectedGeometry() {
         set((state) => {
-          if (!state.selectedPin) {
+          if (!state.selectedGeometry) {
             return;
           }
 
           state.actions.push({
             name: "deleteGeometry",
-            geometryId: state.selectedPin.id,
+            geometryId: state.selectedGeometry.id,
           });
         });
       },
 
       updateSelectedPin(strokeColor: string, strokeWidth: number) {
         set((state) => {
-          if (!state.selectedPin) {
+          if (!state.selectedGeometry) {
             return;
           }
 
           state.actions.push({
             name: "updatePin",
-            pinId: state.selectedPin.id,
+            pinId: state.selectedGeometry.id,
             strokeColor,
             strokeWidth,
+          });
+        });
+      },
+
+      updateSelectedLine(strokeColor: string, strokeWidth: number) {
+        set((state) => {
+          if (!state.selectedGeometry) {
+            return;
+          }
+
+          state.actions.push({
+            name: "updateLine",
+            lineId: state.selectedGeometry.id,
+            strokeColor,
+            strokeWidth,
+          });
+        });
+      },
+
+      async updateSelectedLineSmartMatching(smartMatching: SmartMatching) {
+        const selectedGeometry = get().selectedGeometry;
+
+        if (selectedGeometry?.type !== "PolyLine") {
+          return;
+        }
+
+        const smartPoints = smartMatching.enabled
+          ? await smartMatch(selectedGeometry, smartMatching.profile as SmartMatchingProfile)
+          : [];
+
+        set((state) => {
+          if (!state.selectedGeometry) {
+            return;
+          }
+
+          state.actions.push({
+            name: "updateLineSmartMatching",
+            lineId: state.selectedGeometry.id,
+            smartMatching,
+            smartPoints,
           });
         });
       },

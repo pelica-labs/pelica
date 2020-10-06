@@ -1,6 +1,7 @@
 import { Style } from "@mapbox/mapbox-sdk/services/styles";
 
-import { Point, PolyLine, Position } from "~/lib/geometry";
+import { Coordinates, Point, PolyLine, Position } from "~/lib/geometry";
+import { SmartMatching } from "~/lib/state";
 
 export type Action =
   | DrawAction
@@ -8,8 +9,10 @@ export type Action =
   | ImportGpxAction
   | UpdateStyleAction
   | MovePinAction
-  | SelectPinAction
+  | SelectGeometryAction
   | UpdatePinAction
+  | UpdateLineAction
+  | UpdateLineSmartMatchingAction
   | DeleteGeometryAction;
 
 export type DrawAction = {
@@ -39,9 +42,9 @@ export type UpdateStyleAction = {
   style: Style;
 };
 
-export type SelectPinAction = {
-  name: "selectPin";
-  pinId: number;
+export type SelectGeometryAction = {
+  name: "selectGeometry";
+  geometryId: number;
 };
 
 export type DeleteGeometryAction = {
@@ -54,4 +57,18 @@ export type UpdatePinAction = {
   pinId: number;
   strokeColor: string;
   strokeWidth: number;
+};
+
+export type UpdateLineAction = {
+  name: "updateLine";
+  lineId: number;
+  strokeColor: string;
+  strokeWidth: number;
+};
+
+export type UpdateLineSmartMatchingAction = {
+  name: "updateLineSmartMatching";
+  lineId: number;
+  smartPoints: Coordinates[];
+  smartMatching: SmartMatching;
 };

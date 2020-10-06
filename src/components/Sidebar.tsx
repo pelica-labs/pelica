@@ -1,14 +1,14 @@
-import { MapboxProfile } from "@mapbox/mapbox-sdk/lib/classes/mapi-request";
 import * as KeyCode from "keycode-js";
 import React, { useEffect, useRef } from "react";
 
 import { AspectRatioSelector } from "~/components/AspectRatioSelector";
 import { Button } from "~/components/Button";
 import { ColorPicker } from "~/components/ColorPicker";
-import { CheckboxIcon, EmptyCheckboxIcon, EraserIcon, TrashIcon, UndoIcon } from "~/components/Icon";
+import { EraserIcon, TrashIcon, UndoIcon } from "~/components/Icon";
+import { SmartMatchingSelector } from "~/components/SmartMatchingSelector";
 import { StyleSelector } from "~/components/StyleSelector";
 import { WidthSlider } from "~/components/WidthSlider";
-import { getState, useStore, useStoreSubscription } from "~/lib/state";
+import { useStore } from "~/lib/state";
 import { theme } from "~/styles/tailwind";
 
 const computePanelOffset = (screenWidth: number) => {
@@ -32,11 +32,17 @@ export const Sidebar: React.FC = () => {
   const actions = useStore((store) => store.actions);
   const dispatch = useStore((store) => store.dispatch);
   const screenWidth = useStore((store) => store.screen.width);
-  const selectedPin = useStore((store) => store.selectedPin);
+  const selectedGeometry = useStore((store) => store.selectedGeometry);
 
-  const displayColorPicker = ["draw", "pin"].includes(editor.mode) || selectedPin;
-  const displayWidthPicker = ["draw", "pin"].includes(editor.mode) || selectedPin;
-  const displaySmartMatching = ["draw"].includes(editor.mode);
+  const displaySelectionHeader = selectedGeometry !== null && editor.mode === "move";
+  const displayColorPicker = ["draw", "pin"].includes(editor.mode) || selectedGeometry;
+  const displayWidthPicker = ["draw", "pin"].includes(editor.mode) || selectedGeometry;
+  const displaySmartMatching = ["draw"].includes(editor.mode) || selectedGeometry?.type === "PolyLine";
+
+  const boundColor = selectedGeometry ? selectedGeometry.style.strokeColor : editor.strokeColor;
+  const boundWidth = selectedGeometry ? selectedGeometry.style.strokeWidth : editor.strokeWidth;
+  const boundSmartMatching =
+    selectedGeometry?.type === "PolyLine" ? selectedGeometry.smartMatching : editor.smartMatching;
 
   /**
    * Handle shortcuts
@@ -70,22 +76,6 @@ export const Sidebar: React.FC = () => {
       window.removeEventListener("keydown", onKeyDown, false);
     };
   });
-
-  /**
-   * Handle edition
-   */
-  useStoreSubscription(
-    (store) => ({ strokeWidth: store.editor.strokeWidth, strokeColor: store.editor.strokeColor }),
-    ({ strokeWidth, strokeColor }) => {
-      const selectedPin = getState().selectedPin;
-
-      if (!selectedPin) {
-        return;
-      }
-
-      dispatch.updateSelectedPin(strokeColor, strokeWidth);
-    }
-  );
 
   return (
     <div className="flex-grow relative flex items-end">
@@ -183,11 +173,13 @@ export const Sidebar: React.FC = () => {
             </Button>
           </div>
 
-          {selectedPin !== null && editor.mode === "move" && (
+          {displaySelectionHeader && (
             <div className="flex items-center justify-between px-3 py-2 border-b border-gray-700">
               <span className="text-xs uppercase font-light tracking-wide leading-none">
                 <span className="text-gray-500">Selection:</span>
-                <span className="ml-2">Pin #{selectedPin.id}</span>
+                <span className="ml-2">
+                  {selectedGeometry?.type} #{selectedGeometry?.id}
+                </span>
               </span>
               <Button
                 className="bg-gray-900 text-gray-200"
@@ -206,11 +198,22 @@ export const Sidebar: React.FC = () => {
                 <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Color</span>
                 <div
                   className="ml-2 w-3 h-3 rounded-full border border-gray-200"
-                  style={{ backgroundColor: editor.strokeColor }}
+                  style={{ backgroundColor: boundColor }}
                 />
               </div>
               <div className="mt-4">
-                <ColorPicker />
+                <ColorPicker
+                  value={boundColor}
+                  onChange={(color) => {
+                    if (selectedGeometry?.type === "PolyLine") {
+                      dispatch.updateSelectedLine(color, selectedGeometry.style.strokeWidth);
+                    } else if (selectedGeometry?.type === "Point") {
+                      dispatch.updateSelectedPin(color, selectedGeometry.style.strokeWidth);
+                    } else {
+                      dispatch.setStrokeColor(color);
+                    }
+                  }}
+                />
               </div>
             </div>
           )}
@@ -220,14 +223,22 @@ export const Sidebar: React.FC = () => {
               <div className="flex items-center">
                 <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Width</span>
                 <div className="ml-2 flex justify-center items-center w-3 h-3 rounded-full">
-                  <div
-                    className="rounded-full bg-gray-200"
-                    style={{ width: editor.strokeWidth, height: editor.strokeWidth }}
-                  />
+                  <div className="rounded-full bg-gray-200" style={{ width: boundWidth, height: boundWidth }} />
                 </div>
               </div>
               <div className="mt-4 px-1">
-                <WidthSlider />
+                <WidthSlider
+                  value={boundWidth}
+                  onChange={(width) => {
+                    if (selectedGeometry?.type === "PolyLine") {
+                      dispatch.updateSelectedLine(selectedGeometry.style.strokeColor, width);
+                    } else if (selectedGeometry?.type === "Point") {
+                      dispatch.updateSelectedPin(selectedGeometry.style.strokeColor, width);
+                    } else {
+                      dispatch.setStrokeWidth(width);
+                    }
+                  }}
+                />
               </div>
             </div>
           )}
@@ -236,36 +247,17 @@ export const Sidebar: React.FC = () => {
             <div className="mt-2 px-3 pb-2 mb-2 border-b border-gray-700">
               <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Routes</span>
 
-              <div className="flex items-center mt-2">
-                <Button
-                  className="bg-gray-900 text-gray-200 mt-px"
-                  onClick={() => {
-                    dispatch.toggleSmartMatching();
+              <div className="mt-2">
+                <SmartMatchingSelector
+                  value={boundSmartMatching}
+                  onChange={(value) => {
+                    if (selectedGeometry?.type === "PolyLine") {
+                      dispatch.updateSelectedLineSmartMatching(value);
+                    } else {
+                      dispatch.setEditorSmartMatching(value);
+                    }
                   }}
-                >
-                  {editor.smartMatching ? (
-                    <CheckboxIcon className="w-3 h-3" />
-                  ) : (
-                    <EmptyCheckboxIcon className="w-3 h-3" />
-                  )}
-                  <span className="ml-2 text-xs">Smart matching</span>
-                </Button>
-
-                {editor.smartMatching && (
-                  <select
-                    className="ml-2 p-1 bg-gray-900 border border-gray-500 hover:border-green-900 text-xs rounded cursor-pointer focus:outline-none"
-                    value={editor.smartMatchingProfile as string}
-                    onChange={(event) => dispatch.setSmartMatchingProfile(event.target.value as MapboxProfile)}
-                  >
-                    {["walking", "cycling", "driving"].map((profile) => {
-                      return (
-                        <option key={profile} value={profile}>
-                          {profile}
-                        </option>
-                      );
-                    })}
-                  </select>
-                )}
+                />
               </div>
             </div>
           )}

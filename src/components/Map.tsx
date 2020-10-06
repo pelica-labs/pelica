@@ -61,6 +61,10 @@ export const Map: React.FC = () => {
   const onMouseDown = (event: MapMouseEvent) => {
     const { keyboard, editor } = getState();
 
+    if (event.originalEvent.which !== 1) {
+      return;
+    }
+
     if (keyboard.altKey || editor.mode !== "draw") {
       return;
     }
@@ -93,7 +97,7 @@ export const Map: React.FC = () => {
     }
   };
 
-  const onRouteClick = (event: MapLayerMouseEvent) => {
+  const onFeatureClick = (event: MapLayerMouseEvent) => {
     const { editor } = getState();
 
     if (editor.mode !== "move") {
@@ -104,7 +108,16 @@ export const Map: React.FC = () => {
       return;
     }
 
-    dispatch.selectPin(event.features[0]);
+    dispatch.selectGeometry(event.features[0]);
+  };
+
+  const onFeatureRightClick = (event: MapLayerMouseEvent) => {
+    if (!event.features?.length) {
+      return;
+    }
+
+    dispatch.setEditorMode("move");
+    dispatch.selectGeometry(event.features[0]);
   };
 
   const onWindowBlur = () => {
@@ -112,9 +125,9 @@ export const Map: React.FC = () => {
   };
 
   const onWindowKeyUp = (event: KeyboardEvent) => {
-    const { selectedPin } = getState();
+    const { selectedGeometry } = getState();
 
-    if (!selectedPin) {
+    if (!selectedGeometry) {
       return;
     }
 
@@ -127,7 +140,7 @@ export const Map: React.FC = () => {
       [KeyCode.KEY_DOWN]: { x: 0, y: coefficient },
     };
 
-    if (keyCodeToDirection[event.keyCode]) {
+    if (keyCodeToDirection[event.keyCode] && selectedGeometry.type === "Point") {
       event.preventDefault();
       event.stopPropagation();
 
@@ -182,7 +195,10 @@ export const Map: React.FC = () => {
       map.on("touchstart", onMouseDown);
       map.on("touchend", onMouseUp);
       map.on("click", onClick);
-      map.on("click", MapSource.Pins, onRouteClick);
+      map.on("click", MapSource.Pins, onFeatureClick);
+      map.on("click", MapSource.Routes, onFeatureClick);
+      map.on("contextmenu", MapSource.Pins, onFeatureRightClick);
+      map.on("contextmenu", MapSource.Routes, onFeatureRightClick);
 
       map.on("styledata", () => {
         applySources(map);
