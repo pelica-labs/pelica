@@ -6,9 +6,9 @@ import { computeMapDimensions } from "~/lib/aspectRatio";
 import { applyGeometries } from "~/lib/geometry";
 import { applyInteractions } from "~/lib/interactions";
 import { applyLayers } from "~/lib/layers";
-import { styleToUrl } from "~/lib/mapbox";
 import { applySources } from "~/lib/sources";
 import { getState, useStore, useStoreSubscription } from "~/lib/state";
+import { styleToUrl } from "~/lib/style";
 
 export const Map: React.FC = () => {
   const map = useRef<mapboxgl.Map>();

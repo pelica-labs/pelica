@@ -1,9 +1,9 @@
-import { Style } from "@mapbox/mapbox-sdk/services/styles";
 import { MercatorCoordinate } from "mapbox-gl";
 
 import { Coordinates, Point, PolyLine, Position } from "~/lib/geometry";
 import { SmartMatching } from "~/lib/smartMatching";
 import { MapState } from "~/lib/state";
+import { Style } from "~/lib/style";
 
 export type Action =
   | DrawAction

@@ -1,5 +1,4 @@
 import { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geocoding";
-import { Style } from "@mapbox/mapbox-sdk/services/styles";
 import produce from "immer";
 import { useEffect } from "react";
 import create, { GetState, State, StateCreator, StateSelector } from "zustand";
@@ -9,10 +8,10 @@ import { Action, applyAction, DrawAction } from "~/lib/actions";
 import { AspectRatio } from "~/lib/aspectRatio";
 import { Coordinates, Geometry, nextGeometryId, Point, Position } from "~/lib/geometry";
 import { parseGpx } from "~/lib/gpx";
-import { defaultStyle } from "~/lib/mapbox";
 import { smartMatch, SmartMatching, SmartMatchingProfile } from "~/lib/smartMatching";
 import { MapSource } from "~/lib/sources";
 import { isServer } from "~/lib/ssr";
+import { defaultStyle, Style } from "~/lib/style";
 import { theme } from "~/styles/tailwind";
 
 export type MapState = {

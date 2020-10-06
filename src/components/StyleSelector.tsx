@@ -1,12 +1,12 @@
-import { Style } from "@mapbox/mapbox-sdk/services/styles";
 import classnames from "classnames";
 import { keyBy, mapValues } from "lodash";
 import React, { useEffect, useState } from "react";
 import useSWR from "swr";
 
 import { StylePreview } from "~/components/StylePreview";
-import { defaultStyle, staticImage } from "~/lib/mapbox";
+import { staticImage } from "~/lib/export";
 import { useStore } from "~/lib/state";
+import { defaultStyle, Style } from "~/lib/style";
 
 type StylesResponse = {
   styles: Style[];
@@ -22,7 +22,7 @@ export const StyleSelector: React.FC<Props> = ({ value, onChange }) => {
   const { data } = useSWR<StylesResponse>("/api/styles", {
     revalidateOnMount: true,
     initialData: {
-      styles: [defaultStyle as Style],
+      styles: [defaultStyle],
     },
   });
 
