@@ -11,7 +11,7 @@ type Props = {
 
 export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange }) => {
   return (
-    <div className="flex items-center">
+    <div className="flex flex-wrap items-center">
       <Button
         className="bg-gray-900 text-gray-200 mt-px"
         onClick={() => {
@@ -22,12 +22,12 @@ export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange }) => {
         }}
       >
         {value.enabled ? <CheckboxIcon className="w-3 h-3" /> : <EmptyCheckboxIcon className="w-3 h-3" />}
-        <span className="ml-2 text-xs">Smart matching</span>
+        <span className="ml-2 text-xs text-left">Smart matching</span>
       </Button>
 
       {value.enabled && (
         <select
-          className="ml-2 p-1 bg-gray-900 border border-gray-500 hover:border-green-900 text-xs rounded cursor-pointer focus:outline-none"
+          className="ml-2 p-1 mt-2 md:mt-0 bg-gray-900 border border-gray-500 hover:border-green-900 text-xs rounded cursor-pointer focus:outline-none"
           value={value.profile as string}
           onChange={(event) => {
             onChange({

@@ -73,7 +73,7 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange }) => {
       </Button>
 
       {showExtendedPicker && (
-        <div ref={extendedPickerRef} className="absolute z-10 mt-6">
+        <div ref={extendedPickerRef} className="absolute z-10 mt-6 right-0 mr-3">
           <ChromePicker
             disableAlpha
             color={color}
