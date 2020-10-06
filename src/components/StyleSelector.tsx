@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import useSWR from "swr";
 
 import { StylePreview } from "~/components/StylePreview";
-import { staticImage } from "~/lib/mapbox";
+import { defaultStyle, staticImage } from "~/lib/mapbox";
 import { useStore } from "~/lib/state";
 
 type StylesResponse = {
@@ -19,7 +19,12 @@ type Props = {
 
 export const StyleSelector: React.FC<Props> = ({ value, onChange }) => {
   const [previews, setPreviews] = useState<Record<string, string>>({});
-  const { data } = useSWR<StylesResponse>("/api/styles");
+  const { data } = useSWR<StylesResponse>("/api/styles", {
+    revalidateOnMount: true,
+    initialData: {
+      styles: [defaultStyle as Style],
+    },
+  });
 
   useEffect(() => {
     if (!data) {
@@ -44,7 +49,7 @@ export const StyleSelector: React.FC<Props> = ({ value, onChange }) => {
   }, [data]);
 
   if (!data) {
-    // @todo spinner
+    // This won't happen since we provide initial data
     return null;
   }
 
