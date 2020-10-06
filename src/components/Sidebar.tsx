@@ -1,3 +1,4 @@
+import { geometry } from "@turf/turf";
 import * as KeyCode from "keycode-js";
 import React, { useEffect, useRef } from "react";
 
@@ -11,6 +12,7 @@ import { StyleSelector } from "~/components/StyleSelector";
 import { WidthSlider } from "~/components/WidthSlider";
 import { aspectRatios } from "~/lib/aspectRatio";
 import { useClickOutside } from "~/lib/clickOutside";
+import { PolyLine } from "~/lib/geometry";
 import { SmartMatching } from "~/lib/smartMatching";
 import { useStore } from "~/lib/state";
 import { theme } from "~/styles/tailwind";
@@ -35,13 +37,14 @@ export const Sidebar: React.FC = () => {
   const actions = useStore((store) => store.actions);
   const dispatch = useStore((store) => store.dispatch);
   const screenWidth = useStore((store) => store.screen.width);
-  const selectedGeometry = useStore((store) => store.selectedGeometry);
+  const geometries = useStore((store) => store.geometries);
+  const selectedGeometryId = useStore((store) => store.selectedGeometryId);
   const stylePane = useClickOutside<HTMLDivElement>(() => {
-    console.log("GO");
     dispatch.closePanes();
   });
+  const selectedGeometry = geometries.find((geometry) => geometry.id === selectedGeometryId) as Point | PolyLine;
 
-  const displaySelectionHeader = selectedGeometry !== null && editor.mode === "move";
+  const displaySelectionHeader = selectedGeometryId !== null && editor.mode === "move";
   const displayColorPicker = ["draw", "pin"].includes(editor.mode) || selectedGeometry;
   const displayWidthPicker = ["draw", "pin"].includes(editor.mode) || selectedGeometry;
   const displaySmartMatching = ["draw"].includes(editor.mode) || selectedGeometry?.type === "PolyLine";

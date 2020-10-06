@@ -1,12 +1,13 @@
+import { bbox, circle, lineString, transformScale } from "@turf/turf";
 import mapboxgl, { LngLatBoundsLike } from "mapbox-gl";
 import Head from "next/head";
 import React, { useEffect, useRef } from "react";
 
 import { computeMapDimensions } from "~/lib/aspectRatio";
-import { applyGeometries } from "~/lib/geometry";
+import { applyGeometries, nextGeometryId } from "~/lib/geometry";
 import { applyInteractions } from "~/lib/interactions";
 import { applyLayers } from "~/lib/layers";
-import { applySources } from "~/lib/sources";
+import { applySources, MapSource } from "~/lib/sources";
 import { getState, useStore, useStoreSubscription } from "~/lib/state";
 import { styleToUrl } from "~/lib/style";
 
@@ -205,13 +206,65 @@ export const Map: React.FC = () => {
    * Sync geometries to map
    */
   useStoreSubscription(
-    (store) => store.geometries,
-    (geometries) => {
+    (store) => ({ geometries: store.geometries, selectedGeometryId: store.selectedGeometryId, zoom: store.zoom }),
+    ({ geometries, selectedGeometryId, zoom }) => {
       if (!map.current) {
         return;
       }
 
-      applyGeometries(map.current, geometries);
+      const allGeometries = [...geometries];
+
+      const selectedGeometry = geometries.find((geometry) => geometry.id === selectedGeometryId);
+
+      if (selectedGeometry?.type === "PolyLine") {
+        const box = bbox(
+          transformScale(
+            lineString(
+              selectedGeometry.points.map((point) => {
+                return [point.longitude, point.latitude];
+              })
+            ),
+            1.05
+          )
+        );
+
+        allGeometries.push({
+          id: nextGeometryId(),
+          type: "Rectangle",
+          source: MapSource.Overlays,
+          box: {
+            northWest: { longitude: box[0], latitude: box[1] },
+            southEast: { longitude: box[2], latitude: box[3] },
+          },
+        });
+      }
+
+      if (selectedGeometry?.type === "Point") {
+        const radius = 2 ** (-zoom - 1);
+        const polygon = circle(
+          [selectedGeometry.coordinates.longitude, selectedGeometry.coordinates.latitude],
+          radius * selectedGeometry.style.strokeWidth * 150,
+          {
+            steps: 20,
+            units: "kilometers",
+          }
+        );
+
+        if (polygon.geometry) {
+          allGeometries.push({
+            id: nextGeometryId(),
+            type: "Polygon",
+            source: MapSource.Overlays,
+            lines: polygon.geometry.coordinates.map((points) => {
+              return points.map((point) => {
+                return { longitude: point[0], latitude: point[1] };
+              });
+            }),
+          });
+        }
+      }
+
+      applyGeometries(map.current, allGeometries);
     }
   );
 
@@ -222,9 +275,9 @@ export const Map: React.FC = () => {
     (store) => ({
       editorMode: store.editor.mode,
       altKey: store.keyboard.altKey,
-      draggedGeometry: store.draggedGeometry,
+      draggedGeometryId: store.draggedGeometryId,
     }),
-    ({ editorMode, altKey, draggedGeometry }) => {
+    ({ editorMode, altKey, draggedGeometryId }) => {
       if (!map.current) {
         return null;
       }
@@ -233,7 +286,7 @@ export const Map: React.FC = () => {
 
       if (altKey) {
         canvasStyle.cursor = "pointer";
-      } else if (draggedGeometry) {
+      } else if (draggedGeometryId) {
         canvasStyle.cursor = "grab";
       } else if (editorMode === "draw" || editorMode === "pin") {
         canvasStyle.cursor = "crosshair";

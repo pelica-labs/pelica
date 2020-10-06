@@ -19,7 +19,7 @@ export const applyInteractions = (map: mapboxgl.Map, dispatch: MapStore["dispatc
   };
 
   const onMouseMove = throttle((event: MapMouseEvent) => {
-    const { keyboard, currentDraw, draggedGeometry } = getState();
+    const { keyboard, currentDraw, draggedGeometryId } = getState();
 
     if (keyboard.altKey) {
       return;
@@ -33,7 +33,7 @@ export const applyInteractions = (map: mapboxgl.Map, dispatch: MapStore["dispatc
       dispatch.draw(lat, lng);
     }
 
-    if (draggedGeometry?.type === "Point") {
+    if (draggedGeometryId) {
       dispatch.dragSelectedPin({ latitude: lat, longitude: lng });
     }
   }, 1000 / 30);
@@ -54,7 +54,7 @@ export const applyInteractions = (map: mapboxgl.Map, dispatch: MapStore["dispatc
   };
 
   const onMouseUp = (event?: MapMouseEvent) => {
-    const { keyboard, editor, draggedGeometry } = getState();
+    const { keyboard, editor, draggedGeometryId } = getState();
 
     if (keyboard.altKey) {
       return;
@@ -64,7 +64,7 @@ export const applyInteractions = (map: mapboxgl.Map, dispatch: MapStore["dispatc
       dispatch.endDrawing();
     }
 
-    if (draggedGeometry && event) {
+    if (draggedGeometryId && event) {
       const { lat, lng } = event.lngLat;
 
       dispatch.endDragSelectedPin({ latitude: lat, longitude: lng });
@@ -127,7 +127,7 @@ export const applyInteractions = (map: mapboxgl.Map, dispatch: MapStore["dispatc
   };
 
   const onCanvasKeyUp = (event: KeyboardEvent) => {
-    const { selectedGeometry } = getState();
+    const selectedGeometry = dispatch.getSelectedGeometry();
 
     if (!selectedGeometry) {
       return;
@@ -147,6 +147,7 @@ export const applyInteractions = (map: mapboxgl.Map, dispatch: MapStore["dispatc
       event.stopPropagation();
 
       dispatch.moveSelectedPin(keyCodeToDirection[event.keyCode]);
+      console.log("moving selected pin");
     }
 
     if (event.keyCode === KeyCode.KEY_BACK_SPACE) {
@@ -154,6 +155,13 @@ export const applyInteractions = (map: mapboxgl.Map, dispatch: MapStore["dispatc
       event.stopPropagation();
 
       dispatch.deleteSelectedGeometry();
+    }
+
+    if (event.keyCode === KeyCode.KEY_ESCAPE) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      dispatch.unselectGeometry();
     }
   };
 

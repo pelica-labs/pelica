@@ -3,6 +3,7 @@ import { AnySourceData } from "mapbox-gl";
 export enum MapSource {
   Pins = "pins",
   Routes = "routes",
+  Overlays = "overlays",
 }
 
 const EmptyGeoJsonSource: AnySourceData = {
@@ -14,11 +15,15 @@ const EmptyGeoJsonSource: AnySourceData = {
 };
 
 export const applySources = (map: mapboxgl.Map): void => {
-  if (!map.getSource(MapSource.Routes)) {
-    map.addSource(MapSource.Routes, EmptyGeoJsonSource);
+  addSource(map, MapSource.Routes);
+  addSource(map, MapSource.Pins);
+  addSource(map, MapSource.Overlays);
+};
+
+const addSource = (map: mapboxgl.Map, id: MapSource) => {
+  if (map.getSource(id)) {
+    return;
   }
 
-  if (!map.getSource(MapSource.Pins)) {
-    map.addSource(MapSource.Pins, EmptyGeoJsonSource);
-  }
+  map.addSource(id, EmptyGeoJsonSource);
 };

@@ -13,7 +13,12 @@ export type Position = {
   y: number;
 };
 
-export type Geometry = PolyLine | Point;
+export type BoundingBox = {
+  northWest: Coordinates;
+  southEast: Coordinates;
+};
+
+export type Geometry = PolyLine | Point | Rectangle | Polygon;
 
 export type PolyLine = {
   id: number;
@@ -21,7 +26,6 @@ export type PolyLine = {
   type: "PolyLine";
   points: Coordinates[];
   smartPoints: Coordinates[];
-  selected: boolean;
   smartMatching: SmartMatching;
   style: {
     strokeColor: string;
@@ -34,11 +38,25 @@ export type Point = {
   source: MapSource;
   type: "Point";
   coordinates: Coordinates;
-  selected: boolean;
   style: {
     strokeColor: string;
     strokeWidth: number;
+    targetType?: Geometry["type"];
   };
+};
+
+export type Rectangle = {
+  id: number;
+  source: MapSource;
+  type: "Rectangle";
+  box: BoundingBox;
+};
+
+export type Polygon = {
+  id: number;
+  source: MapSource;
+  type: "Polygon";
+  lines: Coordinates[][];
 };
 
 let _nextId = 0;
@@ -59,7 +77,6 @@ const geometryToFeature = (geometry: Geometry): GeoJSON.Feature<GeoJSON.Geometry
       },
       properties: {
         ...geometry.style,
-        selected: geometry.selected,
       },
     };
   }
@@ -82,6 +99,42 @@ const geometryToFeature = (geometry: Geometry): GeoJSON.Feature<GeoJSON.Geometry
       properties: {
         ...geometry.style,
       },
+    };
+  }
+
+  if (geometry.type === "Rectangle") {
+    return {
+      type: "Feature",
+      id: geometry.id,
+      geometry: {
+        type: "Polygon",
+        coordinates: [
+          [
+            [geometry.box.northWest.longitude, geometry.box.northWest.latitude],
+            [geometry.box.northWest.longitude, geometry.box.southEast.latitude],
+            [geometry.box.southEast.longitude, geometry.box.southEast.latitude],
+            [geometry.box.southEast.longitude, geometry.box.northWest.latitude],
+            [geometry.box.northWest.longitude, geometry.box.northWest.latitude],
+          ],
+        ],
+      },
+      properties: {},
+    };
+  }
+
+  if (geometry.type === "Polygon") {
+    return {
+      type: "Feature",
+      id: geometry.id,
+      geometry: {
+        type: "Polygon",
+        coordinates: geometry.lines.map((points) => {
+          return points.map((point) => {
+            return [point.longitude, point.latitude];
+          });
+        }),
+      },
+      properties: {},
     };
   }
 

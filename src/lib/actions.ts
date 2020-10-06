@@ -12,7 +12,6 @@ export type Action =
   | UpdateStyleAction
   | NudgePinAction
   | MovePinAction
-  | SelectGeometryAction
   | UpdatePinAction
   | UpdateLineAction
   | UpdateLineSmartMatchingAction
@@ -56,6 +55,10 @@ export type SelectGeometryAction = {
   geometryId: number;
 };
 
+export type UnselectGeometryAction = {
+  name: "unselectGeometry";
+};
+
 export type DeleteGeometryAction = {
   name: "deleteGeometry";
   geometryId: number;
@@ -93,17 +96,6 @@ export const applyAction = (state: MapState, action: Action): void => {
 
   if (action.name === "importGpx") {
     state.geometries.push({ ...action.line });
-  }
-
-  if (action.name === "selectGeometry") {
-    if (state.selectedGeometry) {
-      state.selectedGeometry.selected = false;
-    }
-
-    state.selectedGeometry = state.geometries.find((geometry) => geometry.id === action.geometryId) as Point;
-    if (state.selectedGeometry) {
-      state.selectedGeometry.selected = true;
-    }
   }
 
   if (action.name === "nudgePin") {
@@ -157,7 +149,7 @@ export const applyAction = (state: MapState, action: Action): void => {
     const geometryIndex = state.geometries.findIndex((geometry) => geometry.id === action.geometryId);
     if (geometryIndex >= 0) {
       state.geometries.splice(geometryIndex, 1);
-      state.selectedGeometry = null;
+      state.selectedGeometryId = null;
     }
   }
 
