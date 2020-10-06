@@ -1,3 +1,4 @@
+import * as KeyCode from "keycode-js";
 import { throttle } from "lodash";
 import mapboxgl, { LngLatBoundsLike, MapLayerMouseEvent, MapMouseEvent } from "mapbox-gl";
 import Head from "next/head";
@@ -120,10 +121,10 @@ export const Map: React.FC = () => {
     const coefficient = event.shiftKey ? 0.1 : 0.01;
 
     const keyCodeToDirection: { [key: number]: Position } = {
-      37: { x: -coefficient, y: 0 }, // left
-      38: { x: 0, y: -coefficient }, // top
-      39: { x: coefficient, y: 0 }, // right
-      40: { x: 0, y: coefficient }, // down
+      [KeyCode.KEY_LEFT]: { x: -coefficient, y: 0 },
+      [KeyCode.KEY_UP]: { x: 0, y: -coefficient },
+      [KeyCode.KEY_RIGHT]: { x: coefficient, y: 0 },
+      [KeyCode.KEY_DOWN]: { x: 0, y: coefficient },
     };
 
     if (keyCodeToDirection[event.keyCode]) {
@@ -131,6 +132,13 @@ export const Map: React.FC = () => {
       event.stopPropagation();
 
       dispatch.moveSelectedPin(keyCodeToDirection[event.keyCode]);
+    }
+
+    if (event.keyCode === KeyCode.KEY_BACK_SPACE) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      dispatch.deleteSelectedGeometry();
     }
   };
 

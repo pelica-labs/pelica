@@ -1,13 +1,14 @@
 import { MapboxProfile } from "@mapbox/mapbox-sdk/lib/classes/mapi-request";
+import * as KeyCode from "keycode-js";
 import React, { useEffect, useRef } from "react";
 
 import { AspectRatioSelector } from "~/components/AspectRatioSelector";
 import { Button } from "~/components/Button";
 import { ColorPicker } from "~/components/ColorPicker";
-import { CheckboxIcon, EmptyCheckboxIcon, EraserIcon, UndoIcon } from "~/components/Icon";
+import { CheckboxIcon, EmptyCheckboxIcon, EraserIcon, TrashIcon, UndoIcon } from "~/components/Icon";
 import { StyleSelector } from "~/components/StyleSelector";
 import { WidthSlider } from "~/components/WidthSlider";
-import { useStore } from "~/lib/state";
+import { getState, useStore, useStoreSubscription } from "~/lib/state";
 import { theme } from "~/styles/tailwind";
 
 const computePanelOffset = (screenWidth: number) => {
@@ -31,19 +32,35 @@ export const Sidebar: React.FC = () => {
   const actions = useStore((store) => store.actions);
   const dispatch = useStore((store) => store.dispatch);
   const screenWidth = useStore((store) => store.screen.width);
+  const selectedPin = useStore((store) => store.selectedPin);
 
-  const displayColorPicker = ["draw", "trace", "pin"].includes(editor.mode);
-  const displayWidthPicker = ["draw", "trace", "pin"].includes(editor.mode);
-  const displaySmartMatching = ["draw", "trace"].includes(editor.mode);
+  const displayColorPicker = ["draw", "pin"].includes(editor.mode) || selectedPin;
+  const displayWidthPicker = ["draw", "pin"].includes(editor.mode) || selectedPin;
+  const displaySmartMatching = ["draw"].includes(editor.mode);
 
   /**
-   * Handle undo
+   * Handle shortcuts
    */
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.metaKey && event.keyCode === 90) {
+      if (event.metaKey && event.keyCode === KeyCode.KEY_Z) {
         event.preventDefault();
         dispatch.undo();
+      }
+
+      if (event.metaKey && event.keyCode === KeyCode.KEY_1) {
+        event.preventDefault();
+        dispatch.setEditorMode("move");
+      }
+
+      if (event.metaKey && event.keyCode === KeyCode.KEY_2) {
+        event.preventDefault();
+        dispatch.setEditorMode("draw");
+      }
+
+      if (event.metaKey && event.keyCode === KeyCode.KEY_3) {
+        event.preventDefault();
+        dispatch.setEditorMode("pin");
       }
     };
 
@@ -53,6 +70,22 @@ export const Sidebar: React.FC = () => {
       window.removeEventListener("keydown", onKeyDown, false);
     };
   });
+
+  /**
+   * Handle edition
+   */
+  useStoreSubscription(
+    (store) => ({ strokeWidth: store.editor.strokeWidth, strokeColor: store.editor.strokeColor }),
+    ({ strokeWidth, strokeColor }) => {
+      const selectedPin = getState().selectedPin;
+
+      if (!selectedPin) {
+        return;
+      }
+
+      dispatch.updateSelectedPin(strokeColor, strokeWidth);
+    }
+  );
 
   return (
     <div className="flex-grow relative flex items-end">
@@ -96,10 +129,7 @@ export const Sidebar: React.FC = () => {
             <span className="text-xs uppercase text-gray-300 font-light tracking-wide leading-none">Design</span>
             <div className="flex ml-2">
               <Button
-                data-html
                 className="bg-gray-900 text-gray-200"
-                data-place="bottom"
-                data-tip="Undo last action"
                 disabled={!actions.length}
                 onClick={() => {
                   dispatch.undo();
@@ -109,8 +139,6 @@ export const Sidebar: React.FC = () => {
               </Button>
               <Button
                 className="bg-gray-900 text-gray-200 ml-2"
-                data-place="bottom"
-                data-tip="Erase all drawings"
                 onClick={() => {
                   dispatch.clear();
                 }}
@@ -154,6 +182,23 @@ export const Sidebar: React.FC = () => {
               <span className="text-xs">Pin</span>
             </Button>
           </div>
+
+          {selectedPin !== null && editor.mode === "move" && (
+            <div className="flex items-center justify-between px-3 py-2 border-b border-gray-700">
+              <span className="text-xs uppercase font-light tracking-wide leading-none">
+                <span className="text-gray-500">Selection:</span>
+                <span className="ml-2">Pin #{selectedPin.id}</span>
+              </span>
+              <Button
+                className="bg-gray-900 text-gray-200"
+                onClick={() => {
+                  dispatch.deleteSelectedGeometry();
+                }}
+              >
+                <TrashIcon className="w-2 h-2 md:w-3 md:h-3" />
+              </Button>
+            </div>
+          )}
 
           {displayColorPicker && (
             <div className="mt-4 px-2 pb-2 mb-2 border-b border-gray-700">

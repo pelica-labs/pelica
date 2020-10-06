@@ -1,5 +1,6 @@
 import { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geocoding";
 import classnames from "classnames";
+import * as KeyCode from "keycode-js";
 import React, { useEffect, useRef, useState } from "react";
 
 import { CloseIcon, SearchIcon } from "~/components/Icon";
@@ -25,8 +26,7 @@ export const PlaceAutocomplete: React.FC = () => {
    */
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      // Cmd-P
-      if (event.keyCode === 80 && event.metaKey) {
+      if (event.metaKey && event.keyCode === KeyCode.KEY_P) {
         event.preventDefault();
         input.current?.focus();
       }
@@ -79,8 +79,7 @@ export const PlaceAutocomplete: React.FC = () => {
    * Handles keyboard navigation
    */
   const onKeyUp = (event: React.KeyboardEvent) => {
-    // escape
-    if (event.keyCode === 27) {
+    if (event.keyCode === KeyCode.KEY_ESCAPE) {
       onBlur(event);
     }
 
@@ -89,21 +88,21 @@ export const PlaceAutocomplete: React.FC = () => {
     }
 
     // up
-    if (event.keyCode === 38) {
+    if (event.keyCode === KeyCode.KEY_UP) {
       event.preventDefault();
       event.stopPropagation();
       setSelectionIndex((results.length + selectionIndex - 1) % results.length);
     }
 
     // down
-    if (event.keyCode === 40) {
+    if (event.keyCode === KeyCode.KEY_DOWN) {
       event.preventDefault();
       event.stopPropagation();
       setSelectionIndex((selectionIndex + 1) % results.length);
     }
 
     // enter
-    if (event.keyCode === 13) {
+    if (event.keyCode === KeyCode.KEY_RETURN) {
       onPlaceSelection(event, results[selectionIndex]);
     }
   };

@@ -369,6 +369,23 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
               point.coordinates = { latitude: lat, longitude: lng };
             }
 
+            if (action.name === "updatePin") {
+              const point = state.geometries.find((geometry) => geometry.id === action.pinId) as Point;
+
+              point.style = {
+                strokeWidth: action.strokeWidth,
+                strokeColor: action.strokeColor,
+              };
+            }
+
+            if (action.name === "deleteGeometry") {
+              const geometryIndex = state.geometries.findIndex((geometry) => geometry.id === action.geometryId);
+              if (geometryIndex >= 0) {
+                state.geometries.splice(geometryIndex, 1);
+                state.selectedPin = null;
+              }
+            }
+
             if (action.name === "updateStyle") {
               state.style = action.style;
             }
@@ -489,6 +506,34 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
             pinId: state.selectedPin.id,
             direction,
             zoom: state.zoom,
+          });
+        });
+      },
+
+      deleteSelectedGeometry() {
+        set((state) => {
+          if (!state.selectedPin) {
+            return;
+          }
+
+          state.actions.push({
+            name: "deleteGeometry",
+            geometryId: state.selectedPin.id,
+          });
+        });
+      },
+
+      updateSelectedPin(strokeColor: string, strokeWidth: number) {
+        set((state) => {
+          if (!state.selectedPin) {
+            return;
+          }
+
+          state.actions.push({
+            name: "updatePin",
+            pinId: state.selectedPin.id,
+            strokeColor,
+            strokeWidth,
           });
         });
       },
