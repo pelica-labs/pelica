@@ -9,6 +9,7 @@ import { SmartMatchingSelector } from "~/components/SmartMatchingSelector";
 import { StyleSelector } from "~/components/StyleSelector";
 import { WidthSlider } from "~/components/WidthSlider";
 import { aspectRatios } from "~/lib/aspectRatio";
+import { SmartMatching, SmartMatchingProfile } from "~/lib/smartMatching";
 import { useStore } from "~/lib/state";
 import { theme } from "~/styles/tailwind";
 
@@ -44,6 +45,34 @@ export const Sidebar: React.FC = () => {
   const boundWidth = selectedGeometry ? selectedGeometry.style.strokeWidth : editor.strokeWidth;
   const boundSmartMatching =
     selectedGeometry?.type === "PolyLine" ? selectedGeometry.smartMatching : editor.smartMatching;
+
+  const onColorChange = (color: string) => {
+    if (selectedGeometry?.type === "PolyLine") {
+      dispatch.updateSelectedLine(color, selectedGeometry.style.strokeWidth);
+    } else if (selectedGeometry?.type === "Point") {
+      dispatch.updateSelectedPin(color, selectedGeometry.style.strokeWidth);
+    } else {
+      dispatch.setStrokeColor(color);
+    }
+  };
+
+  const onWidthChange = (width: number) => {
+    if (selectedGeometry?.type === "PolyLine") {
+      dispatch.updateSelectedLine(selectedGeometry.style.strokeColor, width);
+    } else if (selectedGeometry?.type === "Point") {
+      dispatch.updateSelectedPin(selectedGeometry.style.strokeColor, width);
+    } else {
+      dispatch.setStrokeWidth(width);
+    }
+  };
+
+  const onSmartMatchingChange = (smartMatching: SmartMatching) => {
+    if (selectedGeometry?.type === "PolyLine") {
+      dispatch.updateSelectedLineSmartMatching(smartMatching);
+    } else {
+      dispatch.setEditorSmartMatching(smartMatching);
+    }
+  };
 
   /**
    * Handle shortcuts
@@ -208,13 +237,7 @@ export const Sidebar: React.FC = () => {
                 <ColorPicker
                   value={boundColor}
                   onChange={(color) => {
-                    if (selectedGeometry?.type === "PolyLine") {
-                      dispatch.updateSelectedLine(color, selectedGeometry.style.strokeWidth);
-                    } else if (selectedGeometry?.type === "Point") {
-                      dispatch.updateSelectedPin(color, selectedGeometry.style.strokeWidth);
-                    } else {
-                      dispatch.setStrokeColor(color);
-                    }
+                    onColorChange(color);
                   }}
                 />
               </div>
@@ -233,13 +256,7 @@ export const Sidebar: React.FC = () => {
                 <WidthSlider
                   value={boundWidth}
                   onChange={(width) => {
-                    if (selectedGeometry?.type === "PolyLine") {
-                      dispatch.updateSelectedLine(selectedGeometry.style.strokeColor, width);
-                    } else if (selectedGeometry?.type === "Point") {
-                      dispatch.updateSelectedPin(selectedGeometry.style.strokeColor, width);
-                    } else {
-                      dispatch.setStrokeWidth(width);
-                    }
+                    onWidthChange(width);
                   }}
                 />
               </div>
@@ -253,12 +270,8 @@ export const Sidebar: React.FC = () => {
               <div className="mt-2">
                 <SmartMatchingSelector
                   value={boundSmartMatching}
-                  onChange={(value) => {
-                    if (selectedGeometry?.type === "PolyLine") {
-                      dispatch.updateSelectedLineSmartMatching(value);
-                    } else {
-                      dispatch.setEditorSmartMatching(value);
-                    }
+                  onChange={(smartMatching) => {
+                    onSmartMatchingChange(smartMatching);
                   }}
                 />
               </div>
