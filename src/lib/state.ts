@@ -1,4 +1,3 @@
-import { MapboxProfile } from "@mapbox/mapbox-sdk/lib/classes/mapi-request";
 import { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geocoding";
 import { Style } from "@mapbox/mapbox-sdk/services/styles";
 import produce from "immer";
@@ -8,9 +7,10 @@ import shallow from "zustand/shallow";
 
 import { Action, applyAction, DrawAction } from "~/lib/actions";
 import { AspectRatio } from "~/lib/aspectRatio";
-import { Coordinates, Geometry, nextGeometryId, Point, Position, smartMatch } from "~/lib/geometry";
+import { Coordinates, Geometry, nextGeometryId, Point, Position } from "~/lib/geometry";
 import { parseGpx } from "~/lib/gpx";
 import { defaultStyle } from "~/lib/mapbox";
+import { smartMatch, SmartMatching, SmartMatchingProfile } from "~/lib/smartMatching";
 import { MapSource } from "~/lib/sources";
 import { isServer } from "~/lib/ssr";
 
@@ -51,13 +51,6 @@ export type MapState = {
 
   screen: ScreenDimensions;
 };
-
-export type SmartMatching = {
-  enabled: boolean;
-  profile: SmartMatchingProfile | null;
-};
-
-export type SmartMatchingProfile = MapboxProfile;
 
 export type EditorMode = "move" | "draw" | "pin";
 

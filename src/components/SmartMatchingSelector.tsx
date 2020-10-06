@@ -2,7 +2,7 @@ import React from "react";
 
 import { Button } from "~/components/Button";
 import { CheckboxIcon, EmptyCheckboxIcon } from "~/components/Icon";
-import { SmartMatching, SmartMatchingProfile } from "~/lib/state";
+import { SmartMatching, SmartMatchingProfile } from "~/lib/smartMatching";
 
 type Props = {
   value: SmartMatching;
