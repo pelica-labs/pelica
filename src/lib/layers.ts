@@ -1,4 +1,5 @@
 import { MapSource } from "~/lib/sources";
+import { theme } from "~/styles/tailwind";
 
 export const applyLayers = (map: mapboxgl.Map): void => {
   if (!map.getLayer(MapSource.Routes)) {
@@ -20,8 +21,14 @@ export const applyLayers = (map: mapboxgl.Map): void => {
       source: MapSource.Pins,
       paint: {
         "circle-color": ["get", "strokeColor"],
-        "circle-stroke-color": ["get", "strokeColor"],
-        "circle-stroke-width": ["get", "strokeWidth"],
+        "circle-radius": ["get", "strokeWidth"],
+        "circle-stroke-width": ["case", ["to-boolean", ["get", "selected"]], 3, 0],
+        "circle-stroke-color": [
+          "case",
+          ["to-boolean", ["get", "selected"]],
+          theme.colors.green[500],
+          ["get", "strokeColor"],
+        ],
       },
     });
   }

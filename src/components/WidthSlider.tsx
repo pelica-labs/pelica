@@ -16,7 +16,7 @@ export const WidthSlider: React.FC = () => {
         height: 14,
         width: 14,
       }}
-      max={10}
+      max={12}
       min={1}
       railStyle={{
         height: 4,

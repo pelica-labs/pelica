@@ -1,9 +1,8 @@
-import { GeoJSONSource } from "mapbox-gl";
+import { Style } from "@mapbox/mapbox-sdk/services/styles";
 
-import { joinPoints, Point, PolyLine } from "~/lib/geometry";
-import { MapSource } from "~/lib/sources";
+import { Point, PolyLine, Position } from "~/lib/geometry";
 
-export type Action = DrawAction | PinAction | ImportGpxAction;
+export type Action = DrawAction | PinAction | ImportGpxAction | UpdateStyleAction | MovePinAction | SelectPinAction;
 
 export type DrawAction = {
   name: "draw";
@@ -20,71 +19,19 @@ export type ImportGpxAction = {
   line: PolyLine;
 };
 
-const ActionToSource = {
-  draw: MapSource.Routes,
-  pin: MapSource.Pins,
-  importGpx: MapSource.Routes,
+export type MovePinAction = {
+  name: "movePin";
+  pinId: number;
+  zoom: number;
+  direction: Position;
 };
 
-const actionToFeature = (action: Action): GeoJSON.Feature<GeoJSON.Geometry> => {
-  if (action.name === "pin") {
-    return {
-      type: "Feature",
-      geometry: {
-        type: "Point",
-        coordinates: [action.point.coordinates.longitude, action.point.coordinates.latitude],
-      },
-      properties: action.point.style,
-    };
-  }
-
-  if (action.name === "draw") {
-    return {
-      type: "Feature",
-      geometry: {
-        type: "MultiLineString",
-        coordinates: joinPoints(action.line.points).map((line) => {
-          return line.map((point) => {
-            return [point.longitude, point.latitude];
-          });
-        }),
-      },
-      properties: action.line.style,
-    };
-  }
-
-  if (action.name === "importGpx") {
-    return {
-      type: "Feature",
-      geometry: {
-        type: "MultiLineString",
-        coordinates: joinPoints(action.line.points).map((line) => {
-          return line.map((point) => {
-            return [point.longitude, point.latitude];
-          });
-        }),
-      },
-      properties: action.line.style,
-    };
-  }
-
-  throw new Error("Action is not handled");
+export type UpdateStyleAction = {
+  name: "updateStyle";
+  style: Style;
 };
 
-export const applyActions = (map: mapboxgl.Map, actions: Action[]): void => {
-  Object.values(MapSource).forEach((sourceId) => {
-    const source = map.getSource(sourceId) as GeoJSONSource;
-    if (!source) {
-      return;
-    }
-
-    const actionsForSource = actions.filter((action) => {
-      return ActionToSource[action.name] === sourceId;
-    });
-
-    source.setData({
-      type: "FeatureCollection",
-      features: actionsForSource.map(actionToFeature),
-    });
-  });
+export type SelectPinAction = {
+  name: "selectPin";
+  pinId: number;
 };

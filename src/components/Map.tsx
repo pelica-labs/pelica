@@ -1,12 +1,12 @@
 import { throttle } from "lodash";
-import mapboxgl, { LngLatBoundsLike, MapMouseEvent } from "mapbox-gl";
+import mapboxgl, { LngLatBoundsLike, MapLayerMouseEvent, MapMouseEvent } from "mapbox-gl";
 import Head from "next/head";
 import React, { CSSProperties, useEffect, useRef } from "react";
 
-import { applyActions } from "~/lib/actions";
+import { applyGeometries, Position } from "~/lib/geometry";
 import { applyLayers } from "~/lib/layers";
 import { styleToUrl } from "~/lib/mapbox";
-import { applySources } from "~/lib/sources";
+import { applySources, MapSource } from "~/lib/sources";
 import { AspectRatio, getState, ScreenDimensions, useStore, useStoreSubscription } from "~/lib/state";
 
 function computeMapDimensions(aspectRatio: AspectRatio, screen: ScreenDimensions): CSSProperties {
@@ -92,8 +92,46 @@ export const Map: React.FC = () => {
     }
   };
 
+  const onRouteClick = (event: MapLayerMouseEvent) => {
+    const { editor } = getState();
+
+    if (editor.mode !== "move") {
+      return;
+    }
+
+    if (!event.features?.length) {
+      return;
+    }
+
+    dispatch.selectPin(event.features[0]);
+  };
+
   const onWindowBlur = () => {
     onMouseUp();
+  };
+
+  const onWindowKeyUp = (event: KeyboardEvent) => {
+    const { selectedPin } = getState();
+
+    if (!selectedPin) {
+      return;
+    }
+
+    const coefficient = event.shiftKey ? 0.1 : 0.01;
+
+    const keyCodeToDirection: { [key: number]: Position } = {
+      37: { x: -coefficient, y: 0 }, // left
+      38: { x: 0, y: -coefficient }, // top
+      39: { x: coefficient, y: 0 }, // right
+      40: { x: 0, y: coefficient }, // down
+    };
+
+    if (keyCodeToDirection[event.keyCode]) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      dispatch.moveSelectedPin(keyCodeToDirection[event.keyCode]);
+    }
   };
 
   /**
@@ -136,20 +174,28 @@ export const Map: React.FC = () => {
       map.on("touchstart", onMouseDown);
       map.on("touchend", onMouseUp);
       map.on("click", onClick);
+      map.on("click", MapSource.Pins, onRouteClick);
 
       map.on("styledata", () => {
         applySources(map);
         applyLayers(map);
-        applyActions(map, getState().actions);
+        applyGeometries(map, getState().geometries);
       });
 
       window.addEventListener("blur", onWindowBlur, false);
+
+      map.getCanvas().addEventListener("keydown", onWindowKeyUp, false);
     });
 
     return () => {
-      map.current?.remove();
+      if (!map.current) {
+        return;
+      }
+
+      map.current.remove();
 
       window.removeEventListener("blur", onWindowBlur, false);
+      map.current.getCanvas().removeEventListener("keydown", onWindowKeyUp, false);
     };
   }, []);
 
@@ -289,21 +335,26 @@ export const Map: React.FC = () => {
   );
 
   /**
-   * Sync actions
+   * Sync actions to state
    */
   useStoreSubscription(
     (store) => ({ actions: store.actions, currentDraw: store.currentDraw }),
-    ({ actions, currentDraw }) => {
+    () => {
+      dispatch.applyActions();
+    }
+  );
+
+  /**
+   * Sync geometries to map
+   */
+  useStoreSubscription(
+    (store) => store.geometries,
+    (geometries) => {
       if (!map.current) {
         return;
       }
 
-      const allActions = [...actions];
-      if (currentDraw) {
-        allActions.push(currentDraw);
-      }
-
-      applyActions(map.current, allActions);
+      applyGeometries(map.current, geometries);
     }
   );
 

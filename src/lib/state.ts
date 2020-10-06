@@ -4,14 +4,17 @@ import { Tracepoint } from "@mapbox/mapbox-sdk/services/map-matching";
 import { Style } from "@mapbox/mapbox-sdk/services/styles";
 import produce from "immer";
 import { chunk } from "lodash";
+import { MercatorCoordinate } from "mapbox-gl";
 import { useEffect } from "react";
 import create, { GetState, State, StateCreator, StateSelector } from "zustand";
 import { devtools } from "zustand/middleware";
 import shallow from "zustand/shallow";
 
-import { Action, DrawAction } from "~/lib/actions";
+import { Action, DrawAction, PinAction } from "~/lib/actions";
+import { Geometry, nextGeometryId, Point, Position } from "~/lib/geometry";
 import { parseGpx } from "~/lib/gpx";
 import { defaultStyle, mapboxMapMatching } from "~/lib/mapbox";
+import { MapSource } from "~/lib/sources";
 import { isServer } from "~/lib/ssr";
 
 export type MapState = {
@@ -37,8 +40,10 @@ export type MapState = {
     smartMatchingProfile: MapboxProfile | null;
   };
 
-  currentDraw: DrawAction | null;
   actions: Action[];
+  geometries: Geometry[];
+  currentDraw: DrawAction | null;
+  selectedPin: Point | null;
 
   keyboard: {
     ctrlKey: boolean;
@@ -84,7 +89,9 @@ const initialState: MapState = {
   aspectRatio: "fill",
 
   actions: [],
+  geometries: [],
   currentDraw: null,
+  selectedPin: null,
 
   keyboard: {
     ctrlKey: false,
@@ -122,7 +129,10 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
 
       setStyle(style: Style) {
         set((state) => {
-          state.style = style;
+          state.actions.push({
+            name: "updateStyle",
+            style,
+          });
         });
       },
 
@@ -193,6 +203,9 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
           state.currentDraw = {
             name: "draw",
             line: {
+              type: "PolyLine",
+              id: nextGeometryId(),
+              source: MapSource.Routes,
               points: [],
               style: {
                 strokeColor: editor.strokeColor,
@@ -286,15 +299,79 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
         const editor = get().editor;
 
         set((state) => {
-          state.actions.push({
+          const pin = {
             name: "pin",
             point: {
+              type: "Point",
+              id: nextGeometryId(),
+              source: MapSource.Pins,
               coordinates: { latitude, longitude },
+              selected: false,
               style: {
                 strokeColor: editor.strokeColor,
                 strokeWidth: editor.strokeWidth,
               },
             },
+          } as PinAction;
+
+          state.actions.push(pin);
+          // state.selectedPin = pin.point;
+        });
+      },
+
+      applyActions() {
+        set((state) => {
+          state.style = defaultStyle as Style;
+          state.geometries = [];
+
+          const allActions = [...state.actions];
+          if (state.currentDraw) {
+            allActions.push(state.currentDraw);
+          }
+
+          allActions.forEach((action) => {
+            if (action.name === "draw") {
+              state.geometries.push({ ...action.line });
+            }
+
+            if (action.name === "pin") {
+              state.geometries.push({ ...action.point });
+            }
+
+            if (action.name === "importGpx") {
+              state.geometries.push({ ...action.line });
+            }
+
+            if (action.name === "selectPin") {
+              if (state.selectedPin) {
+                state.selectedPin.selected = false;
+              }
+
+              state.selectedPin = state.geometries.find((geometry) => geometry.id === action.pinId) as Point;
+              if (state.selectedPin) {
+                state.selectedPin.selected = true;
+              }
+            }
+
+            if (action.name === "movePin") {
+              const point = state.geometries.find((geometry) => geometry.id === action.pinId) as Point;
+
+              const pointCoordinates = MercatorCoordinate.fromLngLat(
+                { lng: point.coordinates.longitude, lat: point.coordinates.latitude },
+                0
+              );
+
+              const base = 2 ** (-action.zoom - 1);
+              pointCoordinates.x += base * action.direction.x;
+              pointCoordinates.y += base * action.direction.y;
+
+              const { lat, lng } = pointCoordinates.toLngLat();
+              point.coordinates = { latitude: lat, longitude: lng };
+            }
+
+            if (action.name === "updateStyle") {
+              state.style = action.style;
+            }
           });
         });
       },
@@ -338,6 +415,9 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
             state.actions.push({
               name: "importGpx",
               line: {
+                type: "PolyLine",
+                id: nextGeometryId(),
+                source: MapSource.Routes,
                 points,
                 style: {
                   strokeColor: editor.strokeColor,
@@ -386,6 +466,30 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
         set((state) => {
           state.screen.width = width;
           state.screen.height = height;
+        });
+      },
+
+      selectPin(feature: GeoJSON.Feature<GeoJSON.Geometry>) {
+        set((state) => {
+          state.actions.push({
+            name: "selectPin",
+            pinId: feature.id as number,
+          });
+        });
+      },
+
+      moveSelectedPin(direction: Position) {
+        set((state) => {
+          if (!state.selectedPin) {
+            return;
+          }
+
+          state.actions.push({
+            name: "movePin",
+            pinId: state.selectedPin.id,
+            direction,
+            zoom: state.zoom,
+          });
         });
       },
     },

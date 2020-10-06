@@ -15,12 +15,23 @@ export const useKeyboard = (): void => {
       });
     };
 
+    const onWindowBlur = () => {
+      dispatch.updateKeyboard({
+        ctrlKey: false,
+        shiftKey: false,
+        altKey: false,
+        metaKey: false,
+      });
+    };
+
     window.addEventListener("keydown", onKeyPress, false);
     window.addEventListener("keyup", onKeyPress, false);
+    window.addEventListener("blur", onWindowBlur, false);
 
     return () => {
       window.removeEventListener("keydown", onKeyPress, false);
       window.removeEventListener("keyup", onKeyPress, false);
+      window.removeEventListener("blur", onWindowBlur, false);
     };
   }, []);
 };
