@@ -217,8 +217,12 @@ export const Map: React.FC = () => {
    * Sync cursor
    */
   useStoreSubscription(
-    (store) => ({ editorMode: store.editor.mode, altKey: store.keyboard.altKey }),
-    ({ editorMode, altKey }) => {
+    (store) => ({
+      editorMode: store.editor.mode,
+      altKey: store.keyboard.altKey,
+      draggedGeometry: store.draggedGeometry,
+    }),
+    ({ editorMode, altKey, draggedGeometry }) => {
       if (!map.current) {
         return null;
       }
@@ -227,6 +231,8 @@ export const Map: React.FC = () => {
 
       if (altKey) {
         canvasStyle.cursor = "pointer";
+      } else if (draggedGeometry) {
+        canvasStyle.cursor = "grab";
       } else if (editorMode === "draw" || editorMode === "pin") {
         canvasStyle.cursor = "crosshair";
       } else if (editorMode === "move") {
