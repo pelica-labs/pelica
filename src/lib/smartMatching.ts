@@ -23,6 +23,7 @@ export const smartMatch = async (line: PolyLine, profile: SmartMatchingProfile):
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         .getMatch({
+          tidy: true,
           profile: profile as SmartMatchingProfile,
           points: points.map((point) => {
             return {
