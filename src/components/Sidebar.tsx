@@ -10,6 +10,7 @@ import { SmartMatchingSelector } from "~/components/SmartMatchingSelector";
 import { StyleSelector } from "~/components/StyleSelector";
 import { WidthSlider } from "~/components/WidthSlider";
 import { aspectRatios } from "~/lib/aspectRatio";
+import { useClickOutside } from "~/lib/clickOutside";
 import { SmartMatching } from "~/lib/smartMatching";
 import { useStore } from "~/lib/state";
 import { theme } from "~/styles/tailwind";
@@ -28,7 +29,7 @@ const computePanelOffset = (screenWidth: number) => {
 
 export const Sidebar: React.FC = () => {
   const fileInput = useRef<HTMLInputElement>(null);
-  const ratioSelector = useRef<HTMLSpanElement>(null);
+  const stylePane = useRef<HTMLDivElement>(null);
   const style = useStore((store) => store.style);
   const editor = useStore((store) => store.editor);
   const aspectRatio = useStore((store) => store.aspectRatio);
@@ -109,10 +110,15 @@ export const Sidebar: React.FC = () => {
     };
   });
 
+  useClickOutside(stylePane.current, () => {
+    dispatch.closePanes();
+  });
+
   return (
     <div className="flex-grow relative flex items-end">
       {editor.pane === "styles" && (
         <div
+          ref={stylePane}
           className="fixed right-0 overflow-y-auto rounded bg-transparent m-1 z-10"
           style={{
             maxHeight: "calc(100vh - 1rem)",
@@ -327,9 +333,7 @@ export const Sidebar: React.FC = () => {
               <span className="lg:w-24 text-left text-xs uppercase text-gray-500 font-light tracking-wide leading-none">
                 Aspect ratio
               </span>
-              <span ref={ratioSelector} className="ml-2 text-xs text-left">
-                {aspectRatios[aspectRatio].name}
-              </span>
+              <span className="ml-2 text-xs text-left">{aspectRatios[aspectRatio].name}</span>
             </Button>
           </div>
 

@@ -78,8 +78,6 @@ export const applyInteractions = (map: mapboxgl.Map, dispatch: MapStore["dispatc
       return;
     }
 
-    dispatch.closePanes();
-
     if (editor.mode === "pin") {
       dispatch.pin(event.lngLat.lat, event.lngLat.lng);
     }
