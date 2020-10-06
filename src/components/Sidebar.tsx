@@ -1,4 +1,3 @@
-import { geometry } from "@turf/turf";
 import * as KeyCode from "keycode-js";
 import React, { useEffect, useRef } from "react";
 
@@ -12,7 +11,7 @@ import { StyleSelector } from "~/components/StyleSelector";
 import { WidthSlider } from "~/components/WidthSlider";
 import { aspectRatios } from "~/lib/aspectRatio";
 import { useClickOutside } from "~/lib/clickOutside";
-import { PolyLine } from "~/lib/geometry";
+import { Point, PolyLine } from "~/lib/geometry";
 import { SmartMatching } from "~/lib/smartMatching";
 import { useStore } from "~/lib/state";
 import { theme } from "~/styles/tailwind";
