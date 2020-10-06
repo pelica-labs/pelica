@@ -1,10 +1,23 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ChromePicker, TwitterPicker } from "react-color";
 
 import { Button } from "~/components/Button";
 import { PlusIcon } from "~/components/Icon";
 import { useClickOutside } from "~/lib/clickOutside";
 import { theme } from "~/styles/tailwind";
+
+const defaultColors = [
+  theme.colors.red[500],
+  theme.colors.orange[500],
+  theme.colors.yellow[500],
+  theme.colors.green[500],
+  theme.colors.teal[500],
+  theme.colors.blue[500],
+  theme.colors.indigo[500],
+  theme.colors.purple[500],
+  theme.colors.pink[500],
+  theme.colors.gray[500],
+];
 
 type Props = {
   value: string;
@@ -33,6 +46,7 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange }) => {
     <div className="relative flex items-start">
       <TwitterPicker
         color={color}
+        colors={defaultColors}
         styles={{
           default: {
             card: { backgroundColor: theme.colors.gray[900], boxShadow: "none" },
@@ -59,7 +73,7 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange }) => {
       </Button>
 
       {showExtendedPicker && (
-        <div ref={extendedPickerRef} className="absolute z-10">
+        <div ref={extendedPickerRef} className="absolute z-10 mt-6">
           <ChromePicker
             disableAlpha
             color={color}

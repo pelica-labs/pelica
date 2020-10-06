@@ -13,6 +13,7 @@ import { defaultStyle } from "~/lib/mapbox";
 import { smartMatch, SmartMatching, SmartMatchingProfile } from "~/lib/smartMatching";
 import { MapSource } from "~/lib/sources";
 import { isServer } from "~/lib/ssr";
+import { theme } from "~/styles/tailwind";
 
 export type MapState = {
   coordinates: {
@@ -71,7 +72,7 @@ const initialState: MapState = {
   pitch: 0,
 
   editor: {
-    strokeColor: "#1824a2",
+    strokeColor: theme.colors.red[500],
     strokeWidth: 5,
     mode: "move",
     pane: null,
