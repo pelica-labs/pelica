@@ -101,7 +101,13 @@ export const Sidebar: React.FC = () => {
             right: computePanelOffset(screenWidth),
           }}
         >
-          <AspectRatioSelector />
+          <AspectRatioSelector
+            value={aspectRatio}
+            onChange={(aspectRatio) => {
+              dispatch.closePanes();
+              dispatch.setAspectRatio(aspectRatio);
+            }}
+          />
         </div>
       )}
 
@@ -166,7 +172,7 @@ export const Sidebar: React.FC = () => {
           </div>
 
           {displaySelectionHeader && (
-            <div className="flex items-center justify-between px-3 py-2 border-b border-gray-700">
+            <div className="flex items-center justify-between px-3 py-2 border-b bg-gray-800 border-gray-700">
               <span className="text-xs uppercase font-light tracking-wide leading-none">
                 <span className="text-gray-500">Selection:</span>
                 <span className="ml-2">

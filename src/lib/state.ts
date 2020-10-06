@@ -2,14 +2,13 @@ import { MapboxProfile } from "@mapbox/mapbox-sdk/lib/classes/mapi-request";
 import { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geocoding";
 import { Style } from "@mapbox/mapbox-sdk/services/styles";
 import produce from "immer";
-import { MercatorCoordinate } from "mapbox-gl";
 import { useEffect } from "react";
 import create, { GetState, State, StateCreator, StateSelector } from "zustand";
 import shallow from "zustand/shallow";
 
-import { Action, DrawAction } from "~/lib/actions";
+import { Action, applyAction, DrawAction } from "~/lib/actions";
 import { AspectRatio } from "~/lib/aspectRatio";
-import { Coordinates, Geometry, nextGeometryId, Point, PolyLine, Position, smartMatch } from "~/lib/geometry";
+import { Coordinates, Geometry, nextGeometryId, Point, Position, smartMatch } from "~/lib/geometry";
 import { parseGpx } from "~/lib/gpx";
 import { defaultStyle } from "~/lib/mapbox";
 import { MapSource } from "~/lib/sources";
@@ -287,87 +286,7 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
           }
 
           allActions.forEach((action) => {
-            if (action.name === "draw") {
-              state.geometries.push({ ...action.line });
-            }
-
-            if (action.name === "pin") {
-              state.geometries.push({ ...action.point });
-            }
-
-            if (action.name === "importGpx") {
-              state.geometries.push({ ...action.line });
-            }
-
-            if (action.name === "selectGeometry") {
-              if (state.selectedGeometry) {
-                state.selectedGeometry.selected = false;
-              }
-
-              state.selectedGeometry = state.geometries.find((geometry) => geometry.id === action.geometryId) as Point;
-              if (state.selectedGeometry) {
-                state.selectedGeometry.selected = true;
-              }
-            }
-
-            if (action.name === "nudgePin") {
-              const point = state.geometries.find((geometry) => geometry.id === action.pinId) as Point;
-
-              const pointCoordinates = MercatorCoordinate.fromLngLat(
-                { lng: point.coordinates.longitude, lat: point.coordinates.latitude },
-                0
-              );
-
-              const base = 2 ** (-action.zoom - 1);
-              pointCoordinates.x += base * action.direction.x;
-              pointCoordinates.y += base * action.direction.y;
-
-              const { lat, lng } = pointCoordinates.toLngLat();
-              point.coordinates = { latitude: lat, longitude: lng };
-            }
-
-            if (action.name === "movePin") {
-              const point = state.geometries.find((geometry) => geometry.id === action.pinId) as Point;
-
-              point.coordinates = action.coordinates;
-            }
-
-            if (action.name === "updatePin") {
-              const point = state.geometries.find((geometry) => geometry.id === action.pinId) as Point;
-
-              point.style = {
-                strokeWidth: action.strokeWidth,
-                strokeColor: action.strokeColor,
-              };
-            }
-
-            if (action.name === "updateLine") {
-              const line = state.geometries.find((geometry) => geometry.id === action.lineId) as PolyLine;
-
-              line.style = {
-                strokeWidth: action.strokeWidth,
-                strokeColor: action.strokeColor,
-              };
-            }
-
-            if (action.name === "updateLineSmartMatching") {
-              const line = state.geometries.find((geometry) => geometry.id === action.lineId) as PolyLine;
-
-              line.smartMatching = action.smartMatching;
-              line.smartPoints = action.smartPoints;
-            }
-
-            if (action.name === "deleteGeometry") {
-              const geometryIndex = state.geometries.findIndex((geometry) => geometry.id === action.geometryId);
-              if (geometryIndex >= 0) {
-                state.geometries.splice(geometryIndex, 1);
-                state.selectedGeometry = null;
-              }
-            }
-
-            if (action.name === "updateStyle") {
-              state.style = action.style;
-            }
+            applyAction(state, action);
           });
         });
       },
@@ -601,7 +520,7 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
 
 // 🧹 💨 🕳
 
-type MapStore = ReturnType<typeof makeStore>;
+export type MapStore = ReturnType<typeof makeStore>;
 
 const immer = <T extends State>(config: StateCreator<T, (fn: (draft: T) => void) => void>): StateCreator<T> => (
   set,

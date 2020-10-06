@@ -1,23 +1,23 @@
 import React from "react";
 
 import { Button } from "~/components/Button";
-import { aspectRatios } from "~/lib/aspectRatio";
-import { useStore } from "~/lib/state";
+import { AspectRatio, aspectRatios } from "~/lib/aspectRatio";
 
-export const AspectRatioSelector: React.FC = () => {
-  const aspectRatio = useStore((store) => store.aspectRatio);
-  const dispatch = useStore((store) => store.dispatch);
+type Props = {
+  value: AspectRatio;
+  onChange: (value: AspectRatio) => void;
+};
 
+export const AspectRatioSelector: React.FC<Props> = ({ value, onChange }) => {
   return (
     <div className="bg-gray-900 text-white rounded shadow flex flex-col">
       {Object.entries(aspectRatios).map(([ratio, configuration]) => {
         return (
           <Button
             key={ratio}
-            active={aspectRatio === ratio}
+            active={value === ratio}
             onClick={() => {
-              dispatch.closePanes();
-              dispatch.setAspectRatio(ratio);
+              onChange(ratio);
             }}
           >
             <div className="flex items-center justify-between w-full">
