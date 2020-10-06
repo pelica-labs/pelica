@@ -29,7 +29,6 @@ const computePanelOffset = (screenWidth: number) => {
 
 export const Sidebar: React.FC = () => {
   const fileInput = useRef<HTMLInputElement>(null);
-  const stylePane = useRef<HTMLDivElement>(null);
   const style = useStore((store) => store.style);
   const editor = useStore((store) => store.editor);
   const aspectRatio = useStore((store) => store.aspectRatio);
@@ -37,6 +36,10 @@ export const Sidebar: React.FC = () => {
   const dispatch = useStore((store) => store.dispatch);
   const screenWidth = useStore((store) => store.screen.width);
   const selectedGeometry = useStore((store) => store.selectedGeometry);
+  const stylePane = useClickOutside<HTMLDivElement>(() => {
+    console.log("GO");
+    dispatch.closePanes();
+  });
 
   const displaySelectionHeader = selectedGeometry !== null && editor.mode === "move";
   const displayColorPicker = ["draw", "pin"].includes(editor.mode) || selectedGeometry;
@@ -108,10 +111,6 @@ export const Sidebar: React.FC = () => {
     return () => {
       window.removeEventListener("keydown", onKeyDown, false);
     };
-  });
-
-  useClickOutside(stylePane.current, () => {
-    dispatch.closePanes();
   });
 
   return (

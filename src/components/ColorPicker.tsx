@@ -15,9 +15,7 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange }) => {
   const [color, setColor] = useState(value);
   const [showExtendedPicker, setShowExtendedPicker] = useState(false);
 
-  const extendedPickerRef = useRef<HTMLDivElement>(null);
-
-  useClickOutside(extendedPickerRef.current, () => {
+  const extendedPickerRef = useClickOutside<HTMLDivElement>(() => {
     if (showExtendedPicker) {
       setShowExtendedPicker(false);
     }
