@@ -3,6 +3,11 @@ import { useEffect } from "react";
 
 import { useStore } from "~/lib/state";
 
+export type ScreenDimensions = {
+  width: number;
+  height: number;
+};
+
 export const useScreen = (): void => {
   const dispatch = useStore((store) => store.dispatch);
 

@@ -8,6 +8,7 @@ import { Action, applyAction, DrawAction } from "~/lib/actions";
 import { AspectRatio } from "~/lib/aspectRatio";
 import { Coordinates, Geometry, nextGeometryId, Point, Position } from "~/lib/geometry";
 import { parseGpx } from "~/lib/gpx";
+import { ScreenDimensions } from "~/lib/screen";
 import { smartMatch, SmartMatching, SmartMatchingProfile } from "~/lib/smartMatching";
 import { MapSource } from "~/lib/sources";
 import { isServer } from "~/lib/ssr";
@@ -55,11 +56,6 @@ export type MapState = {
 export type EditorMode = "move" | "draw" | "pin";
 
 export type EditorPane = "styles" | "aspectRatio";
-
-export type ScreenDimensions = {
-  width: number;
-  height: number;
-};
 
 const initialState: MapState = {
   coordinates: {
