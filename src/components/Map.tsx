@@ -2,35 +2,14 @@ import * as KeyCode from "keycode-js";
 import { throttle } from "lodash";
 import mapboxgl, { LngLatBoundsLike, MapLayerMouseEvent, MapLayerTouchEvent, MapMouseEvent } from "mapbox-gl";
 import Head from "next/head";
-import React, { CSSProperties, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 
+import { computeMapDimensions } from "~/lib/aspectRatio";
 import { applyGeometries, Position } from "~/lib/geometry";
 import { applyLayers } from "~/lib/layers";
 import { styleToUrl } from "~/lib/mapbox";
 import { applySources, MapSource } from "~/lib/sources";
-import { AspectRatio, getState, ScreenDimensions, useStore, useStoreSubscription } from "~/lib/state";
-
-function computeMapDimensions(aspectRatio: AspectRatio, screen: ScreenDimensions): CSSProperties {
-  if (aspectRatio === "fill") {
-    return {
-      width: "100%",
-      height: "100%",
-      maxHeight: "none",
-      maxWidth: "none",
-    };
-  }
-
-  if (aspectRatio === "square") {
-    const smallestDimension = Math.min(screen.width, screen.height);
-
-    return {
-      maxWidth: `${smallestDimension}px`,
-      maxHeight: `${smallestDimension}px`,
-    };
-  }
-
-  throw new Error("Unknown aspect ratio");
-}
+import { getState, useStore, useStoreSubscription } from "~/lib/state";
 
 export const Map: React.FC = () => {
   const map = useRef<mapboxgl.Map>();
@@ -82,7 +61,7 @@ export const Map: React.FC = () => {
     dispatch.startDrawing();
   };
 
-  const onMouseUp = (event: MapMouseEvent) => {
+  const onMouseUp = (event?: MapMouseEvent) => {
     const { keyboard, editor, draggedGeometry } = getState();
 
     if (keyboard.altKey) {
@@ -93,7 +72,7 @@ export const Map: React.FC = () => {
       dispatch.endDrawing();
     }
 
-    if (draggedGeometry) {
+    if (draggedGeometry && event) {
       const { lat, lng } = event.lngLat;
 
       dispatch.endDragSelectedPin({ latitude: lat, longitude: lng });
@@ -325,10 +304,7 @@ export const Map: React.FC = () => {
 
       canvas.style.width = "100%";
       canvas.style.height = "100%";
-
-      setTimeout(() => {
-        map.current?.resize();
-      });
+      map.current?.resize();
     }
   );
 

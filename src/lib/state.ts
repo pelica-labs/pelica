@@ -5,10 +5,10 @@ import produce from "immer";
 import { MercatorCoordinate } from "mapbox-gl";
 import { useEffect } from "react";
 import create, { GetState, State, StateCreator, StateSelector } from "zustand";
-import { devtools } from "zustand/middleware";
 import shallow from "zustand/shallow";
 
 import { Action, DrawAction } from "~/lib/actions";
+import { AspectRatio } from "~/lib/aspectRatio";
 import { Coordinates, Geometry, nextGeometryId, Point, PolyLine, Position, smartMatch } from "~/lib/geometry";
 import { parseGpx } from "~/lib/gpx";
 import { defaultStyle } from "~/lib/mapbox";
@@ -64,8 +64,6 @@ export type EditorMode = "move" | "draw" | "pin";
 
 export type EditorPane = "styles" | "aspectRatio";
 
-export type AspectRatio = "square" | "fill";
-
 export type ScreenDimensions = {
   width: number;
   height: number;
@@ -99,6 +97,7 @@ const initialState: MapState = {
   geometries: [],
   currentDraw: null,
   selectedGeometry: null,
+  draggedGeometry: null,
 
   keyboard: {
     ctrlKey: false,
@@ -610,7 +609,7 @@ const immer = <T extends State>(config: StateCreator<T, (fn: (draft: T) => void)
   api
 ) => config((fn) => set(produce(fn) as (state: T) => T), get, api);
 
-export const useStore = create<MapStore>(devtools(immer(makeStore)));
+export const useStore = create<MapStore>(immer(makeStore));
 
 export const useStoreSubscription = <T extends MapState, StateSlice>(
   selector: StateSelector<T, StateSlice>,

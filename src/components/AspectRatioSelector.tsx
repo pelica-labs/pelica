@@ -1,6 +1,7 @@
 import React from "react";
 
 import { Button } from "~/components/Button";
+import { aspectRatios } from "~/lib/aspectRatio";
 import { useStore } from "~/lib/state";
 
 export const AspectRatioSelector: React.FC = () => {
@@ -9,31 +10,27 @@ export const AspectRatioSelector: React.FC = () => {
 
   return (
     <div className="bg-gray-900 text-white rounded shadow flex flex-col">
-      <Button
-        active={aspectRatio === "fill"}
-        onClick={() => {
-          dispatch.closePanes();
-          dispatch.setAspectRatio("fill");
-        }}
-      >
-        <div className="flex flex-col items-start">
-          <span className="text-sm">Fill</span>
-          <span className="text-xs text-gray-500">Use the entire available space</span>
-        </div>
-      </Button>
-
-      <Button
-        active={aspectRatio === "square"}
-        onClick={() => {
-          dispatch.closePanes();
-          dispatch.setAspectRatio("square");
-        }}
-      >
-        <div className="flex flex-col items-start">
-          <span className="text-sm">Square</span>
-          <span className="text-xs text-gray-500">Suited for social network sharing</span>
-        </div>
-      </Button>
+      {Object.entries(aspectRatios).map(([ratio, configuration]) => {
+        return (
+          <Button
+            key={ratio}
+            active={aspectRatio === ratio}
+            onClick={() => {
+              dispatch.closePanes();
+              dispatch.setAspectRatio(ratio);
+            }}
+          >
+            <div className="flex items-center justify-between w-full">
+              <span className="text-sm">{configuration.name}</span>
+              {configuration.ratio && (
+                <span className="ml-4 text-xs text-gray-500">
+                  {configuration.ratio[0]} x {configuration.ratio[1]}
+                </span>
+              )}
+            </div>
+          </Button>
+        );
+      })}
     </div>
   );
 };
