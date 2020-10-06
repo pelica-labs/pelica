@@ -4,12 +4,13 @@ import React, { useEffect, useRef } from "react";
 import { AspectRatioSelector } from "~/components/AspectRatioSelector";
 import { Button } from "~/components/Button";
 import { ColorPicker } from "~/components/ColorPicker";
+import { CoordinatesInput } from "~/components/CoordinatesInput";
 import { EraserIcon, TrashIcon, UndoIcon } from "~/components/Icon";
 import { SmartMatchingSelector } from "~/components/SmartMatchingSelector";
 import { StyleSelector } from "~/components/StyleSelector";
 import { WidthSlider } from "~/components/WidthSlider";
 import { aspectRatios } from "~/lib/aspectRatio";
-import { SmartMatching, SmartMatchingProfile } from "~/lib/smartMatching";
+import { SmartMatching } from "~/lib/smartMatching";
 import { useStore } from "~/lib/state";
 import { theme } from "~/styles/tailwind";
 
@@ -40,6 +41,7 @@ export const Sidebar: React.FC = () => {
   const displayColorPicker = ["draw", "pin"].includes(editor.mode) || selectedGeometry;
   const displayWidthPicker = ["draw", "pin"].includes(editor.mode) || selectedGeometry;
   const displaySmartMatching = ["draw"].includes(editor.mode) || selectedGeometry?.type === "PolyLine";
+  const displayCoordinates = ["move"].includes(editor.mode) && selectedGeometry?.type === "Point";
 
   const boundColor = selectedGeometry ? selectedGeometry.style.strokeColor : editor.strokeColor;
   const boundWidth = selectedGeometry ? selectedGeometry.style.strokeWidth : editor.strokeWidth;
@@ -272,6 +274,24 @@ export const Sidebar: React.FC = () => {
                   value={boundSmartMatching}
                   onChange={(smartMatching) => {
                     onSmartMatchingChange(smartMatching);
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
+          {displayCoordinates && selectedGeometry?.type === "Point" && (
+            <div className="mt-2 px-3 pb-3 mb-2 border-b border-gray-700">
+              <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Coordinates</span>
+
+              <div className="mt-2">
+                <CoordinatesInput
+                  value={selectedGeometry.coordinates}
+                  onChange={(coordinates) => {
+                    dispatch.editSelectedPinCoordinates(coordinates);
+                  }}
+                  onChangeComplete={(coordinates) => {
+                    dispatch.endEditSelectedPinCoordinates(coordinates);
                   }}
                 />
               </div>

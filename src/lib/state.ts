@@ -425,6 +425,32 @@ const makeStore = (set: (fn: (draft: MapState) => void) => void, get: GetState<M
         });
       },
 
+      editSelectedPinCoordinates(coordinates: Coordinates) {
+        set((state) => {
+          if (state.selectedGeometry?.type !== "Point") {
+            return;
+          }
+          const geometry = state.geometries.find((geometry) => geometry.id === state.selectedGeometry?.id) as Point;
+
+          state.selectedGeometry.coordinates = coordinates;
+          geometry.coordinates = coordinates;
+        });
+      },
+
+      endEditSelectedPinCoordinates(coordinates: Coordinates) {
+        set((state) => {
+          if (state.selectedGeometry?.type !== "Point") {
+            return;
+          }
+
+          state.actions.push({
+            name: "movePin",
+            pinId: state.selectedGeometry.id,
+            coordinates,
+          });
+        });
+      },
+
       moveSelectedPin(direction: Position) {
         set((state) => {
           if (!state.selectedGeometry) {

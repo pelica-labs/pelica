@@ -7,3 +7,9 @@
 html, body, #__next {
   height: 100%;
 }
+
+input[type=number].appearance-none::-webkit-inner-spin-button,
+input[type=number].appearance-none::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
