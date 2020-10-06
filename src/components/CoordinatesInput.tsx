@@ -10,7 +10,7 @@ type Props = {
 
 export const CoordinatesInput: React.FC<Props> = ({ value, onChange, onChangeComplete }) => {
   return (
-    <div className="flex items-center">
+    <div className="flex items-center space-x-2">
       <label className="flex flex-col flex-1">
         <span className="text-2xs uppercase text-gray-500 font-light tracking-wide leading-none">Latitude</span>
         <input

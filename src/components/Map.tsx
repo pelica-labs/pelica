@@ -49,6 +49,8 @@ export const Map: React.FC = () => {
       applyLayers(map);
       applyInteractions(map, dispatch);
 
+      map.getCanvas().style.outline = "none";
+
       map.on("styledata", () => {
         applySources(map);
         applyLayers(map);
