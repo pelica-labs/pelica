@@ -24,7 +24,7 @@ export const smartMatch = async (line: PolyLine, profile: SmartMatchingProfile):
         // @ts-ignore
         .getMatch({
           tidy: true,
-          profile: profile as SmartMatchingProfile,
+          profile,
           points: points.map((point) => {
             return {
               coordinates: [point.longitude, point.latitude],
