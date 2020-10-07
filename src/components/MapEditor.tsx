@@ -1,5 +1,6 @@
 import React from "react";
 
+import { GeolocationButton } from "~/components/GeolocationButton";
 import { Map } from "~/components/Map";
 import { PlaceAutocomplete } from "~/components/PlaceAutocomplete";
 import { ResetOrientationButton } from "~/components/ResetOrientationButton";
@@ -23,8 +24,9 @@ export const MapEditor: React.FC = () => {
 
       <Sidebar />
 
-      <div className="absolute top-0 left-0 mt-2 ml-2">
+      <div className="absolute top-0 left-0 flex flex-col space-y-2 mt-2 ml-2">
         <PlaceAutocomplete />
+        <GeolocationButton />
       </div>
     </div>
   );

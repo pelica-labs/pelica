@@ -852,7 +852,7 @@ module.exports = {
     stroke: [],
     tableLayout: ["responsive"],
     textAlign: ["responsive"],
-    textColor: ["responsive", "hover", "focus"],
+    textColor: ["responsive", "hover", "focus", "group-hover"],
     fontSize: ["responsive"],
     fontStyle: ["responsive"],
     textTransform: ["responsive"],

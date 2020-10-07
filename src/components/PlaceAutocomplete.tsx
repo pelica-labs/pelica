@@ -149,14 +149,16 @@ export const PlaceAutocomplete: React.FC = () => {
   };
 
   const containerClasses = classnames({
-    "relative bg-gray-900 text-gray-200 shadow flex flex-col transition-all duration-100 ease-in-out cursor-pointer": true,
+    "group relative bg-gray-900 text-gray-200 shadow flex flex-col transition-all duration-100 ease-in-out cursor-pointer": true,
     "w-64 rounded": isFocused || search,
     "w-12 rounded-full ": !(isFocused || search),
   });
 
   return (
     <div className={containerClasses} onClick={() => onFocus()}>
-      {!isFocused && !search.length && <SearchIcon className="absolute left-0 ml-3 mt-3 text-gray-600 w-6 h-6" />}
+      {!isFocused && !search.length && (
+        <SearchIcon className="absolute left-0 ml-3 mt-3 text-gray-600 w-6 h-6 group-hover:text-green-500" />
+      )}
 
       <input
         ref={input}
@@ -179,7 +181,7 @@ export const PlaceAutocomplete: React.FC = () => {
       )}
 
       {isFocused && (
-        <ul className="flex flex-col text-sm">
+        <ul className="absolute left-0 right-0 mt-12 flex flex-col text-sm bg-gray-900 z-10">
           {showRecentSearches && recentSearches.length > 0 && (
             <span className="p-2 text-xs text-gray-500 uppercase tracking-wide leading-none">Recent searches</span>
           )}
