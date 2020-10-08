@@ -59,18 +59,25 @@ export const useStoreSubscription = <T extends State, StateSlice>(
   listener: (state: StateSlice) => void
 ): void => {
   return useEffect(() => {
-    return useStore.subscribe(
-      (state) => {
-        if (state !== null) {
-          listener(state);
-        }
-      },
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      selector,
-      shallow
-    );
+    return subscribe(selector, listener);
   }, []);
+};
+
+export const subscribe = <T extends State, StateSlice>(
+  selector: StateSelector<T, StateSlice>,
+  listener: (state: StateSlice) => void
+) => {
+  return useStore.subscribe(
+    (state) => {
+      if (state !== null) {
+        listener(state);
+      }
+    },
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    selector,
+    shallow
+  );
 };
 
 export const getState = (): State => useStore.getState();

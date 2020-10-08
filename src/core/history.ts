@@ -1,6 +1,6 @@
 import { MercatorCoordinate } from "mapbox-gl";
 
-import { State } from "~/core/app";
+import { getState, State, subscribe, useStore } from "~/core/app";
 import { App } from "~/core/helpers";
 import { Coordinates, Point, PolyLine, Position } from "~/lib/geometry";
 import { SmartMatching } from "~/lib/smartMatching";
@@ -88,14 +88,23 @@ export type UpdateLineSmartMatchingAction = {
 
 export type History = {
   actions: Action[];
+  redoStack: Action[];
 };
 
 const initialState: History = {
   actions: [],
+  redoStack: [],
 };
 
 export const history = ({ mutate }: App) => ({
   ...initialState,
+
+  addAction: (action: Action) => {
+    mutate((state) => {
+      state.history.actions.push(action);
+      state.history.redoStack = [];
+    });
+  },
 
   applyActions: () => {
     mutate((state) => {
@@ -193,18 +202,22 @@ export const history = ({ mutate }: App) => ({
 
   undo: () => {
     mutate(({ history }) => {
-      if (!history.actions.length) {
+      const lastAction = history.actions.pop();
+      if (!lastAction) {
         return;
       }
-
-      history.actions.pop();
+      history.redoStack.push(lastAction);
     });
   },
 
-  clear: () => {
-    mutate(({ history, line: draw }) => {
-      history.actions = [];
-      draw.currentDraw = null;
+  redo: () => {
+    mutate(({ history }) => {
+      const lastUndoneAction = history.redoStack.pop();
+      if (!lastUndoneAction) {
+        return;
+      }
+
+      history.actions.push(lastUndoneAction);
     });
   },
 });

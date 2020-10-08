@@ -1,6 +1,7 @@
 import { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geocoding";
 
 import { App } from "~/core/helpers";
+import { Coordinates } from "~/lib/geometry";
 
 export type MapView = {
   coordinates: {
@@ -31,10 +32,9 @@ const initialState: MapView = {
 export const mapView = ({ mutate }: App) => ({
   ...initialState,
 
-  move: (latitude: number, longitude: number, zoom: number, bearing: number, pitch: number) => {
+  move: (coordinates: Coordinates, zoom: number, bearing: number, pitch: number) => {
     mutate(({ mapView }) => {
-      mapView.coordinates.latitude = latitude;
-      mapView.coordinates.longitude = longitude;
+      mapView.coordinates = coordinates;
       mapView.zoom = zoom;
       mapView.bearing = bearing;
       mapView.pitch = pitch;

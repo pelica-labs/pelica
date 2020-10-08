@@ -9,7 +9,7 @@ const initialState: DragAndDrop = {
   draggedGeometryId: null,
 };
 
-export const dragAndDrop = ({ mutate }: App) => ({
+export const dragAndDrop = ({ mutate, get }: App) => ({
   ...initialState,
 
   startDrag: (feature: GeoJSON.Feature<GeoJSON.Geometry>) => {
@@ -27,16 +27,17 @@ export const dragAndDrop = ({ mutate }: App) => ({
   },
 
   endDragSelectedPin: (coordinates: Coordinates) => {
-    mutate(({ geometries, dragAndDrop: drag, history }) => {
-      const draggedGeometry = geometries.items.find((geometry) => geometry.id === drag.draggedGeometryId) as Point;
+    const { geometries, dragAndDrop, history } = get();
+    const draggedGeometry = geometries.items.find((geometry) => geometry.id === dragAndDrop.draggedGeometryId) as Point;
 
-      history.actions.push({
-        name: "movePin",
-        pinId: draggedGeometry.id,
-        coordinates,
-      });
+    history.addAction({
+      name: "movePin",
+      pinId: draggedGeometry.id,
+      coordinates,
+    });
 
-      drag.draggedGeometryId = null;
+    mutate(({ dragAndDrop }) => {
+      dragAndDrop.draggedGeometryId = null;
     });
   },
 });

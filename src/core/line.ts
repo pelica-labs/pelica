@@ -18,8 +18,8 @@ export const line = ({ mutate, get }: App) => ({
   startDrawing: () => {
     const { editor } = get();
 
-    mutate(({ line: draw }) => {
-      draw.currentDraw = {
+    mutate(({ line }) => {
+      line.currentDraw = {
         name: "draw",
         line: {
           type: "PolyLine",
@@ -38,60 +38,62 @@ export const line = ({ mutate, get }: App) => ({
   },
 
   draw: (latitude: number, longitude: number) => {
-    mutate(({ line: draw }) => {
-      if (!draw.currentDraw) {
+    mutate(({ line }) => {
+      if (!line.currentDraw) {
         return;
       }
 
-      draw.currentDraw.line.points.push({ latitude, longitude });
+      line.currentDraw.line.points.push({ latitude, longitude });
     });
   },
 
   endDrawing: async () => {
-    const { currentDraw } = get().line;
+    const { line, history } = get();
 
-    if (!currentDraw) {
+    if (!line.currentDraw) {
       return;
     }
 
-    if (currentDraw.line.points.length === 0) {
+    if (line.currentDraw.line.points.length === 0) {
       return;
     }
 
-    const smartPoints = currentDraw.line.smartMatching.enabled
-      ? await smartMatch(currentDraw.line, currentDraw.line.smartMatching.profile as SmartMatchingProfile)
+    const smartPoints = line.currentDraw.line.smartMatching.enabled
+      ? await smartMatch(line.currentDraw.line, line.currentDraw.line.smartMatching.profile as SmartMatchingProfile)
       : [];
 
-    mutate(({ history, line: draw }) => {
-      history.actions.push({
-        ...currentDraw,
-        line: {
-          ...currentDraw.line,
-          smartPoints,
-        },
-      });
-      draw.currentDraw = null;
+    history.addAction({
+      ...line.currentDraw,
+      line: {
+        ...line.currentDraw.line,
+        smartPoints,
+      },
+    });
+
+    mutate(({ line }) => {
+      line.currentDraw = null;
     });
   },
 
   updateSelectedLine: (strokeColor: string, strokeWidth: number) => {
-    mutate(({ geometries, selection, history }) => {
-      const selectedGeometry = geometries.items.find(
-        (geometry) => geometry.id === selection.selectedGeometryId
-      ) as PolyLine;
+    const { geometries, selection, history } = get();
+    const selectedGeometry = geometries.items.find(
+      (geometry) => geometry.id === selection.selectedGeometryId
+    ) as PolyLine;
 
-      history.actions.push({
-        name: "updateLine",
-        lineId: selectedGeometry.id,
-        strokeColor,
-        strokeWidth,
-      });
+    history.addAction({
+      name: "updateLine",
+      lineId: selectedGeometry.id,
+      strokeColor,
+      strokeWidth,
     });
   },
 
   updateSelectedLineSmartMatching: async (smartMatching: SmartMatching): Promise<void> => {
-    const selectedGeometry = get().geometries.items.find(
-      (geometry) => geometry.id === get().selection.selectedGeometryId
+    const { geometries, selection, history } = get();
+
+    const selectedGeometry = geometries.items.find(
+      (geometry) => geometry.id === selection.selectedGeometryId
     ) as PolyLine;
 
     if (selectedGeometry?.type !== "PolyLine") {
@@ -102,13 +104,11 @@ export const line = ({ mutate, get }: App) => ({
       ? await smartMatch(selectedGeometry, smartMatching.profile as SmartMatchingProfile)
       : [];
 
-    mutate(({ history }) => {
-      history.actions.push({
-        name: "updateLineSmartMatching",
-        lineId: selectedGeometry.id,
-        smartMatching,
-        smartPoints,
-      });
+    history.addAction({
+      name: "updateLineSmartMatching",
+      lineId: selectedGeometry.id,
+      smartMatching,
+      smartPoints,
     });
   },
 });

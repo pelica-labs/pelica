@@ -16,7 +16,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     const bearing = event.target.getBearing();
     const pitch = event.target.getPitch();
 
-    app.mapView.move(lat, lng, zoom, bearing, pitch);
+    app.mapView.move({ latitude: lat, longitude: lng }, zoom, bearing, pitch);
   };
 
   const onMouseMove = throttle((event: MapMouseEvent) => {
@@ -88,7 +88,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     }
 
     if (editor.mode === "pin") {
-      app.pin.pin(event.lngLat.lat, event.lngLat.lng);
+      app.pin.place(event.lngLat.lat, event.lngLat.lng);
     }
   };
 

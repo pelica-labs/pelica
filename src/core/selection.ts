@@ -9,7 +9,7 @@ const initialState: Selection = {
   selectedGeometryId: null,
 };
 
-export const selection = ({ mutate }: App) => ({
+export const selection = ({ mutate, get }: App) => ({
   ...initialState,
 
   selectGeometry: (feature: GeoJSON.Feature<GeoJSON.Geometry>) => {
@@ -25,15 +25,12 @@ export const selection = ({ mutate }: App) => ({
   },
 
   deleteSelectedGeometry: () => {
-    mutate(({ geometries, selection, history }) => {
-      const selectedGeometry = geometries.items.find(
-        (geometry) => geometry.id === selection.selectedGeometryId
-      ) as Point;
+    const { geometries, selection, history } = get();
+    const selectedGeometry = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as Point;
 
-      history.actions.push({
-        name: "deleteGeometry",
-        geometryId: selectedGeometry.id,
-      });
+    history.actions.push({
+      name: "deleteGeometry",
+      geometryId: selectedGeometry.id,
     });
   },
 });

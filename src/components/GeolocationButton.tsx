@@ -34,7 +34,7 @@ export const GeolocationButton: React.FC = () => {
     window.navigator.geolocation.getCurrentPosition(
       (position) => {
         setGeolocationStatus("granted");
-        app.mapView.move(position.coords.latitude, position.coords.longitude, 16, 0, 0);
+        app.mapView.move(position.coords, 16, 0, 0);
       },
       () => {
         updateGeolocationAvailability();

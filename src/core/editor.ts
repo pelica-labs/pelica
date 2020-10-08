@@ -31,7 +31,7 @@ const initiaState: Editor = {
   aspectRatio: "fill",
 };
 
-export const editor = ({ mutate }: App) => ({
+export const editor = ({ mutate, get }: App) => ({
   ...initiaState,
 
   setStrokeColor: (strokeColor: string) => {
@@ -47,11 +47,11 @@ export const editor = ({ mutate }: App) => ({
   },
 
   setStyle: (style: Style) => {
-    mutate(({ history }) => {
-      history.actions.push({
-        name: "updateStyle",
-        style,
-      });
+    const { history } = get();
+
+    history.addAction({
+      name: "updateStyle",
+      style,
     });
   },
 

@@ -5,7 +5,7 @@ import { AspectRatioSelector } from "~/components/AspectRatioSelector";
 import { Button } from "~/components/Button";
 import { ColorPicker } from "~/components/ColorPicker";
 import { CoordinatesInput } from "~/components/CoordinatesInput";
-import { EraserIcon, TrashIcon, UndoIcon } from "~/components/Icon";
+import { RedoIcon, TrashIcon, UndoIcon } from "~/components/Icon";
 import { SmartMatchingSelector } from "~/components/SmartMatchingSelector";
 import { StyleSelector } from "~/components/StyleSelector";
 import { WidthSlider } from "~/components/WidthSlider";
@@ -35,6 +35,7 @@ export const Sidebar: React.FC = () => {
   const editor = useStore((store) => store.editor);
   const aspectRatio = useStore((store) => store.editor.aspectRatio);
   const actions = useStore((store) => store.history.actions);
+  const redoStack = useStore((store) => store.history.redoStack);
   const screenWidth = useStore((store) => store.screen.dimensions.width);
   const geometries = useStore((store) => store.geometries.items);
   const selectedGeometryId = useStore((store) => store.selection.selectedGeometryId);
@@ -90,7 +91,12 @@ export const Sidebar: React.FC = () => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.metaKey && event.keyCode === KeyCode.KEY_Z) {
         event.preventDefault();
-        app.history.undo();
+
+        if (event.shiftKey) {
+          app.history.redo();
+        } else {
+          app.history.undo();
+        }
       }
 
       if (event.metaKey && event.keyCode === KeyCode.KEY_1) {
@@ -171,11 +177,12 @@ export const Sidebar: React.FC = () => {
               </Button>
               <Button
                 className="bg-gray-900 text-gray-200 ml-2"
+                disabled={!redoStack.length}
                 onClick={() => {
-                  app.history.clear();
+                  app.history.redo();
                 }}
               >
-                <EraserIcon className="w-2 h-2 md:w-3 md:h-3" />
+                <RedoIcon className="w-2 h-2 md:w-3 md:h-3" />
               </Button>
             </div>
           </div>

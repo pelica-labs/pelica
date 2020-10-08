@@ -184,12 +184,12 @@ export const Map: React.FC = () => {
 
       if (editorMode === "move" || altKey) {
         map.current.dragPan.enable();
-        map.current.scrollZoom.enable();
+        // map.current.scrollZoom.enable();
         map.current.touchPitch.enable();
         map.current.touchZoomRotate.enable();
       } else if (editorMode === "draw") {
         map.current.dragPan.disable();
-        map.current.scrollZoom.disable();
+        // map.current.scrollZoom.disable();
         map.current.touchPitch.disable();
         map.current.touchZoomRotate.disable();
       }
