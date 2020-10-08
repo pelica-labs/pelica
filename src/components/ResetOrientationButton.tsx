@@ -2,12 +2,12 @@ import React from "react";
 
 import { Button } from "~/components/Button";
 import { CompassIcon } from "~/components/Icon";
-import { useStore } from "~/lib/state";
+import { useApp, useStore } from "~/core/app";
 
 export const ResetOrientationButton: React.FC = () => {
-  const bearing = useStore((store) => store.bearing);
-  const pitch = useStore((store) => store.pitch);
-  const dispatch = useStore((store) => store.dispatch);
+  const app = useApp();
+  const bearing = useStore((store) => store.mapView.bearing);
+  const pitch = useStore((store) => store.mapView.pitch);
 
   const showControls = bearing || pitch;
 
@@ -20,7 +20,7 @@ export const ResetOrientationButton: React.FC = () => {
       color="none"
       shadow={false}
       onClick={() => {
-        dispatch.resetOrientation();
+        app.mapView.resetOrientation();
       }}
     >
       <CompassIcon className="w-5 h-5 text-gray-900" />

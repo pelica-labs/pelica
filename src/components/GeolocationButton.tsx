@@ -3,15 +3,15 @@ import PuffLoader from "react-spinners/PuffLoader";
 
 import { Button } from "~/components/Button";
 import { TargetIcon } from "~/components/Icon";
-import { useStore } from "~/lib/state";
+import { useApp } from "~/core/app";
 import { theme } from "~/styles/tailwind";
 
-type GeolocationStatus = "unknown" | "loading" | "granted";
+type GeolocationStatus = "pending" | "loading" | "granted";
 
 export const GeolocationButton: React.FC = () => {
+  const app = useApp();
   const [geolocationIsAvailable, setGeolocationAvailable] = useState(false);
-  const [geolocationStatus, setGeolocationStatus] = useState<GeolocationStatus>("unknown");
-  const dispatch = useStore((store) => store.dispatch);
+  const [geolocationStatus, setGeolocationStatus] = useState<GeolocationStatus>("pending");
 
   const updateGeolocationAvailability = () => {
     if (!window.navigator.geolocation) {
@@ -23,6 +23,7 @@ export const GeolocationButton: React.FC = () => {
       if (result.state === "denied") {
         setGeolocationAvailable(false);
       } else {
+        setGeolocationStatus("pending");
         setGeolocationAvailable(true);
       }
     });
@@ -33,7 +34,7 @@ export const GeolocationButton: React.FC = () => {
     window.navigator.geolocation.getCurrentPosition(
       (position) => {
         setGeolocationStatus("granted");
-        dispatch.move(position.coords.latitude, position.coords.longitude, 16, 0, 0);
+        app.mapView.move(position.coords.latitude, position.coords.longitude, 16, 0, 0);
       },
       () => {
         updateGeolocationAvailability();

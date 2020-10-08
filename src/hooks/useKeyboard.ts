@@ -1,13 +1,13 @@
 import { useEffect } from "react";
 
-import { useStore } from "~/lib/state";
+import { useApp } from "~/core/app";
 
 export const useKeyboard = (): void => {
-  const dispatch = useStore((store) => store.dispatch);
+  const app = useApp();
 
   useEffect(() => {
     const onKeyPress = (event: KeyboardEvent) => {
-      dispatch.updateKeyboard({
+      app.keyboard.updateKeyboard({
         ctrlKey: event.ctrlKey,
         shiftKey: event.shiftKey,
         altKey: event.altKey,
@@ -16,7 +16,7 @@ export const useKeyboard = (): void => {
     };
 
     const onWindowBlur = () => {
-      dispatch.updateKeyboard({
+      app.keyboard.updateKeyboard({
         ctrlKey: false,
         shiftKey: false,
         altKey: false,

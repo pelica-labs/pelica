@@ -4,8 +4,8 @@ import React, { useEffect, useState } from "react";
 import useSWR from "swr";
 
 import { StylePreview } from "~/components/StylePreview";
-import { staticImage } from "~/lib/export";
-import { useStore } from "~/lib/state";
+import { getState } from "~/core/app";
+import { staticImage } from "~/lib/staticImages";
 import { defaultStyle, Style } from "~/lib/style";
 
 type StylesResponse = {
@@ -31,7 +31,9 @@ export const StyleSelector: React.FC<Props> = ({ value, onChange }) => {
       return;
     }
 
-    const { coordinates, zoom, bearing, pitch } = useStore.getState();
+    const {
+      mapView: { coordinates, zoom, bearing, pitch },
+    } = getState();
 
     const stylesById = keyBy(data.styles, (style) => style.id);
     const previews = mapValues(stylesById, (style) => {

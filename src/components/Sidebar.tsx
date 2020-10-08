@@ -9,11 +9,11 @@ import { EraserIcon, TrashIcon, UndoIcon } from "~/components/Icon";
 import { SmartMatchingSelector } from "~/components/SmartMatchingSelector";
 import { StyleSelector } from "~/components/StyleSelector";
 import { WidthSlider } from "~/components/WidthSlider";
+import { useApp, useStore } from "~/core/app";
+import { useClickOutside } from "~/hooks/useClickOutside";
 import { aspectRatios } from "~/lib/aspectRatio";
-import { useClickOutside } from "~/lib/clickOutside";
 import { Point, PolyLine } from "~/lib/geometry";
 import { SmartMatching } from "~/lib/smartMatching";
-import { useStore } from "~/lib/state";
 import { theme } from "~/styles/tailwind";
 
 const computePanelOffset = (screenWidth: number) => {
@@ -29,18 +29,19 @@ const computePanelOffset = (screenWidth: number) => {
 };
 
 export const Sidebar: React.FC = () => {
+  const app = useApp();
   const fileInput = useRef<HTMLInputElement>(null);
-  const style = useStore((store) => store.style);
+  const style = useStore((store) => store.editor.style);
   const editor = useStore((store) => store.editor);
-  const aspectRatio = useStore((store) => store.aspectRatio);
-  const actions = useStore((store) => store.actions);
-  const dispatch = useStore((store) => store.dispatch);
-  const screenWidth = useStore((store) => store.screen.width);
-  const geometries = useStore((store) => store.geometries);
-  const selectedGeometryId = useStore((store) => store.selectedGeometryId);
+  const aspectRatio = useStore((store) => store.editor.aspectRatio);
+  const actions = useStore((store) => store.history.actions);
+  const screenWidth = useStore((store) => store.screen.dimensions.width);
+  const geometries = useStore((store) => store.geometries.items);
+  const selectedGeometryId = useStore((store) => store.selection.selectedGeometryId);
   const stylePane = useClickOutside<HTMLDivElement>(() => {
-    dispatch.closePanes();
+    app.editor.closePanes();
   });
+
   const selectedGeometry = geometries.find((geometry) => geometry.id === selectedGeometryId) as Point | PolyLine;
 
   const displaySelectionHeader = selectedGeometryId !== null && editor.mode === "move";
@@ -56,29 +57,29 @@ export const Sidebar: React.FC = () => {
 
   const onColorChange = (color: string) => {
     if (selectedGeometry?.type === "PolyLine") {
-      dispatch.updateSelectedLine(color, selectedGeometry.style.strokeWidth);
+      app.line.updateSelectedLine(color, selectedGeometry.style.strokeWidth);
     } else if (selectedGeometry?.type === "Point") {
-      dispatch.updateSelectedPin(color, selectedGeometry.style.strokeWidth);
+      app.pin.updateSelectedPin(color, selectedGeometry.style.strokeWidth);
     } else {
-      dispatch.setStrokeColor(color);
+      app.editor.setStrokeColor(color);
     }
   };
 
   const onWidthChange = (width: number) => {
     if (selectedGeometry?.type === "PolyLine") {
-      dispatch.updateSelectedLine(selectedGeometry.style.strokeColor, width);
+      app.line.updateSelectedLine(selectedGeometry.style.strokeColor, width);
     } else if (selectedGeometry?.type === "Point") {
-      dispatch.updateSelectedPin(selectedGeometry.style.strokeColor, width);
+      app.pin.updateSelectedPin(selectedGeometry.style.strokeColor, width);
     } else {
-      dispatch.setStrokeWidth(width);
+      app.editor.setStrokeWidth(width);
     }
   };
 
   const onSmartMatchingChange = (smartMatching: SmartMatching) => {
     if (selectedGeometry?.type === "PolyLine") {
-      dispatch.updateSelectedLineSmartMatching(smartMatching);
+      app.line.updateSelectedLineSmartMatching(smartMatching);
     } else {
-      dispatch.setEditorSmartMatching(smartMatching);
+      app.editor.setEditorSmartMatching(smartMatching);
     }
   };
 
@@ -89,22 +90,22 @@ export const Sidebar: React.FC = () => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.metaKey && event.keyCode === KeyCode.KEY_Z) {
         event.preventDefault();
-        dispatch.undo();
+        app.history.undo();
       }
 
       if (event.metaKey && event.keyCode === KeyCode.KEY_1) {
         event.preventDefault();
-        dispatch.setEditorMode("move");
+        app.editor.setEditorMode("move");
       }
 
       if (event.metaKey && event.keyCode === KeyCode.KEY_2) {
         event.preventDefault();
-        dispatch.setEditorMode("draw");
+        app.editor.setEditorMode("draw");
       }
 
       if (event.metaKey && event.keyCode === KeyCode.KEY_3) {
         event.preventDefault();
-        dispatch.setEditorMode("pin");
+        app.editor.setEditorMode("pin");
       }
     };
 
@@ -129,7 +130,7 @@ export const Sidebar: React.FC = () => {
           <StyleSelector
             value={style}
             onChange={(style) => {
-              dispatch.setStyle(style);
+              app.editor.setStyle(style);
             }}
           />
         </div>
@@ -147,8 +148,8 @@ export const Sidebar: React.FC = () => {
           <AspectRatioSelector
             value={aspectRatio}
             onChange={(aspectRatio) => {
-              dispatch.closePanes();
-              dispatch.setAspectRatio(aspectRatio);
+              app.editor.closePanes();
+              app.editor.setAspectRatio(aspectRatio);
             }}
           />
         </div>
@@ -163,7 +164,7 @@ export const Sidebar: React.FC = () => {
                 className="bg-gray-900 text-gray-200"
                 disabled={!actions.length}
                 onClick={() => {
-                  dispatch.undo();
+                  app.history.undo();
                 }}
               >
                 <UndoIcon className="w-2 h-2 md:w-3 md:h-3" />
@@ -171,7 +172,7 @@ export const Sidebar: React.FC = () => {
               <Button
                 className="bg-gray-900 text-gray-200 ml-2"
                 onClick={() => {
-                  dispatch.clear();
+                  app.history.clear();
                 }}
               >
                 <EraserIcon className="w-2 h-2 md:w-3 md:h-3" />
@@ -185,7 +186,7 @@ export const Sidebar: React.FC = () => {
               className="bg-gray-900 text-gray-200 py-2 flex-1 justify-center"
               rounded={false}
               onClick={() => {
-                dispatch.setEditorMode("move");
+                app.editor.setEditorMode("move");
               }}
             >
               <span className="text-xs">Move</span>
@@ -196,7 +197,7 @@ export const Sidebar: React.FC = () => {
               className="bg-gray-900 text-gray-200 py-2 flex-1 justify-center"
               rounded={false}
               onClick={() => {
-                dispatch.setEditorMode("draw");
+                app.editor.setEditorMode("draw");
               }}
             >
               <span className="text-xs">Draw</span>
@@ -207,7 +208,7 @@ export const Sidebar: React.FC = () => {
               className="bg-gray-900 text-gray-200 py-2 flex-1 justify-center"
               rounded={false}
               onClick={() => {
-                dispatch.setEditorMode("pin");
+                app.editor.setEditorMode("pin");
               }}
             >
               <span className="text-xs">Pin</span>
@@ -225,7 +226,7 @@ export const Sidebar: React.FC = () => {
               <Button
                 className="bg-gray-900 text-gray-200"
                 onClick={() => {
-                  dispatch.deleteSelectedGeometry();
+                  app.selection.deleteSelectedGeometry();
                 }}
               >
                 <TrashIcon className="w-2 h-2 md:w-3 md:h-3" />
@@ -295,10 +296,10 @@ export const Sidebar: React.FC = () => {
                 <CoordinatesInput
                   value={selectedGeometry.coordinates}
                   onChange={(coordinates) => {
-                    dispatch.editSelectedPinCoordinates(coordinates);
+                    app.pin.editSelectedPinCoordinates(coordinates);
                   }}
                   onChangeComplete={(coordinates) => {
-                    dispatch.endEditSelectedPinCoordinates(coordinates);
+                    app.pin.endEditSelectedPinCoordinates(coordinates);
                   }}
                 />
               </div>
@@ -315,7 +316,7 @@ export const Sidebar: React.FC = () => {
               active={editor.pane === "styles"}
               className="bg-gray-900 text-gray-200 max-w-full"
               onClick={() => {
-                dispatch.togglePane("styles");
+                app.editor.togglePane("styles");
               }}
             >
               <span className="lg:w-24 text-left text-xs uppercase text-gray-500 font-light tracking-wide leading-none">
@@ -328,7 +329,7 @@ export const Sidebar: React.FC = () => {
               active={editor.pane === "aspectRatio"}
               className="bg-gray-900 text-gray-200"
               onClick={() => {
-                dispatch.togglePane("aspectRatio");
+                app.editor.togglePane("aspectRatio");
               }}
             >
               <span className="lg:w-24 text-left text-xs uppercase text-gray-500 font-light tracking-wide leading-none">
@@ -350,7 +351,7 @@ export const Sidebar: React.FC = () => {
                 <Button
                   className="bg-gray-900 text-xs"
                   onClick={() => {
-                    dispatch.downloadImage();
+                    app.export.downloadImage();
                   }}
                 >
                   Image
@@ -361,7 +362,7 @@ export const Sidebar: React.FC = () => {
                 <Button
                   className="bg-gray-900 text-xs"
                   onClick={() => {
-                    dispatch.downloadGpx();
+                    app.export.downloadGpx();
                   }}
                 >
                   GPX
@@ -383,7 +384,7 @@ export const Sidebar: React.FC = () => {
                   type="file"
                   onChange={(event) => {
                     if (event.target.files?.length) {
-                      dispatch.importGpx(event.target.files[0]);
+                      app.import.importGpx(event.target.files[0]);
                     }
                   }}
                 />

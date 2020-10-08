@@ -3,7 +3,7 @@ import { ChromePicker, TwitterPicker } from "react-color";
 
 import { Button } from "~/components/Button";
 import { PaletteIcon } from "~/components/Icon";
-import { useClickOutside } from "~/lib/clickOutside";
+import { useClickOutside } from "~/hooks/useClickOutside";
 import { theme } from "~/styles/tailwind";
 
 const defaultColors = [

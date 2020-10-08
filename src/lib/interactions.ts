@@ -2,11 +2,12 @@ import * as KeyCode from "keycode-js";
 import { throttle } from "lodash";
 import { MapLayerMouseEvent, MapLayerTouchEvent, MapMouseEvent } from "mapbox-gl";
 
-import { Position } from "~/lib/geometry";
+import { State } from "~/core/app";
+import { getState } from "~/core/app";
+import { Point, Position } from "~/lib/geometry";
 import { MapSource } from "~/lib/sources";
-import { getState, MapStore } from "~/lib/state";
 
-export const applyInteractions = (map: mapboxgl.Map, dispatch: MapStore["dispatch"]): void => {
+export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   const canvas = map.getCanvas();
 
   const onMoveEnd = (event: MapMouseEvent) => {
@@ -15,11 +16,15 @@ export const applyInteractions = (map: mapboxgl.Map, dispatch: MapStore["dispatc
     const bearing = event.target.getBearing();
     const pitch = event.target.getPitch();
 
-    dispatch.move(lat, lng, zoom, bearing, pitch);
+    app.mapView.move(lat, lng, zoom, bearing, pitch);
   };
 
   const onMouseMove = throttle((event: MapMouseEvent) => {
-    const { keyboard, currentDraw, draggedGeometryId } = getState();
+    const {
+      keyboard,
+      line: { currentDraw },
+      dragAndDrop: { draggedGeometryId },
+    } = getState();
 
     if (keyboard.altKey) {
       return;
@@ -30,11 +35,11 @@ export const applyInteractions = (map: mapboxgl.Map, dispatch: MapStore["dispatc
     const { lat, lng } = event.lngLat;
 
     if (currentDraw) {
-      dispatch.draw(lat, lng);
+      app.line.draw(lat, lng);
     }
 
     if (draggedGeometryId) {
-      dispatch.dragSelectedPin({ latitude: lat, longitude: lng });
+      app.dragAndDrop.dragSelectedPin({ latitude: lat, longitude: lng });
     }
   }, 1000 / 30);
 
@@ -50,24 +55,28 @@ export const applyInteractions = (map: mapboxgl.Map, dispatch: MapStore["dispatc
     }
 
     event.preventDefault();
-    dispatch.startDrawing();
+    app.line.startDrawing();
   };
 
   const onMouseUp = (event?: MapMouseEvent) => {
-    const { keyboard, editor, draggedGeometryId } = getState();
+    const {
+      keyboard,
+      editor,
+      dragAndDrop: { draggedGeometryId },
+    } = getState();
 
     if (keyboard.altKey) {
       return;
     }
 
     if (editor.mode === "draw") {
-      dispatch.endDrawing();
+      app.line.endDrawing();
     }
 
     if (draggedGeometryId && event) {
       const { lat, lng } = event.lngLat;
 
-      dispatch.endDragSelectedPin({ latitude: lat, longitude: lng });
+      app.dragAndDrop.endDragSelectedPin({ latitude: lat, longitude: lng });
     }
   };
 
@@ -79,7 +88,7 @@ export const applyInteractions = (map: mapboxgl.Map, dispatch: MapStore["dispatc
     }
 
     if (editor.mode === "pin") {
-      dispatch.pin(event.lngLat.lat, event.lngLat.lng);
+      app.pin.pin(event.lngLat.lat, event.lngLat.lng);
     }
   };
 
@@ -94,7 +103,7 @@ export const applyInteractions = (map: mapboxgl.Map, dispatch: MapStore["dispatc
       return;
     }
 
-    dispatch.selectGeometry(event.features[0]);
+    app.selection.selectGeometry(event.features[0]);
   };
 
   const onFeatureRightClick = (event: MapLayerMouseEvent) => {
@@ -102,8 +111,8 @@ export const applyInteractions = (map: mapboxgl.Map, dispatch: MapStore["dispatc
       return;
     }
 
-    dispatch.setEditorMode("move");
-    dispatch.selectGeometry(event.features[0]);
+    app.editor.setEditorMode("move");
+    app.selection.selectGeometry(event.features[0]);
   };
 
   const onFeatureMouseDown = (event: MapLayerMouseEvent | MapLayerTouchEvent) => {
@@ -119,7 +128,7 @@ export const applyInteractions = (map: mapboxgl.Map, dispatch: MapStore["dispatc
 
     event.preventDefault();
 
-    dispatch.startDrag(event.features[0]);
+    app.dragAndDrop.startDrag(event.features[0]);
   };
 
   const onWindowBlur = () => {
@@ -127,11 +136,16 @@ export const applyInteractions = (map: mapboxgl.Map, dispatch: MapStore["dispatc
   };
 
   const onCanvasKeyUp = (event: KeyboardEvent) => {
-    const selectedGeometry = dispatch.getSelectedGeometry();
+    const {
+      selection: { selectedGeometryId },
+      geometries,
+    } = getState();
 
-    if (!selectedGeometry) {
+    if (!selectedGeometryId) {
       return;
     }
+
+    const selectedGeometry = geometries.items.find((geometry) => geometry.id === selectedGeometryId) as Point;
 
     const coefficient = event.shiftKey ? 0.1 : 0.01;
 
@@ -146,7 +160,7 @@ export const applyInteractions = (map: mapboxgl.Map, dispatch: MapStore["dispatc
       event.preventDefault();
       event.stopPropagation();
 
-      dispatch.moveSelectedPin(keyCodeToDirection[event.keyCode]);
+      app.pin.moveSelectedPin(keyCodeToDirection[event.keyCode]);
       console.log("moving selected pin");
     }
 
@@ -154,14 +168,14 @@ export const applyInteractions = (map: mapboxgl.Map, dispatch: MapStore["dispatc
       event.preventDefault();
       event.stopPropagation();
 
-      dispatch.deleteSelectedGeometry();
+      app.selection.deleteSelectedGeometry();
     }
 
     if (event.keyCode === KeyCode.KEY_ESCAPE) {
       event.preventDefault();
       event.stopPropagation();
 
-      dispatch.unselectGeometry();
+      app.selection.unselectGeometry();
     }
   };
 

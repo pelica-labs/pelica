@@ -3,19 +3,19 @@ import mapboxgl, { LngLatBoundsLike } from "mapbox-gl";
 import Head from "next/head";
 import React, { useEffect, useRef } from "react";
 
+import { useApp, useStoreSubscription } from "~/core/app";
 import { computeMapDimensions } from "~/lib/aspectRatio";
 import { applyGeometries, nextGeometryId } from "~/lib/geometry";
 import { applyInteractions } from "~/lib/interactions";
 import { applyLayers } from "~/lib/layers";
 import { applySources, MapSource } from "~/lib/sources";
-import { getState, useStore, useStoreSubscription } from "~/lib/state";
 import { styleToUrl } from "~/lib/style";
 
 export const Map: React.FC = () => {
+  const app = useApp();
   const map = useRef<mapboxgl.Map>();
   const container = useRef<HTMLDivElement>(null);
   const wrapper = useRef<HTMLDivElement>(null);
-  const dispatch = useStore((store) => store.dispatch);
 
   /**
    * Initialize map
@@ -30,7 +30,11 @@ export const Map: React.FC = () => {
       throw new Error("Missing Mapbox public token");
     }
 
-    const { coordinates, zoom, style, bearing, pitch } = getState();
+    const {
+      mapView: { coordinates, zoom, bearing, pitch },
+      editor: { style },
+      geometries,
+    } = app;
 
     map.current = new mapboxgl.Map({
       accessToken,
@@ -48,14 +52,14 @@ export const Map: React.FC = () => {
     map.current.on("load", ({ target: map }) => {
       applySources(map);
       applyLayers(map);
-      applyInteractions(map, dispatch);
+      applyInteractions(map, app);
 
       map.getCanvas().style.outline = "none";
 
       map.on("styledata", () => {
         applySources(map);
         applyLayers(map);
-        applyGeometries(map, getState().geometries);
+        applyGeometries(map, geometries.items);
       });
     });
   }, []);
@@ -64,7 +68,7 @@ export const Map: React.FC = () => {
    * Sync coordinates
    */
   useStoreSubscription(
-    (store) => store.coordinates,
+    (store) => store.mapView.coordinates,
     (coordinates) => {
       map.current?.flyTo({
         center: {
@@ -79,7 +83,7 @@ export const Map: React.FC = () => {
    * Sync zoom
    */
   useStoreSubscription(
-    (store) => store.zoom,
+    (store) => store.mapView.zoom,
     (zoom) => {
       map.current?.zoomTo(zoom);
     }
@@ -89,7 +93,7 @@ export const Map: React.FC = () => {
    * Sync bearing
    */
   useStoreSubscription(
-    (store) => store.bearing,
+    (store) => store.mapView.bearing,
     (bearing) => {
       map.current?.setBearing(bearing);
     }
@@ -99,7 +103,7 @@ export const Map: React.FC = () => {
    * Sync pitch
    */
   useStoreSubscription(
-    (store) => store.pitch,
+    (store) => store.mapView.pitch,
     (pitch) => {
       map.current?.setPitch(pitch);
     }
@@ -109,7 +113,7 @@ export const Map: React.FC = () => {
    * Handle aspect ratio & resize
    */
   useStoreSubscription(
-    (store) => ({ aspectRatio: store.aspectRatio, screen: store.screen }),
+    (store) => ({ aspectRatio: store.editor.aspectRatio, screen: store.screen }),
     ({ aspectRatio }) => {
       const canvas = map.current?.getCanvas();
       if (!canvas || !wrapper.current || !container.current) {
@@ -134,7 +138,7 @@ export const Map: React.FC = () => {
    * Sync place
    */
   useStoreSubscription(
-    (store) => store.place,
+    (store) => store.mapView.place,
     (place) => {
       if (!place) {
         return;
@@ -158,7 +162,7 @@ export const Map: React.FC = () => {
    * Sync style
    */
   useStoreSubscription(
-    (store) => store.style,
+    (store) => store.editor.style,
     (style) => {
       if (!style) {
         return;
@@ -196,9 +200,9 @@ export const Map: React.FC = () => {
    * Sync actions to state
    */
   useStoreSubscription(
-    (store) => ({ actions: store.actions, currentDraw: store.currentDraw }),
+    (store) => ({ actions: store.history.actions, currentDraw: store.line.currentDraw }),
     () => {
-      dispatch.applyActions();
+      app.history.applyActions();
     }
   );
 
@@ -206,7 +210,11 @@ export const Map: React.FC = () => {
    * Sync geometries to map
    */
   useStoreSubscription(
-    (store) => ({ geometries: store.geometries, selectedGeometryId: store.selectedGeometryId, zoom: store.zoom }),
+    (store) => ({
+      geometries: store.geometries.items,
+      selectedGeometryId: store.selection.selectedGeometryId,
+      zoom: store.mapView.zoom,
+    }),
     ({ geometries, selectedGeometryId, zoom }) => {
       if (!map.current) {
         return;
@@ -275,7 +283,7 @@ export const Map: React.FC = () => {
     (store) => ({
       editorMode: store.editor.mode,
       altKey: store.keyboard.altKey,
-      draggedGeometryId: store.draggedGeometryId,
+      draggedGeometryId: store.dragAndDrop.draggedGeometryId,
     }),
     ({ editorMode, altKey, draggedGeometryId }) => {
       if (!map.current) {

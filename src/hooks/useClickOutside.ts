@@ -1,6 +1,6 @@
 import { MutableRefObject, useEffect, useRef, useState } from "react";
 
-export function useClickOutside<T extends HTMLElement>(callback: EventListener): MutableRefObject<T | null> {
+export const useClickOutside = <T extends HTMLElement>(callback: EventListener): MutableRefObject<T | null> => {
   const container = useRef<T>(null);
   const [isTouchEvent, setTouchEvent] = useState(false);
 
@@ -33,4 +33,4 @@ export function useClickOutside<T extends HTMLElement>(callback: EventListener):
   }, []);
 
   return container;
-}
+};

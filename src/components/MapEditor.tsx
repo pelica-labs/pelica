@@ -5,12 +5,12 @@ import { Map } from "~/components/Map";
 import { PlaceAutocomplete } from "~/components/PlaceAutocomplete";
 import { ResetOrientationButton } from "~/components/ResetOrientationButton";
 import { Sidebar } from "~/components/Sidebar";
-import { useKeyboard } from "~/lib/keyboard";
-import { useScreen } from "~/lib/screen";
+import { useKeyboard } from "~/hooks/useKeyboard";
+import { useScreenDimensions } from "~/hooks/useScreenDimensions";
 
 export const MapEditor: React.FC = () => {
   useKeyboard();
-  useScreen();
+  useScreenDimensions();
 
   return (
     <div className="flex h-full justify-between">

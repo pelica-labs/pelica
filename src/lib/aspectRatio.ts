@@ -1,6 +1,6 @@
 import { CSSProperties } from "react";
 
-import { ScreenDimensions } from "~/lib/screen";
+import { ScreenDimensions } from "~/core/screen";
 
 export type AspectRatio = keyof typeof aspectRatios;
 

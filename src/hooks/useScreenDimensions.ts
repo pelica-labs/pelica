@@ -1,19 +1,14 @@
 import { throttle } from "lodash";
 import { useEffect } from "react";
 
-import { useStore } from "~/lib/state";
+import { useApp } from "~/core/app";
 
-export type ScreenDimensions = {
-  width: number;
-  height: number;
-};
-
-export const useScreen = (): void => {
-  const dispatch = useStore((store) => store.dispatch);
+export const useScreenDimensions = (): void => {
+  const app = useApp();
 
   useEffect(() => {
     const onResize = throttle(() => {
-      dispatch.updateScreen(window.innerWidth, window.innerHeight);
+      app.screen.updateScreen(window.innerWidth, window.innerHeight);
     }, 200);
 
     window.addEventListener("load", onResize, false);

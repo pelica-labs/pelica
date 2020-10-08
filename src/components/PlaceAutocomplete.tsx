@@ -4,14 +4,14 @@ import * as KeyCode from "keycode-js";
 import React, { useEffect, useRef, useState } from "react";
 
 import { CloseIcon, SearchIcon } from "~/components/Icon";
-import { useLocalStorage } from "~/lib/localStorage";
+import { useApp, useStore } from "~/core/app";
+import { useLocalStorage } from "~/hooks/useLocalStorage";
 import { mapboxGeocoding } from "~/lib/mapbox";
-import { useStore } from "~/lib/state";
 
 export const PlaceAutocomplete: React.FC = () => {
   const input = useRef<HTMLInputElement>(null);
-  const place = useStore((store) => store.place);
-  const dispatch = useStore((store) => store.dispatch);
+  const app = useApp();
+  const place = useStore((store) => store.mapView.place);
   const [search, setSearch] = useState(place?.place_name ?? "");
   const [places, setPlaces] = useState<GeocodeFeature[]>([]);
   const [isFocused, setIsFocused] = useState(false);
@@ -124,7 +124,7 @@ export const PlaceAutocomplete: React.FC = () => {
     recentSearches.unshift(place);
     setRecentSearches(recentSearches.slice(0, 5));
 
-    dispatch.setPlace(place);
+    app.mapView.setPlace(place);
 
     setIsFocused(false);
   };
@@ -143,7 +143,7 @@ export const PlaceAutocomplete: React.FC = () => {
     setSearch("");
     setPlaces([]);
 
-    dispatch.setPlace(null);
+    app.mapView.setPlace(null);
 
     input.current?.focus();
   };
