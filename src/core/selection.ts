@@ -28,7 +28,7 @@ export const selection = ({ mutate, get }: App) => ({
     const { geometries, selection, history } = get();
     const selectedGeometry = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as Point;
 
-    history.actions.push({
+    history.addAction({
       name: "deleteGeometry",
       geometryId: selectedGeometry.id,
     });
