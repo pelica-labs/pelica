@@ -3,7 +3,6 @@ import { theme } from "~/styles/tailwind";
 
 export const applyLayers = (map: mapboxgl.Map): void => {
   addLayer(map, "routes", {
-    id: "routes",
     type: "line",
     source: MapSource.Routes,
     layout: {
@@ -16,7 +15,6 @@ export const applyLayers = (map: mapboxgl.Map): void => {
   });
 
   addLayer(map, "pins", {
-    id: "pins",
     type: "circle",
     source: MapSource.Pins,
     paint: {
@@ -26,7 +24,6 @@ export const applyLayers = (map: mapboxgl.Map): void => {
   });
 
   addLayer(map, "overlaysBackground", {
-    id: "overlaysBackground",
     type: "fill",
     source: MapSource.Overlays,
     interactive: false,
@@ -37,7 +34,6 @@ export const applyLayers = (map: mapboxgl.Map): void => {
   });
 
   addLayer(map, "overlaysContour", {
-    id: "overlaysContour",
     type: "line",
     source: MapSource.Overlays,
     interactive: false,
@@ -49,10 +45,13 @@ export const applyLayers = (map: mapboxgl.Map): void => {
   });
 };
 
-const addLayer = (map: mapboxgl.Map, id: MapSource | string, layer: mapboxgl.Layer) => {
+const addLayer = (map: mapboxgl.Map, id: MapSource | string, layer: Omit<mapboxgl.Layer, "id">) => {
   if (map.getLayer(id)) {
     return;
   }
 
-  map.addLayer(layer);
+  map.addLayer({
+    id,
+    ...layer,
+  });
 };
