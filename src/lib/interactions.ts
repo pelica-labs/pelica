@@ -13,19 +13,25 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   const onWheel = (event: MapWheelEvent) => {
     const { originalEvent } = event;
 
-    const x = originalEvent.deltaX;
-    const y = originalEvent.deltaY;
+    // Shift scroll for horizontal zoom is natively handled.
 
-    // During a pinch event, the Y delta is always a floating number.
-    // During a scroll event, it's always an integer.
-    // 🤷‍♂️ · We'll have to check on different browsers.
-    if (y !== parseInt(`${y}`)) {
+    // Meta key always triggers the native zoom.
+    if (originalEvent.metaKey) {
       return;
     }
 
-    event.preventDefault();
+    // 🧙‍♂️
+    // During a pinch event, the browser thinks CTRL is pressed.
+    if (originalEvent.ctrlKey) {
+      return;
+    }
+
+    const x = originalEvent.deltaX;
+    const y = originalEvent.deltaY;
 
     map.panBy([x, y], { animate: false });
+
+    event.preventDefault();
   };
 
   const onMoveEnd = (event: MapMouseEvent) => {
