@@ -6,6 +6,7 @@
 
 html, body, #__next {
   height: 100%;
+  overscroll-behavior: none;
 }
 
 input[type=number].appearance-none::-webkit-inner-spin-button,

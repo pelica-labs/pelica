@@ -11,10 +11,19 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   const canvas = map.getCanvas();
 
   const onWheel = (event: MapWheelEvent) => {
-    event.preventDefault();
+    const { originalEvent } = event;
 
-    const x = -event.originalEvent.wheelDeltaX;
-    const y = -event.originalEvent.wheelDeltaY;
+    const x = originalEvent.deltaX;
+    const y = originalEvent.deltaY;
+
+    // During a pinch event, the Y delta is always a floating number.
+    // During a scroll event, it's always an integer.
+    // 🤷‍♂️ · We'll have to check on different browsers.
+    if (y !== parseInt(`${y}`)) {
+      return;
+    }
+
+    event.preventDefault();
 
     map.panBy([x, y], { animate: false });
   };
