@@ -1,9 +1,11 @@
 import * as KeyCode from "keycode-js";
 import { throttle } from "lodash";
 import { MapLayerMouseEvent, MapLayerTouchEvent, MapMouseEvent, MapWheelEvent } from "mapbox-gl";
+import React from "react";
 
-import { State } from "~/core/app";
-import { getState } from "~/core/app";
+import { Pin } from "~/components/Pin";
+import { getState, State } from "~/core/app";
+import { generateImage } from "~/lib/generateImage";
 import { Point, Position } from "~/lib/geometry";
 import { MapSource } from "~/lib/sources";
 
@@ -189,6 +191,20 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     }
   };
 
+  type MapImageMissingEvent = {
+    id: string;
+  };
+
+  const onImageMissing = (event: MapImageMissingEvent) => {
+    const [, imageColor] = event.id.split("-");
+
+    generateImage(<Pin color={imageColor} />).then((image) => {
+      if (!map.hasImage(event.id)) {
+        map.addImage(event.id, image, { pixelRatio: 2 });
+      }
+    });
+  };
+
   canvas.style.cursor = "default";
 
   map.dragPan.disable();
@@ -203,6 +219,8 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   map.on("touchend", onMouseUp);
   map.on("click", onClick);
   map.on("wheel", onWheel);
+
+  map.on("styleimagemissing", onImageMissing);
 
   map.on("click", MapSource.Pins, onFeatureClick);
   map.on("click", MapSource.Routes, onFeatureClick);

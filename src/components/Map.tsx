@@ -44,6 +44,7 @@ export const Map: React.FC = () => {
       zoom,
       bearing,
       pitch,
+      fadeDuration: 0,
       logoPosition: "bottom-right",
       attributionControl: false,
       preserveDrawingBuffer: true,

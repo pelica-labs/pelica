@@ -15,11 +15,13 @@ export const applyLayers = (map: mapboxgl.Map): void => {
   });
 
   addLayer(map, "pins", {
-    type: "circle",
+    type: "symbol",
     source: MapSource.Pins,
-    paint: {
-      "circle-color": ["get", "strokeColor"],
-      "circle-radius": ["get", "strokeWidth"],
+    layout: {
+      "icon-image": ["concat", "pin-", ["get", "strokeColor"]],
+      "icon-size": ["*", 0.2, ["get", "strokeWidth"]],
+      "icon-offset": [0, -20],
+      "icon-allow-overlap": true,
     },
   });
 
