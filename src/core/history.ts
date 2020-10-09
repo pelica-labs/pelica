@@ -1,6 +1,6 @@
 import { MercatorCoordinate } from "mapbox-gl";
 
-import { getState, State, subscribe, useStore } from "~/core/app";
+import { State } from "~/core/app";
 import { App } from "~/core/helpers";
 import { Coordinates, Point, PolyLine, Position } from "~/lib/geometry";
 import { SmartMatching } from "~/lib/smartMatching";
