@@ -175,30 +175,6 @@ export const Map: React.FC = () => {
   );
 
   /**
-   * Sync map interactivity
-   */
-  useStoreSubscription(
-    (store) => ({ editorMode: store.editor.mode, altKey: store.keyboard.altKey }),
-    ({ editorMode, altKey }) => {
-      if (!map.current) {
-        return;
-      }
-
-      if (editorMode === "move" || altKey) {
-        map.current.dragPan.enable();
-        // map.current.scrollZoom.enable();
-        map.current.touchPitch.enable();
-        map.current.touchZoomRotate.enable();
-      } else if (editorMode === "draw") {
-        map.current.dragPan.disable();
-        // map.current.scrollZoom.disable();
-        map.current.touchPitch.disable();
-        map.current.touchZoomRotate.disable();
-      }
-    }
-  );
-
-  /**
    * Sync actions to state
    */
   useStoreSubscription(
@@ -284,24 +260,21 @@ export const Map: React.FC = () => {
   useStoreSubscription(
     (store) => ({
       editorMode: store.editor.mode,
-      altKey: store.keyboard.altKey,
       draggedGeometryId: store.dragAndDrop.draggedGeometryId,
     }),
-    ({ editorMode, altKey, draggedGeometryId }) => {
+    ({ editorMode, draggedGeometryId }) => {
       if (!map.current) {
         return null;
       }
 
       const canvasStyle = map.current.getCanvas().style;
 
-      if (altKey) {
-        canvasStyle.cursor = "pointer";
-      } else if (draggedGeometryId) {
+      if (draggedGeometryId) {
         canvasStyle.cursor = "grab";
       } else if (editorMode === "draw" || editorMode === "pin") {
         canvasStyle.cursor = "crosshair";
       } else if (editorMode === "move") {
-        canvasStyle.cursor = "pointer";
+        canvasStyle.cursor = "default";
       }
     }
   );

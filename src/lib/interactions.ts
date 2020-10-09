@@ -45,14 +45,9 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
 
   const onMouseMove = throttle((event: MapMouseEvent) => {
     const {
-      keyboard,
       line: { currentDraw },
       dragAndDrop: { draggedGeometryId },
     } = getState();
-
-    if (keyboard.altKey) {
-      return;
-    }
 
     event.preventDefault();
 
@@ -68,13 +63,13 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   }, 1000 / 30);
 
   const onMouseDown = (event: MapMouseEvent) => {
-    const { keyboard, editor } = getState();
+    const { editor } = getState();
 
     if (event.originalEvent.which !== 1) {
       return;
     }
 
-    if (keyboard.altKey || editor.mode !== "draw") {
+    if (editor.mode !== "draw") {
       return;
     }
 
@@ -84,14 +79,9 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
 
   const onMouseUp = (event?: MapMouseEvent) => {
     const {
-      keyboard,
       editor,
       dragAndDrop: { draggedGeometryId },
     } = getState();
-
-    if (keyboard.altKey) {
-      return;
-    }
 
     if (editor.mode === "draw") {
       app.line.endDrawing();
@@ -105,11 +95,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   };
 
   const onClick = (event: MapMouseEvent) => {
-    const { keyboard, editor } = getState();
-
-    if (keyboard.altKey) {
-      return;
-    }
+    const { editor } = getState();
 
     if (editor.mode === "pin") {
       app.pin.place(event.lngLat.lat, event.lngLat.lng);
@@ -203,6 +189,9 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     }
   };
 
+  canvas.style.cursor = "default";
+
+  map.dragPan.disable();
   map.scrollZoom.setZoomRate(0.03);
 
   map.on("moveend", onMoveEnd);
