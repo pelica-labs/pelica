@@ -267,6 +267,8 @@ export const Sidebar: React.FC = () => {
               </div>
               <div className="mt-4 px-1">
                 <WidthSlider
+                  max={12}
+                  min={1}
                   value={boundWidth}
                   onChange={(width) => {
                     onWidthChange(width);
