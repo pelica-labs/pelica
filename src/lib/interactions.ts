@@ -197,6 +197,8 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     }
   };
 
+  map.scrollZoom.setZoomRate(0.03);
+
   map.on("moveend", onMoveEnd);
   map.on("mousemove", onMouseMove);
   map.on("mousedown", onMouseDown);
