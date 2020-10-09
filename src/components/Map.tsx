@@ -6,6 +6,7 @@ import React, { useEffect, useRef } from "react";
 import { useApp, useStoreSubscription } from "~/core/app";
 import { computeMapDimensions } from "~/lib/aspectRatio";
 import { applyGeometries, nextGeometryId } from "~/lib/geometry";
+import { applyImageMissingHandler } from "~/lib/imageMissing";
 import { applyInteractions } from "~/lib/interactions";
 import { applyLayers } from "~/lib/layers";
 import { applySources, MapSource } from "~/lib/sources";
@@ -56,6 +57,7 @@ export const Map: React.FC = () => {
       applySources(map);
       applyLayers(map);
       applyInteractions(map, app);
+      applyImageMissingHandler(map);
 
       map.getCanvas().style.outline = "none";
 

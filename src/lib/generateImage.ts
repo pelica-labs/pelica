@@ -18,6 +18,16 @@ export const generateImage = (component: ReactElement): Promise<ImageData> => {
   });
 };
 
+export const generatePlaceholder = (): Uint8Array => {
+  const data = new Uint8Array(4);
+  data[0] = 0;
+  data[1] = 0;
+  data[2] = 0;
+  data[3] = 0;
+
+  return data;
+};
+
 const getImageData = (img: HTMLImageElement): ImageData => {
   const canvas = document.createElement("canvas");
   canvas.width = img.width;
