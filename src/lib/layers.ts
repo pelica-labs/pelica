@@ -2,26 +2,36 @@ import { MapSource } from "~/lib/sources";
 import { theme } from "~/styles/tailwind";
 
 export const applyLayers = (map: mapboxgl.Map): void => {
-  addLayer(map, "routes", {
-    type: "line",
-    source: MapSource.Routes,
-    layout: {
-      "line-cap": "round",
+  addLayer(
+    map,
+    "routes",
+    {
+      type: "line",
+      source: MapSource.Routes,
+      layout: {
+        "line-cap": "round",
+      },
+      paint: {
+        "line-color": ["get", "strokeColor"],
+        "line-width": ["get", "strokeWidth"],
+      },
     },
-    paint: {
-      "line-color": ["get", "strokeColor"],
-      "line-width": ["get", "strokeWidth"],
-    },
-  });
+    "waterway-label"
+  );
 
-  addLayer(map, "pins", {
-    type: "circle",
-    source: MapSource.Pins,
-    paint: {
-      "circle-color": ["get", "strokeColor"],
-      "circle-radius": ["get", "strokeWidth"],
+  addLayer(
+    map,
+    "pins",
+    {
+      type: "circle",
+      source: MapSource.Pins,
+      paint: {
+        "circle-color": ["get", "strokeColor"],
+        "circle-radius": ["get", "strokeWidth"],
+      },
     },
-  });
+    "waterway-label"
+  );
 
   addLayer(map, "overlaysBackground", {
     type: "fill",
@@ -45,13 +55,28 @@ export const applyLayers = (map: mapboxgl.Map): void => {
   });
 };
 
-const addLayer = (map: mapboxgl.Map, id: MapSource | string, layer: Omit<mapboxgl.Layer, "id">) => {
+const addLayer = (
+  map: mapboxgl.Map,
+  id: MapSource | string,
+  layer: Omit<mapboxgl.Layer, "id">,
+  beforeLayer?: string
+) => {
   if (map.getLayer(id)) {
     return;
   }
 
-  map.addLayer({
-    id,
-    ...layer,
-  });
+  if (beforeLayer && map.getLayer(beforeLayer)) {
+    map.addLayer(
+      {
+        id,
+        ...layer,
+      },
+      beforeLayer
+    );
+  } else {
+    map.addLayer({
+      id,
+      ...layer,
+    });
+  }
 };

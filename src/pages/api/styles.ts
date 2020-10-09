@@ -11,6 +11,8 @@ const mapboxStyles = MapboxStyles({ accessToken });
 const Styles: NextApiHandler = async (req, res) => {
   const styles = await mapboxStyles.listStyles({}).send();
 
+  res.setHeader("Cache-Control", "s-maxage=1, stale-while-revalidate");
+
   res.json({
     styles: styles.body,
   });
