@@ -4,7 +4,6 @@ import ReactDOMServer from "react-dom/server";
 export const generateImage = (component: ReactElement): Promise<ImageData> => {
   return new Promise((resolve, reject) => {
     const svg = ReactDOMServer.renderToString(component);
-
     const image = new Image(54, 73);
     image.src = `data:image/svg+xml;base64,` + btoa(svg);
 

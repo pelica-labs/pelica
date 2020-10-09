@@ -1,7 +1,15 @@
 import React from "react";
 
+import { FireIcon, TargetIcon } from "~/components/Icon";
 import { Pin } from "~/components/Pin";
 import { generateImage, generatePlaceholder } from "~/lib/generateImage";
+
+const PrefixToComponent = {
+  pin: Pin,
+
+  fire: FireIcon,
+  target: TargetIcon,
+};
 
 type MapImageMissingEvent = {
   id: string;
@@ -9,9 +17,14 @@ type MapImageMissingEvent = {
 
 export const applyImageMissingHandler = (map: mapboxgl.Map): void => {
   const onImageMissing = (event: MapImageMissingEvent) => {
-    const [, imageColor] = event.id.split("-");
+    const parts = event.id.split("-");
 
-    generateImage(<Pin color={imageColor} />).then((image) => {
+    const prefix = parts[0] as keyof typeof PrefixToComponent;
+    const color = parts[1];
+
+    const Component = PrefixToComponent[prefix];
+
+    generateImage(<Component color={color} />).then((image) => {
       if (map.hasImage(event.id)) {
         map.removeImage(event.id);
       }

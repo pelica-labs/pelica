@@ -2,14 +2,25 @@ import React from "react";
 
 type Props = {
   className?: string;
+  color?: string;
+  width?: number;
+  height?: number;
 };
 
 type Icon = React.FC<Props>;
 
 const icon = (path: JSX.Element): Icon => {
-  return function Icon({ className }) {
+  return function Icon({ className, width, height, color = "currentColor" }) {
     return (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg
+        className={className}
+        fill="none"
+        height={height}
+        stroke={color}
+        viewBox="0 0 24 24"
+        width={width}
+        xmlns="http://www.w3.org/2000/svg"
+      >
         {path}
       </svg>
     );

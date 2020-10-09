@@ -18,10 +18,21 @@ export const applyLayers = (map: mapboxgl.Map): void => {
     type: "symbol",
     source: MapSource.Pins,
     layout: {
-      "visibility": "visible",
       "icon-image": ["concat", "pin-", ["get", "strokeColor"]],
       "icon-size": ["*", 0.2, ["get", "strokeWidth"]],
       "icon-offset": [0, -20],
+      "icon-allow-overlap": true,
+      "text-allow-overlap": true,
+    },
+  });
+
+  addLayer(map, "pinIcons", {
+    type: "symbol",
+    source: MapSource.Pins,
+    layout: {
+      "icon-image": ["concat", "fire-", ["get", "strokeColor"]],
+      "icon-size": ["*", 0.1, ["get", "strokeWidth"]],
+      "icon-offset": [0, -50],
       "icon-allow-overlap": true,
       "text-allow-overlap": true,
     },
