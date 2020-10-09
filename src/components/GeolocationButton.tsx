@@ -19,6 +19,13 @@ export const GeolocationButton: React.FC = () => {
       return;
     }
 
+    if (!window.navigator.permissions) {
+      setGeolocationStatus("pending");
+      setGeolocationAvailable(true);
+
+      return;
+    }
+
     window.navigator.permissions.query({ name: "geolocation" }).then((result) => {
       if (result.state === "denied") {
         setGeolocationAvailable(false);
