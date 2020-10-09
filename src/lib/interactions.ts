@@ -1,6 +1,6 @@
 import * as KeyCode from "keycode-js";
 import { throttle } from "lodash";
-import { MapLayerMouseEvent, MapLayerTouchEvent, MapMouseEvent } from "mapbox-gl";
+import { MapLayerMouseEvent, MapLayerTouchEvent, MapMouseEvent, MapWheelEvent } from "mapbox-gl";
 
 import { State } from "~/core/app";
 import { getState } from "~/core/app";
@@ -9,6 +9,15 @@ import { MapSource } from "~/lib/sources";
 
 export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   const canvas = map.getCanvas();
+
+  const onWheel = (event: MapWheelEvent) => {
+    event.preventDefault();
+
+    const x = -event.originalEvent.wheelDeltaX;
+    const y = -event.originalEvent.wheelDeltaY;
+
+    map.panBy([x, y], { animate: false });
+  };
 
   const onMoveEnd = (event: MapMouseEvent) => {
     const { lng, lat } = event.target.getCenter();
@@ -187,6 +196,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   map.on("touchstart", onMouseDown);
   map.on("touchend", onMouseUp);
   map.on("click", onClick);
+  map.on("wheel", onWheel);
 
   map.on("click", MapSource.Pins, onFeatureClick);
   map.on("click", MapSource.Routes, onFeatureClick);
