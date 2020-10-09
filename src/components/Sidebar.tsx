@@ -4,7 +4,6 @@ import React, { useEffect, useRef } from "react";
 import { AspectRatioSelector } from "~/components/AspectRatioSelector";
 import { Button } from "~/components/Button";
 import { ColorPicker } from "~/components/ColorPicker";
-import { CoordinatesInput } from "~/components/CoordinatesInput";
 import { RedoIcon, TrashIcon, UndoIcon } from "~/components/Icon";
 import { SmartMatchingSelector } from "~/components/SmartMatchingSelector";
 import { StyleSelector } from "~/components/StyleSelector";
@@ -31,9 +30,7 @@ const computePanelOffset = (screenWidth: number) => {
 export const Sidebar: React.FC = () => {
   const app = useApp();
   const fileInput = useRef<HTMLInputElement>(null);
-  const style = useStore((store) => store.editor.style);
   const editor = useStore((store) => store.editor);
-  const aspectRatio = useStore((store) => store.editor.aspectRatio);
   const actions = useStore((store) => store.history.actions);
   const redoStack = useStore((store) => store.history.redoStack);
   const screenWidth = useStore((store) => store.screen.dimensions.width);
@@ -49,7 +46,6 @@ export const Sidebar: React.FC = () => {
   const displayColorPicker = ["draw", "pin"].includes(editor.mode) || selectedGeometry;
   const displayWidthPicker = ["draw", "pin"].includes(editor.mode) || selectedGeometry;
   const displaySmartMatching = ["draw"].includes(editor.mode) || selectedGeometry?.type === "PolyLine";
-  const displayCoordinates = ["move"].includes(editor.mode) && selectedGeometry?.type === "Point";
 
   const boundColor = selectedGeometry ? selectedGeometry.style.strokeColor : editor.strokeColor;
   const boundWidth = selectedGeometry ? selectedGeometry.style.strokeWidth : editor.strokeWidth;
@@ -134,7 +130,7 @@ export const Sidebar: React.FC = () => {
           }}
         >
           <StyleSelector
-            value={style}
+            value={editor.style}
             onChange={(style) => {
               app.editor.setStyle(style);
             }}
@@ -152,7 +148,7 @@ export const Sidebar: React.FC = () => {
           }}
         >
           <AspectRatioSelector
-            value={aspectRatio}
+            value={editor.aspectRatio}
             onChange={(aspectRatio) => {
               app.editor.closePanes();
               app.editor.setAspectRatio(aspectRatio);
@@ -294,24 +290,6 @@ export const Sidebar: React.FC = () => {
               </div>
             </div>
           )}
-
-          {displayCoordinates && selectedGeometry?.type === "Point" && (
-            <div className="mt-2 px-3 pb-3 mb-2 border-b border-gray-700">
-              <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Coordinates</span>
-
-              <div className="mt-2">
-                <CoordinatesInput
-                  value={selectedGeometry.coordinates}
-                  onChange={(coordinates) => {
-                    app.pin.editSelectedPinCoordinates(coordinates);
-                  }}
-                  onChangeComplete={(coordinates) => {
-                    app.pin.endEditSelectedPinCoordinates(coordinates);
-                  }}
-                />
-              </div>
-            </div>
-          )}
         </div>
 
         <div>
@@ -329,7 +307,7 @@ export const Sidebar: React.FC = () => {
               <span className="lg:w-24 text-left text-xs uppercase text-gray-500 font-light tracking-wide leading-none">
                 Style
               </span>
-              <span className="ml-2 text-xs text-left truncate">{style.name}</span>
+              <span className="ml-2 text-xs text-left truncate">{editor.style.name}</span>
             </Button>
 
             <Button
@@ -342,7 +320,7 @@ export const Sidebar: React.FC = () => {
               <span className="lg:w-24 text-left text-xs uppercase text-gray-500 font-light tracking-wide leading-none">
                 Aspect ratio
               </span>
-              <span className="ml-2 text-xs text-left">{aspectRatios[aspectRatio].name}</span>
+              <span className="ml-2 text-xs text-left">{aspectRatios[editor.aspectRatio].name}</span>
             </Button>
           </div>
 
