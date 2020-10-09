@@ -50,6 +50,8 @@ export const Map: React.FC = () => {
     });
 
     map.current.on("load", ({ target: map }) => {
+      map.resize();
+
       applySources(map);
       applyLayers(map);
       applyInteractions(map, app);
