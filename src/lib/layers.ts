@@ -64,6 +64,7 @@ export const applyLayers = (map: mapboxgl.Map): void => {
       "icon-allow-overlap": true,
       "text-allow-overlap": true,
     },
+    paint: {},
   });
 
   addLayer(map, {

@@ -240,8 +240,9 @@ export const Map: React.FC = () => {
     (store) => ({
       editorMode: store.editor.mode,
       draggedGeometryId: store.dragAndDrop.draggedGeometryId,
+      hoveredGeometryId: store.dragAndDrop.hoveredGeometryId,
     }),
-    ({ editorMode, draggedGeometryId }) => {
+    ({ editorMode, draggedGeometryId, hoveredGeometryId }) => {
       if (!map.current) {
         return null;
       }
@@ -252,6 +253,8 @@ export const Map: React.FC = () => {
         canvasStyle.cursor = "grab";
       } else if (editorMode === "draw" || editorMode === "pin") {
         canvasStyle.cursor = "crosshair";
+      } else if (hoveredGeometryId) {
+        canvasStyle.cursor = "pointer";
       } else if (editorMode === "move") {
         canvasStyle.cursor = "default";
       }

@@ -51,6 +51,10 @@ export const line = ({ mutate, get }: App) => ({
     }
 
     if (line.currentLine.points.length === 0) {
+      mutate(({ line }) => {
+        line.currentLine = null;
+      });
+
       return;
     }
 

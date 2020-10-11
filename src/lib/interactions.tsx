@@ -99,6 +99,8 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     if (editor.mode === "pin") {
       app.pin.place(event.lngLat.lat, event.lngLat.lng);
     }
+
+    app.selection.unselectGeometry();
   };
 
   const onFeatureClick = (event: MapLayerMouseEvent) => {
@@ -137,7 +139,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
 
     event.preventDefault();
 
-    app.dragAndDrop.startDrag(event.features[0]);
+    app.dragAndDrop.startDrag(event.features[0].id as number);
   };
 
   const onWindowBlur = () => {
@@ -187,6 +189,18 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     }
   };
 
+  const onFeatureHoverStart = (event: MapLayerMouseEvent) => {
+    if (!event.features?.length) {
+      return;
+    }
+
+    app.dragAndDrop.startHover(event.features[0].id as number, event.features[0].source);
+  };
+
+  const onFeatureHoverEnd = () => {
+    app.dragAndDrop.endHover();
+  };
+
   canvas.style.cursor = "default";
 
   map.dragPan.disable();
@@ -202,6 +216,10 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   map.on("click", onClick);
   map.on("wheel", onWheel);
 
+  map.on("mouseenter", MapSource.Pins, onFeatureHoverStart);
+  map.on("mouseleave", MapSource.Pins, onFeatureHoverEnd);
+  map.on("mouseenter", MapSource.Routes, onFeatureHoverStart);
+  map.on("mouseleave", MapSource.Routes, onFeatureHoverEnd);
   map.on("click", MapSource.Pins, onFeatureClick);
   map.on("click", MapSource.Routes, onFeatureClick);
   map.on("contextmenu", MapSource.Pins, onFeatureRightClick);
