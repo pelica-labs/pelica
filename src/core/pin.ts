@@ -1,3 +1,5 @@
+import { MercatorCoordinate } from "mapbox-gl";
+
 import { Coordinates, nextGeometryId, Point, Position } from "~/core/geometries";
 import { App } from "~/core/helpers";
 import { MapSource } from "~/lib/sources";
@@ -61,15 +63,23 @@ export const pin = ({ mutate, get }: App) => ({
     });
   },
 
-  moveSelectedPin: (direction: Position) => {
+  nudgeSelectedPin: (direction: Position) => {
     const { geometries, selection, history, mapView } = get();
-    const selectedGeometry = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as Point;
+    const point = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as Point;
+
+    const pointCoordinates = MercatorCoordinate.fromLngLat(
+      { lng: point.coordinates.longitude, lat: point.coordinates.latitude },
+      0
+    );
+    const base = 2 ** (-mapView.zoom - 1);
+    pointCoordinates.x += base * direction.x;
+    pointCoordinates.y += base * direction.y;
+    const { lat, lng } = pointCoordinates.toLngLat();
 
     history.push({
-      name: "nudgePin",
-      pinId: selectedGeometry.id,
-      direction,
-      zoom: mapView.zoom,
+      name: "movePin",
+      pinId: point.id,
+      coordinates: { latitude: lat, longitude: lng },
     });
   },
 });

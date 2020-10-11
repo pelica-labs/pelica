@@ -1,7 +1,5 @@
-import { MercatorCoordinate } from "mapbox-gl";
-
 import { State } from "~/core/app";
-import { Coordinates, Geometry, Point, PolyLine, Position } from "~/core/geometries";
+import { Coordinates, Geometry, Point, PolyLine } from "~/core/geometries";
 import { SmartMatching } from "~/lib/smartMatching";
 import { Style } from "~/lib/style";
 
@@ -15,7 +13,6 @@ export type Action =
   | PinAction
   | ImportGpxAction
   | UpdateStyleAction
-  | NudgePinAction
   | MovePinAction
   | UpdatePinAction
   | UpdateLineAction
@@ -70,40 +67,6 @@ const ImportGpxHandler: Handler<ImportGpxAction> = {
 
   undo: ({ geometries }, action) => {
     geometries.items.splice(geometries.items.findIndex((geometry) => geometry.id === action.line.id));
-  },
-};
-
-// ---
-
-type NudgePinAction = {
-  name: "nudgePin";
-  pinId: number;
-  zoom: number;
-  direction: Position;
-
-  previousCoordinates?: Coordinates;
-};
-
-const NudgePinHandler: Handler<NudgePinAction> = {
-  apply: ({ geometries }, action) => {
-    const point = geometries.items.find((geometry) => geometry.id === action.pinId) as Point;
-    const pointCoordinates = MercatorCoordinate.fromLngLat(
-      { lng: point.coordinates.longitude, lat: point.coordinates.latitude },
-      0
-    );
-    const base = 2 ** (-action.zoom - 1);
-    pointCoordinates.x += base * action.direction.x;
-    pointCoordinates.y += base * action.direction.y;
-    const { lat, lng } = pointCoordinates.toLngLat();
-
-    action.previousCoordinates = point.coordinates;
-    point.coordinates = { latitude: lat, longitude: lng };
-  },
-
-  undo: ({ geometries }, action) => {
-    const point = geometries.items.find((geometry) => geometry.id === action.pinId) as Point;
-
-    point.coordinates = action.previousCoordinates;
   },
 };
 
@@ -286,7 +249,6 @@ export const handlers = {
   draw: DrawHandler,
   pin: PinHandler,
   importGpx: ImportGpxHandler,
-  nudgePin: NudgePinHandler,
   movePin: MovePinHandler,
   updatePin: UpdatePinHandler,
   updateLine: UpdateLineHandler,
