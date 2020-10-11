@@ -2,7 +2,8 @@ import { MapSource } from "~/lib/sources";
 import { theme } from "~/styles/tailwind";
 
 export const applyLayers = (map: mapboxgl.Map): void => {
-  addLayer(map, "overlaysBackground", {
+  addLayer(map, {
+    id: "overlaysBackground",
     type: "fill",
     source: MapSource.Overlays,
     interactive: false,
@@ -12,7 +13,8 @@ export const applyLayers = (map: mapboxgl.Map): void => {
     },
   });
 
-  addLayer(map, "overlaysPoint", {
+  addLayer(map, {
+    id: "overlaysPoint",
     type: "circle",
     source: MapSource.Overlays,
     interactive: false,
@@ -26,17 +28,20 @@ export const applyLayers = (map: mapboxgl.Map): void => {
     },
   });
 
-  addLayer(map, "overlaysContour", {
+  addLayer(map, {
+    id: "overlaysContour",
     type: "line",
     source: MapSource.Overlays,
     interactive: false,
     paint: {
       "line-color": theme.colors.green[500],
       "line-width": 1,
-      // "line-dasharray": [3, 1],
     },
   });
-  addLayer(map, "routes", {
+
+  addLayer(map, {
+    id: "routes",
+    before: "waterway-label",
     type: "line",
     source: MapSource.Routes,
     layout: {
@@ -48,7 +53,8 @@ export const applyLayers = (map: mapboxgl.Map): void => {
     },
   });
 
-  addLayer(map, "pins", {
+  addLayer(map, {
+    id: "pins",
     type: "symbol",
     source: MapSource.Pins,
     layout: {
@@ -60,7 +66,8 @@ export const applyLayers = (map: mapboxgl.Map): void => {
     },
   });
 
-  addLayer(map, "pinIcons", {
+  addLayer(map, {
+    id: "pinIcons",
     type: "symbol",
     source: MapSource.Pins,
     layout: {
@@ -73,13 +80,10 @@ export const applyLayers = (map: mapboxgl.Map): void => {
   });
 };
 
-const addLayer = (map: mapboxgl.Map, id: MapSource | string, layer: Omit<mapboxgl.Layer, "id">) => {
-  if (map.getLayer(id)) {
+const addLayer = (map: mapboxgl.Map, layer: mapboxgl.Layer & { before?: string }) => {
+  if (map.getLayer(layer.id)) {
     return;
   }
 
-  map.addLayer({
-    id,
-    ...layer,
-  });
+  map.addLayer(layer, layer.before);
 };
