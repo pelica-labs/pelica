@@ -20,7 +20,7 @@ export const imports = ({ get }: App) => ({
       history.push({
         name: "importGpx",
         line: {
-          type: "PolyLine",
+          type: "Line",
           id: nextGeometryId(),
           source: MapSource.Routes,
           smartMatching: { enabled: false, profile: null },

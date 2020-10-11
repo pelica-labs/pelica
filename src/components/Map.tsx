@@ -212,7 +212,7 @@ export const Map: React.FC = () => {
 
       const selectedGeometry = geometries.find((geometry) => geometry.id === selectedGeometryId);
 
-      if (selectedGeometry?.type === "PolyLine") {
+      if (selectedGeometry?.type === "Line") {
         const box = bbox(
           transformScale(
             lineString(

@@ -35,7 +35,7 @@ export type Geometry = PolyLine | Point | Circle | Rectangle | Polygon;
 export type PolyLine = {
   id: number;
   source: MapSource;
-  type: "PolyLine";
+  type: "Line";
   points: Coordinates[];
   smartPoints: Coordinates[];
   smartMatching: SmartMatching;
@@ -129,7 +129,7 @@ const geometryToFeature = (geometry: Geometry): GeoJSON.Feature<GeoJSON.Geometry
     };
   }
 
-  if (geometry.type === "PolyLine") {
+  if (geometry.type === "Line") {
     const points =
       geometry.smartMatching.enabled && geometry.smartPoints.length ? geometry.smartPoints : geometry.points;
 

@@ -5,7 +5,7 @@ import React, { useEffect, useRef } from "react";
 import { AspectRatioSelector } from "~/components/AspectRatioSelector";
 import { Button } from "~/components/Button";
 import { ColorPicker } from "~/components/ColorPicker";
-import { icons, RedoIcon, TrashIcon, UndoIcon } from "~/components/Icon";
+import { HandIcon, icons, PaintIcon, PinIcon, RedoIcon, TrashIcon, UndoIcon } from "~/components/Icon";
 import { IconSelector } from "~/components/IconSelector";
 import { SmartMatchingSelector } from "~/components/SmartMatchingSelector";
 import { StyleSelector } from "~/components/StyleSelector";
@@ -57,12 +57,11 @@ export const Sidebar: React.FC = () => {
   const displayIconPicker = editor.mode === "pin" || selectedGeometry?.type === "Point";
   const displayColorPicker = ["draw", "pin"].includes(editor.mode) || selectedGeometry;
   const displayWidthPicker = ["draw", "pin"].includes(editor.mode) || selectedGeometry;
-  const displaySmartMatching = ["draw"].includes(editor.mode) || selectedGeometry?.type === "PolyLine";
+  const displaySmartMatching = ["draw"].includes(editor.mode) || selectedGeometry?.type === "Line";
 
   const boundColor = selectedGeometry ? selectedGeometry.style.color : editor.mode === "draw" ? line.color : pin.color;
   const boundWidth = selectedGeometry ? selectedGeometry.style.width : editor.mode === "draw" ? line.width : pin.width;
-  const boundSmartMatching =
-    selectedGeometry?.type === "PolyLine" ? selectedGeometry.smartMatching : editor.smartMatching;
+  const boundSmartMatching = selectedGeometry?.type === "Line" ? selectedGeometry.smartMatching : editor.smartMatching;
 
   const onIconChange = (icon: string) => {
     if (selectedGeometry?.type === "Point") {
@@ -73,7 +72,7 @@ export const Sidebar: React.FC = () => {
   };
 
   const onColorChange = throttle((color: string) => {
-    if (selectedGeometry?.type === "PolyLine") {
+    if (selectedGeometry?.type === "Line") {
       app.line.transientUpdateSelectedLine(color, selectedGeometry.style.width);
     } else if (selectedGeometry?.type === "Point") {
       app.pin.transientUpdateSelectedPin(selectedGeometry.style.icon, color, selectedGeometry.style.width);
@@ -85,7 +84,7 @@ export const Sidebar: React.FC = () => {
   }, 200);
 
   const onColorChangeComplete = (color: string) => {
-    if (selectedGeometry?.type === "PolyLine") {
+    if (selectedGeometry?.type === "Line") {
       app.line.updateSelectedLine(color, selectedGeometry.style.width);
     } else if (selectedGeometry?.type === "Point") {
       app.pin.updateSelectedPin(selectedGeometry.style.icon, color, selectedGeometry.style.width);
@@ -93,7 +92,7 @@ export const Sidebar: React.FC = () => {
   };
 
   const onWidthChange = (width: number) => {
-    if (selectedGeometry?.type === "PolyLine") {
+    if (selectedGeometry?.type === "Line") {
       app.line.transientUpdateSelectedLine(selectedGeometry.style.color, width);
     } else if (selectedGeometry?.type === "Point") {
       app.pin.transientUpdateSelectedPin(selectedGeometry.style.icon, selectedGeometry.style.color, width);
@@ -105,7 +104,7 @@ export const Sidebar: React.FC = () => {
   };
 
   const onWidthChangeComplete = (width: number) => {
-    if (selectedGeometry?.type === "PolyLine") {
+    if (selectedGeometry?.type === "Line") {
       app.line.updateSelectedLine(selectedGeometry.style.color, width);
     } else if (selectedGeometry?.type === "Point") {
       app.pin.updateSelectedPin(selectedGeometry.style.icon, selectedGeometry.style.color, width);
@@ -113,7 +112,7 @@ export const Sidebar: React.FC = () => {
   };
 
   const onSmartMatchingChange = (smartMatching: SmartMatching) => {
-    if (selectedGeometry?.type === "PolyLine") {
+    if (selectedGeometry?.type === "Line") {
       app.line.updateSelectedLineSmartMatching(smartMatching);
     } else {
       app.editor.setEditorSmartMatching(smartMatching);
@@ -252,7 +251,7 @@ export const Sidebar: React.FC = () => {
                 app.editor.setEditorMode("move");
               }}
             >
-              <span className="text-xs">Move</span>
+              <HandIcon className="w-6 h-6" />
             </Button>
 
             <Button
@@ -263,7 +262,7 @@ export const Sidebar: React.FC = () => {
                 app.editor.setEditorMode("draw");
               }}
             >
-              <span className="text-xs">Draw</span>
+              <PaintIcon className="w-6 h-6" />
             </Button>
 
             <Button
@@ -274,7 +273,7 @@ export const Sidebar: React.FC = () => {
                 app.editor.setEditorMode("pin");
               }}
             >
-              <span className="text-xs">Pin</span>
+              <PinIcon className="w-6 h-6" />
             </Button>
           </div>
 

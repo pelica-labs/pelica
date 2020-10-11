@@ -45,7 +45,7 @@ export const line = ({ mutate, get }: App) => ({
 
       if (!line.currentLine) {
         line.currentLine = {
-          type: "PolyLine",
+          type: "Line",
           id: nextGeometryId(),
           source: MapSource.Routes,
           points: [],
@@ -145,7 +145,7 @@ export const line = ({ mutate, get }: App) => ({
       (geometry) => geometry.id === selection.selectedGeometryId
     ) as PolyLine;
 
-    if (selectedGeometry?.type !== "PolyLine") {
+    if (selectedGeometry?.type !== "Line") {
       return;
     }
 
