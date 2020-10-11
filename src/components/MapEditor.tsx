@@ -22,7 +22,7 @@ export const MapEditor: React.FC = () => {
           <ResetOrientationButton />
         </div>
 
-        <div className="absolute bottom-0 mb-2 flex justify-center w-full">
+        <div className="absolute bottom-0 mb-2 flex justify-center w-full z-10">
           <Tips />
         </div>
       </div>
