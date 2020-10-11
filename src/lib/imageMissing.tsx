@@ -3,7 +3,6 @@ import ReactDOMServer from "react-dom/server";
 
 import { icons } from "~/components/Icon";
 import { pins } from "~/components/Pin";
-import { getState } from "~/core/app";
 
 const allIcons = icons();
 const allPins = pins();

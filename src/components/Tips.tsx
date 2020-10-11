@@ -17,7 +17,7 @@ export const Tips: React.FC = () => {
       <div className="flex flex-col text-xs ml-3">
         <span>Draw mode</span>
         <span className="text-gray-500">Tap the last point to end your route.</span>
-        <a className="text-gray-500">
+        <span className="text-gray-500">
           (or tap{" "}
           <a
             className="underline cursor-pointer"
@@ -28,7 +28,7 @@ export const Tips: React.FC = () => {
             right here
           </a>
           )
-        </a>
+        </span>
       </div>
     </div>
   );

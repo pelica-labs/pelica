@@ -4,19 +4,39 @@ import { MapLayerMouseEvent, MapLayerTouchEvent, MapMouseEvent, MapTouchEvent, M
 
 import { getState, State } from "~/core/app";
 import { Point, Position } from "~/core/geometries";
+import { isClient } from "~/lib/ssr";
+
+const touchDevice = isClient && "ontouchstart" in document.documentElement;
+
+const isMultitouchEvent = (event?: MapMouseEvent | MapTouchEvent) => {
+  return event && "touches" in event.originalEvent && event.originalEvent?.touches?.length > 1;
+};
+
+let justClickedLayer = false;
+let justTouched = false;
+
+const clickLayer = () => {
+  justClickedLayer = true;
+
+  setTimeout(() => {
+    justClickedLayer = false;
+  }, 200);
+};
+
+const touch = (event?: MapMouseEvent | MapTouchEvent) => {
+  if (isMultitouchEvent(event)) {
+    return;
+  }
+
+  justTouched = true;
+
+  setTimeout(() => {
+    justTouched = false;
+  }, 50);
+};
 
 export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   const canvas = map.getCanvas();
-
-  let justClickedLayer = false;
-
-  const clickLayer = () => {
-    justClickedLayer = true;
-
-    setTimeout(() => {
-      justClickedLayer = false;
-    }, 200);
-  };
 
   const onWheel = (event: MapWheelEvent) => {
     const { originalEvent } = event;
@@ -51,13 +71,17 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     app.mapView.move({ latitude: lat, longitude: lng }, zoom, bearing, pitch);
   };
 
-  const onMouseMove = throttle((event: MapMouseEvent) => {
+  const onMouseMove = throttle((event: MapMouseEvent | MapTouchEvent) => {
     const {
       line: { currentLine },
       dragAndDrop: { draggedGeometryId },
     } = getState();
 
-    event.preventDefault();
+    touch();
+    if (justTouched && isMultitouchEvent(event)) {
+      app.line.stopDrawing();
+      return;
+    }
 
     const { lat, lng } = event.lngLat;
 
@@ -70,8 +94,14 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     }
   }, 1000 / 30);
 
-  const onMouseDown = (event: MapMouseEvent) => {
+  const onMouseDown = (event: MapMouseEvent | MapTouchEvent) => {
     const { editor } = getState();
+
+    touch();
+    if (justTouched && isMultitouchEvent(event)) {
+      app.line.stopDrawing();
+      return;
+    }
 
     if (justClickedLayer) {
       return;
@@ -85,7 +115,13 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     app.line.startDrawing(event.lngLat.lat, event.lngLat.lng);
   };
 
-  const onMouseUp = (event?: MapMouseEvent) => {
+  const onMouseUp = (event?: MapMouseEvent | MapTouchEvent) => {
+    touch();
+    if (justTouched && isMultitouchEvent(event)) {
+      app.line.stopDrawing();
+      return;
+    }
+
     const {
       editor,
       dragAndDrop: { draggedGeometryId },
@@ -110,7 +146,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     }
 
     if (editor.mode === "draw") {
-      app.line.draw(event.lngLat.lat, event.lngLat.lng);
+      // app.line.draw(event.lngLat.lat, event.lngLat.lng);
     }
 
     if (!justClickedLayer) {
@@ -243,7 +279,10 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
 
   canvas.style.cursor = "default";
 
-  map.dragPan.disable();
+  if (!touchDevice) {
+    map.dragPan.disable();
+  }
+
   map.scrollZoom.setZoomRate(0.03);
 
   map.on("mouseenter", "pins", onFeatureHoverStart);
