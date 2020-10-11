@@ -22,9 +22,10 @@ const defaultColors = [
 type Props = {
   value: string;
   onChange: (value: string) => void;
+  onChangeComplete: (value: string) => void;
 };
 
-export const ColorPicker: React.FC<Props> = ({ value, onChange }) => {
+export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete }) => {
   const [color, setColor] = useState(value);
   const [showExtendedPicker, setShowExtendedPicker] = useState(false);
 
@@ -79,9 +80,10 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange }) => {
             color={color}
             onChange={(event) => {
               setColor(event.hex);
+              onChange(event.hex);
             }}
             onChangeComplete={(event) => {
-              onChange(event.hex);
+              onChangeComplete(event.hex);
             }}
           />
         </div>

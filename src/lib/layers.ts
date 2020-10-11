@@ -2,6 +2,40 @@ import { MapSource } from "~/lib/sources";
 import { theme } from "~/styles/tailwind";
 
 export const applyLayers = (map: mapboxgl.Map): void => {
+  addLayer(map, "overlaysBackground", {
+    type: "fill",
+    source: MapSource.Overlays,
+    interactive: false,
+    paint: {
+      "fill-color": theme.colors.green[500],
+      "fill-opacity": 0.1,
+    },
+  });
+
+  addLayer(map, "overlaysPoint", {
+    type: "circle",
+    source: MapSource.Overlays,
+    interactive: false,
+    filter: ["==", ["get", "target"], "Point"],
+    paint: {
+      "circle-radius": 10,
+      "circle-opacity": 0.1,
+      "circle-stroke-color": theme.colors.green[500],
+      "circle-stroke-width": 1,
+      "circle-color": theme.colors.green[500],
+    },
+  });
+
+  addLayer(map, "overlaysContour", {
+    type: "line",
+    source: MapSource.Overlays,
+    interactive: false,
+    paint: {
+      "line-color": theme.colors.green[500],
+      "line-width": 1,
+      // "line-dasharray": [3, 1],
+    },
+  });
   addLayer(map, "routes", {
     type: "line",
     source: MapSource.Routes,
@@ -35,27 +69,6 @@ export const applyLayers = (map: mapboxgl.Map): void => {
       "icon-offset": [0, -20],
       "icon-allow-overlap": true,
       "text-allow-overlap": true,
-    },
-  });
-
-  addLayer(map, "overlaysBackground", {
-    type: "fill",
-    source: MapSource.Overlays,
-    interactive: false,
-    paint: {
-      "fill-color": theme.colors.green[500],
-      "fill-opacity": 0.1,
-    },
-  });
-
-  addLayer(map, "overlaysContour", {
-    type: "line",
-    source: MapSource.Overlays,
-    interactive: false,
-    paint: {
-      "line-color": theme.colors.green[500],
-      "line-width": 2,
-      "line-dasharray": [3, 1],
     },
   });
 };

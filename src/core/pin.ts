@@ -24,14 +24,33 @@ export const pin = ({ mutate, get }: App) => ({
     });
   },
 
-  updateSelectedPin: (icon: string, strokeColor: string, strokeWidth: number) => {
-    const { geometries, selection, history } = get();
+  transientUpdateSelectedPin: (icon: string, strokeColor: string, strokeWidth: number) => {
+    mutate(({ geometries, selection }) => {
+      const point = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as Point;
 
-    const selectedGeometry = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as Point;
+      point.transientStyle = {
+        strokeColor,
+        strokeWidth,
+      };
+    });
+  },
+
+  updateSelectedPin: (icon: string, strokeColor: string, strokeWidth: number) => {
+    const { selection, history } = get();
+
+    if (!selection.selectedGeometryId) {
+      return;
+    }
+
+    mutate(({ geometries, selection }) => {
+      const point = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as Point;
+
+      delete point.transientStyle;
+    });
 
     history.push({
       name: "updatePin",
-      pinId: selectedGeometry.id,
+      pinId: selection.selectedGeometryId,
       icon,
       strokeColor,
       strokeWidth,

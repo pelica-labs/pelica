@@ -169,7 +169,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
       event.preventDefault();
       event.stopPropagation();
 
-      app.pin.moveSelectedPin(keyCodeToDirection[event.keyCode]);
+      app.pin.nudgeSelectedPin(keyCodeToDirection[event.keyCode]);
     }
 
     if (event.keyCode === KeyCode.KEY_BACK_SPACE) {

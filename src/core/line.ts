@@ -71,15 +71,33 @@ export const line = ({ mutate, get }: App) => ({
     });
   },
 
+  transientUpdateSelectedLine: (strokeColor: string, strokeWidth: number) => {
+    mutate(({ geometries, selection }) => {
+      const line = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as PolyLine;
+
+      line.transientStyle = {
+        strokeColor,
+        strokeWidth,
+      };
+    });
+  },
+
   updateSelectedLine: (strokeColor: string, strokeWidth: number) => {
-    const { geometries, selection, history } = get();
-    const selectedGeometry = geometries.items.find(
-      (geometry) => geometry.id === selection.selectedGeometryId
-    ) as PolyLine;
+    const { selection, history } = get();
+
+    if (!selection.selectedGeometryId) {
+      return;
+    }
+
+    mutate(({ geometries, selection }) => {
+      const line = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as PolyLine;
+
+      delete line.transientStyle;
+    });
 
     history.push({
       name: "updateLine",
-      lineId: selectedGeometry.id,
+      lineId: selection.selectedGeometryId,
       strokeColor,
       strokeWidth,
     });

@@ -8,9 +8,10 @@ type Props = {
   max: number;
   value: number;
   onChange: (value: number) => void;
+  onChangeComplete: (value: number) => void;
 };
 
-export const WidthSlider: React.FC<Props> = ({ min, max, value, onChange }) => {
+export const WidthSlider: React.FC<Props> = ({ min, max, value, onChange, onChangeComplete }) => {
   const [width, setWidth] = useState(value);
 
   useEffect(() => {
@@ -34,9 +35,10 @@ export const WidthSlider: React.FC<Props> = ({ min, max, value, onChange }) => {
       trackStyle={{ backgroundColor: theme.colors.green[500], height: 4 }}
       value={width}
       onAfterChange={(value) => {
-        onChange(value);
+        onChangeComplete(value);
       }}
       onChange={(value) => {
+        onChange(value);
         setWidth(value);
       }}
     />

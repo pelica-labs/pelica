@@ -30,7 +30,7 @@ export type BoundingBox = {
   southEast: Coordinates;
 };
 
-export type Geometry = PolyLine | Point | Rectangle | Polygon;
+export type Geometry = PolyLine | Point | Circle | Rectangle | Polygon;
 
 export type PolyLine = {
   id: number;
@@ -40,6 +40,10 @@ export type PolyLine = {
   smartPoints: Coordinates[];
   smartMatching: SmartMatching;
   style: {
+    strokeColor: string;
+    strokeWidth: number;
+  };
+  transientStyle?: {
     strokeColor: string;
     strokeWidth: number;
   };
@@ -54,7 +58,19 @@ export type Point = {
     strokeColor: string;
     strokeWidth: number;
     icon: string;
+    target?: "Point";
   };
+  transientStyle?: {
+    strokeColor: string;
+    strokeWidth: number;
+  };
+};
+
+export type Circle = {
+  id: number;
+  source: MapSource;
+  type: "Circle";
+  coordinates: Coordinates;
 };
 
 export type Rectangle = {
@@ -89,6 +105,21 @@ const geometryToFeature = (geometry: Geometry): GeoJSON.Feature<GeoJSON.Geometry
       },
       properties: {
         ...geometry.style,
+        ...geometry.transientStyle,
+      },
+    };
+  }
+
+  if (geometry.type === "Circle") {
+    return {
+      type: "Feature",
+      id: geometry.id,
+      geometry: {
+        type: "Point",
+        coordinates: [geometry.coordinates.longitude, geometry.coordinates.latitude],
+      },
+      properties: {
+        target: "Point",
       },
     };
   }
@@ -110,6 +141,7 @@ const geometryToFeature = (geometry: Geometry): GeoJSON.Feature<GeoJSON.Geometry
       },
       properties: {
         ...geometry.style,
+        ...geometry.transientStyle,
       },
     };
   }

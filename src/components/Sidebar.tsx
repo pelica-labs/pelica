@@ -1,4 +1,5 @@
 import * as KeyCode from "keycode-js";
+import { throttle } from "lodash";
 import React, { useEffect, useRef } from "react";
 
 import { AspectRatioSelector } from "~/components/AspectRatioSelector";
@@ -69,7 +70,17 @@ export const Sidebar: React.FC = () => {
     }
   };
 
-  const onColorChange = (color: string) => {
+  const onColorChange = throttle((color: string) => {
+    if (selectedGeometry?.type === "PolyLine") {
+      app.line.transientUpdateSelectedLine(color, selectedGeometry.style.strokeWidth);
+    } else if (selectedGeometry?.type === "Point") {
+      app.pin.transientUpdateSelectedPin(selectedGeometry.style.icon, color, selectedGeometry.style.strokeWidth);
+    } else {
+      app.editor.setStrokeColor(color);
+    }
+  }, 200);
+
+  const onColorChangeComplete = (color: string) => {
     if (selectedGeometry?.type === "PolyLine") {
       app.line.updateSelectedLine(color, selectedGeometry.style.strokeWidth);
     } else if (selectedGeometry?.type === "Point") {
@@ -80,6 +91,16 @@ export const Sidebar: React.FC = () => {
   };
 
   const onWidthChange = (width: number) => {
+    if (selectedGeometry?.type === "PolyLine") {
+      app.line.transientUpdateSelectedLine(selectedGeometry.style.strokeColor, width);
+    } else if (selectedGeometry?.type === "Point") {
+      app.pin.transientUpdateSelectedPin(selectedGeometry.style.icon, selectedGeometry.style.strokeColor, width);
+    } else {
+      app.editor.setStrokeWidth(width);
+    }
+  };
+
+  const onWidthChangeComplete = (width: number) => {
     if (selectedGeometry?.type === "PolyLine") {
       app.line.updateSelectedLine(selectedGeometry.style.strokeColor, width);
     } else if (selectedGeometry?.type === "Point") {
@@ -307,6 +328,9 @@ export const Sidebar: React.FC = () => {
                   onChange={(color) => {
                     onColorChange(color);
                   }}
+                  onChangeComplete={(color) => {
+                    onColorChangeComplete(color);
+                  }}
                 />
               </div>
             </div>
@@ -327,6 +351,9 @@ export const Sidebar: React.FC = () => {
                   value={boundWidth}
                   onChange={(width) => {
                     onWidthChange(width);
+                  }}
+                  onChangeComplete={(width) => {
+                    onWidthChangeComplete(width);
                   }}
                 />
               </div>

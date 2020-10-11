@@ -1,4 +1,4 @@
-import { bbox, circle, lineString, transformScale } from "@turf/turf";
+import { bbox, lineString, transformScale } from "@turf/turf";
 import mapboxgl, { LngLatBoundsLike } from "mapbox-gl";
 import Head from "next/head";
 import React, { useEffect, useRef } from "react";
@@ -184,9 +184,8 @@ export const Map: React.FC = () => {
       geometries: store.geometries.items,
       currentLine: store.line.currentLine,
       selectedGeometryId: store.selection.selectedGeometryId,
-      zoom: store.mapView.zoom,
     }),
-    ({ geometries, currentLine, selectedGeometryId, zoom }) => {
+    ({ geometries, currentLine, selectedGeometryId }) => {
       if (!map.current) {
         return;
       }
@@ -206,7 +205,7 @@ export const Map: React.FC = () => {
                 return [point.longitude, point.latitude];
               })
             ),
-            1.05
+            1.05 + 0.01 * selectedGeometry.style.strokeWidth
           )
         );
 
@@ -222,28 +221,12 @@ export const Map: React.FC = () => {
       }
 
       if (selectedGeometry?.type === "Point") {
-        const radius = 2 ** (-zoom - 1);
-        const polygon = circle(
-          [selectedGeometry.coordinates.longitude, selectedGeometry.coordinates.latitude],
-          radius * selectedGeometry.style.strokeWidth * 150,
-          {
-            steps: 20,
-            units: "kilometers",
-          }
-        );
-
-        if (polygon.geometry) {
-          allGeometries.push({
-            id: -1,
-            type: "Polygon",
-            source: MapSource.Overlays,
-            lines: polygon.geometry.coordinates.map((points) => {
-              return points.map((point) => {
-                return { longitude: point[0], latitude: point[1] };
-              });
-            }),
-          });
-        }
+        allGeometries.push({
+          id: -1,
+          type: "Circle",
+          source: MapSource.Overlays,
+          coordinates: selectedGeometry.coordinates,
+        });
       }
 
       applyGeometries(map.current, allGeometries);
