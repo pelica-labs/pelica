@@ -35,6 +35,8 @@ export const Sidebar: React.FC = () => {
   const app = useApp();
   const fileInput = useRef<HTMLInputElement>(null);
   const editor = useStore((store) => store.editor);
+  const line = useStore((store) => store.line);
+  const pin = useStore((store) => store.pin);
   const actions = useStore((store) => store.history.actions);
   const redoStack = useStore((store) => store.history.redoStack);
   const screenWidth = useStore((store) => store.screen.dimensions.width);
@@ -49,7 +51,7 @@ export const Sidebar: React.FC = () => {
 
   const selectedGeometry = geometries.find((geometry) => geometry.id === selectedGeometryId) as Point | PolyLine | null;
 
-  const SelectedIcon = allIcons[editor.icon];
+  const SelectedIcon = allIcons[pin.icon];
 
   const displaySelectionHeader = selectedGeometryId !== null && editor.mode === "move";
   const displayIconPicker = editor.mode === "pin" || selectedGeometry?.type === "Point";
@@ -57,8 +59,16 @@ export const Sidebar: React.FC = () => {
   const displayWidthPicker = ["draw", "pin"].includes(editor.mode) || selectedGeometry;
   const displaySmartMatching = ["draw"].includes(editor.mode) || selectedGeometry?.type === "PolyLine";
 
-  const boundColor = selectedGeometry ? selectedGeometry.style.strokeColor : editor.strokeColor;
-  const boundWidth = selectedGeometry ? selectedGeometry.style.strokeWidth : editor.strokeWidth;
+  const boundColor = selectedGeometry
+    ? selectedGeometry.style.strokeColor
+    : editor.mode === "draw"
+    ? line.color
+    : pin.color;
+  const boundWidth = selectedGeometry
+    ? selectedGeometry.style.strokeWidth
+    : editor.mode === "draw"
+    ? line.width
+    : pin.width;
   const boundSmartMatching =
     selectedGeometry?.type === "PolyLine" ? selectedGeometry.smartMatching : editor.smartMatching;
 
@@ -66,7 +76,7 @@ export const Sidebar: React.FC = () => {
     if (selectedGeometry?.type === "Point") {
       app.pin.updateSelectedPin(icon, selectedGeometry.style.strokeColor, selectedGeometry.style.strokeWidth);
     } else {
-      app.editor.setIcon(icon);
+      app.pin.setIcon(icon);
     }
   };
 
@@ -75,8 +85,10 @@ export const Sidebar: React.FC = () => {
       app.line.transientUpdateSelectedLine(color, selectedGeometry.style.strokeWidth);
     } else if (selectedGeometry?.type === "Point") {
       app.pin.transientUpdateSelectedPin(selectedGeometry.style.icon, color, selectedGeometry.style.strokeWidth);
-    } else {
-      app.editor.setStrokeColor(color);
+    } else if (editor.mode === "draw") {
+      app.line.setColor(color);
+    } else if (editor.mode === "pin") {
+      app.pin.setColor(color);
     }
   }, 200);
 
@@ -85,8 +97,6 @@ export const Sidebar: React.FC = () => {
       app.line.updateSelectedLine(color, selectedGeometry.style.strokeWidth);
     } else if (selectedGeometry?.type === "Point") {
       app.pin.updateSelectedPin(selectedGeometry.style.icon, color, selectedGeometry.style.strokeWidth);
-    } else {
-      app.editor.setStrokeColor(color);
     }
   };
 
@@ -95,8 +105,10 @@ export const Sidebar: React.FC = () => {
       app.line.transientUpdateSelectedLine(selectedGeometry.style.strokeColor, width);
     } else if (selectedGeometry?.type === "Point") {
       app.pin.transientUpdateSelectedPin(selectedGeometry.style.icon, selectedGeometry.style.strokeColor, width);
-    } else {
-      app.editor.setStrokeWidth(width);
+    } else if (editor.mode === "draw") {
+      app.line.setWidth(width);
+    } else if (editor.mode === "pin") {
+      app.pin.setWidth(width);
     }
   };
 
@@ -105,8 +117,6 @@ export const Sidebar: React.FC = () => {
       app.line.updateSelectedLine(selectedGeometry.style.strokeColor, width);
     } else if (selectedGeometry?.type === "Point") {
       app.pin.updateSelectedPin(selectedGeometry.style.icon, selectedGeometry.style.strokeColor, width);
-    } else {
-      app.editor.setStrokeWidth(width);
     }
   };
 
@@ -187,7 +197,7 @@ export const Sidebar: React.FC = () => {
           }}
         >
           <IconSelector
-            value={editor.icon}
+            value={pin.icon}
             onChange={(icon) => {
               onIconChange(icon);
               app.editor.closePanes();
@@ -295,24 +305,6 @@ export const Sidebar: React.FC = () => {
             </div>
           )}
 
-          {displayIconPicker && (
-            <div className="mt-2 px-3 pb-2 mb-2 border-b border-gray-700">
-              <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Icon</span>
-
-              <Button
-                className="mt-2"
-                onClick={() => {
-                  app.editor.togglePane("icons");
-                }}
-              >
-                <div className="flex items-start">
-                  <SelectedIcon className="w-4 h-4" />
-                  <span className="ml-2 text-gray-500 text-xs">{app.editor.icon}</span>
-                </div>
-              </Button>
-            </div>
-          )}
-
           {displayColorPicker && (
             <div className="mt-4 px-2 pb-2 mb-2 border-b border-gray-700">
               <div className="flex items-center px-1">
@@ -357,6 +349,24 @@ export const Sidebar: React.FC = () => {
                   }}
                 />
               </div>
+            </div>
+          )}
+
+          {displayIconPicker && (
+            <div className="mt-2 px-3 pb-2 mb-2 border-b border-gray-700">
+              <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Icon</span>
+
+              <Button
+                className="mt-2"
+                onClick={() => {
+                  app.editor.togglePane("icons");
+                }}
+              >
+                <div className="flex items-start">
+                  <SelectedIcon className="w-4 h-4" />
+                  <span className="ml-2 text-gray-500 text-xs">{pin.icon}</span>
+                </div>
+              </Button>
             </div>
           )}
 

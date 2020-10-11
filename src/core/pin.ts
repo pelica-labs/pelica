@@ -3,10 +3,43 @@ import { MercatorCoordinate } from "mapbox-gl";
 import { Coordinates, nextGeometryId, Point, Position } from "~/core/geometries";
 import { App } from "~/core/helpers";
 import { MapSource } from "~/lib/sources";
+import { theme } from "~/styles/tailwind";
+
+export type Pin = {
+  icon: string;
+  width: number;
+  color: string;
+};
+
+const initialState: Pin = {
+  icon: "fire",
+  width: 6,
+  color: theme.colors.yellow[500],
+};
 
 export const pin = ({ mutate, get }: App) => ({
+  ...initialState,
+
+  setIcon: (icon: string) => {
+    mutate(({ pin }) => {
+      pin.icon = icon;
+    });
+  },
+
+  setWidth: (width: number) => {
+    mutate(({ pin }) => {
+      pin.width = width;
+    });
+  },
+
+  setColor: (color: string) => {
+    mutate(({ pin }) => {
+      pin.color = color;
+    });
+  },
+
   place: (latitude: number, longitude: number) => {
-    const { history, editor } = get();
+    const { history, pin } = get();
 
     history.push({
       name: "pin",
@@ -16,9 +49,9 @@ export const pin = ({ mutate, get }: App) => ({
         source: MapSource.Pins,
         coordinates: { latitude, longitude },
         style: {
-          strokeColor: editor.strokeColor,
-          strokeWidth: editor.strokeWidth,
-          icon: editor.icon,
+          strokeColor: pin.color,
+          strokeWidth: pin.width,
+          icon: pin.icon,
         },
       },
     });

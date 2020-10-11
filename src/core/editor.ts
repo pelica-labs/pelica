@@ -2,12 +2,8 @@ import { App } from "~/core/helpers";
 import { AspectRatio } from "~/lib/aspectRatio";
 import { SmartMatching } from "~/lib/smartMatching";
 import { defaultStyle, Style } from "~/lib/style";
-import { theme } from "~/styles/tailwind";
 
 export type Editor = {
-  icon: string;
-  strokeColor: string;
-  strokeWidth: number;
   mode: EditorMode;
   pane: EditorPane | null;
   smartMatching: SmartMatching;
@@ -20,9 +16,6 @@ export type EditorMode = "move" | "draw" | "pin";
 export type EditorPane = "styles" | "aspectRatio" | "icons";
 
 const initiaState: Editor = {
-  icon: "fire",
-  strokeColor: theme.colors.red[500],
-  strokeWidth: 5,
   mode: "move",
   pane: null,
   smartMatching: {
@@ -35,24 +28,6 @@ const initiaState: Editor = {
 
 export const editor = ({ mutate, get }: App) => ({
   ...initiaState,
-
-  setIcon: (icon: string) => {
-    mutate(({ editor }) => {
-      editor.icon = icon;
-    });
-  },
-
-  setStrokeColor: (strokeColor: string) => {
-    mutate(({ editor }) => {
-      editor.strokeColor = strokeColor;
-    });
-  },
-
-  setStrokeWidth: (strokeWidth: number) => {
-    mutate(({ editor }) => {
-      editor.strokeWidth = strokeWidth;
-    });
-  },
 
   setStyle: (style: Style) => {
     const { history } = get();

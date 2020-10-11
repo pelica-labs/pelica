@@ -2,17 +2,36 @@ import { nextGeometryId, PolyLine } from "~/core/geometries";
 import { App } from "~/core/helpers";
 import { smartMatch, SmartMatching, SmartMatchingProfile } from "~/lib/smartMatching";
 import { MapSource } from "~/lib/sources";
+import { theme } from "~/styles/tailwind";
 
 export type Line = {
   currentLine: PolyLine | null;
+
+  width: number;
+  color: string;
 };
 
 const initialState: Line = {
   currentLine: null,
+
+  width: 3,
+  color: theme.colors.red[500],
 };
 
 export const line = ({ mutate, get }: App) => ({
   ...initialState,
+
+  setWidth: (width: number) => {
+    mutate(({ line }) => {
+      line.width = width;
+    });
+  },
+
+  setColor: (color: string) => {
+    mutate(({ line }) => {
+      line.color = color;
+    });
+  },
 
   startDrawing: () => {
     const { editor } = get();
@@ -26,8 +45,8 @@ export const line = ({ mutate, get }: App) => ({
         smartPoints: [],
         smartMatching: editor.smartMatching,
         style: {
-          strokeColor: editor.strokeColor,
-          strokeWidth: editor.strokeWidth,
+          strokeColor: line.color,
+          strokeWidth: line.width,
         },
       };
     });
