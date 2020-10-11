@@ -51,11 +51,15 @@ export const editor = ({ mutate, get }: App) => ({
   },
 
   setEditorMode: (mode: EditorMode) => {
-    mutate(({ editor, selection }) => {
+    mutate(({ editor, selection, line }) => {
       editor.mode = mode;
 
       if (editor.mode !== "move") {
         selection.selectedGeometryId = null;
+      }
+
+      if (editor.mode !== "draw") {
+        line.currentLine = null;
       }
     });
   },

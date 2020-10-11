@@ -49,26 +49,26 @@ export const pin = ({ mutate, get }: App) => ({
         source: MapSource.Pins,
         coordinates: { latitude, longitude },
         style: {
-          strokeColor: pin.color,
-          strokeWidth: pin.width,
+          color: pin.color,
+          width: pin.width,
           icon: pin.icon,
         },
       },
     });
   },
 
-  transientUpdateSelectedPin: (icon: string, strokeColor: string, strokeWidth: number) => {
+  transientUpdateSelectedPin: (icon: string, color: string, width: number) => {
     mutate(({ geometries, selection }) => {
       const point = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as Point;
 
       point.transientStyle = {
-        strokeColor,
-        strokeWidth,
+        color: color,
+        width: width,
       };
     });
   },
 
-  updateSelectedPin: (icon: string, strokeColor: string, strokeWidth: number) => {
+  updateSelectedPin: (icon: string, color: string, width: number) => {
     const { selection, history } = get();
 
     if (!selection.selectedGeometryId) {
@@ -85,8 +85,8 @@ export const pin = ({ mutate, get }: App) => ({
       name: "updatePin",
       pinId: selection.selectedGeometryId,
       icon,
-      strokeColor,
-      strokeWidth,
+      color,
+      width,
     });
   },
 

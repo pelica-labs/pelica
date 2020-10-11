@@ -4,7 +4,6 @@ import { MapLayerMouseEvent, MapLayerTouchEvent, MapMouseEvent, MapWheelEvent } 
 
 import { getState, State } from "~/core/app";
 import { Point, Position } from "~/core/geometries";
-import { MapSource } from "~/lib/sources";
 
 export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   const canvas = map.getCanvas();
@@ -73,7 +72,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     }
 
     event.preventDefault();
-    app.line.startDrawing();
+    app.line.startDrawing(event.lngLat.lat, event.lngLat.lng);
   };
 
   const onMouseUp = (event?: MapMouseEvent) => {
@@ -83,7 +82,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     } = getState();
 
     if (editor.mode === "draw") {
-      app.line.endDrawing();
+      app.line.stopSegment();
     }
 
     if (draggedGeometryId && event) {
@@ -98,6 +97,10 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
 
     if (editor.mode === "pin") {
       app.pin.place(event.lngLat.lat, event.lngLat.lng);
+    }
+
+    if (editor.mode === "draw") {
+      app.line.draw(event.lngLat.lat, event.lngLat.lng);
     }
 
     app.selection.unselectGeometry();
@@ -152,10 +155,6 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
       geometries,
     } = getState();
 
-    if (!selectedGeometryId) {
-      return;
-    }
-
     const selectedGeometry = geometries.items.find((geometry) => geometry.id === selectedGeometryId) as Point;
 
     const coefficient = event.shiftKey ? 0.1 : 0.01;
@@ -167,14 +166,14 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
       [KeyCode.KEY_DOWN]: { x: 0, y: coefficient },
     };
 
-    if (keyCodeToDirection[event.keyCode] && selectedGeometry.type === "Point") {
+    if (keyCodeToDirection[event.keyCode] && selectedGeometry?.type === "Point") {
       event.preventDefault();
       event.stopPropagation();
 
       app.pin.nudgeSelectedPin(keyCodeToDirection[event.keyCode]);
     }
 
-    if (event.keyCode === KeyCode.KEY_BACK_SPACE) {
+    if (event.keyCode === KeyCode.KEY_BACK_SPACE && selectedGeometry) {
       event.preventDefault();
       event.stopPropagation();
 
@@ -186,6 +185,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
       event.stopPropagation();
 
       app.selection.unselectGeometry();
+      app.line.stopDrawing();
     }
   };
 
@@ -195,10 +195,33 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     }
 
     app.dragAndDrop.startHover(event.features[0].id as number, event.features[0].source);
+
+    map.setFeatureState(event.features[0], {
+      hover: true,
+    });
   };
 
   const onFeatureHoverEnd = () => {
+    const {
+      dragAndDrop: { hoveredGeometryId, hoveredGeometrySource },
+    } = getState();
+
+    if (!hoveredGeometryId || !hoveredGeometrySource) {
+      return;
+    }
+
     app.dragAndDrop.endHover();
+
+    map.setFeatureState(
+      { id: hoveredGeometryId, source: hoveredGeometrySource },
+      {
+        hover: false,
+      }
+    );
+  };
+
+  const onRouteStopClick = () => {
+    app.line.stopDrawing();
   };
 
   canvas.style.cursor = "default";
@@ -216,16 +239,19 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   map.on("click", onClick);
   map.on("wheel", onWheel);
 
-  map.on("mouseenter", MapSource.Pins, onFeatureHoverStart);
-  map.on("mouseleave", MapSource.Pins, onFeatureHoverEnd);
-  map.on("mouseenter", MapSource.Routes, onFeatureHoverStart);
-  map.on("mouseleave", MapSource.Routes, onFeatureHoverEnd);
-  map.on("click", MapSource.Pins, onFeatureClick);
-  map.on("click", MapSource.Routes, onFeatureClick);
-  map.on("contextmenu", MapSource.Pins, onFeatureRightClick);
-  map.on("contextmenu", MapSource.Routes, onFeatureRightClick);
-  map.on("mousedown", MapSource.Pins, onFeatureMouseDown);
-  map.on("touchstart", MapSource.Pins, onFeatureMouseDown);
+  map.on("mouseenter", "pins", onFeatureHoverStart);
+  map.on("mouseleave", "pins", onFeatureHoverEnd);
+  map.on("mouseenter", "routes", onFeatureHoverStart);
+  map.on("mouseleave", "routes", onFeatureHoverEnd);
+  map.on("mouseenter", "routesStop", onFeatureHoverStart);
+  map.on("mouseleave", "routesStop", onFeatureHoverEnd);
+  map.on("mousedown", "routesStop", onRouteStopClick);
+  map.on("click", "pins", onFeatureClick);
+  map.on("click", "routes", onFeatureClick);
+  map.on("contextmenu", "pins", onFeatureRightClick);
+  map.on("contextmenu", "routes", onFeatureRightClick);
+  map.on("mousedown", "pins", onFeatureMouseDown);
+  map.on("touchstart", "pins", onFeatureMouseDown);
 
   window.addEventListener("blur", onWindowBlur);
 

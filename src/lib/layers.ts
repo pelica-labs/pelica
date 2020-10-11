@@ -48,8 +48,23 @@ export const applyLayers = (map: mapboxgl.Map): void => {
       "line-cap": "round",
     },
     paint: {
-      "line-color": ["get", "strokeColor"],
-      "line-width": ["get", "strokeWidth"],
+      "line-color": ["get", "color"],
+      "line-width": ["get", "width"],
+    },
+  });
+
+  addLayer(map, {
+    id: "routesStop",
+    before: "waterway-label",
+    type: "circle",
+    source: MapSource.Routes,
+    filter: ["==", ["get", "target"], "Point"],
+    paint: {
+      "circle-radius": ["*", ["get", "width"], 1.5],
+      "circle-opacity": ["case", ["boolean", ["feature-state", "hover"], true], 0.5, 0.1],
+      "circle-stroke-color": ["get", "color"],
+      "circle-stroke-width": 1,
+      "circle-color": ["get", "color"],
     },
   });
 
@@ -58,8 +73,8 @@ export const applyLayers = (map: mapboxgl.Map): void => {
     type: "symbol",
     source: MapSource.Pins,
     layout: {
-      "icon-image": ["concat", "pin", "-", "pelipin", "-", ["get", "strokeColor"]],
-      "icon-size": ["*", 0.2, ["get", "strokeWidth"]],
+      "icon-image": ["concat", "pin", "-", "pelipin", "-", ["get", "color"]],
+      "icon-size": ["*", 0.2, ["get", "width"]],
       "icon-offset": [0, -20],
       "icon-allow-overlap": true,
       "text-allow-overlap": true,
@@ -72,8 +87,8 @@ export const applyLayers = (map: mapboxgl.Map): void => {
     type: "symbol",
     source: MapSource.Pins,
     layout: {
-      "icon-image": ["concat", "icon", "-", ["concat", ["get", "icon"], "-", ["get", "strokeColor"]]],
-      "icon-size": ["*", 0.25, ["get", "strokeWidth"]],
+      "icon-image": ["concat", "icon", "-", ["concat", ["get", "icon"], "-", ["get", "color"]]],
+      "icon-size": ["*", 0.25, ["get", "width"]],
       "icon-offset": [0, -20],
       "icon-allow-overlap": true,
       "text-allow-overlap": true,

@@ -53,28 +53,20 @@ export const Sidebar: React.FC = () => {
 
   const SelectedIcon = allIcons[pin.icon];
 
-  const displaySelectionHeader = selectedGeometryId !== null && editor.mode === "move";
+  const displaySelectionHeader = selectedGeometry && editor.mode === "move";
   const displayIconPicker = editor.mode === "pin" || selectedGeometry?.type === "Point";
   const displayColorPicker = ["draw", "pin"].includes(editor.mode) || selectedGeometry;
   const displayWidthPicker = ["draw", "pin"].includes(editor.mode) || selectedGeometry;
   const displaySmartMatching = ["draw"].includes(editor.mode) || selectedGeometry?.type === "PolyLine";
 
-  const boundColor = selectedGeometry
-    ? selectedGeometry.style.strokeColor
-    : editor.mode === "draw"
-    ? line.color
-    : pin.color;
-  const boundWidth = selectedGeometry
-    ? selectedGeometry.style.strokeWidth
-    : editor.mode === "draw"
-    ? line.width
-    : pin.width;
+  const boundColor = selectedGeometry ? selectedGeometry.style.color : editor.mode === "draw" ? line.color : pin.color;
+  const boundWidth = selectedGeometry ? selectedGeometry.style.width : editor.mode === "draw" ? line.width : pin.width;
   const boundSmartMatching =
     selectedGeometry?.type === "PolyLine" ? selectedGeometry.smartMatching : editor.smartMatching;
 
   const onIconChange = (icon: string) => {
     if (selectedGeometry?.type === "Point") {
-      app.pin.updateSelectedPin(icon, selectedGeometry.style.strokeColor, selectedGeometry.style.strokeWidth);
+      app.pin.updateSelectedPin(icon, selectedGeometry.style.color, selectedGeometry.style.width);
     } else {
       app.pin.setIcon(icon);
     }
@@ -82,9 +74,9 @@ export const Sidebar: React.FC = () => {
 
   const onColorChange = throttle((color: string) => {
     if (selectedGeometry?.type === "PolyLine") {
-      app.line.transientUpdateSelectedLine(color, selectedGeometry.style.strokeWidth);
+      app.line.transientUpdateSelectedLine(color, selectedGeometry.style.width);
     } else if (selectedGeometry?.type === "Point") {
-      app.pin.transientUpdateSelectedPin(selectedGeometry.style.icon, color, selectedGeometry.style.strokeWidth);
+      app.pin.transientUpdateSelectedPin(selectedGeometry.style.icon, color, selectedGeometry.style.width);
     } else if (editor.mode === "draw") {
       app.line.setColor(color);
     } else if (editor.mode === "pin") {
@@ -94,17 +86,17 @@ export const Sidebar: React.FC = () => {
 
   const onColorChangeComplete = (color: string) => {
     if (selectedGeometry?.type === "PolyLine") {
-      app.line.updateSelectedLine(color, selectedGeometry.style.strokeWidth);
+      app.line.updateSelectedLine(color, selectedGeometry.style.width);
     } else if (selectedGeometry?.type === "Point") {
-      app.pin.updateSelectedPin(selectedGeometry.style.icon, color, selectedGeometry.style.strokeWidth);
+      app.pin.updateSelectedPin(selectedGeometry.style.icon, color, selectedGeometry.style.width);
     }
   };
 
   const onWidthChange = (width: number) => {
     if (selectedGeometry?.type === "PolyLine") {
-      app.line.transientUpdateSelectedLine(selectedGeometry.style.strokeColor, width);
+      app.line.transientUpdateSelectedLine(selectedGeometry.style.color, width);
     } else if (selectedGeometry?.type === "Point") {
-      app.pin.transientUpdateSelectedPin(selectedGeometry.style.icon, selectedGeometry.style.strokeColor, width);
+      app.pin.transientUpdateSelectedPin(selectedGeometry.style.icon, selectedGeometry.style.color, width);
     } else if (editor.mode === "draw") {
       app.line.setWidth(width);
     } else if (editor.mode === "pin") {
@@ -114,9 +106,9 @@ export const Sidebar: React.FC = () => {
 
   const onWidthChangeComplete = (width: number) => {
     if (selectedGeometry?.type === "PolyLine") {
-      app.line.updateSelectedLine(selectedGeometry.style.strokeColor, width);
+      app.line.updateSelectedLine(selectedGeometry.style.color, width);
     } else if (selectedGeometry?.type === "Point") {
-      app.pin.updateSelectedPin(selectedGeometry.style.icon, selectedGeometry.style.strokeColor, width);
+      app.pin.updateSelectedPin(selectedGeometry.style.icon, selectedGeometry.style.color, width);
     }
   };
 

@@ -5,6 +5,7 @@ import React, { useEffect, useRef } from "react";
 
 import { useApp, useStoreSubscription } from "~/core/app";
 import { applyGeometries } from "~/core/geometries";
+import { STOP_DRAWING_CIRCLE_ID } from "~/core/line";
 import { computeMapDimensions } from "~/lib/aspectRatio";
 import { applyImageMissingHandler } from "~/lib/imageMissing";
 import { applyInteractions } from "~/lib/interactions";
@@ -183,9 +184,10 @@ export const Map: React.FC = () => {
     (store) => ({
       geometries: store.geometries.items,
       currentLine: store.line.currentLine,
+      drawing: store.line.drawing,
       selectedGeometryId: store.selection.selectedGeometryId,
     }),
-    ({ geometries, currentLine, selectedGeometryId }) => {
+    ({ geometries, currentLine, drawing, selectedGeometryId }) => {
       if (!map.current) {
         return;
       }
@@ -193,6 +195,19 @@ export const Map: React.FC = () => {
 
       if (currentLine) {
         allGeometries.push(currentLine);
+
+        if (!drawing && currentLine.points.length > 1) {
+          allGeometries.push({
+            id: STOP_DRAWING_CIRCLE_ID,
+            type: "Circle",
+            source: MapSource.Routes,
+            coordinates: currentLine.points[currentLine.points.length - 1],
+            style: {
+              color: currentLine.style.color,
+              width: currentLine.style.width,
+            },
+          });
+        }
       }
 
       const selectedGeometry = geometries.find((geometry) => geometry.id === selectedGeometryId);
@@ -205,7 +220,7 @@ export const Map: React.FC = () => {
                 return [point.longitude, point.latitude];
               })
             ),
-            1.05 + 0.01 * selectedGeometry.style.strokeWidth
+            1.05 + 0.01 * selectedGeometry.style.width
           )
         );
 
@@ -251,7 +266,7 @@ export const Map: React.FC = () => {
 
       if (draggedGeometryId) {
         canvasStyle.cursor = "grab";
-      } else if (editorMode === "draw" || editorMode === "pin") {
+      } else if ((editorMode === "draw" || editorMode === "pin") && hoveredGeometryId !== STOP_DRAWING_CIRCLE_ID) {
         canvasStyle.cursor = "crosshair";
       } else if (hoveredGeometryId) {
         canvasStyle.cursor = "pointer";

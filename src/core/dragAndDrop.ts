@@ -6,6 +6,7 @@ export type DragAndDrop = {
   dragMoved: boolean;
   hoveredGeometryId: number | null;
   hoveredGeometrySource: string | null;
+  hoveringAction: boolean;
 };
 
 const initialState: DragAndDrop = {
@@ -13,6 +14,7 @@ const initialState: DragAndDrop = {
   dragMoved: false,
   hoveredGeometryId: null,
   hoveredGeometrySource: null,
+  hoveringAction: false,
 };
 
 export const dragAndDrop = ({ mutate, get }: App) => ({
@@ -22,6 +24,7 @@ export const dragAndDrop = ({ mutate, get }: App) => ({
     mutate(({ dragAndDrop: drag }) => {
       drag.hoveredGeometryId = id;
       drag.hoveredGeometrySource = source;
+      drag.hoveringAction = id === -2;
     });
   },
 
@@ -29,6 +32,7 @@ export const dragAndDrop = ({ mutate, get }: App) => ({
     mutate(({ dragAndDrop: drag }) => {
       drag.hoveredGeometryId = null;
       drag.hoveredGeometrySource = null;
+      drag.hoveringAction = false;
     });
   },
 

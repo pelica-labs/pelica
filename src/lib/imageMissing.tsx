@@ -42,10 +42,6 @@ export const applyImageMissingHandler = (map: mapboxgl.Map): void => {
     map.addImage(event.id, image, { pixelRatio: 2 });
 
     // 💩 Manually retriggers a re-render. This is far from ideal and looks glitchy.
-    getState().history.undo();
-    setTimeout(() => {
-      getState().history.redo();
-    });
   };
 
   map.on("styleimagemissing", onImageMissing);

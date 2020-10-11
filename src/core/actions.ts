@@ -24,15 +24,39 @@ export type Action =
 type DrawAction = {
   name: "draw";
   line: PolyLine;
+  previousLength?: number;
 };
 
 const DrawHandler: Handler<DrawAction> = {
-  apply: ({ geometries }, action) => {
-    geometries.items.push({ ...action.line });
+  apply: ({ geometries, line }, action) => {
+    line.currentLine = action.line;
+
+    const lineIndex = geometries.items.findIndex((line) => line.id === action.line.id);
+
+    if (lineIndex === -1) {
+      action.previousLength = 0;
+      geometries.items.push(action.line);
+    } else {
+      action.previousLength = (geometries.items[lineIndex] as PolyLine).points.length;
+      geometries.items[lineIndex] = line.currentLine;
+    }
   },
 
-  undo: ({ geometries }, action) => {
-    geometries.items.splice(geometries.items.findIndex((geometry) => geometry.id === action.line.id));
+  undo: ({ geometries, line }, action) => {
+    const lineIndex = geometries.items.findIndex((line) => line.id === action.line.id);
+
+    if (line.currentLine?.id !== action.line.id) {
+      line.currentLine = action.line;
+    }
+
+    line.currentLine.points = line.currentLine.points.slice(0, action.previousLength);
+    const savedLine = geometries.items[lineIndex] as PolyLine;
+    savedLine.points = savedLine.points.slice(0, action.previousLength);
+
+    if (action.previousLength === 0) {
+      line.currentLine = null;
+      geometries.items.splice(lineIndex, 1);
+    }
   },
 };
 
@@ -144,13 +168,13 @@ const DeleteGeometryHandler: Handler<DeleteGeometryAction> = {
 type UpdatePinAction = {
   name: "updatePin";
   pinId: number;
-  strokeColor: string;
-  strokeWidth: number;
+  color: string;
+  width: number;
   icon: string;
 
   previousStyle?: {
-    strokeColor: string;
-    strokeWidth: number;
+    color: string;
+    width: number;
     icon: string;
   };
 };
@@ -162,8 +186,8 @@ const UpdatePinHandler: Handler<UpdatePinAction> = {
     action.previousStyle = point.style;
 
     point.style = {
-      strokeWidth: action.strokeWidth,
-      strokeColor: action.strokeColor,
+      width: action.width,
+      color: action.color,
       icon: action.icon,
     };
   },
@@ -180,12 +204,12 @@ const UpdatePinHandler: Handler<UpdatePinAction> = {
 type UpdateLineAction = {
   name: "updateLine";
   lineId: number;
-  strokeColor: string;
-  strokeWidth: number;
+  color: string;
+  width: number;
 
   previousStyle?: {
-    strokeColor: string;
-    strokeWidth: number;
+    color: string;
+    width: number;
   };
 };
 
@@ -196,8 +220,8 @@ const UpdateLineHandler: Handler<UpdateLineAction> = {
     action.previousStyle = line.style;
 
     line.style = {
-      strokeWidth: action.strokeWidth,
-      strokeColor: action.strokeColor,
+      width: action.width,
+      color: action.color,
     };
   },
 

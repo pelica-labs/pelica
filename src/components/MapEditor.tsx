@@ -5,6 +5,7 @@ import { Map } from "~/components/Map";
 import { PlaceAutocomplete } from "~/components/PlaceAutocomplete";
 import { ResetOrientationButton } from "~/components/ResetOrientationButton";
 import { Sidebar } from "~/components/Sidebar";
+import { Tips } from "~/components/Tips";
 import { useKeyboard } from "~/hooks/useKeyboard";
 import { useScreenDimensions } from "~/hooks/useScreenDimensions";
 
@@ -19,6 +20,10 @@ export const MapEditor: React.FC = () => {
 
         <div className="absolute top-0 right-0 mt-1 mr-1">
           <ResetOrientationButton />
+        </div>
+
+        <div className="absolute bottom-0 mb-2 flex justify-center w-full">
+          <Tips />
         </div>
       </div>
 

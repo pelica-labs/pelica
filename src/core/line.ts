@@ -6,6 +6,7 @@ import { theme } from "~/styles/tailwind";
 
 export type Line = {
   currentLine: PolyLine | null;
+  drawing: boolean;
 
   width: number;
   color: string;
@@ -13,10 +14,13 @@ export type Line = {
 
 const initialState: Line = {
   currentLine: null,
+  drawing: false,
 
   width: 3,
   color: theme.colors.red[500],
 };
+
+export const STOP_DRAWING_CIRCLE_ID = 999999999; // 🙉
 
 export const line = ({ mutate, get }: App) => ({
   ...initialState,
@@ -33,27 +37,37 @@ export const line = ({ mutate, get }: App) => ({
     });
   },
 
-  startDrawing: () => {
+  startDrawing: (latitude: number, longitude: number) => {
     const { editor } = get();
 
     mutate(({ line }) => {
-      line.currentLine = {
-        type: "PolyLine",
-        id: nextGeometryId(),
-        source: MapSource.Routes,
-        points: [],
-        smartPoints: [],
-        smartMatching: editor.smartMatching,
-        style: {
-          strokeColor: line.color,
-          strokeWidth: line.width,
-        },
-      };
+      line.drawing = true;
+
+      if (!line.currentLine) {
+        line.currentLine = {
+          type: "PolyLine",
+          id: nextGeometryId(),
+          source: MapSource.Routes,
+          points: [],
+          smartPoints: [],
+          smartMatching: editor.smartMatching,
+          style: {
+            color: line.color,
+            width: line.width,
+          },
+        };
+      }
+
+      line.currentLine.points.push({ latitude, longitude });
     });
   },
 
   draw: (latitude: number, longitude: number) => {
     mutate(({ line }) => {
+      if (!line.drawing) {
+        return;
+      }
+
       if (!line.currentLine) {
         return;
       }
@@ -62,18 +76,14 @@ export const line = ({ mutate, get }: App) => ({
     });
   },
 
-  endDrawing: async () => {
+  stopSegment: async () => {
     const { line, history } = get();
 
+    mutate(({ line }) => {
+      line.drawing = false;
+    });
+
     if (!line.currentLine) {
-      return;
-    }
-
-    if (line.currentLine.points.length === 0) {
-      mutate(({ line }) => {
-        line.currentLine = null;
-      });
-
       return;
     }
 
@@ -88,24 +98,26 @@ export const line = ({ mutate, get }: App) => ({
         smartPoints,
       },
     });
+  },
 
+  stopDrawing: () => {
     mutate(({ line }) => {
       line.currentLine = null;
     });
   },
 
-  transientUpdateSelectedLine: (strokeColor: string, strokeWidth: number) => {
+  transientUpdateSelectedLine: (color: string, width: number) => {
     mutate(({ geometries, selection }) => {
       const line = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as PolyLine;
 
       line.transientStyle = {
-        strokeColor,
-        strokeWidth,
+        color: color,
+        width: width,
       };
     });
   },
 
-  updateSelectedLine: (strokeColor: string, strokeWidth: number) => {
+  updateSelectedLine: (color: string, width: number) => {
     const { selection, history } = get();
 
     if (!selection.selectedGeometryId) {
@@ -121,8 +133,8 @@ export const line = ({ mutate, get }: App) => ({
     history.push({
       name: "updateLine",
       lineId: selection.selectedGeometryId,
-      strokeColor,
-      strokeWidth,
+      color: color,
+      width: width,
     });
   },
 

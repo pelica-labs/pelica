@@ -40,12 +40,12 @@ export type PolyLine = {
   smartPoints: Coordinates[];
   smartMatching: SmartMatching;
   style: {
-    strokeColor: string;
-    strokeWidth: number;
+    color: string;
+    width: number;
   };
   transientStyle?: {
-    strokeColor: string;
-    strokeWidth: number;
+    color: string;
+    width: number;
   };
 };
 
@@ -55,14 +55,14 @@ export type Point = {
   type: "Point";
   coordinates: Coordinates;
   style: {
-    strokeColor: string;
-    strokeWidth: number;
+    color: string;
+    width: number;
     icon: string;
     target?: "Point";
   };
   transientStyle?: {
-    strokeColor: string;
-    strokeWidth: number;
+    color: string;
+    width: number;
   };
 };
 
@@ -71,6 +71,10 @@ export type Circle = {
   source: MapSource;
   type: "Circle";
   coordinates: Coordinates;
+  style?: {
+    color: string;
+    width: number;
+  };
 };
 
 export type Rectangle = {
@@ -119,6 +123,7 @@ const geometryToFeature = (geometry: Geometry): GeoJSON.Feature<GeoJSON.Geometry
         coordinates: [geometry.coordinates.longitude, geometry.coordinates.latitude],
       },
       properties: {
+        ...geometry.style,
         target: "Point",
       },
     };
