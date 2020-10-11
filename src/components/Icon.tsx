@@ -1,5 +1,22 @@
 import React from "react";
 
+export const icons = (): { [key: string]: Icon } => ({
+  fire: FireIcon,
+  target: TargetIcon,
+  kabaddi: KabaddiIcon,
+  close: CloseIcon,
+  search: SearchIcon,
+  pencil: PencilIcon,
+  hand: HandIcon,
+  paint: PaintIcon,
+  share: ShareIcon,
+  ruler: RulerCompassIcon,
+  pin: PinIcon,
+  compass: CompassIcon,
+  plus: PlusIcon,
+  palette: PaletteIcon,
+});
+
 type Props = {
   className?: string;
   color?: string;

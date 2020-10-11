@@ -16,12 +16,13 @@ export const pin = ({ mutate, get }: App) => ({
         style: {
           strokeColor: editor.strokeColor,
           strokeWidth: editor.strokeWidth,
+          icon: editor.icon,
         },
       },
     });
   },
 
-  updateSelectedPin: (strokeColor: string, strokeWidth: number) => {
+  updateSelectedPin: (icon: string, strokeColor: string, strokeWidth: number) => {
     const { geometries, selection, history } = get();
 
     const selectedGeometry = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as Point;
@@ -29,6 +30,7 @@ export const pin = ({ mutate, get }: App) => ({
     history.addAction({
       name: "updatePin",
       pinId: selectedGeometry.id,
+      icon,
       strokeColor,
       strokeWidth,
     });

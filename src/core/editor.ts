@@ -5,6 +5,7 @@ import { defaultStyle, Style } from "~/lib/style";
 import { theme } from "~/styles/tailwind";
 
 export type Editor = {
+  icon: string;
   strokeColor: string;
   strokeWidth: number;
   mode: EditorMode;
@@ -16,9 +17,10 @@ export type Editor = {
 
 export type EditorMode = "move" | "draw" | "pin";
 
-export type EditorPane = "styles" | "aspectRatio";
+export type EditorPane = "styles" | "aspectRatio" | "icons";
 
 const initiaState: Editor = {
+  icon: "fire",
   strokeColor: theme.colors.red[500],
   strokeWidth: 5,
   mode: "move",
@@ -33,6 +35,12 @@ const initiaState: Editor = {
 
 export const editor = ({ mutate, get }: App) => ({
   ...initiaState,
+
+  setIcon: (icon: string) => {
+    mutate(({ editor }) => {
+      editor.icon = icon;
+    });
+  },
 
   setStrokeColor: (strokeColor: string) => {
     mutate(({ editor }) => {

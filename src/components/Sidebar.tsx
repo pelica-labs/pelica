@@ -4,7 +4,8 @@ import React, { useEffect, useRef } from "react";
 import { AspectRatioSelector } from "~/components/AspectRatioSelector";
 import { Button } from "~/components/Button";
 import { ColorPicker } from "~/components/ColorPicker";
-import { RedoIcon, TrashIcon, UndoIcon } from "~/components/Icon";
+import { icons, RedoIcon, TrashIcon, UndoIcon } from "~/components/Icon";
+import { IconSelector } from "~/components/IconSelector";
 import { SmartMatchingSelector } from "~/components/SmartMatchingSelector";
 import { StyleSelector } from "~/components/StyleSelector";
 import { WidthSlider } from "~/components/WidthSlider";
@@ -27,6 +28,8 @@ const computePanelOffset = (screenWidth: number) => {
   return theme.width[64];
 };
 
+const allIcons = icons();
+
 export const Sidebar: React.FC = () => {
   const app = useApp();
   const fileInput = useRef<HTMLInputElement>(null);
@@ -39,10 +42,16 @@ export const Sidebar: React.FC = () => {
   const stylePane = useClickOutside<HTMLDivElement>(() => {
     app.editor.closePanes();
   });
+  const iconPane = useClickOutside<HTMLDivElement>(() => {
+    app.editor.closePanes();
+  });
 
-  const selectedGeometry = geometries.find((geometry) => geometry.id === selectedGeometryId) as Point | PolyLine;
+  const selectedGeometry = geometries.find((geometry) => geometry.id === selectedGeometryId) as Point | PolyLine | null;
+
+  const SelectedIcon = allIcons[editor.icon];
 
   const displaySelectionHeader = selectedGeometryId !== null && editor.mode === "move";
+  const displayIconPicker = editor.mode === "pin" || selectedGeometry?.type === "Point";
   const displayColorPicker = ["draw", "pin"].includes(editor.mode) || selectedGeometry;
   const displayWidthPicker = ["draw", "pin"].includes(editor.mode) || selectedGeometry;
   const displaySmartMatching = ["draw"].includes(editor.mode) || selectedGeometry?.type === "PolyLine";
@@ -52,11 +61,19 @@ export const Sidebar: React.FC = () => {
   const boundSmartMatching =
     selectedGeometry?.type === "PolyLine" ? selectedGeometry.smartMatching : editor.smartMatching;
 
+  const onIconChange = (icon: string) => {
+    if (selectedGeometry?.type === "Point") {
+      app.pin.updateSelectedPin(icon, selectedGeometry.style.strokeColor, selectedGeometry.style.strokeWidth);
+    } else {
+      app.editor.setIcon(icon);
+    }
+  };
+
   const onColorChange = (color: string) => {
     if (selectedGeometry?.type === "PolyLine") {
       app.line.updateSelectedLine(color, selectedGeometry.style.strokeWidth);
     } else if (selectedGeometry?.type === "Point") {
-      app.pin.updateSelectedPin(color, selectedGeometry.style.strokeWidth);
+      app.pin.updateSelectedPin(selectedGeometry.style.icon, color, selectedGeometry.style.strokeWidth);
     } else {
       app.editor.setStrokeColor(color);
     }
@@ -66,7 +83,7 @@ export const Sidebar: React.FC = () => {
     if (selectedGeometry?.type === "PolyLine") {
       app.line.updateSelectedLine(selectedGeometry.style.strokeColor, width);
     } else if (selectedGeometry?.type === "Point") {
-      app.pin.updateSelectedPin(selectedGeometry.style.strokeColor, width);
+      app.pin.updateSelectedPin(selectedGeometry.style.icon, selectedGeometry.style.strokeColor, width);
     } else {
       app.editor.setStrokeWidth(width);
     }
@@ -133,6 +150,26 @@ export const Sidebar: React.FC = () => {
             value={editor.style}
             onChange={(style) => {
               app.editor.setStyle(style);
+            }}
+          />
+        </div>
+      )}
+
+      {editor.pane === "icons" && (
+        <div
+          ref={iconPane}
+          className="fixed right-0 overflow-y-auto rounded bg-transparent m-1 z-10"
+          style={{
+            maxHeight: "calc(100vh - 1rem)",
+            top: 100,
+            right: computePanelOffset(screenWidth),
+          }}
+        >
+          <IconSelector
+            value={editor.icon}
+            onChange={(icon) => {
+              onIconChange(icon);
+              app.editor.closePanes();
             }}
           />
         </div>
@@ -233,6 +270,24 @@ export const Sidebar: React.FC = () => {
                 }}
               >
                 <TrashIcon className="w-2 h-2 md:w-3 md:h-3" />
+              </Button>
+            </div>
+          )}
+
+          {displayIconPicker && (
+            <div className="mt-2 px-3 pb-2 mb-2 border-b border-gray-700">
+              <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Icon</span>
+
+              <Button
+                className="mt-2"
+                onClick={() => {
+                  app.editor.togglePane("icons");
+                }}
+              >
+                <div className="flex items-start">
+                  <SelectedIcon className="w-4 h-4" />
+                  <span className="ml-2 text-gray-500 text-xs">{app.editor.icon}</span>
+                </div>
               </Button>
             </div>
           )}

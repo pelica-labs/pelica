@@ -1,10 +1,14 @@
 import React from "react";
 
+export const pins = (): { [key: string]: React.FC<Props> } => ({
+  pelipin: Pelipin,
+});
+
 type Props = {
   color: string;
 };
 
-export const Pin: React.FC<Props> = ({ color }) => {
+export const Pelipin: React.FC<Props> = ({ color }) => {
   return (
     <svg fill="none" height="73" viewBox="0 0 54 73" width="54" xmlns="http://www.w3.org/2000/svg">
       <path

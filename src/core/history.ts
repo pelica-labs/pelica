@@ -70,6 +70,7 @@ export type UpdatePinAction = {
   pinId: number;
   strokeColor: string;
   strokeWidth: number;
+  icon: string;
 };
 
 export type UpdateLineAction = {
@@ -169,6 +170,7 @@ export const history = ({ mutate }: App) => ({
       point.style = {
         strokeWidth: action.strokeWidth,
         strokeColor: action.strokeColor,
+        icon: action.icon,
       };
     }
 

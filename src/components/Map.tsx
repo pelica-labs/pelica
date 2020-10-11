@@ -47,7 +47,6 @@ export const Map: React.FC = () => {
       pitch,
       fadeDuration: 0,
       logoPosition: "bottom-right",
-      attributionControl: false,
       preserveDrawingBuffer: true,
     });
 
