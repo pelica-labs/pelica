@@ -871,7 +871,7 @@ module.exports = {
     removeDeprecatedGapUtilities: true,
     purgeLayersByDefault: true,
   },
-  purge: [],
+  purge: ["./src/**/*.tsx"],
   plugins: [],
   prefix: "",
   important: false,
