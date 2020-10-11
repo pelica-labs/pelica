@@ -279,7 +279,7 @@ export const Map: React.FC = () => {
   return (
     <>
       <Head>
-        <link as="style" href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="preload" />
+        <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
       </Head>
       <div ref={container} className="flex justify-center items-center w-full h-full p-1 bg-gray-700">
         <div ref={wrapper} className="w-full h-full shadow" />
