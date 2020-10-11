@@ -9,7 +9,11 @@ import { Tips } from "~/components/Tips";
 import { useKeyboard } from "~/hooks/useKeyboard";
 import { useScreenDimensions } from "~/hooks/useScreenDimensions";
 
-export const MapEditor: React.FC = () => {
+type Props = {
+  onImage: (image: string) => void;
+};
+
+export const MapEditor: React.FC<Props> = ({ onImage }) => {
   useKeyboard();
   useScreenDimensions();
 
@@ -27,7 +31,7 @@ export const MapEditor: React.FC = () => {
         </div>
       </div>
 
-      <Sidebar />
+      <Sidebar onImage={onImage} />
 
       <div className="absolute top-0 left-0 flex flex-col space-y-2 mt-2 ml-2">
         <PlaceAutocomplete />

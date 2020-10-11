@@ -1,25 +1,10 @@
 export const exports = () => ({
-  downloadImage: () => {
+  generateImage: () => {
     const canvas = document.querySelector("canvas");
     if (!canvas) {
-      return;
+      throw new Error("Could not fetch canvas");
     }
 
-    const a = document.createElement("a");
-    a.href = canvas.toDataURL();
-    a.download = "pelica";
-    a.click();
-  },
-
-  downloadGpx: () => {
-    // const routes = get().routes;
-    // if (!routes.length) {
-    //   return;
-    // }
-    // const gpx = generateGpx(routes);
-    // const a = document.createElement("a");
-    // a.href = "data:application/gpx+xml," + encodeURIComponent(gpx);
-    // a.download = "pelica.gpx";
-    // a.click();
+    return canvas.toDataURL("image/jpeg", 1);
   },
 });

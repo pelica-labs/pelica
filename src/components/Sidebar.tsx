@@ -5,7 +5,7 @@ import React, { useEffect, useRef } from "react";
 import { AspectRatioSelector } from "~/components/AspectRatioSelector";
 import { Button } from "~/components/Button";
 import { ColorPicker } from "~/components/ColorPicker";
-import { HandIcon, icons, PaintIcon, PinIcon, RedoIcon, TrashIcon, UndoIcon } from "~/components/Icon";
+import { ExportIcon, HandIcon, icons, PaintIcon, PinIcon, RedoIcon, TrashIcon, UndoIcon } from "~/components/Icon";
 import { IconSelector } from "~/components/IconSelector";
 import { SmartMatchingSelector } from "~/components/SmartMatchingSelector";
 import { StyleSelector } from "~/components/StyleSelector";
@@ -31,7 +31,11 @@ const computePanelOffset = (screenWidth: number) => {
 
 const allIcons = icons();
 
-export const Sidebar: React.FC = () => {
+type Props = {
+  onImage: (image: string) => void;
+};
+
+export const Sidebar: React.FC<Props> = ({ onImage }) => {
   const app = useApp();
   const fileInput = useRef<HTMLInputElement>(null);
   const editor = useStore((store) => store.editor);
@@ -58,6 +62,7 @@ export const Sidebar: React.FC = () => {
   const displayColorPicker = ["draw", "pin"].includes(editor.mode) || selectedGeometry;
   const displayWidthPicker = ["draw", "pin"].includes(editor.mode) || selectedGeometry;
   const displaySmartMatching = ["draw"].includes(editor.mode) || selectedGeometry?.type === "Line";
+  const displayGpxImport = editor.mode === "draw";
 
   const boundColor = selectedGeometry ? selectedGeometry.style.color : editor.mode === "draw" ? line.color : pin.color;
   const boundWidth = selectedGeometry ? selectedGeometry.style.width : editor.mode === "draw" ? line.width : pin.width;
@@ -216,7 +221,7 @@ export const Sidebar: React.FC = () => {
         </div>
       )}
 
-      <div className="flex flex-col justify-between bg-gray-900 text-gray-200 w-32 md:w-48 lg:w-64 h-full pb-1">
+      <div className="flex flex-col justify-between bg-gray-900 text-gray-200 w-32 md:w-48 lg:w-64 h-full">
         <div>
           <div className="flex justify-between items-center px-3 h-8 py-2 bg-gray-800">
             <span className="text-xs uppercase text-gray-300 font-light tracking-wide leading-none">Design</span>
@@ -375,6 +380,30 @@ export const Sidebar: React.FC = () => {
               </div>
             </div>
           )}
+
+          {displayGpxImport && (
+            <div className="px-3 flex justify-between items-center">
+              <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Import</span>
+              <Button
+                className="bg-gray-900 text-gray-200 mt-1"
+                onClick={() => {
+                  fileInput.current?.click();
+                }}
+              >
+                <input
+                  ref={fileInput}
+                  className="hidden"
+                  type="file"
+                  onChange={(event) => {
+                    if (event.target.files?.length) {
+                      app.import.importGpx(event.target.files[0]);
+                    }
+                  }}
+                />
+                <span className="text-xs">GPX</span>
+              </Button>
+            </div>
+          )}
         </div>
 
         <div>
@@ -409,58 +438,18 @@ export const Sidebar: React.FC = () => {
             </Button>
           </div>
 
-          <div className="flex justify-between items-center mt-8 bg-gray-800 py-2 px-3 h-8">
-            <span className="text-xs uppercase text-gray-300 font-light tracking-wide leading-none">Share</span>
-          </div>
+          <div className="flex justify-end items-center mt-8 bg-gray-800 py-2 px-3">
+            <Button
+              className="bg-green-700 border border-green-500 hover:border-green-800 text-xs uppercase py-2"
+              onClick={() => {
+                const image = app.export.generateImage();
 
-          <div className="px-1 mt-1">
-            <div className="px-2 flex justify-between items-center">
-              <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Export</span>
-
-              <div className="flex items-center flex-wrap ml-2">
-                <Button
-                  className="bg-gray-900 text-xs"
-                  onClick={() => {
-                    app.export.downloadImage();
-                  }}
-                >
-                  Image
-                </Button>
-
-                <span className="text-gray-500 mx-1 text-xs hidden md:block">/</span>
-
-                <Button
-                  className="bg-gray-900 text-xs"
-                  onClick={() => {
-                    app.export.downloadGpx();
-                  }}
-                >
-                  GPX
-                </Button>
-              </div>
-            </div>
-
-            <div className="px-2 flex justify-between items-center">
-              <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Import</span>
-              <Button
-                className="bg-gray-900 text-gray-200 mt-1"
-                onClick={() => {
-                  fileInput.current?.click();
-                }}
-              >
-                <input
-                  ref={fileInput}
-                  className="hidden"
-                  type="file"
-                  onChange={(event) => {
-                    if (event.target.files?.length) {
-                      app.import.importGpx(event.target.files[0]);
-                    }
-                  }}
-                />
-                <span className="text-xs">GPX</span>
-              </Button>
-            </div>
+                onImage(image);
+              }}
+            >
+              Export
+              <ExportIcon className="ml-2 w-4 h-4" />
+            </Button>
           </div>
         </div>
       </div>
