@@ -10,9 +10,9 @@ import { SmartMatchingSelector } from "~/components/SmartMatchingSelector";
 import { StyleSelector } from "~/components/StyleSelector";
 import { WidthSlider } from "~/components/WidthSlider";
 import { useApp, useStore } from "~/core/app";
+import { Point, PolyLine } from "~/core/geometries";
 import { useClickOutside } from "~/hooks/useClickOutside";
 import { aspectRatios } from "~/lib/aspectRatio";
-import { Point, PolyLine } from "~/lib/geometry";
 import { SmartMatching } from "~/lib/smartMatching";
 import { theme } from "~/styles/tailwind";
 

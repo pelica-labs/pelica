@@ -1,15 +1,14 @@
+import { nextGeometryId, PolyLine } from "~/core/geometries";
 import { App } from "~/core/helpers";
-import { DrawAction } from "~/core/history";
-import { nextGeometryId, PolyLine } from "~/lib/geometry";
 import { smartMatch, SmartMatching, SmartMatchingProfile } from "~/lib/smartMatching";
 import { MapSource } from "~/lib/sources";
 
 export type Line = {
-  currentDraw: DrawAction | null;
+  currentLine: PolyLine | null;
 };
 
 const initialState: Line = {
-  currentDraw: null,
+  currentLine: null,
 };
 
 export const line = ({ mutate, get }: App) => ({
@@ -19,19 +18,16 @@ export const line = ({ mutate, get }: App) => ({
     const { editor } = get();
 
     mutate(({ line }) => {
-      line.currentDraw = {
-        name: "draw",
-        line: {
-          type: "PolyLine",
-          id: nextGeometryId(),
-          source: MapSource.Routes,
-          points: [],
-          smartPoints: [],
-          smartMatching: editor.smartMatching,
-          style: {
-            strokeColor: editor.strokeColor,
-            strokeWidth: editor.strokeWidth,
-          },
+      line.currentLine = {
+        type: "PolyLine",
+        id: nextGeometryId(),
+        source: MapSource.Routes,
+        points: [],
+        smartPoints: [],
+        smartMatching: editor.smartMatching,
+        style: {
+          strokeColor: editor.strokeColor,
+          strokeWidth: editor.strokeWidth,
         },
       };
     });
@@ -39,39 +35,39 @@ export const line = ({ mutate, get }: App) => ({
 
   draw: (latitude: number, longitude: number) => {
     mutate(({ line }) => {
-      if (!line.currentDraw) {
+      if (!line.currentLine) {
         return;
       }
 
-      line.currentDraw.line.points.push({ latitude, longitude });
+      line.currentLine.points.push({ latitude, longitude });
     });
   },
 
   endDrawing: async () => {
     const { line, history } = get();
 
-    if (!line.currentDraw) {
+    if (!line.currentLine) {
       return;
     }
 
-    if (line.currentDraw.line.points.length === 0) {
+    if (line.currentLine.points.length === 0) {
       return;
     }
 
-    const smartPoints = line.currentDraw.line.smartMatching.enabled
-      ? await smartMatch(line.currentDraw.line, line.currentDraw.line.smartMatching.profile as SmartMatchingProfile)
+    const smartPoints = line.currentLine.smartMatching.enabled
+      ? await smartMatch(line.currentLine, line.currentLine.smartMatching.profile as SmartMatchingProfile)
       : [];
 
-    history.addAction({
-      ...line.currentDraw,
+    history.push({
+      name: "draw",
       line: {
-        ...line.currentDraw.line,
+        ...line.currentLine,
         smartPoints,
       },
     });
 
     mutate(({ line }) => {
-      line.currentDraw = null;
+      line.currentLine = null;
     });
   },
 
@@ -81,7 +77,7 @@ export const line = ({ mutate, get }: App) => ({
       (geometry) => geometry.id === selection.selectedGeometryId
     ) as PolyLine;
 
-    history.addAction({
+    history.push({
       name: "updateLine",
       lineId: selectedGeometry.id,
       strokeColor,
@@ -104,7 +100,7 @@ export const line = ({ mutate, get }: App) => ({
       ? await smartMatch(selectedGeometry, smartMatching.profile as SmartMatchingProfile)
       : [];
 
-    history.addAction({
+    history.push({
       name: "updateLineSmartMatching",
       lineId: selectedGeometry.id,
       smartMatching,

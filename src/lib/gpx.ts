@@ -1,4 +1,4 @@
-import { Coordinates } from "~/lib/geometry";
+import { Coordinates } from "~/core/geometries";
 
 export const parseGpx = (xml: string): Coordinates[] => {
   const parser = new DOMParser();

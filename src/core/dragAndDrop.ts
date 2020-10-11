@@ -1,5 +1,5 @@
+import { Coordinates, Point } from "~/core/geometries";
 import { App } from "~/core/helpers";
-import { Coordinates, Point } from "~/lib/geometry";
 
 export type DragAndDrop = {
   draggedGeometryId: number | null;
@@ -30,7 +30,7 @@ export const dragAndDrop = ({ mutate, get }: App) => ({
     const { geometries, dragAndDrop, history } = get();
     const draggedGeometry = geometries.items.find((geometry) => geometry.id === dragAndDrop.draggedGeometryId) as Point;
 
-    history.addAction({
+    history.push({
       name: "movePin",
       pinId: draggedGeometry.id,
       coordinates,

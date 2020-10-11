@@ -1,7 +1,7 @@
 import { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geocoding";
 
+import { Coordinates } from "~/core/geometries";
 import { App } from "~/core/helpers";
-import { Coordinates } from "~/lib/geometry";
 
 export type MapView = {
   coordinates: {

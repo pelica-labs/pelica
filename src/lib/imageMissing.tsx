@@ -3,9 +3,16 @@ import ReactDOMServer from "react-dom/server";
 
 import { icons } from "~/components/Icon";
 import { pins } from "~/components/Pin";
+import { getState } from "~/core/app";
 
 const allIcons = icons();
 const allPins = pins();
+
+const transparentPixel = {
+  width: 1,
+  height: 1,
+  data: new Uint8Array([0, 0, 0, 0]),
+};
 
 const idToComponent = (eventId: string) => {
   const [prefix, name, color] = eventId.split("-");
@@ -24,73 +31,47 @@ type MapImageMissingEvent = {
 };
 
 export const applyImageMissingHandler = (map: mapboxgl.Map): void => {
-  const onImageMissing = (event: MapImageMissingEvent) => {
+  const onImageMissing = async (event: MapImageMissingEvent) => {
     const { element, dimensions } = idToComponent(event.id);
 
-    generateImage(element, dimensions).then((image) => {
-      if (map.hasImage(event.id)) {
-        map.removeImage(event.id);
-      }
+    map.addImage(event.id, transparentPixel);
 
-      map.addImage(event.id, image, { pixelRatio: 2 });
+    const image = await generateImage(element, dimensions);
 
-      // 💩 This doesn't work and the image won't render when first loaded.
-      map.setLayoutProperty("pins", "visibility", "none");
-      setTimeout(() => {
-        map.setLayoutProperty("pins", "visibility", "visible");
-        setTimeout(() => {
-          map.triggerRepaint();
-        });
-      });
-    });
+    map.removeImage(event.id);
+    map.addImage(event.id, image, { pixelRatio: 2 });
 
-    map.addImage(event.id, {
-      width: 1,
-      height: 1,
-      data: generatePlaceholder(),
+    // 💩 Manually retriggers a re-render. This is far from ideal and looks glitchy.
+    getState().history.undo();
+    setTimeout(() => {
+      getState().history.redo();
     });
   };
 
   map.on("styleimagemissing", onImageMissing);
 };
 
-export const generateImage = (element: ReactElement, dimensions: [number, number]): Promise<ImageData> => {
-  return new Promise((resolve, reject) => {
+export const generateImage = (element: ReactElement, [width, height]: [number, number]): Promise<ImageData> => {
+  return new Promise((resolve) => {
     const svg = ReactDOMServer.renderToString(element);
-    const image = new Image(dimensions[0], dimensions[1]);
-    image.src = `data:image/svg+xml;base64,` + btoa(svg);
+
+    const image = new Image(width, height);
 
     image.onload = () => {
-      resolve(getImageData(image));
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+
+      const context = canvas.getContext("2d");
+      if (!context) {
+        throw new Error("failed to create canvas 2d context");
+      }
+
+      context.drawImage(image, 0, 0, width, height);
+
+      resolve(context.getImageData(0, 0, width, height));
     };
 
-    image.onerror = (err) => {
-      reject(err);
-    };
+    image.src = `data:image/svg+xml;base64,` + btoa(svg);
   });
-};
-
-export const generatePlaceholder = (): Uint8Array => {
-  const data = new Uint8Array(4);
-  data[0] = 0;
-  data[1] = 0;
-  data[2] = 0;
-  data[3] = 0;
-
-  return data;
-};
-
-const getImageData = (img: HTMLImageElement): ImageData => {
-  const canvas = document.createElement("canvas");
-  canvas.width = img.width;
-  canvas.height = img.height;
-
-  const context = canvas.getContext("2d");
-  if (!context) {
-    throw new Error("failed to create canvas 2d context");
-  }
-
-  context.drawImage(img, 0, 0, img.width, img.height);
-
-  return context.getImageData(0, 0, img.width, img.height);
 };

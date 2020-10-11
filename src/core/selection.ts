@@ -1,5 +1,5 @@
+import { Point } from "~/core/geometries";
 import { App } from "~/core/helpers";
-import { Point } from "~/lib/geometry";
 
 export type Selection = {
   selectedGeometryId: number | null;
@@ -28,7 +28,7 @@ export const selection = ({ mutate, get }: App) => ({
     const { geometries, selection, history } = get();
     const selectedGeometry = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as Point;
 
-    history.addAction({
+    history.push({
       name: "deleteGeometry",
       geometryId: selectedGeometry.id,
     });

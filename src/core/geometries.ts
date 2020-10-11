@@ -53,7 +53,7 @@ export type Point = {
   style: {
     strokeColor: string;
     strokeWidth: number;
-    targetType?: Geometry["type"];
+    icon: string;
   };
 };
 

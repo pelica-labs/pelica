@@ -1,4 +1,4 @@
-import { Coordinates } from "~/lib/geometry";
+import { Coordinates } from "~/core/geometries";
 import { accessToken } from "~/lib/mapbox";
 import { Style } from "~/lib/style";
 

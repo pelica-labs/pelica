@@ -4,8 +4,8 @@ import Head from "next/head";
 import React, { useEffect, useRef } from "react";
 
 import { useApp, useStoreSubscription } from "~/core/app";
+import { applyGeometries } from "~/core/geometries";
 import { computeMapDimensions } from "~/lib/aspectRatio";
-import { applyGeometries, nextGeometryId } from "~/lib/geometry";
 import { applyImageMissingHandler } from "~/lib/imageMissing";
 import { applyInteractions } from "~/lib/interactions";
 import { applyLayers } from "~/lib/layers";
@@ -177,30 +177,24 @@ export const Map: React.FC = () => {
   );
 
   /**
-   * Sync actions to state
-   */
-  useStoreSubscription(
-    (store) => ({ actions: store.history.actions, currentDraw: store.line.currentDraw }),
-    () => {
-      app.history.applyActions();
-    }
-  );
-
-  /**
    * Sync geometries to map
    */
   useStoreSubscription(
     (store) => ({
       geometries: store.geometries.items,
+      currentLine: store.line.currentLine,
       selectedGeometryId: store.selection.selectedGeometryId,
       zoom: store.mapView.zoom,
     }),
-    ({ geometries, selectedGeometryId, zoom }) => {
+    ({ geometries, currentLine, selectedGeometryId, zoom }) => {
       if (!map.current) {
         return;
       }
-
       const allGeometries = [...geometries];
+
+      if (currentLine) {
+        allGeometries.push(currentLine);
+      }
 
       const selectedGeometry = geometries.find((geometry) => geometry.id === selectedGeometryId);
 
@@ -217,7 +211,7 @@ export const Map: React.FC = () => {
         );
 
         allGeometries.push({
-          id: nextGeometryId(),
+          id: -1,
           type: "Rectangle",
           source: MapSource.Overlays,
           box: {
@@ -240,7 +234,7 @@ export const Map: React.FC = () => {
 
         if (polygon.geometry) {
           allGeometries.push({
-            id: nextGeometryId(),
+            id: -1,
             type: "Polygon",
             source: MapSource.Overlays,
             lines: polygon.geometry.coordinates.map((points) => {

@@ -2,7 +2,7 @@ import { MapboxProfile } from "@mapbox/mapbox-sdk/lib/classes/mapi-request";
 import { Tracepoint } from "@mapbox/mapbox-sdk/services/map-matching";
 import { chunk } from "lodash";
 
-import { Coordinates, PolyLine } from "~/lib/geometry";
+import { Coordinates, PolyLine } from "~/core/geometries";
 import { mapboxMapMatching } from "~/lib/mapbox";
 
 export type SmartMatching = {

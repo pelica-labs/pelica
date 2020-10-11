@@ -3,7 +3,7 @@ import { throttle } from "lodash";
 import { MapLayerMouseEvent, MapLayerTouchEvent, MapMouseEvent, MapWheelEvent } from "mapbox-gl";
 
 import { getState, State } from "~/core/app";
-import { Point, Position } from "~/lib/geometry";
+import { Point, Position } from "~/core/geometries";
 import { MapSource } from "~/lib/sources";
 
 export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
@@ -44,7 +44,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
 
   const onMouseMove = throttle((event: MapMouseEvent) => {
     const {
-      line: { currentDraw },
+      line: { currentLine: currentDraw },
       dragAndDrop: { draggedGeometryId },
     } = getState();
 

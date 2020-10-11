@@ -1,12 +1,12 @@
+import { Coordinates, nextGeometryId, Point, Position } from "~/core/geometries";
 import { App } from "~/core/helpers";
-import { Coordinates, nextGeometryId, Point, Position } from "~/lib/geometry";
 import { MapSource } from "~/lib/sources";
 
 export const pin = ({ mutate, get }: App) => ({
   place: (latitude: number, longitude: number) => {
     const { history, editor } = get();
 
-    history.addAction({
+    history.push({
       name: "pin",
       point: {
         type: "Point",
@@ -27,7 +27,7 @@ export const pin = ({ mutate, get }: App) => ({
 
     const selectedGeometry = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as Point;
 
-    history.addAction({
+    history.push({
       name: "updatePin",
       pinId: selectedGeometry.id,
       icon,
@@ -54,7 +54,7 @@ export const pin = ({ mutate, get }: App) => ({
       return;
     }
 
-    history.addAction({
+    history.push({
       name: "movePin",
       pinId: selectedGeometry.id,
       coordinates,
@@ -65,7 +65,7 @@ export const pin = ({ mutate, get }: App) => ({
     const { geometries, selection, history, mapView } = get();
     const selectedGeometry = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as Point;
 
-    history.addAction({
+    history.push({
       name: "nudgePin",
       pinId: selectedGeometry.id,
       direction,

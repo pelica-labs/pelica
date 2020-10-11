@@ -1,5 +1,5 @@
+import { nextGeometryId } from "~/core/geometries";
 import { App } from "~/core/helpers";
-import { nextGeometryId } from "~/lib/geometry";
 import { parseGpx } from "~/lib/gpx";
 import { MapSource } from "~/lib/sources";
 
@@ -17,7 +17,7 @@ export const imports = ({ get }: App) => ({
 
       const points = parseGpx(xml);
 
-      history.addAction({
+      history.push({
         name: "importGpx",
         line: {
           type: "PolyLine",

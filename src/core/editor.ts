@@ -26,8 +26,8 @@ const initiaState: Editor = {
   mode: "move",
   pane: null,
   smartMatching: {
-    enabled: true,
-    profile: "walking",
+    enabled: false,
+    profile: null,
   },
   style: defaultStyle as Style,
   aspectRatio: "fill",
@@ -57,7 +57,7 @@ export const editor = ({ mutate, get }: App) => ({
   setStyle: (style: Style) => {
     const { history } = get();
 
-    history.addAction({
+    history.push({
       name: "updateStyle",
       style,
     });
