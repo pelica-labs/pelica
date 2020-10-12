@@ -6,14 +6,16 @@ import HttpStatus from "http-status-codes";
 import { NextApiHandler, NextApiRequest } from "next";
 import uniqid from "uniqid";
 
+import { getEnv } from "~/lib/config";
+
 const s3 = new AWS.S3({
-  accessKeyId: process.env.AWS_KEY,
-  secretAccessKey: process.env.AWS_SECRET,
-  region: process.env.AWS_S3_REGION,
+  accessKeyId: getEnv("AWS_KEY", process.env.AWS_KEY),
+  secretAccessKey: getEnv("AWS_SECRET", process.env.AWS_SECRET),
+  region: getEnv("AWS_S3_REGION", process.env.AWS_S3_REGION),
 });
 
 const generateUniqueFilePath = () => {
-  const prefix = process.env.VERCEL_URL || `local-${process.env.USER}`;
+  const prefix = process.env.NODE_ENV + (process.env.USER ? `-${process.env.USER}` : "");
   const date = format(new Date(), "yyyyMMddHHmmss");
   const id = uniqid().toUpperCase();
 
@@ -45,7 +47,7 @@ const UploadMap: NextApiHandler = async (req, res) => {
 
   const upload = await s3
     .upload({
-      Bucket: process.env.AWS_S3_BUCKET as string,
+      Bucket: getEnv("AWS_S3_BUCKET", process.env.AWS_S3_BUCKET),
       Key: generateUniqueFilePath(),
       Body: fs.createReadStream(image.path),
     })

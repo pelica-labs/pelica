@@ -1,10 +1,9 @@
 import MapboxStyles from "@mapbox/mapbox-sdk/services/styles";
 import { NextApiHandler } from "next";
 
-const accessToken = process.env.MAPBOX_SECRET_TOKEN;
-if (!accessToken) {
-  throw new Error("Missing Mapbox secret token");
-}
+import { getEnv } from "~/lib/config";
+
+const accessToken = getEnv("MAPBOX_SECRET_TOKEN", process.env.MAPBOX_SECRET_TOKEN);
 
 const mapboxStyles = MapboxStyles({ accessToken });
 

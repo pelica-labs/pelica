@@ -8,6 +8,7 @@ import { useApp, useStoreSubscription } from "~/core/app";
 import { applyGeometries } from "~/core/geometries";
 import { STOP_DRAWING_CIRCLE_ID } from "~/core/line";
 import { computeMapDimensions } from "~/lib/aspectRatio";
+import { getEnv } from "~/lib/config";
 import { applyImageMissingHandler } from "~/lib/imageMissing";
 import { applyInteractions } from "~/lib/interactions";
 import { applyLayers } from "~/lib/layers";
@@ -28,10 +29,7 @@ export const Map: React.FC = () => {
       return;
     }
 
-    const accessToken = process.env.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN;
-    if (!accessToken) {
-      throw new Error("Missing Mapbox public token");
-    }
+    const accessToken = getEnv("NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN", process.env.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN);
 
     const {
       mapView: { coordinates, zoom, bearing, pitch },
