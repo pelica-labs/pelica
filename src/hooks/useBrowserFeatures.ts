@@ -9,7 +9,7 @@ export const useBrowserFeatures = (): BrowserFeatures => {
 
   useEffect(() => {
     setShare(!!window.navigator.share);
-  });
+  }, []);
 
   return {
     shareFeature,

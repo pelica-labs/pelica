@@ -2,7 +2,7 @@ import { NextPage } from "next";
 import React, { useState } from "react";
 
 import { MapEditor } from "~/components/MapEditor";
-import { MapImage } from "~/components/MapImage";
+import { MapExport } from "~/components/MapExport";
 
 const Home: NextPage = () => {
   const [image, setImage] = useState<string | null>(null);
@@ -10,7 +10,7 @@ const Home: NextPage = () => {
   return (
     <>
       {image && (
-        <MapImage
+        <MapExport
           image={image}
           onBack={() => {
             setImage(null);
