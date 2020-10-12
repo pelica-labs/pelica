@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ChromePicker, TwitterPicker } from "react-color";
 
 import { Button } from "~/components/Button";
-import { PaletteIcon } from "~/components/Icon";
+import { PlusIcon } from "~/components/Icon";
 import { useClickOutside } from "~/hooks/useClickOutside";
 import { theme } from "~/styles/tailwind";
 
@@ -70,7 +70,7 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete
           setShowExtendedPicker(true);
         }}
       >
-        <PaletteIcon className="w-3 h-3" />
+        <PlusIcon className="w-3 h-3" />
       </Button>
 
       {showExtendedPicker && (
