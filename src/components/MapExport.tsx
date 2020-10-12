@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import BounceLoader from "react-spinners/BounceLoader";
 
 import { Button } from "~/components/Button";
 import { useBrowserFeatures } from "~/hooks/useBrowserFeatures";
+import { dataUrlToBlob } from "~/lib/fileConversion";
 import { theme } from "~/styles/tailwind";
 
 type Props = {
@@ -22,23 +23,46 @@ export const MapExport: React.FC<Props> = ({ image, onBack }) => {
   };
 
   const onShare = () => {
+    if (!imageUrl) {
+      return;
+    }
+
     navigator.share({
       title: "Pelica Map",
-      url: image,
+      url: imageUrl,
     });
   };
+
+  useEffect(() => {
+    const data = new FormData();
+    data.append("image", dataUrlToBlob(image));
+
+    fetch("/api/upload-map", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+      },
+      body: data,
+    })
+      .then((res) => res.json())
+      .then((json) => {
+        setImageUrl(json.url);
+      });
+  }, []);
 
   return (
     <div className="flex justify-center h-full bg-gray-900 py-1">
       <div className="relative h-full max-w-full shadow">
-        <img className="h-full max-w-full" src={image} />
+        <img className="h-full max-w-full" src={imageUrl || image} />
 
-        <div className="absolute bottom-0 mb-4 w-full flex justify-center">
-          <div className="flex items-center bg-gray-900 rounded-lg shadow py-2 px-6 opacity-75">
-            <span className="uppercase text-gray-400 mr-4 block w-full text-sm">Preparing export...</span>
-            <BounceLoader color={theme.colors.green[500]} size={10} />
+        {!imageUrl && (
+          <div className="absolute bottom-0 mb-4 w-full flex justify-center">
+            <div className="flex items-center bg-gray-900 rounded-lg shadow py-2 px-6 opacity-75">
+              <span className="uppercase text-gray-400 mr-4 block w-full text-sm">Preparing export...</span>
+              <BounceLoader color={theme.colors.green[500]} size={10} />
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <div className="flex flex-col fixed top-0 right-0 m-1 bg-gray-800 p-2 rounded border border-green-700 shadow">
@@ -55,7 +79,7 @@ export const MapExport: React.FC<Props> = ({ image, onBack }) => {
         </Button>
 
         <div className="mt-10 flex flex-col space-y-2">
-          {!shareFeature && (
+          {shareFeature && (
             <Button
               className="bg-green-700 text-gray-200 border border-green-500 hover:border-green-800 text-xs uppercase py-2 justify-center"
               disabled={!imageUrl}

@@ -5,6 +5,6 @@ export const exports = () => ({
       throw new Error("Could not fetch canvas");
     }
 
-    return canvas.toDataURL("image/jpeg", 1);
+    return canvas.toDataURL("image/jpeg", 0.9);
   },
 });
