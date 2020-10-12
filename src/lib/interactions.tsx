@@ -67,8 +67,9 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     const zoom = event.target.getZoom();
     const bearing = event.target.getBearing();
     const pitch = event.target.getPitch();
+    const bounds = event.target.getBounds();
 
-    app.mapView.move({ latitude: lat, longitude: lng }, zoom, bearing, pitch);
+    app.mapView.move({ latitude: lat, longitude: lng }, zoom, bearing, pitch, bounds);
 
     app.mapView.updateFeatures({ latitude: lat, longitude: lng });
   };

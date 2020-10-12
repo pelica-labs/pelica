@@ -1,5 +1,6 @@
 import { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geocoding";
 import { debounce } from "lodash";
+import { LngLatBounds } from "mapbox-gl";
 
 import { Coordinates } from "~/core/geometries";
 import { App } from "~/core/helpers";
@@ -15,6 +16,8 @@ export type MapView = {
   bearing: number;
   pitch: number;
 
+  bounds: LngLatBounds | null;
+
   place: GeocodeFeature | null;
 
   features: GeocodeFeature[];
@@ -25,6 +28,8 @@ const initialState: MapView = {
     latitude: 48.856614,
     longitude: 2.3522219,
   },
+
+  bounds: null,
 
   zoom: 9,
   bearing: 0,
@@ -38,12 +43,13 @@ const initialState: MapView = {
 export const mapView = ({ mutate }: App) => ({
   ...initialState,
 
-  move: (coordinates: Coordinates, zoom: number, bearing: number, pitch: number) => {
+  move: (coordinates: Coordinates, zoom: number, bearing: number, pitch: number, bounds: LngLatBounds) => {
     mutate(({ mapView }) => {
       mapView.coordinates = coordinates;
       mapView.zoom = zoom;
       mapView.bearing = bearing;
       mapView.pitch = pitch;
+      mapView.bounds = bounds;
     });
   },
 
@@ -52,7 +58,6 @@ export const mapView = ({ mutate }: App) => ({
       .reverseGeocode({
         query: [coordinates.longitude, coordinates.latitude],
         mode: "mapbox.places",
-        types: ["place"],
       })
       .send();
 
