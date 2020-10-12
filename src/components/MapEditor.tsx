@@ -26,7 +26,7 @@ export const MapEditor: React.FC<Props> = ({ onImage }) => {
           <ResetOrientationButton />
         </div>
 
-        <div className="absolute bottom-0 mb-2 flex justify-center w-full z-10">
+        <div className="absolute bottom-0 mb-2 flex justify-center w-full z-10 pointer-events-none">
           <Tips />
         </div>
       </div>
