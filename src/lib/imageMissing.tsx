@@ -19,6 +19,10 @@ const idToComponent = (eventId: string) => {
   const Component = prefix === "icon" ? allIcons[name] : allPins[name];
   const dimensions = prefix === "icon" ? [24, 24] : [54, 73];
 
+  if (!Component) {
+    return null;
+  }
+
   return {
     element: <Component color={color} />,
     dimensions: dimensions as [number, number],
@@ -31,11 +35,15 @@ type MapImageMissingEvent = {
 
 export const applyImageMissingHandler = (map: mapboxgl.Map): void => {
   const onImageMissing = async (event: MapImageMissingEvent) => {
-    const { element, dimensions } = idToComponent(event.id);
+    const component = idToComponent(event.id);
 
     map.addImage(event.id, transparentPixel);
 
-    const image = await generateImage(element, dimensions);
+    if (!component) {
+      return;
+    }
+
+    const image = await generateImage(component.element, component.dimensions);
 
     map.removeImage(event.id);
     map.addImage(event.id, image, { pixelRatio: 2 });
