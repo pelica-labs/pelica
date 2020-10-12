@@ -42,10 +42,12 @@ export type PolyLine = {
   style: {
     color: string;
     width: number;
+    outlineColor: string;
   };
   transientStyle?: {
     color: string;
     width: number;
+    outlineColor: string;
   };
 };
 

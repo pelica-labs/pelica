@@ -29,6 +29,7 @@ export const imports = ({ get }: App) => ({
           style: {
             color: line.color,
             width: line.width,
+            outlineColor: line.outlineColor,
           },
         },
       });

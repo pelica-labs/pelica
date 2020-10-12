@@ -2,6 +2,7 @@ import { Feature, MultiLineString, multiLineString, simplify } from "@turf/turf"
 
 import { nextGeometryId, PolyLine } from "~/core/geometries";
 import { App } from "~/core/helpers";
+import { outlineColor } from "~/lib/color";
 import { smartMatch, SmartMatching, SmartMatchingProfile } from "~/lib/smartMatching";
 import { MapSource } from "~/lib/sources";
 import { theme } from "~/styles/tailwind";
@@ -12,6 +13,8 @@ export type Line = {
 
   width: number;
   color: string;
+  outlineColor: string;
+  outlineWidth: number;
 };
 
 const initialState: Line = {
@@ -20,6 +23,8 @@ const initialState: Line = {
 
   width: 3,
   color: theme.colors.red[500],
+  outlineWidth: 1,
+  outlineColor: outlineColor(theme.colors.red[500]),
 };
 
 export const STOP_DRAWING_CIRCLE_ID = 999999999; // 🙉
@@ -36,6 +41,7 @@ export const line = ({ mutate, get }: App) => ({
   setColor: (color: string) => {
     mutate(({ line }) => {
       line.color = color;
+      line.outlineColor = outlineColor(color);
     });
   },
 
@@ -46,6 +52,7 @@ export const line = ({ mutate, get }: App) => ({
       line.drawing = true;
 
       if (!line.currentLine) {
+        console.log(line.outlineColor);
         line.currentLine = {
           type: "Line",
           id: nextGeometryId(),
@@ -56,6 +63,7 @@ export const line = ({ mutate, get }: App) => ({
           style: {
             color: line.color,
             width: line.width,
+            outlineColor: line.outlineColor,
           },
         };
       }
@@ -135,6 +143,7 @@ export const line = ({ mutate, get }: App) => ({
       line.transientStyle = {
         color: color,
         width: width,
+        outlineColor: outlineColor(color),
       };
     });
   },

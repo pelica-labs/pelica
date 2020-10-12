@@ -1,5 +1,6 @@
 import { State } from "~/core/app";
 import { Coordinates, Geometry, Point, PolyLine } from "~/core/geometries";
+import { outlineColor } from "~/lib/color";
 import { SmartMatching } from "~/lib/smartMatching";
 import { Style } from "~/lib/style";
 
@@ -210,6 +211,7 @@ type UpdateLineAction = {
   previousStyle?: {
     color: string;
     width: number;
+    outlineColor: string;
   };
 };
 
@@ -222,6 +224,7 @@ const UpdateLineHandler: Handler<UpdateLineAction> = {
     line.style = {
       width: action.width,
       color: action.color,
+      outlineColor: outlineColor(action.color),
     };
   },
 

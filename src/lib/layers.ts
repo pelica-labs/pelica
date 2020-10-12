@@ -50,6 +50,22 @@ export const applyLayers = (map: mapboxgl.Map): void => {
     paint: {
       "line-color": ["get", "color"],
       "line-width": ["get", "width"],
+      "line-opacity": 1,
+    },
+  });
+
+  addLayer(map, {
+    id: "routesOutlines",
+    before: "routes",
+    type: "line",
+    source: MapSource.Routes,
+    layout: {
+      "line-cap": "round",
+    },
+    paint: {
+      "line-color": ["get", "outlineColor"],
+      "line-width": ["+", ["get", "width"], 1],
+      "line-opacity": 1,
     },
   });
 
