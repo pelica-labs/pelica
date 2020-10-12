@@ -1,5 +1,5 @@
 import { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geocoding";
-import { debounce } from "lodash";
+import { throttle } from "lodash";
 import { LngLatBounds } from "mapbox-gl";
 
 import { Coordinates } from "~/core/geometries";
@@ -53,7 +53,7 @@ export const mapView = ({ mutate }: App) => ({
     });
   },
 
-  updateFeatures: debounce(async (coordinates: Coordinates) => {
+  updateFeatures: throttle(async (coordinates: Coordinates) => {
     const res = await mapboxGeocoding
       .reverseGeocode({
         query: [coordinates.longitude, coordinates.latitude],
