@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 import { CloseIcon, SearchIcon } from "~/components/Icon";
 import { useApp, useStore } from "~/core/app";
-import { useLocalStorage } from "~/hooks/useLocalStorage";
+import { useAsyncStorage } from "~/hooks/useAsyncStorage";
 import { mapboxGeocoding } from "~/lib/mapbox";
 
 export const PlaceAutocomplete: React.FC = () => {
@@ -16,7 +16,9 @@ export const PlaceAutocomplete: React.FC = () => {
   const [places, setPlaces] = useState<GeocodeFeature[]>([]);
   const [isFocused, setIsFocused] = useState(false);
   const [selectionIndex, setSelectionIndex] = useState(0);
-  const [recentSearches, setRecentSearches] = useLocalStorage<GeocodeFeature[]>("recentSearches", []);
+  const [recentSearches, setRecentSearches] = useAsyncStorage<GeocodeFeature[]>("recentSearches", []);
+
+  console.log(recentSearches);
 
   const showRecentSearches = !search;
   const results = showRecentSearches ? recentSearches : places;
