@@ -19,8 +19,8 @@ const initiaState: Editor = {
   mode: "move",
   pane: null,
   smartMatching: {
-    enabled: false,
-    profile: null,
+    enabled: true,
+    profile: "walking",
   },
   style: defaultStyle as Style,
   aspectRatio: "fill",

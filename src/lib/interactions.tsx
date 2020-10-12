@@ -146,7 +146,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     }
 
     if (editor.mode === "draw") {
-      // app.line.draw(event.lngLat.lat, event.lngLat.lng);
+      app.line.draw(event.lngLat.lat, event.lngLat.lng);
     }
 
     if (!justClickedLayer) {

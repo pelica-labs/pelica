@@ -28,6 +28,7 @@ export const smartMatch = async (line: PolyLine, profile: SmartMatchingProfile):
           points: points.map((point) => {
             return {
               coordinates: [point.longitude, point.latitude],
+              radius: 50,
             };
           }),
         })
