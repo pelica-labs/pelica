@@ -12,6 +12,14 @@ const s3 = new AWS.S3({
   region: process.env.AWS_S3_REGION,
 });
 
+const generateUniqueFilePath = () => {
+  const prefix = process.env.VERCEL_URL || `local-${process.env.USER}`;
+  const date = format(new Date(), "yyyyMMddHHmmss");
+  const id = uniqid().toUpperCase();
+
+  return `${prefix}/maps/${date}-${id}.jpeg`;
+};
+
 const parseUpload = (req: NextApiRequest): Promise<File> => {
   return new Promise((resolve, reject) => {
     const form = new IncomingForm();
@@ -34,9 +42,13 @@ const UploadMap: NextApiHandler = async (req, res) => {
   }
 
   const image = await parseUpload(req);
-  const path = `${process.env.NODE_ENV}/maps/${format(new Date(), "yyyy-MM-dd")}_${uniqid()}.jpeg`;
+
   const upload = await s3
-    .upload({ Bucket: process.env.AWS_S3_BUCKET as string, Key: path, Body: fs.createReadStream(image.path) })
+    .upload({
+      Bucket: process.env.AWS_S3_BUCKET as string,
+      Key: generateUniqueFilePath(),
+      Body: fs.createReadStream(image.path),
+    })
     .promise();
 
   return res.status(HttpStatus.CREATED).json({
