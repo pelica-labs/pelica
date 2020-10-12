@@ -1,7 +1,9 @@
 import { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geocoding";
+import { debounce } from "lodash";
 
 import { Coordinates } from "~/core/geometries";
 import { App } from "~/core/helpers";
+import { mapboxGeocoding } from "~/lib/mapbox";
 
 export type MapView = {
   coordinates: {
@@ -14,6 +16,8 @@ export type MapView = {
   pitch: number;
 
   place: GeocodeFeature | null;
+
+  features: GeocodeFeature[];
 };
 
 const initialState: MapView = {
@@ -27,6 +31,8 @@ const initialState: MapView = {
   pitch: 0,
 
   place: null,
+
+  features: [],
 };
 
 export const mapView = ({ mutate }: App) => ({
@@ -40,6 +46,20 @@ export const mapView = ({ mutate }: App) => ({
       mapView.pitch = pitch;
     });
   },
+
+  updateFeatures: debounce(async (coordinates: Coordinates) => {
+    const res = await mapboxGeocoding
+      .reverseGeocode({
+        query: [coordinates.longitude, coordinates.latitude],
+        mode: "mapbox.places",
+        types: ["place"],
+      })
+      .send();
+
+    mutate(({ mapView }) => {
+      mapView.features = res.body.features;
+    });
+  }, 2000),
 
   setPlace: (place: GeocodeFeature | null) => {
     mutate(({ mapView }) => {

@@ -69,6 +69,8 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     const pitch = event.target.getPitch();
 
     app.mapView.move({ latitude: lat, longitude: lng }, zoom, bearing, pitch);
+
+    app.mapView.updateFeatures({ latitude: lat, longitude: lng });
   };
 
   const onMouseMove = throttle((event: MapMouseEvent | MapTouchEvent) => {
@@ -284,6 +286,9 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   }
 
   map.scrollZoom.setZoomRate(0.03);
+
+  const { lat, lng } = map.getCenter();
+  app.mapView.updateFeatures({ latitude: lat, longitude: lng });
 
   map.on("mouseenter", "pins", onFeatureHoverStart);
   map.on("mouseleave", "pins", onFeatureHoverEnd);

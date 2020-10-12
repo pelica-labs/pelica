@@ -3,6 +3,7 @@ import mapboxgl, { LngLatBoundsLike } from "mapbox-gl";
 import Head from "next/head";
 import React, { useEffect, useRef } from "react";
 
+import { DocumentTitle } from "~/components/DocumentTitle";
 import { useApp, useStoreSubscription } from "~/core/app";
 import { applyGeometries } from "~/core/geometries";
 import { STOP_DRAWING_CIRCLE_ID } from "~/core/line";
@@ -281,6 +282,7 @@ export const Map: React.FC = () => {
       <Head>
         <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
       </Head>
+      <DocumentTitle />
       <div ref={container} className="flex justify-center items-center w-full h-full p-1 bg-gray-700">
         <div ref={wrapper} className="w-full h-full shadow" />
       </div>
