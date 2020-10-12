@@ -1,31 +1,15 @@
 import { NextPage } from "next";
-import React, { useState } from "react";
-
-import { MapEditor } from "~/components/MapEditor";
-import { MapExport } from "~/components/MapExport";
+import Link from "next/link";
+import React from "react";
 
 const Home: NextPage = () => {
-  const [image, setImage] = useState<string | null>(null);
-
   return (
-    <>
-      {image && (
-        <MapExport
-          image={image}
-          onBack={() => {
-            setImage(null);
-          }}
-        />
-      )}
-
-      {!image && (
-        <MapEditor
-          onImage={(image) => {
-            setImage(image);
-          }}
-        />
-      )}
-    </>
+    <div className="flex flex-col">
+      <span>Landing</span>
+      <Link href="/app">
+        <a className="underline">App</a>
+      </Link>
+    </div>
   );
 };
 
