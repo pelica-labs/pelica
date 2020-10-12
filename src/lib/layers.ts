@@ -101,5 +101,5 @@ const addLayer = (map: mapboxgl.Map, layer: mapboxgl.Layer & { before?: string }
     return;
   }
 
-  map.addLayer(layer, layer.before);
+  map.addLayer(layer, layer.before && map.getLayer(layer.before) ? layer.before : undefined);
 };
