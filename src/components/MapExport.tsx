@@ -29,9 +29,7 @@ export const MapExport: React.FC<Props> = ({ image, onBack }) => {
 
     navigator.share({
       title: "Pelica Map",
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      files: [dataUrlToBlob(image)],
+      url: imageUrl,
     });
   };
 
