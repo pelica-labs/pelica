@@ -17,7 +17,7 @@ export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange }) => {
         onClick={() => {
           onChange({
             enabled: !value.enabled,
-            profile: value.enabled ? null : "walking",
+            profile: value.enabled ? null : "driving",
           });
         }}
       >

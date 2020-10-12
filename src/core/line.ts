@@ -1,3 +1,5 @@
+import { Feature, MultiLineString, multiLineString, simplify } from "@turf/turf";
+
 import { nextGeometryId, PolyLine } from "~/core/geometries";
 import { App } from "~/core/helpers";
 import { smartMatch, SmartMatching, SmartMatchingProfile } from "~/lib/smartMatching";
@@ -63,7 +65,7 @@ export const line = ({ mutate, get }: App) => ({
   },
 
   draw: (latitude: number, longitude: number) => {
-    mutate(({ line }) => {
+    mutate(({ line, mapView }) => {
       if (!line.drawing) {
         return;
       }
@@ -73,15 +75,35 @@ export const line = ({ mutate, get }: App) => ({
       }
 
       line.currentLine.points.push({ latitude, longitude });
+
+      if (line.currentLine.points.length <= 2) {
+        return;
+      }
+
+      const feature = multiLineString([
+        line.currentLine.points.map((point) => {
+          return [point.longitude, point.latitude];
+        }),
+      ]);
+      const tolerance = 2 ** (-mapView.zoom - 1) * 0.8;
+      const simplified = simplify(feature, { tolerance }) as Feature<MultiLineString>;
+
+      if (!simplified.geometry) {
+        return;
+      }
+
+      line.currentLine.points = simplified.geometry.coordinates[0].map((point) => {
+        return { latitude: point[1], longitude: point[0] };
+      });
     });
   },
 
   stopSegment: async () => {
-    const { line, history } = get();
-
     mutate(({ line }) => {
       line.drawing = false;
     });
+
+    const { line, history } = get();
 
     if (!line.currentLine) {
       return;
