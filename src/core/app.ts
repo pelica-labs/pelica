@@ -40,7 +40,7 @@ const state = (app: App) => {
     line: line(app),
     pin: pin(app),
     history: history(app),
-    geometries: geometries(),
+    geometries: geometries(app),
     selection: selection(app),
     dragAndDrop: dragAndDrop(app),
     export: exports(),

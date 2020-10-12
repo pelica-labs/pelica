@@ -3,6 +3,7 @@ import ReactDOMServer from "react-dom/server";
 
 import { icons } from "~/components/Icon";
 import { pins } from "~/components/Pin";
+import { getState } from "~/core/app";
 
 const allIcons = icons();
 const allPins = pins();
@@ -49,6 +50,9 @@ export const applyImageMissingHandler = (map: mapboxgl.Map): void => {
     map.addImage(event.id, image, { pixelRatio: 2 });
 
     // 💩 Manually retriggers a re-render. This is far from ideal and looks glitchy.
+    setTimeout(() => {
+      getState().geometries.redraw();
+    });
   };
 
   map.on("styleimagemissing", onImageMissing);

@@ -1,5 +1,6 @@
 import { GeoJSONSource } from "mapbox-gl";
 
+import { App } from "~/core/helpers";
 import { SmartMatching } from "~/lib/smartMatching";
 import { MapSource } from "~/lib/sources";
 
@@ -11,8 +12,23 @@ const initialState: Geometries = {
   items: [],
 };
 
-export const geometries = () => ({
+export const geometries = ({ mutate }: App) => ({
   ...initialState,
+
+  redraw: () => {
+    mutate(({ geometries }) => {
+      geometries.items.push({
+        id: 1,
+        source: MapSource.Pins,
+        type: "Circle",
+        coordinates: { latitude: 0, longitude: 0 },
+      });
+    });
+
+    mutate(({ geometries }) => {
+      geometries.items.splice(geometries.items.length - 1);
+    });
+  },
 });
 
 export type Coordinates = {
