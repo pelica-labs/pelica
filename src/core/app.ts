@@ -9,6 +9,7 @@ import { geometries } from "~/core/geometries";
 import { App, immer } from "~/core/helpers";
 import { history } from "~/core/history";
 import { imports } from "~/core/import";
+import { itineraries } from "~/core/itineraries";
 import { keyboard } from "~/core/keyboard";
 import { line } from "~/core/line";
 import { mapView } from "~/core/mapView";
@@ -23,6 +24,7 @@ export type State = {
   mapView: ReturnType<typeof mapView>;
   editor: ReturnType<typeof editor>;
   line: ReturnType<typeof line>;
+  itineraries: ReturnType<typeof itineraries>;
   pin: ReturnType<typeof pin>;
   history: ReturnType<typeof history>;
   geometries: ReturnType<typeof geometries>;
@@ -41,6 +43,7 @@ const state = (app: App) => {
     editor: editor(app),
     line: line(app),
     pin: pin(app),
+    itineraries: itineraries(app),
     history: history(app),
     geometries: geometries(app),
     selection: selection(app),

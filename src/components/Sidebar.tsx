@@ -5,12 +5,14 @@ import React, { useEffect, useRef } from "react";
 import { AspectRatioSelector } from "~/components/AspectRatioSelector";
 import { Button } from "~/components/Button";
 import { ColorPicker } from "~/components/ColorPicker";
-import { ExportIcon, FireIcon, HandIcon, ImageSizeIcon, PinIcon, RouteIcon, TrashIcon } from "~/components/Icon";
+import { TrashIcon } from "~/components/Icon";
 import { IconSelector } from "~/components/IconSelector";
+import { ItineraryInput } from "~/components/ItineraryInput";
 import { SmartMatchingSelector } from "~/components/SmartMatchingSelector";
 import { StyleSelector } from "~/components/StyleSelector";
+import { Toolbar } from "~/components/Toolbar";
 import { WidthSlider } from "~/components/WidthSlider";
-import { useApp, useStore } from "~/core/app";
+import { useApp, useStore, useStoreSubscription } from "~/core/app";
 import { SmartMatching } from "~/lib/smartMatching";
 import { theme } from "~/styles/tailwind";
 
@@ -32,8 +34,24 @@ type Props = {
 
 export const Sidebar: React.FC<Props> = ({ onImage }) => {
   const app = useApp();
+  const itineraryContainer = useRef<HTMLDivElement>(null);
   const editor = useStore((store) => store.editor);
   const screenWidth = useStore((store) => store.screen.dimensions.width);
+  const currentItinerary = useStore((store) => store.itineraries.currentItinerary);
+
+  /**
+   * Focus itinerary input when switching to mode
+   */
+  useStoreSubscription(
+    (store) => store.editor.mode === "itinerary",
+    (itineraryMode) => {
+      if (itineraryMode) {
+        setTimeout(() => {
+          itineraryContainer.current?.querySelector("input")?.focus();
+        });
+      }
+    }
+  );
 
   /**
    * Handle shortcuts
@@ -82,6 +100,21 @@ export const Sidebar: React.FC<Props> = ({ onImage }) => {
         <Toolbar onImage={onImage} />
       </div>
 
+      {editor.mode === "itinerary" && (
+        <div
+          ref={itineraryContainer}
+          className="fixed top-0 mt-2"
+          style={{ right: computePanelOffset(screenWidth), marginRight: 64 }}
+        >
+          <ItineraryInput
+            value={currentItinerary}
+            onChange={(places) => {
+              app.itineraries.updateCurrentItinerary(places);
+            }}
+          />
+        </div>
+      )}
+
       <div className="flex flex-col bg-gray-900 text-gray-200 w-32 md:w-48 lg:w-64 h-full overflow-y-auto">
         <div className="flex justify-between items-center px-3 h-8 py-2 bg-gray-800">
           <span className="text-xs uppercase text-gray-300 font-light tracking-wide leading-none">{editor.mode}</span>
@@ -102,6 +135,8 @@ export const Sidebar: React.FC<Props> = ({ onImage }) => {
 
         {editor.mode === "draw" && <DrawSidebar />}
 
+        {editor.mode === "itinerary" && <ItinerarySidebar />}
+
         {editor.mode === "aspectRatio" && (
           <AspectRatioSelector
             value={editor.aspectRatio}
@@ -112,91 +147,6 @@ export const Sidebar: React.FC<Props> = ({ onImage }) => {
         )}
       </div>
     </div>
-  );
-};
-
-const Toolbar: React.FC<Props> = ({ onImage }) => {
-  const app = useApp();
-  const editorMode = useStore((store) => store.editor.mode);
-
-  return (
-    <>
-      <div className="flex flex-col space-y-1">
-        <Button
-          active={editorMode === "style"}
-          className="bg-gray-900 text-gray-200 py-2 flex-1 justify-center rounded border border-gray-700"
-          rounded={false}
-          onClick={() => {
-            app.editor.setEditorMode("style");
-          }}
-        >
-          <FireIcon className="w-6 h-6" />
-        </Button>
-      </div>
-
-      <div className="flex flex-col space-y-1 mt-6">
-        <Button
-          active={editorMode === "move"}
-          className="bg-gray-900 text-gray-200 py-2 flex-1 justify-center rounded border border-gray-700"
-          rounded={false}
-          onClick={() => {
-            app.editor.setEditorMode("move");
-          }}
-        >
-          <HandIcon className="w-6 h-6" />
-        </Button>
-
-        <Button
-          active={editorMode === "draw"}
-          className="bg-gray-900 text-gray-200 py-2 flex-1 justify-center rounded border border-gray-700"
-          rounded={false}
-          onClick={() => {
-            app.editor.setEditorMode("draw");
-          }}
-        >
-          <RouteIcon className="w-6 h-6" />
-        </Button>
-
-        <Button
-          active={editorMode === "pin"}
-          className="bg-gray-900 text-gray-200 py-2 flex-1 justify-center rounded border border-gray-700"
-          rounded={false}
-          onClick={() => {
-            app.editor.setEditorMode("pin");
-          }}
-        >
-          <PinIcon className="w-6 h-6" />
-        </Button>
-      </div>
-
-      <div className="flex flex-col space-y-1 mt-6">
-        <Button
-          active={editorMode === "aspectRatio"}
-          className="bg-gray-900 text-gray-200 py-2 flex-1 justify-center rounded border border-gray-700"
-          rounded={false}
-          onClick={() => {
-            app.editor.setEditorMode("aspectRatio");
-          }}
-        >
-          <ImageSizeIcon className="w-6 h-6" />
-        </Button>
-
-        <Button
-          active={editorMode === "export"}
-          className="bg-gray-900 text-gray-200 py-2 flex-1 justify-center rounded border border-gray-700"
-          rounded={false}
-          onClick={() => {
-            app.editor.setEditorMode("export");
-
-            const image = app.export.generateImage();
-
-            onImage(image);
-          }}
-        >
-          <ExportIcon className="w-6 h-6" />
-        </Button>
-      </div>
-    </>
   );
 };
 
@@ -493,6 +443,70 @@ const DrawSidebar: React.FC = () => {
           />
           <span className="text-xs">GPX</span>
         </Button>
+      </div>
+    </>
+  );
+};
+
+const ItinerarySidebar: React.FC = () => {
+  const app = useApp();
+  const color = useStore((store) => store.line.color);
+  const width = useStore((store) => store.line.width);
+  const smartMatching = useStore((store) => store.editor.smartMatching);
+
+  return (
+    <>
+      <div className="mt-4 px-2 pb-2 mb-2 border-b border-gray-700">
+        <div className="flex items-center px-1">
+          <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Color</span>
+          <div className="ml-2 w-3 h-3 rounded-full border border-gray-200" style={{ backgroundColor: color }} />
+        </div>
+        <div className="mt-4">
+          <ColorPicker
+            value={color}
+            onChange={(color) => {
+              app.line.setColor(color);
+            }}
+            onChangeComplete={(color) => {
+              app.line.setColor(color);
+            }}
+          />
+        </div>
+      </div>
+
+      <div className="mt-4 px-3 pb-3 mb-2 border-b border-gray-700">
+        <div className="flex items-center">
+          <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Width</span>
+          <div className="ml-2 flex justify-center items-center w-3 h-3 rounded-full">
+            <div className="rounded-full bg-gray-200" style={{ width: width, height: width }} />
+          </div>
+        </div>
+        <div className="mt-4 px-1">
+          <WidthSlider
+            max={12}
+            min={1}
+            value={width}
+            onChange={(width) => {
+              app.line.setWidth(width);
+            }}
+            onChangeComplete={(width) => {
+              app.line.setWidth(width);
+            }}
+          />
+        </div>
+      </div>
+
+      <div className="mt-2 px-3 pb-2 mb-2 border-b border-gray-700">
+        <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Routes</span>
+
+        <div className="mt-2">
+          <SmartMatchingSelector
+            value={smartMatching}
+            onChange={(smartMatching) => {
+              app.editor.setEditorSmartMatching(smartMatching);
+            }}
+          />
+        </div>
       </div>
     </>
   );

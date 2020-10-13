@@ -3,23 +3,49 @@ import classnames from "classnames";
 import * as KeyCode from "keycode-js";
 import React, { useEffect, useRef, useState } from "react";
 
-import { CloseIcon, SearchIcon } from "~/components/Icon";
-import { useApp, useStore } from "~/core/app";
+import { CloseIcon, Icon, SearchIcon } from "~/components/Icon";
 import { useAsyncStorage } from "~/hooks/useAsyncStorage";
 import { mapboxGeocoding } from "~/lib/mapbox";
 
-export const PlaceAutocomplete: React.FC = () => {
+type Props = {
+  value: GeocodeFeature | null;
+  onChange: (value: GeocodeFeature | null) => void;
+
+  collapsesWhenEmpty?: boolean;
+  clearable?: boolean;
+  dense?: boolean;
+  leftIcon?: Icon | null;
+  excludeRecentSearches?: GeocodeFeature[];
+};
+
+const MAX_RECENT_SEARCHES = 5;
+
+export const PlaceAutocomplete: React.FC<Props> = ({
+  value,
+  onChange,
+
+  collapsesWhenEmpty = false,
+  dense = false,
+  clearable = true,
+  leftIcon: LeftIcon = SearchIcon,
+  excludeRecentSearches = [],
+}) => {
   const input = useRef<HTMLInputElement>(null);
-  const app = useApp();
-  const place = useStore((store) => store.mapView.place);
-  const [search, setSearch] = useState(place?.place_name ?? "");
+  const [search, setSearch] = useState(value?.place_name ?? "");
   const [places, setPlaces] = useState<GeocodeFeature[]>([]);
   const [isFocused, setIsFocused] = useState(false);
   const [selectionIndex, setSelectionIndex] = useState(0);
   const [recentSearches, setRecentSearches] = useAsyncStorage<GeocodeFeature[]>("recentSearches", []);
 
+  const inputHeight = dense ? 8 : 12;
+  const textClass = dense ? "text-sm" : "text-normal";
+
   const showRecentSearches = !search;
-  const results = showRecentSearches ? recentSearches : places;
+  const results = showRecentSearches
+    ? recentSearches
+        .filter((search) => !excludeRecentSearches.find((recentSearch) => recentSearch.id === search.id))
+        .slice(0, MAX_RECENT_SEARCHES)
+    : places;
 
   /**
    * Keyboard shortcut
@@ -64,9 +90,9 @@ export const PlaceAutocomplete: React.FC = () => {
     input.current?.focus();
   };
 
-  const onBlur = (event: React.FocusEvent | React.KeyboardEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
+  const onBlur = (event?: React.FocusEvent | React.KeyboardEvent) => {
+    event?.preventDefault();
+    event?.stopPropagation();
 
     input.current?.blur();
 
@@ -114,7 +140,7 @@ export const PlaceAutocomplete: React.FC = () => {
     event.preventDefault();
     event.stopPropagation();
 
-    setSearch(place.place_name);
+    setSearch(collapsesWhenEmpty ? place.place_name : "");
     setPlaces([]);
 
     const placeIndexInRecentSearches = recentSearches.findIndex((search) => search.id === place.id);
@@ -122,10 +148,11 @@ export const PlaceAutocomplete: React.FC = () => {
       recentSearches.splice(placeIndexInRecentSearches, 1);
     }
     recentSearches.unshift(place);
-    setRecentSearches(recentSearches.slice(0, 5));
+    setRecentSearches(recentSearches.slice(0, MAX_RECENT_SEARCHES + 1));
 
-    app.mapView.setPlace(place);
+    onChange(place);
 
+    onBlur();
     setIsFocused(false);
   };
 
@@ -143,26 +170,31 @@ export const PlaceAutocomplete: React.FC = () => {
     setSearch("");
     setPlaces([]);
 
-    app.mapView.setPlace(null);
+    onChange(null);
 
     input.current?.focus();
   };
 
   const containerClasses = classnames({
     "group relative bg-gray-900 text-gray-200 shadow flex flex-col transition-all duration-100 ease-in-out cursor-pointer": true,
-    "w-64 rounded": isFocused || search,
-    "w-12 rounded-full ": !(isFocused || search),
+    ...(collapsesWhenEmpty && {
+      "w-64 rounded": isFocused || search,
+      "w-12 rounded-full ": !(isFocused || search),
+    }),
+    ...(!collapsesWhenEmpty && {
+      "w-64 rounded": true,
+    }),
   });
 
   return (
     <div className={containerClasses} onClick={() => onFocus()}>
-      {!isFocused && !search.length && (
-        <SearchIcon className="absolute left-0 ml-3 mt-3 text-gray-600 w-6 h-6 group-hover:text-green-500" />
+      {!!LeftIcon && !isFocused && !search.length && (
+        <LeftIcon className="absolute left-0 ml-3 mt-3 text-gray-600 w-6 h-6 group-hover:text-green-500" />
       )}
 
       <input
         ref={input}
-        className="p-2 bg-transparent text-gray-200 w-full outline-none border-2 h-12 border-transparent cursor-pointer rounded-sm focus:border-green-700"
+        className={`${textClass} p-2 bg-transparent text-gray-200 w-full outline-none border-2 h-${inputHeight} border-transparent cursor-pointer rounded-sm focus:border-green-700`}
         type="text"
         value={search}
         onBlur={(event) => onBlur(event)}
@@ -171,7 +203,7 @@ export const PlaceAutocomplete: React.FC = () => {
         onKeyUp={(event) => onKeyUp(event)}
       />
 
-      {!!place && (
+      {clearable && !!value && (
         <button
           className="absolute flex justify-center items-center mt-3 mr-2 right-0 bg-gray-900 hover:bg-gray-800 outline-none rounded-full w-6 h-6 text-gray-600"
           onClick={() => onClearClick()}
@@ -181,7 +213,7 @@ export const PlaceAutocomplete: React.FC = () => {
       )}
 
       {isFocused && (
-        <ul className="absolute left-0 right-0 mt-12 flex flex-col text-sm bg-gray-900 z-10">
+        <ul className={`absolute left-0 right-0 mt-${inputHeight} flex flex-col text-sm bg-gray-900 z-10`}>
           {showRecentSearches && recentSearches.length > 0 && (
             <span className="p-2 text-xs text-gray-500 uppercase tracking-wide leading-none">Recent searches</span>
           )}

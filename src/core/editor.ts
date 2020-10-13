@@ -10,7 +10,7 @@ export type Editor = {
   aspectRatio: AspectRatio;
 };
 
-export type EditorMode = "style" | "move" | "draw" | "pin" | "aspectRatio" | "export";
+export type EditorMode = "style" | "move" | "draw" | "itinerary" | "pin" | "aspectRatio" | "export";
 
 const initiaState: Editor = {
   mode: "style",

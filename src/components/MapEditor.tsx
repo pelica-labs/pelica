@@ -1,11 +1,14 @@
-import React from "react";
+import { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geocoding";
+import React, { useState } from "react";
 
 import { GeolocationButton } from "~/components/GeolocationButton";
+import { ItineraryInput } from "~/components/ItineraryInput";
 import { Map } from "~/components/Map";
 import { PlaceAutocomplete } from "~/components/PlaceAutocomplete";
 import { ResetOrientationButton } from "~/components/ResetOrientationButton";
 import { Sidebar } from "~/components/Sidebar";
 import { Tips } from "~/components/Tips";
+import { useApp, useStore } from "~/core/app";
 import { useKeyboard } from "~/hooks/useKeyboard";
 import { useScreenDimensions } from "~/hooks/useScreenDimensions";
 
@@ -14,6 +17,9 @@ type Props = {
 };
 
 export const MapEditor: React.FC<Props> = ({ onImage }) => {
+  const app = useApp();
+  const place = useStore((store) => store.mapView.place);
+
   useKeyboard();
   useScreenDimensions();
 
@@ -34,8 +40,19 @@ export const MapEditor: React.FC<Props> = ({ onImage }) => {
       <Sidebar onImage={onImage} />
 
       <div className="absolute top-0 left-0 flex flex-col space-y-2 mt-2 ml-2">
-        <PlaceAutocomplete />
-        <GeolocationButton />
+        <PlaceAutocomplete
+          collapsesWhenEmpty
+          value={place}
+          onChange={(place) => {
+            app.mapView.setPlace(place);
+          }}
+        />
+
+        <GeolocationButton
+          onChange={(coordinates) => {
+            app.mapView.move(coordinates, 16, 0, 0);
+          }}
+        />
       </div>
     </div>
   );
