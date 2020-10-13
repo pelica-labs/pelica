@@ -16,9 +16,8 @@ export const Tips: React.FC = () => {
       <InformationIcon className="w-4 h-4" />
       <div className="flex flex-col text-xs ml-3">
         <span>Draw mode</span>
-        <span className="text-gray-500">Tap the last point to end your route.</span>
         <span className="text-gray-500">
-          (or tap{" "}
+          Tap the last point to end your route (or tap{" "}
           <a
             className="underline cursor-pointer"
             onClick={() => {

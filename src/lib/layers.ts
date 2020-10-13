@@ -76,7 +76,7 @@ export const applyLayers = (map: mapboxgl.Map): void => {
     source: MapSource.Routes,
     filter: ["==", ["get", "target"], "Point"],
     paint: {
-      "circle-radius": ["*", ["get", "width"], 1.5],
+      "circle-radius": 10,
       "circle-opacity": ["case", ["boolean", ["feature-state", "hover"], true], 0.5, 0.1],
       "circle-stroke-color": ["get", "color"],
       "circle-stroke-width": 1,
