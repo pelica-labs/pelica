@@ -24,9 +24,9 @@ type Props = {
   height?: number;
 };
 
-type Icon = React.FC<Props>;
+export type Icon = React.FC<Props>;
 
-const icon = (path: JSX.Element): Icon => {
+const icon = (path: JSX.Element, size = 24): Icon => {
   return function Icon({ className, width, height, color = "currentColor" }) {
     return (
       <svg
@@ -34,7 +34,7 @@ const icon = (path: JSX.Element): Icon => {
         fill="none"
         height={height}
         stroke={color}
-        viewBox="0 0 24 24"
+        viewBox={`0 0 ${size}, ${size}`}
         width={width}
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -229,4 +229,52 @@ export const ExportIcon = icon(
     d="M13 9.8v.9l-1.7.2c-2.6.4-4.5 1.4-5.9 2.7c1.7-.5 3.5-.8 5.6-.8h2v1.3l2.2-2.1L13 9.8M11 5l7 7l-7 7v-4.1c-5 0-8.5 1.6-11 5.1c1-5 4-10 11-11m6-1V5l7 7l-7 7v-3l4-4"
     fill="currentColor"
   />
+);
+
+export const ImageSizeIcon = icon(
+  <path
+    d="M21 15h2v2h-2v-2m0-4h2v2h-2v-2m2 8h-2v2c1 0 2-1 2-2M13 3h2v2h-2V3m8 4h2v2h-2V7m0-4v2h2c0-1-1-2-2-2M1 7h2v2H1V7m16-4h2v2h-2V3m0 16h2v2h-2v-2M3 3C2 3 1 4 1 5h2V3m6 0h2v2H9V3M5 3h2v2H5V3m-4 8v8a2 2 0 0 0 2 2h12V11H1m2 8l2.5-3.21l1.79 2.15l2.5-3.22L13 19H3z"
+    fill="currentColor"
+  />
+);
+
+// -- Line Awesome start
+
+export const FacebookIcon = icon(
+  <path
+    d="M16 4C9.384 4 4 9.384 4 16s5.384 12 12 12s12-5.384 12-12S22.616 4 16 4zm0 2c5.535 0 10 4.465 10 10a9.977 9.977 0 0 1-8.512 9.879v-6.963h2.848l.447-2.893h-3.295v-1.58c0-1.2.395-2.267 1.518-2.267h1.805V9.652c-.317-.043-.988-.136-2.256-.136c-2.648 0-4.2 1.398-4.2 4.584v1.923h-2.722v2.893h2.722v6.938A9.975 9.975 0 0 1 6 16c0-5.535 4.465-10 10-10z"
+    fill="currentColor"
+  />,
+  32
+);
+
+export const InstagramIcon = icon(
+  <path
+    d="M11.469 5C7.918 5 5 7.914 5 11.469v9.062C5 24.082 7.914 27 11.469 27h9.062C24.082 27 27 24.086 27 20.531V11.47C27 7.918 24.086 5 20.531 5zm0 2h9.062A4.463 4.463 0 0 1 25 11.469v9.062A4.463 4.463 0 0 1 20.531 25H11.47A4.463 4.463 0 0 1 7 20.531V11.47A4.463 4.463 0 0 1 11.469 7zm10.437 2.188a.902.902 0 0 0-.906.906c0 .504.402.906.906.906a.902.902 0 0 0 .907-.906a.902.902 0 0 0-.907-.906zM16 10c-3.3 0-6 2.7-6 6s2.7 6 6 6s6-2.7 6-6s-2.7-6-6-6zm0 2c2.223 0 4 1.777 4 4s-1.777 4-4 4s-4-1.777-4-4s1.777-4 4-4z"
+    fill="currentColor"
+  />,
+  32
+);
+
+export const YouTubeIcon = icon(
+  <path
+    d="M16 6c-3.766 0-7.094.39-9.125.688c-1.68.246-3.035 1.511-3.344 3.187C3.27 11.301 3 13.387 3 16s.27 4.7.531 6.125c.309 1.676 1.664 2.945 3.344 3.188c2.04.296 5.379.687 9.125.687c3.746 0 7.086-.39 9.125-.688c1.68-.242 3.035-1.511 3.344-3.187c.261-1.43.531-3.52.531-6.125s-.266-4.695-.531-6.125c-.309-1.676-1.664-2.941-3.344-3.188C23.094 6.391 19.765 6 16 6zm0 2c3.633 0 6.879.371 8.844.656A1.966 1.966 0 0 1 26.5 10.25c.242 1.32.5 3.277.5 5.75c0 2.469-.258 4.43-.5 5.75a1.957 1.957 0 0 1-1.656 1.594C22.87 23.629 19.609 24 16 24c-3.61 0-6.875-.371-8.844-.656A1.962 1.962 0 0 1 5.5 21.75C5.258 20.43 5 18.477 5 16c0-2.48.258-4.43.5-5.75a1.962 1.962 0 0 1 1.656-1.594C9.117 8.371 12.367 8 16 8zm-3 2.281V21.72l1.5-.844l7-4L23 16l-1.5-.875l-7-4zm2 3.438L18.969 16L15 18.281z"
+    fill="currentColor"
+  />,
+  32
+);
+
+export const SquareIcon = icon(<path d="M6 6v20h20V6zm2 2h16v16H8z" fill="currentColor"></path>);
+
+export const FileIcon = icon(
+  <path d="M6 3v26h20V9.594l-.281-.313l-6-6L19.406 3zm2 2h10v6h6v16H8zm12 1.438L22.563 9H20z" fill="currentColor" />,
+  32
+);
+
+export const ExpandIcon = icon(
+  <path
+    d="M4 4v9h2V7.437L14.563 16L6 24.563V19H4v9h9v-2H7.437L16 17.437L24.563 26H19v2h9v-9h-2v5.563L17.437 16L26 7.437V13h2V4h-9v2h5.563L16 14.563L7.437 6H13V4z"
+    fill="currentColor"
+  />,
+  32
 );

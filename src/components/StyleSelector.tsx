@@ -56,31 +56,27 @@ export const StyleSelector: React.FC<Props> = ({ value, onChange }) => {
   }
 
   return (
-    <div className="bg-gray-900 text-white rounded shadow flex flex-col p-1">
-      <div className="flex flex-row flex-wrap max-w-xl">
-        {data.styles.map((style) => {
-          const isSelectedStyle = value.id === style.id;
-          const containerClasses = classnames({
-            "flex flex-col items-center p-2 rounded font-medium cursor-pointer hover:bg-green-900": true,
-            "bg-green-700": isSelectedStyle,
-          });
+    <div className="bg-gray-900 text-white rounded shadow flex flex-col items-start space-y-1 p-1">
+      {data.styles.map((style) => {
+        const isSelectedStyle = value.id === style.id;
+        const containerClasses = classnames({
+          "flex flex-col items-start p-2 rounded font-medium cursor-pointer hover:bg-green-900 w-full h-40": true,
+          "bg-green-700": isSelectedStyle,
+        });
 
-          return (
-            <div
-              key={style.id}
-              className={containerClasses}
-              onClick={() => {
-                onChange(style);
-              }}
-            >
-              <span className="text-xs uppercase text-gray-200 w-32 inline-flex overflow-x-hidden whitespace-no-wrap">
-                {style.name}
-              </span>
-              <StylePreview src={previews[style.id]} />
-            </div>
-          );
-        })}
-      </div>
+        return (
+          <div
+            key={style.id}
+            className={containerClasses}
+            onClick={() => {
+              onChange(style);
+            }}
+          >
+            <span className="text-xs uppercase text-gray-200  inline-flex whitespace-no-wrap">{style.name}</span>
+            <StylePreview src={previews[style.id]} />
+          </div>
+        );
+      })}
     </div>
   );
 };

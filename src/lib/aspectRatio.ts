@@ -1,5 +1,6 @@
 import { CSSProperties } from "react";
 
+import { ExpandIcon, FacebookIcon, FileIcon, Icon, InstagramIcon, SquareIcon, YouTubeIcon } from "~/components/Icon";
 import { ScreenDimensions } from "~/core/screen";
 
 export type AspectRatio = keyof typeof aspectRatios;
@@ -7,39 +8,48 @@ export type AspectRatio = keyof typeof aspectRatios;
 type AspectRatioConfiguration = {
   ratio?: [number, number];
   name: string;
+  icon: Icon;
 };
 
 export const aspectRatios: { [key: string]: AspectRatioConfiguration } = {
   fill: {
     name: "Fill",
+    icon: ExpandIcon,
   },
   square: {
     name: "Square",
     ratio: [1, 1],
+    icon: SquareIcon,
   },
   facebookPost: {
     name: "Facebook post",
     ratio: [940, 788],
+    icon: FacebookIcon,
   },
   facebookCover: {
     name: "Facebook cover",
     ratio: [2050, 780],
+    icon: FacebookIcon,
   },
   instagramPost: {
     name: "Instagram post",
     ratio: [1080, 1080],
+    icon: InstagramIcon,
   },
   instagramStory: {
     name: "Instagram story",
     ratio: [1080, 1920],
+    icon: InstagramIcon,
   },
   youtubeThumbnail: {
     name: "YouTube thumbnail",
     ratio: [1280, 720],
+    icon: YouTubeIcon,
   },
   a4: {
     name: "A4 print",
     ratio: [793.7, 1122.5],
+    icon: FileIcon,
   },
 };
 

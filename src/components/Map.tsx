@@ -57,7 +57,7 @@ export const Map: React.FC = () => {
       applySources(map);
       applyLayers(map);
 
-      await app.sync.restoreState();
+      // await app.sync.restoreState();
 
       applyInteractions(map, app);
       applyImageMissingHandler(map);

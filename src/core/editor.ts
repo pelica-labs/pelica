@@ -5,19 +5,15 @@ import { defaultStyle, Style } from "~/lib/style";
 
 export type Editor = {
   mode: EditorMode;
-  pane: EditorPane | null;
   smartMatching: SmartMatching;
   style: Style;
   aspectRatio: AspectRatio;
 };
 
-export type EditorMode = "move" | "draw" | "pin";
-
-export type EditorPane = "styles" | "aspectRatio" | "icons";
+export type EditorMode = "style" | "move" | "draw" | "pin" | "aspectRatio" | "export";
 
 const initiaState: Editor = {
-  mode: "move",
-  pane: null,
+  mode: "style",
   smartMatching: {
     enabled: false,
     profile: null,
@@ -44,12 +40,6 @@ export const editor = ({ mutate, get }: App) => ({
     });
   },
 
-  togglePane: (pane: EditorPane) => {
-    mutate(({ editor }) => {
-      editor.pane = editor.pane !== pane ? pane : null;
-    });
-  },
-
   setEditorMode: (mode: EditorMode) => {
     mutate(({ editor, selection, line }) => {
       editor.mode = mode;
@@ -67,12 +57,6 @@ export const editor = ({ mutate, get }: App) => ({
   setEditorSmartMatching: (smartMatching: SmartMatching) => {
     mutate(({ editor }) => {
       editor.smartMatching = smartMatching;
-    });
-  },
-
-  closePanes: () => {
-    mutate(({ editor }) => {
-      editor.pane = null;
     });
   },
 });
