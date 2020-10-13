@@ -18,8 +18,6 @@ export const PlaceAutocomplete: React.FC = () => {
   const [selectionIndex, setSelectionIndex] = useState(0);
   const [recentSearches, setRecentSearches] = useAsyncStorage<GeocodeFeature[]>("recentSearches", []);
 
-  console.log(recentSearches);
-
   const showRecentSearches = !search;
   const results = showRecentSearches ? recentSearches : places;
 

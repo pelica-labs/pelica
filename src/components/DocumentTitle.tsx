@@ -18,7 +18,12 @@ export const DocumentTitle: React.FC = () => {
       }
 
       return booleanWithin(
-        bboxPolygon([...mapBounds.getNorthWest().toArray(), ...mapBounds.getSouthEast().toArray()] as BBox),
+        bboxPolygon([
+          mapBounds[0].longitude,
+          mapBounds[0].latitude,
+          mapBounds[1].longitude,
+          mapBounds[1].latitude,
+        ] as BBox),
         bboxPolygon(feature.bbox as BBox)
       );
     });

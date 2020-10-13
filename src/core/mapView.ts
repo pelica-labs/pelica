@@ -1,22 +1,18 @@
 import { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geocoding";
 import { throttle } from "lodash";
-import { LngLatBounds } from "mapbox-gl";
 
 import { Coordinates } from "~/core/geometries";
 import { App } from "~/core/helpers";
 import { mapboxGeocoding } from "~/lib/mapbox";
 
 export type MapView = {
-  coordinates: {
-    latitude: number;
-    longitude: number;
-  };
+  coordinates: Coordinates;
 
   zoom: number;
   bearing: number;
   pitch: number;
 
-  bounds: LngLatBounds | null;
+  bounds: [Coordinates, Coordinates] | null;
 
   place: GeocodeFeature | null;
 
@@ -43,13 +39,22 @@ const initialState: MapView = {
 export const mapView = ({ mutate }: App) => ({
   ...initialState,
 
-  move: (coordinates: Coordinates, zoom: number, bearing: number, pitch: number, bounds: LngLatBounds) => {
+  move: (
+    coordinates: Coordinates,
+    zoom: number,
+    bearing: number,
+    pitch: number,
+    bounds?: [Coordinates, Coordinates]
+  ) => {
     mutate(({ mapView }) => {
       mapView.coordinates = coordinates;
       mapView.zoom = zoom;
       mapView.bearing = bearing;
       mapView.pitch = pitch;
-      mapView.bounds = bounds;
+
+      if (bounds) {
+        mapView.bounds = bounds;
+      }
     });
   },
 

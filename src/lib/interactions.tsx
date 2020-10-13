@@ -3,7 +3,7 @@ import { throttle } from "lodash";
 import { MapLayerMouseEvent, MapLayerTouchEvent, MapMouseEvent, MapTouchEvent, MapWheelEvent } from "mapbox-gl";
 
 import { getState, State } from "~/core/app";
-import { Point, Position } from "~/core/geometries";
+import { Coordinates, Point, Position } from "~/core/geometries";
 import { isClient } from "~/lib/ssr";
 
 const touchDevice = isClient && "ontouchstart" in document.documentElement;
@@ -62,14 +62,19 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     event.preventDefault();
   };
 
-  const onMoveEnd = (event: MapMouseEvent) => {
-    const { lng, lat } = event.target.getCenter();
-    const zoom = event.target.getZoom();
-    const bearing = event.target.getBearing();
-    const pitch = event.target.getPitch();
-    const bounds = event.target.getBounds();
+  const updateMapView = () => {
+    const { lng, lat } = map.getCenter();
+    const zoom = map.getZoom();
+    const bearing = map.getBearing();
+    const pitch = map.getPitch();
+    const bounds = map.getBounds();
 
-    app.mapView.move({ latitude: lat, longitude: lng }, zoom, bearing, pitch, bounds);
+    const bbox: [Coordinates, Coordinates] = [
+      { latitude: bounds.getNorthWest().lat, longitude: bounds.getNorthWest().lng },
+      { latitude: bounds.getSouthEast().lat, longitude: bounds.getSouthEast().lng },
+    ];
+
+    app.mapView.move({ latitude: lat, longitude: lng }, zoom, bearing, pitch, bbox);
 
     app.mapView.updateFeatures({ latitude: lat, longitude: lng });
   };
@@ -288,8 +293,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
 
   map.scrollZoom.setZoomRate(0.03);
 
-  const { lat, lng } = map.getCenter();
-  app.mapView.updateFeatures({ latitude: lat, longitude: lng });
+  updateMapView();
 
   map.on("mouseenter", "pins", onFeatureHoverStart);
   map.on("mouseleave", "pins", onFeatureHoverEnd);
@@ -308,7 +312,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   map.on("mousedown", "pins", onFeatureMouseDown);
   map.on("touchstart", "pins", onFeatureMouseDown);
 
-  map.on("moveend", onMoveEnd);
+  map.on("moveend", updateMapView);
   map.on("mousemove", onMouseMove);
   map.on("mousedown", onMouseDown);
   map.on("mouseup", onMouseUp);

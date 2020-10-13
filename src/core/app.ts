@@ -15,6 +15,7 @@ import { mapView } from "~/core/mapView";
 import { pin } from "~/core/pin";
 import { screen } from "~/core/screen";
 import { selection } from "~/core/selection";
+import { sync } from "~/core/sync";
 
 export type State = {
   screen: ReturnType<typeof screen>;
@@ -29,6 +30,7 @@ export type State = {
   dragAndDrop: ReturnType<typeof dragAndDrop>;
   export: ReturnType<typeof exports>;
   import: ReturnType<typeof imports>;
+  sync: ReturnType<typeof sync>;
 };
 
 const state = (app: App) => {
@@ -45,6 +47,7 @@ const state = (app: App) => {
     dragAndDrop: dragAndDrop(app),
     export: exports(),
     import: imports(app),
+    sync: sync(app),
   };
 };
 

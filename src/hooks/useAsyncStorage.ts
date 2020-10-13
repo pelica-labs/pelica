@@ -1,7 +1,7 @@
 import localforage from "localforage";
 import { useEffect, useState } from "react";
 
-const storage = localforage.createInstance({
+export const asyncStorage = localforage.createInstance({
   name: "pelica",
   storeName: "pelica",
   version: 1,
@@ -16,7 +16,7 @@ export const useAsyncStorage = <T>(key: string, initialValue: T): [T, (value: T)
 
   const getItem = async () => {
     try {
-      const value = await storage.getItem<T>(key);
+      const value = await asyncStorage.getItem<T>(key);
 
       setStoredValue(value ?? initialValue);
     } catch (error) {
@@ -29,7 +29,7 @@ export const useAsyncStorage = <T>(key: string, initialValue: T): [T, (value: T)
     setStoredValue(valueToStore);
 
     try {
-      await storage.setItem(key, value);
+      await asyncStorage.setItem(key, value);
     } catch (error) {
       console.error(error);
     }

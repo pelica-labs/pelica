@@ -1,4 +1,5 @@
 import { bbox, lineString, transformScale } from "@turf/turf";
+import { debounce } from "lodash";
 import mapboxgl, { LngLatBoundsLike } from "mapbox-gl";
 import Head from "next/head";
 import React, { useEffect, useRef } from "react";
@@ -50,11 +51,14 @@ export const Map: React.FC = () => {
       preserveDrawingBuffer: true,
     });
 
-    map.current.on("load", ({ target: map }) => {
+    map.current.on("load", async ({ target: map }) => {
       map.resize();
 
       applySources(map);
       applyLayers(map);
+
+      await app.sync.restoreState();
+
       applyInteractions(map, app);
       applyImageMissingHandler(map);
 
@@ -67,6 +71,16 @@ export const Map: React.FC = () => {
       });
     });
   }, []);
+
+  /**
+   * Sync state to storage
+   */
+  useStoreSubscription(
+    (store) => store,
+    debounce(() => {
+      app.sync.saveState();
+    }, 1000)
+  );
 
   /**
    * Sync coordinates
@@ -190,6 +204,7 @@ export const Map: React.FC = () => {
       if (!map.current) {
         return;
       }
+
       const allGeometries = [...geometries];
 
       if (currentLine) {

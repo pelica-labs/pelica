@@ -109,7 +109,7 @@ export type Polygon = {
   lines: Coordinates[][];
 };
 
-let _nextId = 0;
+let _nextId = +new Date();
 
 export const nextGeometryId = (): number => {
   _nextId += 1;

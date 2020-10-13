@@ -286,9 +286,7 @@ export const Sidebar: React.FC<Props> = ({ onImage }) => {
             <div className="flex items-center justify-between px-3 py-2 border-b bg-gray-800 border-gray-700">
               <span className="text-xs uppercase font-light tracking-wide leading-none">
                 <span className="text-gray-500">Selection:</span>
-                <span className="ml-2">
-                  {selectedGeometry?.type} #{selectedGeometry?.id}
-                </span>
+                <span className="ml-2">{selectedGeometry?.type}</span>
               </span>
               <Button
                 className="bg-gray-900 text-gray-200"

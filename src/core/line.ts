@@ -52,7 +52,6 @@ export const line = ({ mutate, get }: App) => ({
       line.drawing = true;
 
       if (!line.currentLine) {
-        console.log(line.outlineColor);
         line.currentLine = {
           type: "Line",
           id: nextGeometryId(),
