@@ -5,7 +5,7 @@ import React, { useEffect, useRef } from "react";
 import { AspectRatioSelector } from "~/components/AspectRatioSelector";
 import { Button } from "~/components/Button";
 import { ColorPicker } from "~/components/ColorPicker";
-import { ExportIcon, FireIcon, HandIcon, ImageSizeIcon, PaintIcon, PinIcon, TrashIcon } from "~/components/Icon";
+import { ExportIcon, FireIcon, HandIcon, ImageSizeIcon, PinIcon, RouteIcon, TrashIcon } from "~/components/Icon";
 import { IconSelector } from "~/components/IconSelector";
 import { SmartMatchingSelector } from "~/components/SmartMatchingSelector";
 import { StyleSelector } from "~/components/StyleSelector";
@@ -154,7 +154,7 @@ const Toolbar: React.FC<Props> = ({ onImage }) => {
             app.editor.setEditorMode("draw");
           }}
         >
-          <PaintIcon className="w-6 h-6" />
+          <RouteIcon className="w-6 h-6" />
         </Button>
 
         <Button
