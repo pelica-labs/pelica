@@ -157,6 +157,12 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
       app.line.draw(event.lngLat.lat, event.lngLat.lng);
     }
 
+    if (!justClickedLayer && editor.mode === "itinerary") {
+      const { lat, lng } = event.lngLat;
+
+      app.itineraries.addStep({ latitude: lat, longitude: lng });
+    }
+
     if (!justClickedLayer) {
       app.selection.unselectGeometry();
     }

@@ -1,10 +1,15 @@
-import { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geocoding";
-
-import { nextGeometryId } from "~/core/geometries";
+import { Coordinates, nextGeometryId } from "~/core/geometries";
 import { App } from "~/core/helpers";
 import { MapSource } from "~/map/sources";
 
-type Itinerary = GeocodeFeature[];
+export type Place = {
+  id: string;
+  type: "Feature" | "Coordinates";
+  center: number[];
+  name: string;
+};
+
+type Itinerary = Place[];
 
 type Itineraries = {
   currentItinerary: Itinerary;
@@ -18,16 +23,29 @@ export const itineraries = ({ mutate }: App) => ({
   ...initialState,
 
   updateCurrentItinerary: async (itinerary: Itinerary) => {
-    mutate(({ itineraries, line, editor }) => {
+    mutate(({ itineraries }) => {
       itineraries.currentItinerary = itinerary;
+    });
+  },
 
+  addStep: (coordinates: Coordinates) => {
+    mutate(({ itineraries }) => {
+      itineraries.currentItinerary.push({
+        id: `${coordinates.latitude};${coordinates.longitude}`,
+        type: "Coordinates",
+        center: [coordinates.longitude, coordinates.latitude],
+        name: `${coordinates.latitude.toFixed(7)}, ${coordinates.longitude.toFixed(7)}`,
+      });
+    });
+  },
+
+  displayCurrentItinerary: (points: Coordinates[]) => {
+    mutate(({ line, editor }) => {
       line.currentLine = {
         type: "Line",
         id: nextGeometryId(),
         source: MapSource.Routes,
-        points: itinerary.map((place) => {
-          return { latitude: place.center[1], longitude: place.center[0] };
-        }),
+        points,
         smartPoints: [],
         smartMatching: editor.smartMatching,
         style: {
@@ -37,23 +55,5 @@ export const itineraries = ({ mutate }: App) => ({
         },
       };
     });
-
-    // const { history, line } = get();
-
-    // if (!line.currentLine) {
-    //   return;
-    // }
-
-    // const smartPoints = line.currentLine.smartMatching.enabled
-    //   ? await smartMatch(line.currentLine, line.currentLine.smartMatching.profile as SmartMatchingProfile)
-    //   : [];
-
-    // history.push({
-    //   name: "draw",
-    //   line: {
-    //     ...line.currentLine,
-    //     smartPoints,
-    //   },
-    // });
   },
 });

@@ -1,4 +1,5 @@
 import { SdkConfig } from "@mapbox/mapbox-sdk/lib/classes/mapi-client";
+import MapboxMapDirections from "@mapbox/mapbox-sdk/services/directions";
 import MapboxGeocoding from "@mapbox/mapbox-sdk/services/geocoding";
 import MapboxMapMatching from "@mapbox/mapbox-sdk/services/map-matching";
 
@@ -13,3 +14,5 @@ const config: SdkConfig = {
 export const mapboxGeocoding = MapboxGeocoding(config);
 
 export const mapboxMapMatching = MapboxMapMatching(config);
+
+export const mapboxDirections = MapboxMapDirections(config);

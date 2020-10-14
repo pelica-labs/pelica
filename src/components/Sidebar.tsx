@@ -93,6 +93,9 @@ export const Sidebar: React.FC<Props> = ({ onImage, initialStyles }) => {
             onChange={(places) => {
               app.itineraries.updateCurrentItinerary(places);
             }}
+            onRouteFound={(points) => {
+              app.itineraries.displayCurrentItinerary(points);
+            }}
           />
         </div>
       )}

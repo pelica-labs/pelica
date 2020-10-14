@@ -1,21 +1,23 @@
-import { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geocoding";
-import classnames from "classnames";
+import { GeocodeResponse } from "@mapbox/mapbox-sdk/services/geocoding";
+import classNames from "classnames";
 import * as KeyCode from "keycode-js";
 import React, { useEffect, useRef, useState } from "react";
 
 import { CloseIcon, Icon, SearchIcon } from "~/components/Icon";
+import { Place } from "~/core/itineraries";
 import { useAsyncStorage } from "~/hooks/useAsyncStorage";
 import { mapboxGeocoding } from "~/lib/mapbox";
 
 type Props = {
-  value: GeocodeFeature | null;
-  onChange: (value: GeocodeFeature | null) => void;
+  value: Place | null;
+  onChange: (value: Place | null) => void;
 
   collapsesWhenEmpty?: boolean;
   clearable?: boolean;
   dense?: boolean;
   leftIcon?: Icon | null;
-  excludeRecentSearches?: GeocodeFeature[];
+  placeholder?: string;
+  excludeRecentSearches?: Place[];
 };
 
 const MAX_RECENT_SEARCHES = 5;
@@ -28,17 +30,15 @@ export const PlaceAutocomplete: React.FC<Props> = ({
   dense = false,
   clearable = true,
   leftIcon: LeftIcon = SearchIcon,
+  placeholder,
   excludeRecentSearches = [],
 }) => {
   const input = useRef<HTMLInputElement>(null);
-  const [search, setSearch] = useState(value?.place_name ?? "");
-  const [places, setPlaces] = useState<GeocodeFeature[]>([]);
+  const [search, setSearch] = useState(value?.name ?? "");
+  const [places, setPlaces] = useState<Place[]>([]);
   const [isFocused, setIsFocused] = useState(false);
   const [selectionIndex, setSelectionIndex] = useState(0);
-  const [recentSearches, setRecentSearches] = useAsyncStorage<GeocodeFeature[]>("recentSearches", []);
-
-  const inputHeight = dense ? 8 : 12;
-  const textClass = dense ? "text-sm" : "text-normal";
+  const [recentSearches, setRecentSearches] = useAsyncStorage<Place[]>("recentSearches", []);
 
   const showRecentSearches = !search;
   const results = showRecentSearches
@@ -77,7 +77,17 @@ export const PlaceAutocomplete: React.FC<Props> = ({
       .forwardGeocode({ query: search, mode: "mapbox.places" })
       .send()
       .then((res) => {
-        setPlaces(res.body.features);
+        const places = res.body as GeocodeResponse;
+
+        setPlaces(
+          places.features.map((feature) => {
+            return {
+              ...feature,
+              type: "Feature",
+              name: feature.place_name,
+            };
+          })
+        );
         setSelectionIndex(0);
       });
   }, [search]);
@@ -88,6 +98,10 @@ export const PlaceAutocomplete: React.FC<Props> = ({
   const onFocus = () => {
     setIsFocused(true);
     input.current?.focus();
+
+    if (value?.type === "Coordinates") {
+      input.current?.select();
+    }
   };
 
   const onBlur = (event?: React.FocusEvent | React.KeyboardEvent) => {
@@ -137,11 +151,11 @@ export const PlaceAutocomplete: React.FC<Props> = ({
   /**
    * Handles result selection
    */
-  const onPlaceSelection = (event: React.MouseEvent | React.KeyboardEvent, place: GeocodeFeature) => {
+  const onPlaceSelection = (event: React.MouseEvent | React.KeyboardEvent, place: Place) => {
     event.preventDefault();
     event.stopPropagation();
 
-    setSearch(collapsesWhenEmpty ? place.place_name : "");
+    setSearch(collapsesWhenEmpty ? place.name : "");
     setPlaces([]);
 
     const placeIndexInRecentSearches = recentSearches.findIndex((search) => search.id === place.id);
@@ -176,26 +190,33 @@ export const PlaceAutocomplete: React.FC<Props> = ({
     input.current?.focus();
   };
 
-  const containerClasses = classnames({
-    "group relative bg-gray-900 text-gray-200 shadow flex flex-col transition-all duration-100 ease-in-out cursor-pointer": true,
-    ...(collapsesWhenEmpty && {
-      "w-64 rounded": isFocused || search,
-      "w-12 rounded-full ": !(isFocused || search),
-    }),
-    ...(!collapsesWhenEmpty && {
-      "w-64 rounded": true,
-    }),
-  });
-
   return (
-    <div className={containerClasses} onClick={() => onFocus()}>
+    <div
+      className={classNames({
+        "group relative bg-gray-900 text-gray-200 shadow flex flex-col transition-all duration-100 ease-in-out cursor-pointer": true,
+        ...(collapsesWhenEmpty && {
+          "w-64 rounded": isFocused || search,
+          "w-12 rounded-full ": !(isFocused || search),
+        }),
+        ...(!collapsesWhenEmpty && {
+          "w-64 rounded": true,
+        }),
+      })}
+      onClick={() => onFocus()}
+    >
       {!!LeftIcon && !isFocused && !search.length && (
         <LeftIcon className="absolute left-0 ml-3 mt-3 text-gray-600 w-6 h-6 group-hover:text-orange-500" />
       )}
 
       <input
         ref={input}
-        className={`${textClass} p-2 bg-transparent text-gray-200 w-full outline-none border-2 h-${inputHeight} border-transparent cursor-pointer rounded-sm focus:border-orange-700`}
+        className={classNames({
+          "p-2 bg-transparent text-gray-200 w-full outline-none border-2 border-transparent cursor-pointer rounded-sm focus:border-orange-700 placeholder-opacity-50": true,
+          "text-gray-500 text-xs": value?.type === "Coordinates",
+          "h-8 text-sm": dense && value?.type !== "Coordinates",
+          "h-12": !dense && value?.type !== "Coordinates",
+        })}
+        placeholder={placeholder}
         type="text"
         value={search}
         onBlur={(event) => onBlur(event)}
@@ -214,26 +235,31 @@ export const PlaceAutocomplete: React.FC<Props> = ({
       )}
 
       {isFocused && (
-        <ul className={`absolute left-0 right-0 mt-${inputHeight} flex flex-col text-sm bg-gray-900 z-10`}>
+        <ul
+          className={classNames({
+            "absolute left-0 right-0 flex flex-col text-sm bg-gray-900 z-10": true,
+            "mt-8": dense,
+            "mt-12": !dense,
+          })}
+        >
           {showRecentSearches && recentSearches.length > 0 && (
             <span className="p-2 text-xs text-gray-500 uppercase tracking-wide leading-none">Recent searches</span>
           )}
 
           {results.map((place, index) => {
             const isKeyboardSelected = selectionIndex === index;
-            const linkClasses = classnames({
-              "block px-2 py-2 cursor-pointer border-b border-gray-700 hover:bg-orange-900": true,
-              "bg-orange-900": isKeyboardSelected,
-            });
 
             return (
               <li key={place.id}>
                 <a
-                  className={linkClasses}
+                  className={classNames({
+                    "block px-2 py-2 cursor-pointer border-b border-gray-700 hover:bg-orange-900": true,
+                    "bg-orange-900": isKeyboardSelected,
+                  })}
                   onClick={(event) => onPlaceSelection(event, place)}
                   onMouseEnter={() => onPlaceHover(index)}
                 >
-                  {place.place_name}
+                  {place.name}
                 </a>
               </li>
             );
