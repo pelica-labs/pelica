@@ -96,6 +96,7 @@ export const PlaceAutocomplete: React.FC<Props> = ({
 
     input.current?.blur();
 
+    // @todo - this triggers a react state update warning
     setTimeout(() => {
       setIsFocused(false);
     }, 300);

@@ -1,6 +1,5 @@
-import * as KeyCode from "keycode-js";
 import { throttle } from "lodash";
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 
 import { AspectRatioSelector } from "~/components/AspectRatioSelector";
 import { Button } from "~/components/Button";
@@ -8,11 +7,13 @@ import { ColorPicker } from "~/components/ColorPicker";
 import { TrashIcon } from "~/components/Icon";
 import { IconSelector } from "~/components/IconSelector";
 import { ItineraryInput } from "~/components/ItineraryInput";
+import { MenuButton } from "~/components/MenuButton";
 import { SmartMatchingSelector } from "~/components/SmartMatchingSelector";
 import { StyleSelector } from "~/components/StyleSelector";
 import { Toolbar } from "~/components/Toolbar";
 import { WidthSlider } from "~/components/WidthSlider";
 import { useApp, useStore, useStoreSubscription } from "~/core/app";
+import { useHotkey } from "~/hooks/useHotkey";
 import { SmartMatching } from "~/lib/smartMatching";
 import { theme } from "~/styles/tailwind";
 
@@ -53,42 +54,20 @@ export const Sidebar: React.FC<Props> = ({ onImage }) => {
     }
   );
 
-  /**
-   * Handle shortcuts
-   */
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.metaKey && event.keyCode === KeyCode.KEY_Z) {
-        event.preventDefault();
+  useHotkey({ key: "1", meta: true }, () => {
+    app.editor.setEditorMode("move");
+  });
 
-        if (event.shiftKey) {
-          app.history.redo();
-        } else {
-          app.history.undo();
-        }
-      }
+  useHotkey({ key: "2", meta: true }, () => {
+    app.editor.setEditorMode("draw");
+  });
 
-      if (event.metaKey && event.keyCode === KeyCode.KEY_1) {
-        event.preventDefault();
-        app.editor.setEditorMode("move");
-      }
+  useHotkey({ key: "3", meta: true }, () => {
+    app.editor.setEditorMode("itinerary");
+  });
 
-      if (event.metaKey && event.keyCode === KeyCode.KEY_2) {
-        event.preventDefault();
-        app.editor.setEditorMode("draw");
-      }
-
-      if (event.metaKey && event.keyCode === KeyCode.KEY_3) {
-        event.preventDefault();
-        app.editor.setEditorMode("pin");
-      }
-    };
-
-    window.addEventListener("keydown", onKeyDown, false);
-
-    return () => {
-      window.removeEventListener("keydown", onKeyDown, false);
-    };
+  useHotkey({ key: "4", meta: true }, () => {
+    app.editor.setEditorMode("pin");
   });
 
   return (
@@ -118,6 +97,7 @@ export const Sidebar: React.FC<Props> = ({ onImage }) => {
       <div className="flex flex-col bg-gray-900 text-gray-200 w-32 md:w-48 lg:w-64 h-full overflow-y-auto">
         <div className="flex justify-between items-center px-3 h-8 py-2 bg-gray-800">
           <span className="text-xs uppercase text-gray-300 font-light tracking-wide leading-none">{editor.mode}</span>
+          <MenuButton />
         </div>
 
         {editor.mode === "style" && (

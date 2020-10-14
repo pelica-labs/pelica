@@ -75,4 +75,12 @@ export const history = ({ mutate }: App) => ({
       }
     });
   },
+
+  clear: () => {
+    mutate(({ history, geometries }) => {
+      history.actions = [];
+      history.redoStack = [];
+      geometries.items = [];
+    });
+  },
 });
