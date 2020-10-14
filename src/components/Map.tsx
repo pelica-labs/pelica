@@ -304,16 +304,18 @@ export const Map: React.FC = () => {
         return null;
       }
 
-      const canvasStyle = map.current.getCanvas().style;
+      const containerClasses = map.current.getCanvasContainer().classList;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      containerClasses.remove(...containerClasses.values());
+      containerClasses.add("mapboxgl-canvas-container");
 
       if (draggedGeometryId) {
-        canvasStyle.cursor = "grab";
+        containerClasses.add("grab");
       } else if ((editorMode === "draw" || editorMode === "pin") && hoveredGeometryId !== STOP_DRAWING_CIRCLE_ID) {
-        canvasStyle.cursor = "crosshair";
+        containerClasses.add("crosshair");
       } else if (hoveredGeometryId) {
-        canvasStyle.cursor = "pointer";
-      } else if (editorMode === "select") {
-        canvasStyle.cursor = "default";
+        containerClasses.add("pointer");
       }
     }
   );

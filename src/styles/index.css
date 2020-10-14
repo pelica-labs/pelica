@@ -14,3 +14,5 @@ input[type=number].appearance-none::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
+@import "./cursor.css"

@@ -285,8 +285,6 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     event.originalEvent.stopPropagation();
   };
 
-  canvas.style.cursor = "default";
-
   if (!touchDevice) {
     map.dragPan.disable();
   }
