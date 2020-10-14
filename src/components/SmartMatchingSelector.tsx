@@ -27,7 +27,7 @@ export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange }) => {
 
       {value.enabled && (
         <select
-          className="ml-2 p-1 mt-2 md:mt-0 bg-gray-900 border border-gray-500 hover:border-green-900 text-xs rounded cursor-pointer focus:outline-none"
+          className="ml-2 p-1 mt-2 md:mt-0 bg-gray-900 border border-gray-500 hover:border-orange-900 text-xs rounded cursor-pointer focus:outline-none"
           value={value.profile as string}
           onChange={(event) => {
             onChange({

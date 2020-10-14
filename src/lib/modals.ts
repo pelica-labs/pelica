@@ -19,7 +19,7 @@ export const setupModals = (): void => {
     content: {
       ...Modal.defaultStyles.content,
       backgroundColor: theme.colors.gray[900],
-      borderColor: theme.colors.green[500],
+      borderColor: theme.colors.orange[500],
       padding: theme.padding[3],
       color: theme.colors.gray[200],
     },

@@ -59,13 +59,13 @@ export const MapExport: React.FC<Props> = ({ image, onBack }) => {
           <div className="absolute bottom-0 mb-4 w-full flex justify-center">
             <div className="flex items-center bg-gray-900 rounded-lg shadow py-2 px-6 opacity-75">
               <span className="uppercase text-gray-400 mr-4 block w-full text-sm">Preparing export...</span>
-              <BounceLoader color={theme.colors.green[500]} size={10} />
+              <BounceLoader color={theme.colors.orange[500]} size={10} />
             </div>
           </div>
         )}
       </div>
 
-      <div className="flex flex-col fixed top-0 right-0 m-1 bg-gray-800 p-2 rounded border border-green-700 shadow">
+      <div className="flex flex-col fixed top-0 right-0 m-1 bg-gray-800 p-2 rounded border border-orange-700 shadow">
         <img src="/images/logo.png" />
 
         <Button
@@ -81,7 +81,7 @@ export const MapExport: React.FC<Props> = ({ image, onBack }) => {
         <div className="mt-10 flex flex-col space-y-2">
           {shareFeature && (
             <Button
-              className="bg-green-700 text-gray-200 border border-green-500 hover:border-green-800 text-xs uppercase py-2 justify-center"
+              className="bg-orange-700 text-gray-200 border border-orange-500 hover:border-orange-800 text-xs uppercase py-2 justify-center"
               disabled={!imageUrl}
               onClick={() => {
                 onShare();
@@ -90,14 +90,14 @@ export const MapExport: React.FC<Props> = ({ image, onBack }) => {
               Share
               {!imageUrl && (
                 <div className="ml-4">
-                  <BounceLoader color={theme.colors.green[500]} size={10} />
+                  <BounceLoader color={theme.colors.orange[500]} size={10} />
                 </div>
               )}
             </Button>
           )}
 
           <Button
-            className="bg-green-700 text-gray-200 border border-green-500 hover:border-green-800 text-xs uppercase py-2 justify-center"
+            className="bg-orange-700 text-gray-200 border border-orange-500 hover:border-orange-800 text-xs uppercase py-2 justify-center"
             onClick={() => {
               onDownload();
             }}

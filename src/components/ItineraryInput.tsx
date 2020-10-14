@@ -23,7 +23,7 @@ const getHandleClasses = (places: GeocodeFeature[]) => {
 const getItemClasses = (isDragging: boolean) => {
   return classnames({
     "flex items-center rounded mb-1": true,
-    "bg-green-800": isDragging,
+    "bg-orange-800": isDragging,
   });
 };
 

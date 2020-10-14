@@ -190,12 +190,12 @@ export const PlaceAutocomplete: React.FC<Props> = ({
   return (
     <div className={containerClasses} onClick={() => onFocus()}>
       {!!LeftIcon && !isFocused && !search.length && (
-        <LeftIcon className="absolute left-0 ml-3 mt-3 text-gray-600 w-6 h-6 group-hover:text-green-500" />
+        <LeftIcon className="absolute left-0 ml-3 mt-3 text-gray-600 w-6 h-6 group-hover:text-orange-500" />
       )}
 
       <input
         ref={input}
-        className={`${textClass} p-2 bg-transparent text-gray-200 w-full outline-none border-2 h-${inputHeight} border-transparent cursor-pointer rounded-sm focus:border-green-700`}
+        className={`${textClass} p-2 bg-transparent text-gray-200 w-full outline-none border-2 h-${inputHeight} border-transparent cursor-pointer rounded-sm focus:border-orange-700`}
         type="text"
         value={search}
         onBlur={(event) => onBlur(event)}
@@ -222,8 +222,8 @@ export const PlaceAutocomplete: React.FC<Props> = ({
           {results.map((place, index) => {
             const isKeyboardSelected = selectionIndex === index;
             const linkClasses = classnames({
-              "block px-2 py-2 cursor-pointer border-b border-gray-700 hover:bg-green-900": true,
-              "bg-green-900": isKeyboardSelected,
+              "block px-2 py-2 cursor-pointer border-b border-gray-700 hover:bg-orange-900": true,
+              "bg-orange-900": isKeyboardSelected,
             });
 
             return (

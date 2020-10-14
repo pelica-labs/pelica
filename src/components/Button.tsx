@@ -12,7 +12,7 @@ export const Button: React.FC<Props> = ({
   rounded = true,
   shadow = true,
   active = false,
-  color = "green",
+  color = "orange",
   className,
   ...attributes
 }) => {

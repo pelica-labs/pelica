@@ -29,8 +29,8 @@ export const MenuButton: React.FC = () => {
                 <Menu.Button
                   className={classNames({
                     "inline-flex justify-center w-full text-sm font-medium leading-5 transition duration-150 ease-in-out text-gray-200 rounded-md focus:outline-none p-1": true,
-                    "bg-green-900 rounded": open,
-                    "hover:text-green-600": !open,
+                    "bg-orange-900 rounded": open,
+                    "hover:text-orange-600": !open,
                   })}
                 >
                   <MenuIcon className="w-4 h-4" />
@@ -48,8 +48,8 @@ export const MenuButton: React.FC = () => {
                         <a
                           className={classNames({
                             "flex items-center justify-between px-2 py-1": true,
-                            "bg-green-900": active,
-                            "hover:bg-green-900 cursor-pointer": !disabled,
+                            "bg-orange-900": active,
+                            "hover:bg-orange-900 cursor-pointer": !disabled,
                             "text-gray-600": disabled,
                           })}
                           onClick={() => {
@@ -70,8 +70,8 @@ export const MenuButton: React.FC = () => {
                         <a
                           className={classNames({
                             "flex items-center justify-between px-2 py-1": true,
-                            "bg-green-900": active,
-                            "hover:bg-green-900 cursor-pointer": !disabled,
+                            "bg-orange-900": active,
+                            "hover:bg-orange-900 cursor-pointer": !disabled,
                             "text-gray-600": disabled,
                           })}
                           onClick={() => {
@@ -92,8 +92,8 @@ export const MenuButton: React.FC = () => {
                         <a
                           className={classNames({
                             "flex items-center justify-between px-2 py-1": true,
-                            "bg-green-900": active,
-                            "hover:bg-green-900 cursor-pointer": !disabled,
+                            "bg-orange-900": active,
+                            "hover:bg-orange-900 cursor-pointer": !disabled,
                             "text-gray-600": disabled,
                           })}
                           onClick={() => {
@@ -115,8 +115,8 @@ export const MenuButton: React.FC = () => {
                         <Link href="/">
                           <a
                             className={classNames({
-                              "text-gray-200 text-sm px-2 py-1 hover:bg-green-900": true,
-                              "bg-green-900": active,
+                              "text-gray-200 text-sm px-2 py-1 hover:bg-orange-900": true,
+                              "bg-orange-900": active,
                             })}
                           >
                             About Pelica
@@ -130,8 +130,8 @@ export const MenuButton: React.FC = () => {
                         <Link href="mailto:hey@pelica.co">
                           <a
                             className={classNames({
-                              "text-gray-200 text-sm px-2 py-1 hover:bg-green-900": true,
-                              "bg-green-900": active,
+                              "text-gray-200 text-sm px-2 py-1 hover:bg-orange-900": true,
+                              "bg-orange-900": active,
                             })}
                           >
                             Contact us

@@ -8,7 +8,7 @@ export const applyLayers = (map: mapboxgl.Map): void => {
     source: MapSource.Overlays,
     interactive: false,
     paint: {
-      "fill-color": theme.colors.green[500],
+      "fill-color": theme.colors.orange[500],
       "fill-opacity": 0.1,
     },
   });
@@ -22,9 +22,9 @@ export const applyLayers = (map: mapboxgl.Map): void => {
     paint: {
       "circle-radius": 10,
       "circle-opacity": 0.1,
-      "circle-stroke-color": theme.colors.green[500],
+      "circle-stroke-color": theme.colors.orange[500],
       "circle-stroke-width": 1,
-      "circle-color": theme.colors.green[500],
+      "circle-color": theme.colors.orange[500],
     },
   });
 
@@ -34,7 +34,7 @@ export const applyLayers = (map: mapboxgl.Map): void => {
     source: MapSource.Overlays,
     interactive: false,
     paint: {
-      "line-color": theme.colors.green[500],
+      "line-color": theme.colors.orange[500],
       "line-width": 1,
     },
   });

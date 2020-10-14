@@ -21,7 +21,7 @@ export const WidthSlider: React.FC<Props> = ({ min, max, value, onChange, onChan
   return (
     <Slider
       handleStyle={{
-        backgroundColor: theme.colors.green[500],
+        backgroundColor: theme.colors.orange[600],
         borderColor: theme.colors.gray[200],
         height: 14,
         width: 14,
@@ -32,7 +32,7 @@ export const WidthSlider: React.FC<Props> = ({ min, max, value, onChange, onChan
         height: 4,
         backgroundColor: theme.colors.gray[200],
       }}
-      trackStyle={{ backgroundColor: theme.colors.green[500], height: 4 }}
+      trackStyle={{ backgroundColor: theme.colors.orange[600], height: 4 }}
       value={width}
       onAfterChange={(value) => {
         onChangeComplete(value);

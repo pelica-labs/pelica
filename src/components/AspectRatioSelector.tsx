@@ -17,6 +17,7 @@ export const AspectRatioSelector: React.FC<Props> = ({ value, onChange }) => {
             key={ratio}
             active={value === ratio}
             className="rounded-none"
+            rounded={false}
             onClick={() => {
               onChange(ratio);
             }}
