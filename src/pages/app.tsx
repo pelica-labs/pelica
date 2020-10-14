@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { MapEditor } from "~/components/MapEditor";
 import { MapExport } from "~/components/MapExport";
 import { Style } from "~/lib/style";
-import { getBaseUrl } from "~/lib/url";
+import { fetchStyles } from "~/pages/api/styles";
 
 type Props = {
   initialStyles: Style[];
@@ -13,9 +13,7 @@ type Props = {
 export const getStaticProps: GetStaticProps<Props> = async () => {
   return {
     props: {
-      initialStyles: await fetch(`${getBaseUrl()}/api/styles`)
-        .then((res) => res.json())
-        .then((res) => res.styles),
+      initialStyles: await fetchStyles(),
     },
     revalidate: 3600,
   };
