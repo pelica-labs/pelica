@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "tsc && eslint . --ext ts,tsx,js,json",
-    "test": "cypress run --browser firefox"
+    "test": "cypress run"
   },
   "dependencies": {
     "@headlessui/react": "^0.2.0",
