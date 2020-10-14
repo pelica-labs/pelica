@@ -581,7 +581,7 @@ module.exports = {
       "default": "default",
       "pointer": "pointer",
       "wait": "wait",
-      "move": "move",
+      "select": "select",
       "not-allowed": "not-allowed",
     },
     width: {

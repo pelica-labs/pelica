@@ -166,7 +166,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     const { editor } = getState();
     clickLayer();
 
-    if (editor.mode !== "move") {
+    if (editor.mode !== "select") {
       return;
     }
 
@@ -182,14 +182,14 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
       return;
     }
 
-    app.editor.setEditorMode("move");
+    app.editor.setEditorMode("select");
     app.selection.selectGeometry(event.features[0]);
   };
 
   const onFeatureMouseDown = (event: MapLayerMouseEvent | MapLayerTouchEvent) => {
     const { editor } = getState();
 
-    if (editor.mode !== "move") {
+    if (editor.mode !== "select") {
       return;
     }
 

@@ -10,7 +10,7 @@ export type Editor = {
   aspectRatio: AspectRatio;
 };
 
-export type EditorMode = "style" | "move" | "draw" | "itinerary" | "pin" | "aspectRatio" | "export";
+export type EditorMode = "style" | "select" | "draw" | "itinerary" | "pin" | "aspectRatio" | "export";
 
 const initiaState: Editor = {
   mode: "style",
@@ -44,7 +44,7 @@ export const editor = ({ mutate, get }: App) => ({
     mutate(({ editor, selection, line }) => {
       editor.mode = mode;
 
-      if (editor.mode !== "move") {
+      if (editor.mode !== "select") {
         selection.selectedGeometryId = null;
       }
 

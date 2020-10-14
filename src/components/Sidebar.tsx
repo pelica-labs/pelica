@@ -55,7 +55,7 @@ export const Sidebar: React.FC<Props> = ({ onImage }) => {
   );
 
   useHotkey({ key: "1", meta: true }, () => {
-    app.editor.setEditorMode("move");
+    app.editor.setEditorMode("select");
   });
 
   useHotkey({ key: "2", meta: true }, () => {
@@ -109,7 +109,7 @@ export const Sidebar: React.FC<Props> = ({ onImage }) => {
           />
         )}
 
-        {editor.mode === "move" && <MoveSidebar />}
+        {editor.mode === "select" && <MoveSidebar />}
 
         {editor.mode === "pin" && <PinSidebar />}
 

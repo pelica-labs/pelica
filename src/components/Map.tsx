@@ -312,7 +312,7 @@ export const Map: React.FC = () => {
         canvasStyle.cursor = "crosshair";
       } else if (hoveredGeometryId) {
         canvasStyle.cursor = "pointer";
-      } else if (editorMode === "move") {
+      } else if (editorMode === "select") {
         canvasStyle.cursor = "default";
       }
     }
