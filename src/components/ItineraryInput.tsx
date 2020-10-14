@@ -132,6 +132,7 @@ export const ItineraryInput: React.FC<Props> = ({ value, onChange, onRouteFound 
     const directions = res.body as DirectionsResponse;
 
     if (!directions.routes.length) {
+      setHasErrored(true);
       return [];
     }
 
