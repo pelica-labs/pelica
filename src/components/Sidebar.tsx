@@ -303,7 +303,7 @@ const PinSidebar: React.FC = () => {
         </div>
       </div>
 
-      <div className="mt-4 px-3 pb-3 mb-2 border-b border-gray-700">
+      <div className="mt-2 px-3 pb-3 mb-2 border-b border-gray-700">
         <div className="flex items-center">
           <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Width</span>
           <div className="ml-2 flex justify-center items-center w-3 h-3 rounded-full">
@@ -325,7 +325,7 @@ const PinSidebar: React.FC = () => {
         </div>
       </div>
 
-      <div className="mt-2 px-3 pb-2 mb-2 border-b border-gray-700">
+      <div className="px-3 pb-2 mb-2 border-b border-gray-700">
         <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Icon</span>
 
         <div className="mt-2">
@@ -368,7 +368,7 @@ const DrawSidebar: React.FC = () => {
         </div>
       </div>
 
-      <div className="mt-4 px-3 pb-3 mb-2 border-b border-gray-700">
+      <div className="mt-2 px-3 pb-3 mb-2 border-b border-gray-700">
         <div className="flex items-center">
           <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Width</span>
           <div className="ml-2 flex justify-center items-center w-3 h-3 rounded-full">
@@ -390,7 +390,7 @@ const DrawSidebar: React.FC = () => {
         </div>
       </div>
 
-      <div className="mt-2 px-3 pb-2 mb-2 border-b border-gray-700">
+      <div className="px-3 pb-2 mb-2 border-b border-gray-700">
         <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Routes</span>
 
         <div className="mt-2">
@@ -454,7 +454,7 @@ const ItinerarySidebar: React.FC = () => {
         </div>
       </div>
 
-      <div className="mt-4 px-3 pb-3 mb-2 border-b border-gray-700">
+      <div className="mt-2 px-3 pb-3 mb-2 border-b border-gray-700">
         <div className="flex items-center">
           <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Width</span>
           <div className="ml-2 flex justify-center items-center w-3 h-3 rounded-full">
@@ -476,7 +476,7 @@ const ItinerarySidebar: React.FC = () => {
         </div>
       </div>
 
-      <div className="mt-2 px-3 pb-2 mb-2 border-b border-gray-700">
+      <div className="px-3 pb-2 mb-2 border-b border-gray-700">
         <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Routes</span>
 
         <div className="mt-2">
