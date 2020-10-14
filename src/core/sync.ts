@@ -16,6 +16,12 @@ export const sync = ({ mutate, get }: App) => ({
   saveState: async () => {
     const state = JSON.parse(JSON.stringify(get()));
 
+    if (process.env.NODE_ENV === "development") {
+      Object.assign(window, {
+        pelica: { state },
+      });
+    }
+
     await asyncStorage.setItem("state", state);
   },
 });

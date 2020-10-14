@@ -1,0 +1,1285 @@
+exports[`Map editor > loads the map #0`] =
+{
+  "dragAndDrop": {
+    "dragMoved": false,
+    "draggedGeometryId": null,
+    "hoveredGeometryId": null,
+    "hoveredGeometrySource": null,
+    "hoveringAction": false
+  },
+  "editor": {
+    "aspectRatio": "fill",
+    "mode": "style",
+    "smartMatching": {
+      "enabled": false,
+      "profile": null
+    },
+    "style": {
+      "id": "ckfy50y250eq019qwbenxy5b0",
+      "name": "Default",
+      "owner": "bstnfrmry"
+    }
+  },
+  "export": {},
+  "geometries": {
+    "items": []
+  },
+  "history": {
+    "actions": [],
+    "redoStack": []
+  },
+  "import": {},
+  "itineraries": {
+    "currentItinerary": []
+  },
+  "keyboard": {
+    "altKey": false,
+    "ctrlKey": false,
+    "metaKey": false,
+    "shiftKey": false
+  },
+  "line": {
+    "color": "#f56565",
+    "currentLine": null,
+    "drawing": false,
+    "outlineColor": "#ac1515",
+    "outlineWidth": 1,
+    "width": 3
+  },
+  "mapView": {
+    "bearing": 0,
+    "bounds": [
+      {
+        "latitude": 49.213142137605985,
+        "longitude": 1.7095217046853293
+      },
+      {
+        "latitude": 48.49752839316753,
+        "longitude": 2.9949220953106988
+      }
+    ],
+    "coordinates": {
+      "latitude": 48.856614,
+      "longitude": 2.3522219
+    },
+    "features": [
+      {
+        "center": [
+          2.352222,
+          48.856614
+        ],
+        "context": [
+          {
+            "id": "neighborhood.10168999216602850",
+            "text": "Saint-Merri",
+            "wikidata": "Q3413122"
+          },
+          {
+            "id": "postcode.11392507906176320",
+            "text": "75004"
+          },
+          {
+            "id": "locality.11392507907718660",
+            "text": "4th arrondissement of Paris",
+            "wikidata": "Q230127"
+          },
+          {
+            "id": "place.14749210607497330",
+            "short_code": "FR-75",
+            "text": "Paris",
+            "wikidata": "Q90"
+          },
+          {
+            "id": "country.19008108158641660",
+            "short_code": "fr",
+            "text": "France",
+            "wikidata": "Q142"
+          }
+        ],
+        "geometry": {
+          "coordinates": [
+            2.352222,
+            48.856614
+          ],
+          "type": "Point"
+        },
+        "id": "poi.8590014793",
+        "place_name": "French Flair, Paris, 75004, France",
+        "place_type": [
+          "poi"
+        ],
+        "properties": {
+          "category": "shop, baby",
+          "foursquare": "5a4b619d911fc41c77fe6cbc",
+          "landmark": true
+        },
+        "relevance": 1,
+        "text": "French Flair",
+        "type": "Feature"
+      },
+      {
+        "bbox": [
+          2.34680264211375,
+          48.8546671891465,
+          2.35686231490314,
+          48.8619911907752
+        ],
+        "center": [
+          2.35127,
+          48.8588
+        ],
+        "context": [
+          {
+            "id": "postcode.11392507906176320",
+            "text": "75004"
+          },
+          {
+            "id": "locality.11392507907718660",
+            "text": "4th arrondissement of Paris",
+            "wikidata": "Q230127"
+          },
+          {
+            "id": "place.14749210607497330",
+            "short_code": "FR-75",
+            "text": "Paris",
+            "wikidata": "Q90"
+          },
+          {
+            "id": "country.19008108158641660",
+            "short_code": "fr",
+            "text": "France",
+            "wikidata": "Q142"
+          }
+        ],
+        "geometry": {
+          "coordinates": [
+            2.35127,
+            48.8588
+          ],
+          "type": "Point"
+        },
+        "id": "neighborhood.10168999216602850",
+        "place_name": "Saint-Merri, 75004, 4th arrondissement of Paris, Paris, France",
+        "place_type": [
+          "neighborhood"
+        ],
+        "properties": {
+          "wikidata": "Q3413122"
+        },
+        "relevance": 1,
+        "text": "Saint-Merri",
+        "type": "Feature"
+      },
+      {
+        "bbox": [
+          2.344758,
+          48.845944,
+          2.369166,
+          48.861963
+        ],
+        "center": [
+          2.35,
+          48.86
+        ],
+        "context": [
+          {
+            "id": "locality.11392507907718660",
+            "text": "4th arrondissement of Paris",
+            "wikidata": "Q230127"
+          },
+          {
+            "id": "place.14749210607497330",
+            "short_code": "FR-75",
+            "text": "Paris",
+            "wikidata": "Q90"
+          },
+          {
+            "id": "country.19008108158641660",
+            "short_code": "fr",
+            "text": "France",
+            "wikidata": "Q142"
+          }
+        ],
+        "geometry": {
+          "coordinates": [
+            2.35,
+            48.86
+          ],
+          "type": "Point"
+        },
+        "id": "postcode.11392507906176320",
+        "place_name": "75004, Paris, France",
+        "place_type": [
+          "postcode"
+        ],
+        "properties": {},
+        "relevance": 1,
+        "text": "75004",
+        "type": "Feature"
+      },
+      {
+        "bbox": [
+          2.344758,
+          48.845944,
+          2.369166,
+          48.861963
+        ],
+        "center": [
+          2.35556,
+          48.85556
+        ],
+        "context": [
+          {
+            "id": "place.14749210607497330",
+            "short_code": "FR-75",
+            "text": "Paris",
+            "wikidata": "Q90"
+          },
+          {
+            "id": "country.19008108158641660",
+            "short_code": "fr",
+            "text": "France",
+            "wikidata": "Q142"
+          }
+        ],
+        "geometry": {
+          "coordinates": [
+            2.35556,
+            48.85556
+          ],
+          "type": "Point"
+        },
+        "id": "locality.11392507907718660",
+        "place_name": "4th arrondissement of Paris, Paris, France",
+        "place_type": [
+          "locality"
+        ],
+        "properties": {
+          "wikidata": "Q230127"
+        },
+        "relevance": 1,
+        "text": "4th arrondissement of Paris",
+        "type": "Feature"
+      },
+      {
+        "bbox": [
+          2.22422400085346,
+          48.8156060108013,
+          2.46976999462145,
+          48.9020129995121
+        ],
+        "center": [
+          2.35183,
+          48.85658
+        ],
+        "context": [
+          {
+            "id": "country.19008108158641660",
+            "short_code": "fr",
+            "text": "France",
+            "wikidata": "Q142"
+          }
+        ],
+        "geometry": {
+          "coordinates": [
+            2.35183,
+            48.85658
+          ],
+          "type": "Point"
+        },
+        "id": "place.14749210607497330",
+        "place_name": "Paris, France",
+        "place_type": [
+          "region",
+          "place"
+        ],
+        "properties": {
+          "short_code": "FR-75",
+          "wikidata": "Q90"
+        },
+        "relevance": 1,
+        "text": "Paris",
+        "type": "Feature"
+      },
+      {
+        "bbox": [
+          -5.24227249992918,
+          41.3108229,
+          9.66015649291518,
+          51.148409399929
+        ],
+        "center": [
+          2.61878695312962,
+          47.8249046208979
+        ],
+        "geometry": {
+          "coordinates": [
+            2.61878695312962,
+            47.8249046208979
+          ],
+          "type": "Point"
+        },
+        "id": "country.19008108158641660",
+        "place_name": "France",
+        "place_type": [
+          "country"
+        ],
+        "properties": {
+          "short_code": "fr",
+          "wikidata": "Q142"
+        },
+        "relevance": 1,
+        "text": "France",
+        "type": "Feature"
+      }
+    ],
+    "pitch": 0,
+    "place": null,
+    "zoom": 9
+  },
+  "pin": {
+    "color": "#ecc94b",
+    "icon": "fire",
+    "width": 6
+  },
+  "screen": {
+    "dimensions": {
+      "height": 800,
+      "width": 1200
+    }
+  },
+  "selection": {
+    "selectedGeometryId": null
+  },
+  "sync": {}
+};
+
+exports[`Map editor > allows placing pins #0`] =
+{
+  "dragAndDrop": {
+    "dragMoved": false,
+    "draggedGeometryId": null,
+    "hoveredGeometryId": null,
+    "hoveredGeometrySource": null,
+    "hoveringAction": false
+  },
+  "editor": {
+    "aspectRatio": "fill",
+    "mode": "pin",
+    "smartMatching": {
+      "enabled": false,
+      "profile": null
+    },
+    "style": {
+      "id": "ckfy50y250eq019qwbenxy5b0",
+      "name": "Default",
+      "owner": "bstnfrmry"
+    }
+  },
+  "export": {},
+  "geometries": {
+    "items": [
+      {
+        "coordinates": {
+          "latitude": 49.12335090719563,
+          "longitude": 1.8468508062485114
+        },
+        "id": 1,
+        "source": "pins",
+        "style": {
+          "color": "#ecc94b",
+          "icon": "fire",
+          "width": 6
+        },
+        "type": "Point"
+      },
+      {
+        "coordinates": {
+          "latitude": 49.0333968004216,
+          "longitude": 1.8468508062485114
+        },
+        "id": 2,
+        "source": "pins",
+        "style": {
+          "color": "#ecc94b",
+          "icon": "fire",
+          "width": 6
+        },
+        "type": "Point"
+      }
+    ]
+  },
+  "history": {
+    "actions": [
+      {
+        "name": "pin",
+        "point": {
+          "coordinates": {
+            "latitude": 49.12335090719563,
+            "longitude": 1.8468508062485114
+          },
+          "id": 1,
+          "source": "pins",
+          "style": {
+            "color": "#ecc94b",
+            "icon": "fire",
+            "width": 6
+          },
+          "type": "Point"
+        }
+      },
+      {
+        "name": "pin",
+        "point": {
+          "coordinates": {
+            "latitude": 49.0333968004216,
+            "longitude": 1.8468508062485114
+          },
+          "id": 2,
+          "source": "pins",
+          "style": {
+            "color": "#ecc94b",
+            "icon": "fire",
+            "width": 6
+          },
+          "type": "Point"
+        }
+      }
+    ],
+    "redoStack": []
+  },
+  "import": {},
+  "itineraries": {
+    "currentItinerary": []
+  },
+  "keyboard": {},
+  "line": {
+    "color": "#f56565",
+    "currentLine": null,
+    "drawing": false,
+    "outlineColor": "#ac1515",
+    "outlineWidth": 1,
+    "width": 3
+  },
+  "mapView": {
+    "bearing": 0,
+    "bounds": [
+      {
+        "latitude": 49.213142137605985,
+        "longitude": 1.7095217046853293
+      },
+      {
+        "latitude": 48.49752839316753,
+        "longitude": 2.9949220953106988
+      }
+    ],
+    "coordinates": {
+      "latitude": 48.856614,
+      "longitude": 2.3522219
+    },
+    "features": [
+      {
+        "center": [
+          2.352222,
+          48.856614
+        ],
+        "context": [
+          {
+            "id": "neighborhood.10168999216602850",
+            "text": "Saint-Merri",
+            "wikidata": "Q3413122"
+          },
+          {
+            "id": "postcode.11392507906176320",
+            "text": "75004"
+          },
+          {
+            "id": "locality.11392507907718660",
+            "text": "4th arrondissement of Paris",
+            "wikidata": "Q230127"
+          },
+          {
+            "id": "place.14749210607497330",
+            "short_code": "FR-75",
+            "text": "Paris",
+            "wikidata": "Q90"
+          },
+          {
+            "id": "country.19008108158641660",
+            "short_code": "fr",
+            "text": "France",
+            "wikidata": "Q142"
+          }
+        ],
+        "geometry": {
+          "coordinates": [
+            2.352222,
+            48.856614
+          ],
+          "type": "Point"
+        },
+        "id": "poi.8590014793",
+        "place_name": "French Flair, Paris, 75004, France",
+        "place_type": [
+          "poi"
+        ],
+        "properties": {
+          "category": "shop, baby",
+          "foursquare": "5a4b619d911fc41c77fe6cbc",
+          "landmark": true
+        },
+        "relevance": 1,
+        "text": "French Flair",
+        "type": "Feature"
+      },
+      {
+        "bbox": [
+          2.34680264211375,
+          48.8546671891465,
+          2.35686231490314,
+          48.8619911907752
+        ],
+        "center": [
+          2.35127,
+          48.8588
+        ],
+        "context": [
+          {
+            "id": "postcode.11392507906176320",
+            "text": "75004"
+          },
+          {
+            "id": "locality.11392507907718660",
+            "text": "4th arrondissement of Paris",
+            "wikidata": "Q230127"
+          },
+          {
+            "id": "place.14749210607497330",
+            "short_code": "FR-75",
+            "text": "Paris",
+            "wikidata": "Q90"
+          },
+          {
+            "id": "country.19008108158641660",
+            "short_code": "fr",
+            "text": "France",
+            "wikidata": "Q142"
+          }
+        ],
+        "geometry": {
+          "coordinates": [
+            2.35127,
+            48.8588
+          ],
+          "type": "Point"
+        },
+        "id": "neighborhood.10168999216602850",
+        "place_name": "Saint-Merri, 75004, 4th arrondissement of Paris, Paris, France",
+        "place_type": [
+          "neighborhood"
+        ],
+        "properties": {
+          "wikidata": "Q3413122"
+        },
+        "relevance": 1,
+        "text": "Saint-Merri",
+        "type": "Feature"
+      },
+      {
+        "bbox": [
+          2.344758,
+          48.845944,
+          2.369166,
+          48.861963
+        ],
+        "center": [
+          2.35,
+          48.86
+        ],
+        "context": [
+          {
+            "id": "locality.11392507907718660",
+            "text": "4th arrondissement of Paris",
+            "wikidata": "Q230127"
+          },
+          {
+            "id": "place.14749210607497330",
+            "short_code": "FR-75",
+            "text": "Paris",
+            "wikidata": "Q90"
+          },
+          {
+            "id": "country.19008108158641660",
+            "short_code": "fr",
+            "text": "France",
+            "wikidata": "Q142"
+          }
+        ],
+        "geometry": {
+          "coordinates": [
+            2.35,
+            48.86
+          ],
+          "type": "Point"
+        },
+        "id": "postcode.11392507906176320",
+        "place_name": "75004, Paris, France",
+        "place_type": [
+          "postcode"
+        ],
+        "properties": {},
+        "relevance": 1,
+        "text": "75004",
+        "type": "Feature"
+      },
+      {
+        "bbox": [
+          2.344758,
+          48.845944,
+          2.369166,
+          48.861963
+        ],
+        "center": [
+          2.35556,
+          48.85556
+        ],
+        "context": [
+          {
+            "id": "place.14749210607497330",
+            "short_code": "FR-75",
+            "text": "Paris",
+            "wikidata": "Q90"
+          },
+          {
+            "id": "country.19008108158641660",
+            "short_code": "fr",
+            "text": "France",
+            "wikidata": "Q142"
+          }
+        ],
+        "geometry": {
+          "coordinates": [
+            2.35556,
+            48.85556
+          ],
+          "type": "Point"
+        },
+        "id": "locality.11392507907718660",
+        "place_name": "4th arrondissement of Paris, Paris, France",
+        "place_type": [
+          "locality"
+        ],
+        "properties": {
+          "wikidata": "Q230127"
+        },
+        "relevance": 1,
+        "text": "4th arrondissement of Paris",
+        "type": "Feature"
+      },
+      {
+        "bbox": [
+          2.22422400085346,
+          48.8156060108013,
+          2.46976999462145,
+          48.9020129995121
+        ],
+        "center": [
+          2.35183,
+          48.85658
+        ],
+        "context": [
+          {
+            "id": "country.19008108158641660",
+            "short_code": "fr",
+            "text": "France",
+            "wikidata": "Q142"
+          }
+        ],
+        "geometry": {
+          "coordinates": [
+            2.35183,
+            48.85658
+          ],
+          "type": "Point"
+        },
+        "id": "place.14749210607497330",
+        "place_name": "Paris, France",
+        "place_type": [
+          "region",
+          "place"
+        ],
+        "properties": {
+          "short_code": "FR-75",
+          "wikidata": "Q90"
+        },
+        "relevance": 1,
+        "text": "Paris",
+        "type": "Feature"
+      },
+      {
+        "bbox": [
+          -5.24227249992918,
+          41.3108229,
+          9.66015649291518,
+          51.148409399929
+        ],
+        "center": [
+          2.61878695312962,
+          47.8249046208979
+        ],
+        "geometry": {
+          "coordinates": [
+            2.61878695312962,
+            47.8249046208979
+          ],
+          "type": "Point"
+        },
+        "id": "country.19008108158641660",
+        "place_name": "France",
+        "place_type": [
+          "country"
+        ],
+        "properties": {
+          "short_code": "fr",
+          "wikidata": "Q142"
+        },
+        "relevance": 1,
+        "text": "France",
+        "type": "Feature"
+      }
+    ],
+    "pitch": 0,
+    "place": null,
+    "zoom": 9
+  },
+  "pin": {
+    "color": "#ecc94b",
+    "icon": "fire",
+    "width": 6
+  },
+  "screen": {
+    "dimensions": {
+      "height": 800,
+      "width": 1200
+    }
+  },
+  "selection": {
+    "selectedGeometryId": null
+  },
+  "sync": {}
+};
+
+exports[`Map editor > allows drawing routes #0`] =
+{
+  "dragAndDrop": {
+    "dragMoved": false,
+    "draggedGeometryId": null,
+    "hoveredGeometryId": null,
+    "hoveredGeometrySource": null,
+    "hoveringAction": false
+  },
+  "editor": {
+    "aspectRatio": "fill",
+    "mode": "draw",
+    "smartMatching": {
+      "enabled": false,
+      "profile": null
+    },
+    "style": {
+      "id": "ckfy50y250eq019qwbenxy5b0",
+      "name": "Default",
+      "owner": "bstnfrmry"
+    }
+  },
+  "export": {},
+  "geometries": {
+    "items": [
+      {
+        "id": 1,
+        "points": [
+          {
+            "latitude": 48.94327974396387,
+            "longitude": 2.121509009373426
+          },
+          {
+            "latitude": 48.85299966598066,
+            "longitude": 2.121509009373426
+          },
+          {
+            "latitude": 48.85299966598066,
+            "longitude": 2.258838110935187
+          },
+          {
+            "latitude": 48.76255649611758,
+            "longitude": 2.258838110935187
+          }
+        ],
+        "smartMatching": {
+          "enabled": false,
+          "profile": null
+        },
+        "smartPoints": [],
+        "source": "routes",
+        "style": {
+          "color": "#f56565",
+          "outlineColor": "#ac1515",
+          "width": 3
+        },
+        "type": "Line"
+      }
+    ]
+  },
+  "history": {
+    "actions": [
+      {
+        "line": {
+          "id": 1,
+          "points": [
+            {
+              "latitude": 48.94327974396387,
+              "longitude": 2.121509009373426
+            }
+          ],
+          "smartMatching": {
+            "enabled": false,
+            "profile": null
+          },
+          "smartPoints": [],
+          "source": "routes",
+          "style": {
+            "color": "#f56565",
+            "outlineColor": "#ac1515",
+            "width": 3
+          },
+          "type": "Line"
+        },
+        "name": "draw",
+        "previousLength": 0
+      },
+      {
+        "line": {
+          "id": 1,
+          "points": [
+            {
+              "latitude": 48.94327974396387,
+              "longitude": 2.121509009373426
+            },
+            {
+              "latitude": 48.85299966598066,
+              "longitude": 2.121509009373426
+            }
+          ],
+          "smartMatching": {
+            "enabled": false,
+            "profile": null
+          },
+          "smartPoints": [],
+          "source": "routes",
+          "style": {
+            "color": "#f56565",
+            "outlineColor": "#ac1515",
+            "width": 3
+          },
+          "type": "Line"
+        },
+        "name": "draw",
+        "previousLength": 1
+      },
+      {
+        "line": {
+          "id": 1,
+          "points": [
+            {
+              "latitude": 48.94327974396387,
+              "longitude": 2.121509009373426
+            },
+            {
+              "latitude": 48.85299966598066,
+              "longitude": 2.121509009373426
+            },
+            {
+              "latitude": 48.85299966598066,
+              "longitude": 2.258838110935187
+            }
+          ],
+          "smartMatching": {
+            "enabled": false,
+            "profile": null
+          },
+          "smartPoints": [],
+          "source": "routes",
+          "style": {
+            "color": "#f56565",
+            "outlineColor": "#ac1515",
+            "width": 3
+          },
+          "type": "Line"
+        },
+        "name": "draw",
+        "previousLength": 2
+      },
+      {
+        "line": {
+          "id": 1,
+          "points": [
+            {
+              "latitude": 48.94327974396387,
+              "longitude": 2.121509009373426
+            },
+            {
+              "latitude": 48.85299966598066,
+              "longitude": 2.121509009373426
+            },
+            {
+              "latitude": 48.85299966598066,
+              "longitude": 2.258838110935187
+            },
+            {
+              "latitude": 48.76255649611758,
+              "longitude": 2.258838110935187
+            }
+          ],
+          "smartMatching": {
+            "enabled": false,
+            "profile": null
+          },
+          "smartPoints": [],
+          "source": "routes",
+          "style": {
+            "color": "#f56565",
+            "outlineColor": "#ac1515",
+            "width": 3
+          },
+          "type": "Line"
+        },
+        "name": "draw",
+        "previousLength": 3
+      }
+    ],
+    "redoStack": []
+  },
+  "import": {},
+  "itineraries": {
+    "currentItinerary": []
+  },
+  "keyboard": {
+    "altKey": false,
+    "ctrlKey": false,
+    "metaKey": false,
+    "shiftKey": false
+  },
+  "line": {
+    "color": "#f56565",
+    "currentLine": null,
+    "drawing": false,
+    "outlineColor": "#ac1515",
+    "outlineWidth": 1,
+    "width": 3
+  },
+  "mapView": {
+    "bearing": 0,
+    "bounds": [
+      {
+        "latitude": 49.213142137605985,
+        "longitude": 1.7095217046853293
+      },
+      {
+        "latitude": 48.49752839316753,
+        "longitude": 2.9949220953106988
+      }
+    ],
+    "coordinates": {
+      "latitude": 48.856614,
+      "longitude": 2.3522219
+    },
+    "features": [
+      {
+        "center": [
+          2.352222,
+          48.856614
+        ],
+        "context": [
+          {
+            "id": "neighborhood.10168999216602850",
+            "text": "Saint-Merri",
+            "wikidata": "Q3413122"
+          },
+          {
+            "id": "postcode.11392507906176320",
+            "text": "75004"
+          },
+          {
+            "id": "locality.11392507907718660",
+            "text": "4th arrondissement of Paris",
+            "wikidata": "Q230127"
+          },
+          {
+            "id": "place.14749210607497330",
+            "short_code": "FR-75",
+            "text": "Paris",
+            "wikidata": "Q90"
+          },
+          {
+            "id": "country.19008108158641660",
+            "short_code": "fr",
+            "text": "France",
+            "wikidata": "Q142"
+          }
+        ],
+        "geometry": {
+          "coordinates": [
+            2.352222,
+            48.856614
+          ],
+          "type": "Point"
+        },
+        "id": "poi.8590014793",
+        "place_name": "French Flair, Paris, 75004, France",
+        "place_type": [
+          "poi"
+        ],
+        "properties": {
+          "category": "shop, baby",
+          "foursquare": "5a4b619d911fc41c77fe6cbc",
+          "landmark": true
+        },
+        "relevance": 1,
+        "text": "French Flair",
+        "type": "Feature"
+      },
+      {
+        "bbox": [
+          2.34680264211375,
+          48.8546671891465,
+          2.35686231490314,
+          48.8619911907752
+        ],
+        "center": [
+          2.35127,
+          48.8588
+        ],
+        "context": [
+          {
+            "id": "postcode.11392507906176320",
+            "text": "75004"
+          },
+          {
+            "id": "locality.11392507907718660",
+            "text": "4th arrondissement of Paris",
+            "wikidata": "Q230127"
+          },
+          {
+            "id": "place.14749210607497330",
+            "short_code": "FR-75",
+            "text": "Paris",
+            "wikidata": "Q90"
+          },
+          {
+            "id": "country.19008108158641660",
+            "short_code": "fr",
+            "text": "France",
+            "wikidata": "Q142"
+          }
+        ],
+        "geometry": {
+          "coordinates": [
+            2.35127,
+            48.8588
+          ],
+          "type": "Point"
+        },
+        "id": "neighborhood.10168999216602850",
+        "place_name": "Saint-Merri, 75004, 4th arrondissement of Paris, Paris, France",
+        "place_type": [
+          "neighborhood"
+        ],
+        "properties": {
+          "wikidata": "Q3413122"
+        },
+        "relevance": 1,
+        "text": "Saint-Merri",
+        "type": "Feature"
+      },
+      {
+        "bbox": [
+          2.344758,
+          48.845944,
+          2.369166,
+          48.861963
+        ],
+        "center": [
+          2.35,
+          48.86
+        ],
+        "context": [
+          {
+            "id": "locality.11392507907718660",
+            "text": "4th arrondissement of Paris",
+            "wikidata": "Q230127"
+          },
+          {
+            "id": "place.14749210607497330",
+            "short_code": "FR-75",
+            "text": "Paris",
+            "wikidata": "Q90"
+          },
+          {
+            "id": "country.19008108158641660",
+            "short_code": "fr",
+            "text": "France",
+            "wikidata": "Q142"
+          }
+        ],
+        "geometry": {
+          "coordinates": [
+            2.35,
+            48.86
+          ],
+          "type": "Point"
+        },
+        "id": "postcode.11392507906176320",
+        "place_name": "75004, Paris, France",
+        "place_type": [
+          "postcode"
+        ],
+        "properties": {},
+        "relevance": 1,
+        "text": "75004",
+        "type": "Feature"
+      },
+      {
+        "bbox": [
+          2.344758,
+          48.845944,
+          2.369166,
+          48.861963
+        ],
+        "center": [
+          2.35556,
+          48.85556
+        ],
+        "context": [
+          {
+            "id": "place.14749210607497330",
+            "short_code": "FR-75",
+            "text": "Paris",
+            "wikidata": "Q90"
+          },
+          {
+            "id": "country.19008108158641660",
+            "short_code": "fr",
+            "text": "France",
+            "wikidata": "Q142"
+          }
+        ],
+        "geometry": {
+          "coordinates": [
+            2.35556,
+            48.85556
+          ],
+          "type": "Point"
+        },
+        "id": "locality.11392507907718660",
+        "place_name": "4th arrondissement of Paris, Paris, France",
+        "place_type": [
+          "locality"
+        ],
+        "properties": {
+          "wikidata": "Q230127"
+        },
+        "relevance": 1,
+        "text": "4th arrondissement of Paris",
+        "type": "Feature"
+      },
+      {
+        "bbox": [
+          2.22422400085346,
+          48.8156060108013,
+          2.46976999462145,
+          48.9020129995121
+        ],
+        "center": [
+          2.35183,
+          48.85658
+        ],
+        "context": [
+          {
+            "id": "country.19008108158641660",
+            "short_code": "fr",
+            "text": "France",
+            "wikidata": "Q142"
+          }
+        ],
+        "geometry": {
+          "coordinates": [
+            2.35183,
+            48.85658
+          ],
+          "type": "Point"
+        },
+        "id": "place.14749210607497330",
+        "place_name": "Paris, France",
+        "place_type": [
+          "region",
+          "place"
+        ],
+        "properties": {
+          "short_code": "FR-75",
+          "wikidata": "Q90"
+        },
+        "relevance": 1,
+        "text": "Paris",
+        "type": "Feature"
+      },
+      {
+        "bbox": [
+          -5.24227249992918,
+          41.3108229,
+          9.66015649291518,
+          51.148409399929
+        ],
+        "center": [
+          2.61878695312962,
+          47.8249046208979
+        ],
+        "geometry": {
+          "coordinates": [
+            2.61878695312962,
+            47.8249046208979
+          ],
+          "type": "Point"
+        },
+        "id": "country.19008108158641660",
+        "place_name": "France",
+        "place_type": [
+          "country"
+        ],
+        "properties": {
+          "short_code": "fr",
+          "wikidata": "Q142"
+        },
+        "relevance": 1,
+        "text": "France",
+        "type": "Feature"
+      }
+    ],
+    "pitch": 0,
+    "place": null,
+    "zoom": 9
+  },
+  "pin": {
+    "color": "#ecc94b",
+    "icon": "fire",
+    "width": 6
+  },
+  "screen": {
+    "dimensions": {
+      "height": 800,
+      "width": 1200
+    }
+  },
+  "selection": {
+    "selectedGeometryId": null
+  },
+  "sync": {}
+};

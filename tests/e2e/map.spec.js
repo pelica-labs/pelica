@@ -6,7 +6,10 @@ describe("Map editor", () => {
   it("loads the map", () => {
     cy.get("#map canvas.loaded");
 
-    cy.wait(1000).get("#map canvas").toMatchImageSnapshot();
+    cy.wait(1000);
+
+    cy.window().its("pelica.state").toMatchSnapshot();
+    cy.get("body").toMatchImageSnapshot();
   });
 
   it("allows placing pins", () => {
@@ -14,9 +17,12 @@ describe("Map editor", () => {
 
     cy.get("#toolbar-pin").click();
     cy.get("canvas").trigger("click", 100, 100);
+    cy.wait(100);
     cy.get("canvas").trigger("click", 100, 200);
 
-    cy.wait(1000).get("#map canvas").toMatchImageSnapshot();
+    cy.wait(2000);
+    cy.window().its("pelica.state").toMatchSnapshot();
+    cy.get("body").toMatchImageSnapshot();
   });
 
   it("allows drawing routes", () => {
@@ -29,6 +35,8 @@ describe("Map editor", () => {
     cy.get("canvas").trigger("mousedown", 400, 500).trigger("mouseup");
     cy.contains("right here").click();
 
-    cy.wait(1000).get("#map canvas").toMatchImageSnapshot();
+    cy.wait(1000);
+    cy.window().its("pelica.state").toMatchSnapshot();
+    cy.get("body").toMatchImageSnapshot();
   });
 });
