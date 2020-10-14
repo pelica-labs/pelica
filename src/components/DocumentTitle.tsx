@@ -1,10 +1,12 @@
 import { BBox, bboxPolygon, booleanWithin } from "@turf/turf";
 import Head from "next/head";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { useStore } from "~/core/app";
 
 export const DocumentTitle: React.FC = () => {
+  const { t } = useTranslation();
   const mapBounds = useStore((store) => store.mapView.bounds);
   const features = useStore((store) => store.mapView.features);
 
@@ -28,7 +30,7 @@ export const DocumentTitle: React.FC = () => {
       );
     });
 
-  const title = ["Pelica", feature?.place_name].filter((text) => !!text).join(" · ");
+  const title = [t("pelica"), feature?.place_name].filter((text) => !!text).join(" · ");
 
   return (
     <Head>
