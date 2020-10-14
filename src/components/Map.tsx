@@ -52,6 +52,8 @@ export const Map: React.FC = () => {
     });
 
     map.current.on("load", async ({ target: map }) => {
+      map.getCanvas().classList.add("loaded");
+
       map.resize();
 
       applySources(map);
@@ -64,7 +66,7 @@ export const Map: React.FC = () => {
 
       map.getCanvas().style.outline = "none";
 
-      map.on("styledata", () => {
+      map.on("styledata", (d) => {
         applySources(map);
         applyLayers(map);
         applyGeometries(map, geometries.items);
@@ -327,7 +329,7 @@ export const Map: React.FC = () => {
       </Head>
       <DocumentTitle />
       <div ref={container} className="flex justify-center items-center w-full h-full p-1 bg-gray-700">
-        <div ref={wrapper} className="w-full h-full shadow" />
+        <div ref={wrapper} className="w-full h-full shadow" id="map" />
       </div>
     </>
   );

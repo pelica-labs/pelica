@@ -1,0 +1,26 @@
+{
+  "baseUrl": "http://localhost:3000",
+  "viewportWidth": 1200,
+  "viewportHeight": 800,
+
+  "ignoreTestFiles": [
+    "**/__snapshots__/*",
+    "**/__image_snapshots__/*"
+  ],
+
+  "env": {
+    "cypress-plugin-snapshots": {
+      "autoCleanUp": true,
+      "imageConfig": {
+        "threshold": 0.001
+      }
+    }
+  },
+
+  "fixturesFolder": false,
+  "integrationFolder": "tests/e2e",
+  "pluginsFile": "tests/plugins/index.js",
+  "screenshotsFolder": "tests/screenshots",
+  "supportFile": "tests/support/index.js",
+  "videosFolder": "tests/videos"
+}

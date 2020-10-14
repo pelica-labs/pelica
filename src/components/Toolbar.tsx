@@ -26,6 +26,7 @@ export const Toolbar: React.FC<Props> = ({ onImage }) => {
         <Button
           active={editorMode === "style"}
           className="bg-gray-900 text-gray-200 py-2 flex-1 justify-center border border-gray-700"
+          id="toolbar-style"
           onClick={() => {
             app.editor.setEditorMode("style");
           }}
@@ -38,6 +39,7 @@ export const Toolbar: React.FC<Props> = ({ onImage }) => {
         <Button
           active={editorMode === "select"}
           className="bg-gray-900 text-gray-200 py-2 flex-1 justify-center border border-gray-700"
+          id="toolbar-select"
           onClick={() => {
             app.editor.setEditorMode("select");
           }}
@@ -48,6 +50,7 @@ export const Toolbar: React.FC<Props> = ({ onImage }) => {
         <Button
           active={editorMode === "draw"}
           className="bg-gray-900 text-gray-200 py-2 flex-1 justify-center border border-gray-700"
+          id="toolbar-draw"
           onClick={() => {
             app.editor.setEditorMode("draw");
           }}
@@ -58,6 +61,7 @@ export const Toolbar: React.FC<Props> = ({ onImage }) => {
         <Button
           active={editorMode === "itinerary"}
           className="bg-gray-900 text-gray-200 py-2 flex-1 justify-center border border-gray-700"
+          id="toolbar-itinerary"
           onClick={() => {
             app.editor.setEditorMode("itinerary");
           }}
@@ -68,6 +72,7 @@ export const Toolbar: React.FC<Props> = ({ onImage }) => {
         <Button
           active={editorMode === "pin"}
           className="bg-gray-900 text-gray-200 py-2 flex-1 justify-center border border-gray-700"
+          id="toolbar-pin"
           onClick={() => {
             app.editor.setEditorMode("pin");
           }}
@@ -80,6 +85,7 @@ export const Toolbar: React.FC<Props> = ({ onImage }) => {
         <Button
           active={editorMode === "aspectRatio"}
           className="bg-gray-900 text-gray-200 py-2 flex-1 justify-center border border-gray-700"
+          id="toolbar-aspect-ratio"
           onClick={() => {
             app.editor.setEditorMode("aspectRatio");
           }}
@@ -90,6 +96,7 @@ export const Toolbar: React.FC<Props> = ({ onImage }) => {
         <Button
           active={editorMode === "export"}
           className="bg-gray-900 text-gray-200 py-2 flex-1 justify-center border border-gray-700"
+          id="toolbar-export"
           onClick={() => {
             app.editor.setEditorMode("export");
 
