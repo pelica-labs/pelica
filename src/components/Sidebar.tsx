@@ -15,6 +15,7 @@ import { WidthSlider } from "~/components/WidthSlider";
 import { useApp, useStore, useStoreSubscription } from "~/core/app";
 import { useHotkey } from "~/hooks/useHotkey";
 import { SmartMatching } from "~/lib/smartMatching";
+import { Style } from "~/lib/style";
 import { theme } from "~/styles/tailwind";
 
 const computePanelOffset = (screenWidth: number) => {
@@ -30,10 +31,12 @@ const computePanelOffset = (screenWidth: number) => {
 };
 
 type Props = {
+  initialStyles: Style[];
+
   onImage: (image: string) => void;
 };
 
-export const Sidebar: React.FC<Props> = ({ onImage }) => {
+export const Sidebar: React.FC<Props> = ({ onImage, initialStyles }) => {
   const app = useApp();
   const itineraryContainer = useRef<HTMLDivElement>(null);
   const editor = useStore((store) => store.editor);
@@ -102,6 +105,7 @@ export const Sidebar: React.FC<Props> = ({ onImage }) => {
 
         {editor.mode === "style" && (
           <StyleSelector
+            initialStyles={initialStyles}
             value={editor.style}
             onChange={(style) => {
               app.editor.setStyle(style);

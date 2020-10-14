@@ -6,7 +6,7 @@ import useSWR from "swr";
 import { StylePreview } from "~/components/StylePreview";
 import { getState } from "~/core/app";
 import { staticImage } from "~/lib/staticImages";
-import { defaultStyle, Style } from "~/lib/style";
+import { Style } from "~/lib/style";
 
 type StylesResponse = {
   styles: Style[];
@@ -15,14 +15,16 @@ type StylesResponse = {
 type Props = {
   value: Style;
   onChange: (value: Style) => void;
+
+  initialStyles: Style[];
 };
 
-export const StyleSelector: React.FC<Props> = ({ value, onChange }) => {
+export const StyleSelector: React.FC<Props> = ({ value, onChange, initialStyles }) => {
   const [previews, setPreviews] = useState<Record<string, string>>({});
   const { data } = useSWR<StylesResponse>("/api/styles", {
     revalidateOnMount: true,
     initialData: {
-      styles: [defaultStyle],
+      styles: initialStyles,
     },
   });
 
