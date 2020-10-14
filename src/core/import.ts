@@ -1,7 +1,7 @@
 import { nextGeometryId } from "~/core/geometries";
 import { App } from "~/core/helpers";
 import { parseGpx } from "~/lib/gpx";
-import { MapSource } from "~/lib/sources";
+import { MapSource } from "~/map/sources";
 
 export const imports = ({ get }: App) => ({
   importGpx: (file: File) => {

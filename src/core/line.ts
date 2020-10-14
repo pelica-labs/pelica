@@ -4,7 +4,7 @@ import { nextGeometryId, PolyLine } from "~/core/geometries";
 import { App } from "~/core/helpers";
 import { outlineColor } from "~/lib/color";
 import { smartMatch, SmartMatching, SmartMatchingProfile } from "~/lib/smartMatching";
-import { MapSource } from "~/lib/sources";
+import { MapSource } from "~/map/sources";
 import { theme } from "~/styles/tailwind";
 
 export type Line = {

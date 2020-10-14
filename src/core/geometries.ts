@@ -2,7 +2,7 @@ import { GeoJSONSource } from "mapbox-gl";
 
 import { App } from "~/core/helpers";
 import { SmartMatching } from "~/lib/smartMatching";
-import { MapSource } from "~/lib/sources";
+import { MapSource } from "~/map/sources";
 
 export type Geometries = {
   items: Geometry[];

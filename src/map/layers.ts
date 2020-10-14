@@ -1,4 +1,4 @@
-import { MapSource } from "~/lib/sources";
+import { MapSource } from "~/map/sources";
 import { theme } from "~/styles/tailwind";
 
 export const applyLayers = (map: mapboxgl.Map): void => {

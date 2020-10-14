@@ -1,5 +1,5 @@
 import { bbox, lineString, transformScale } from "@turf/turf";
-import { debounce, last } from "lodash";
+import { debounce } from "lodash";
 import mapboxgl, { LngLatBoundsLike } from "mapbox-gl";
 import Head from "next/head";
 import React, { useEffect, useRef } from "react";
@@ -10,11 +10,11 @@ import { applyGeometries } from "~/core/geometries";
 import { STOP_DRAWING_CIRCLE_ID } from "~/core/line";
 import { computeMapDimensions } from "~/lib/aspectRatio";
 import { getEnv } from "~/lib/config";
-import { applyImageMissingHandler } from "~/lib/imageMissing";
-import { applyInteractions } from "~/lib/interactions";
-import { applyLayers } from "~/lib/layers";
-import { applySources, MapSource } from "~/lib/sources";
 import { styleToUrl } from "~/lib/style";
+import { applyImageMissingHandler } from "~/map/imageMissing";
+import { applyInteractions } from "~/map/interactions";
+import { applyLayers } from "~/map/layers";
+import { applySources, MapSource } from "~/map/sources";
 
 export const Map: React.FC = () => {
   const app = useApp();

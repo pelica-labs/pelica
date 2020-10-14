@@ -2,8 +2,7 @@ import { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geocoding";
 
 import { nextGeometryId } from "~/core/geometries";
 import { App } from "~/core/helpers";
-import { smartMatch, SmartMatchingProfile } from "~/lib/smartMatching";
-import { MapSource } from "~/lib/sources";
+import { MapSource } from "~/map/sources";
 
 type Itinerary = GeocodeFeature[];
 
@@ -15,7 +14,7 @@ const initialState: Itineraries = {
   currentItinerary: [],
 };
 
-export const itineraries = ({ mutate, get }: App) => ({
+export const itineraries = ({ mutate }: App) => ({
   ...initialState,
 
   updateCurrentItinerary: async (itinerary: Itinerary) => {

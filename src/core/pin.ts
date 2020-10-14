@@ -2,7 +2,7 @@ import { MercatorCoordinate } from "mapbox-gl";
 
 import { Coordinates, nextGeometryId, Point, Position } from "~/core/geometries";
 import { App } from "~/core/helpers";
-import { MapSource } from "~/lib/sources";
+import { MapSource } from "~/map/sources";
 import { theme } from "~/styles/tailwind";
 
 export type Pin = {
