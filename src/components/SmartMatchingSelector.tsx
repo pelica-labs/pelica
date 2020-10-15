@@ -50,7 +50,7 @@ export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange }) => {
           tipSize={4}
         >
           <InformationIcon
-            className="w-3 h-3 cursor-pointer"
+            className="ml-2 w-3 h-3 cursor-pointer"
             onMouseEnter={() => {
               setShowTooltip(true);
             }}
