@@ -39,24 +39,40 @@ export const routes = ({ mutate, get }: App) => ({
   setWidth: (width: number) => {
     mutate(({ routes }) => {
       routes.width = width;
+
+      if (routes.currentRoute) {
+        routes.currentRoute.style.width = width;
+      }
     });
   },
 
   setColor: (color: string) => {
     mutate(({ routes }) => {
       routes.color = color;
+
+      if (routes.currentRoute) {
+        routes.currentRoute.style.color = color;
+      }
     });
   },
 
   setOutline: (outline: OutlineType) => {
     mutate(({ routes }) => {
       routes.outline = outline;
+
+      if (routes.currentRoute) {
+        routes.currentRoute.style.outline = outline;
+      }
     });
   },
 
   setSmartMatching: (smartMatching: SmartMatching) => {
     mutate(({ routes }) => {
       routes.smartMatching = smartMatching;
+
+      if (routes.currentRoute) {
+        routes.currentRoute.smartMatching = smartMatching;
+      }
     });
   },
 

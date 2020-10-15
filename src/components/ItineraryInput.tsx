@@ -31,9 +31,9 @@ type ProfileConfiguration = {
 };
 
 const Profiles: ProfileConfiguration[] = [
-  { name: "Walking", icon: WalkingIcon, profile: "walking" },
-  { name: "Cycling", icon: BicycleIcon, profile: "cycling" },
   { name: "Driving", icon: CarIcon, profile: "driving" },
+  { name: "Cycling", icon: BicycleIcon, profile: "cycling" },
+  { name: "Walking", icon: WalkingIcon, profile: "walking" },
   { name: "Direct", icon: HelicopterIcon, profile: "direct" },
 ];
 
@@ -44,7 +44,7 @@ type Props = {
 };
 
 export const ItineraryInput: React.FC<Props> = ({ value, onChange, onRouteFound }) => {
-  const [profile, setProfile] = useState<Profile>("walking");
+  const [profile, setProfile] = useState<Profile>("driving");
   const [isComputing, setIsComputing] = useState(false);
   const [hasErrored, setHasErrored] = useState(false);
 
