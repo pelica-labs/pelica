@@ -38,13 +38,13 @@ export const IconSelector: React.FC<Props> = ({ value, onChange }) => {
       </div>
 
       {showMenu && (
-        <div className="absolute left-0 top-0 mt-6 bg-gray-800 text-white rounded shadow flex flex-wrap pr-1 pb-1 shadow">
+        <div className="absolute left-0 top-0 mt-6 bg-gray-900 text-white rounded border border-orange-500 flex flex-wrap pr-1 pb-1 shadow">
           {Object.entries(allIcons).map(([iconName, Icon]) => {
             return (
               <div key={iconName} className="w-1/5 pl-1 pt-1">
                 <Button
                   active={value === iconName}
-                  className="w-full py-3 bg-gray-900 border border-gray-700"
+                  className="w-full py-3 bg-gray-900 border border-gray-800"
                   onClick={() => {
                     onChange(iconName);
                   }}

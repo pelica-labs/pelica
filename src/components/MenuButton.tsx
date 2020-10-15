@@ -40,7 +40,7 @@ export const MenuButton: React.FC = () => {
               {open && (
                 <Menu.Items
                   static
-                  className="absolute z-10 right-0 w-56 mt-2 origin-top-right bg-gray-900 border border-gray-700 rounded shadow shadow-outline outline-none py-1"
+                  className="absolute z-10 right-0 w-56 mt-1 origin-top-right bg-gray-900 border rounded border-orange-500 outline-none py-1"
                 >
                   <div className="flex flex-col">
                     <Menu.Item disabled={!canUndo}>

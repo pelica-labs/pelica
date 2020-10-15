@@ -53,7 +53,7 @@ export const Sidebar: React.FC<Props> = ({ initialStyles }) => {
     <div ref={sidebarRef} className="flex-grow relative flex items-end">
       {sidebarDimensions && (
         <div
-          className="fixed top-0 flex flex-col bg-gray-800 m-2 p-1 shadow rounded"
+          className="fixed top-0 flex flex-col bg-gray-900 border border-gray-800 m-2 p-1 shadow rounded"
           style={{ right: sidebarDimensions.width }}
         >
           <Toolbar />
