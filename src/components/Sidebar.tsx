@@ -29,7 +29,7 @@ export const Sidebar: React.FC<Props> = ({ initialStyles }) => {
   const app = useApp();
   const editorMode = useStore((store) => store.editor.mode);
   const sidebarRef = useRef<HTMLDivElement>(null);
-  const sidebarDimensions = useDimensions(sidebarRef.current);
+  const sidebarDimensions = useDimensions(sidebarRef);
 
   useHotkey({ key: "1", meta: true }, () => {
     app.editor.setEditorMode("select");

@@ -1,5 +1,5 @@
-import { debounce } from "lodash";
-import { useEffect, useState } from "react";
+import { throttle } from "lodash";
+import { RefObject, useEffect, useState } from "react";
 import ResizeObserver from "resize-observer-polyfill";
 
 export type Dimensions = {
@@ -13,16 +13,16 @@ export type Dimensions = {
   left: number;
 };
 
-export const useDimensions = (element: Element | null, defaultValue: Dimensions | null = null): Dimensions | null => {
+export const useDimensions = (ref: RefObject<Element>, defaultValue: Dimensions | null = null): Dimensions | null => {
   const [dimensions, setDimensions] = useState<Dimensions | null>(defaultValue);
 
   useEffect(() => {
-    if (!element) {
+    if (!ref.current) {
       return;
     }
 
     const observer = new ResizeObserver(
-      debounce((elements: ResizeObserverEntry[]) => {
+      throttle((elements: ResizeObserverEntry[]) => {
         if (!elements.length) {
           return;
         }
@@ -31,10 +31,10 @@ export const useDimensions = (element: Element | null, defaultValue: Dimensions 
       }, 200)
     );
 
-    observer.observe(element);
+    observer.observe(ref.current);
 
     return () => observer.disconnect();
-  }, [element]);
+  }, [ref.current]);
 
   return dimensions;
 };

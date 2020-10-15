@@ -1,4 +1,4 @@
-import React from "react";
+import React, { SVGAttributes } from "react";
 
 export const icons = (): { [key: string]: Icon } => ({
   fire: FireIcon,
@@ -17,7 +17,7 @@ export const icons = (): { [key: string]: Icon } => ({
   palette: PaletteIcon,
 });
 
-type Props = {
+type Props = SVGAttributes<SVGElement> & {
   className?: string;
   color?: string;
   width?: number;
@@ -27,10 +27,10 @@ type Props = {
 export type Icon = React.FC<Props>;
 
 const icon = (path: JSX.Element, size = 24): Icon => {
-  return function Icon({ className, width, height, color = "currentColor" }) {
+  return function Icon({ width, height, color = "currentColor", ...props }) {
     return (
       <svg
-        className={className}
+        {...props}
         fill="none"
         height={height}
         stroke={color}
