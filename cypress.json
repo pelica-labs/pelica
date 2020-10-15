@@ -3,6 +3,11 @@
   "viewportWidth": 1200,
   "viewportHeight": 800,
 
+  "retries": {
+    "runMode": 2,
+    "openMode": 0
+  },
+
   "ignoreTestFiles": [
     "**/__snapshots__/*",
     "**/__image_snapshots__/*"
