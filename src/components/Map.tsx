@@ -225,12 +225,13 @@ export const Map: React.FC = () => {
    */
   useStoreSubscription(
     (store) => ({
+      editorMode: store.editor.mode,
       geometries: store.geometries.items,
       currentLine: store.line.currentLine,
       drawing: store.line.drawing,
       selectedGeometryId: store.selection.selectedGeometryId,
     }),
-    ({ geometries, currentLine, drawing, selectedGeometryId }) => {
+    ({ editorMode, geometries, currentLine, drawing, selectedGeometryId }) => {
       if (!map.current) {
         return;
       }
@@ -254,38 +255,40 @@ export const Map: React.FC = () => {
         }
       }
 
-      const selectedGeometry = geometries.find((geometry) => geometry.id === selectedGeometryId);
+      if (editorMode !== "export") {
+        const selectedGeometry = geometries.find((geometry) => geometry.id === selectedGeometryId);
 
-      if (selectedGeometry?.type === "Line") {
-        const box = bbox(
-          transformScale(
-            lineString(
-              selectedGeometry.points.map((point) => {
-                return [point.longitude, point.latitude];
-              })
-            ),
-            1.05 + 0.01 * selectedGeometry.style.width
-          )
-        );
+        if (selectedGeometry?.type === "Line") {
+          const box = bbox(
+            transformScale(
+              lineString(
+                selectedGeometry.points.map((point) => {
+                  return [point.longitude, point.latitude];
+                })
+              ),
+              1.05 + 0.01 * selectedGeometry.style.width
+            )
+          );
 
-        allGeometries.push({
-          id: -1,
-          type: "Rectangle",
-          source: MapSource.Overlays,
-          box: {
-            northWest: { longitude: box[0], latitude: box[1] },
-            southEast: { longitude: box[2], latitude: box[3] },
-          },
-        });
-      }
+          allGeometries.push({
+            id: -1,
+            type: "Rectangle",
+            source: MapSource.Overlays,
+            box: {
+              northWest: { longitude: box[0], latitude: box[1] },
+              southEast: { longitude: box[2], latitude: box[3] },
+            },
+          });
+        }
 
-      if (selectedGeometry?.type === "Point") {
-        allGeometries.push({
-          id: -1,
-          type: "Circle",
-          source: MapSource.Overlays,
-          coordinates: selectedGeometry.coordinates,
-        });
+        if (selectedGeometry?.type === "Point") {
+          allGeometries.push({
+            id: -1,
+            type: "Circle",
+            source: MapSource.Overlays,
+            coordinates: selectedGeometry.coordinates,
+          });
+        }
       }
 
       applyGeometries(map.current, allGeometries);

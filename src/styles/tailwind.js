@@ -814,7 +814,7 @@ module.exports = {
     borderStyle: ["responsive"],
     borderWidth: ["responsive"],
     cursor: ["responsive"],
-    display: ["responsive"],
+    display: ["responsive", "group-hover"],
     flexDirection: ["responsive"],
     flexWrap: ["responsive"],
     alignItems: ["responsive"],

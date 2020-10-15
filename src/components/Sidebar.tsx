@@ -7,13 +7,12 @@ import { Button } from "~/components/Button";
 import { ColorPicker } from "~/components/ColorPicker";
 import { TrashIcon } from "~/components/Icon";
 import { IconSelector } from "~/components/IconSelector";
-import { ItineraryInput } from "~/components/ItineraryInput";
 import { MenuButton } from "~/components/MenuButton";
 import { SmartMatchingSelector } from "~/components/SmartMatchingSelector";
 import { StyleSelector } from "~/components/StyleSelector";
 import { Toolbar } from "~/components/Toolbar";
 import { WidthSlider } from "~/components/WidthSlider";
-import { useApp, useStore, useStoreSubscription } from "~/core/app";
+import { useApp, useStore } from "~/core/app";
 import { useBrowserFeatures } from "~/hooks/useBrowserFeatures";
 import { useHotkey } from "~/hooks/useHotkey";
 import { dataUrlToBlob } from "~/lib/fileConversion";
@@ -39,24 +38,8 @@ type Props = {
 
 export const Sidebar: React.FC<Props> = ({ initialStyles }) => {
   const app = useApp();
-  const itineraryContainer = useRef<HTMLDivElement>(null);
   const editor = useStore((store) => store.editor);
   const screenWidth = useStore((store) => store.screen.dimensions.width);
-  const currentItinerary = useStore((store) => store.itineraries.currentItinerary);
-
-  /**
-   * Focus itinerary input when switching to mode
-   */
-  useStoreSubscription(
-    (store) => store.editor.mode === "itinerary",
-    (itineraryMode) => {
-      if (itineraryMode) {
-        setTimeout(() => {
-          itineraryContainer.current?.querySelector("input")?.focus();
-        });
-      }
-    }
-  );
 
   useHotkey({ key: "1", meta: true }, () => {
     app.editor.setEditorMode("select");
@@ -82,24 +65,6 @@ export const Sidebar: React.FC<Props> = ({ initialStyles }) => {
       >
         <Toolbar />
       </div>
-
-      {editor.mode === "itinerary" && (
-        <div
-          ref={itineraryContainer}
-          className="fixed top-0 mt-2"
-          style={{ right: computePanelOffset(screenWidth), marginRight: 64 }}
-        >
-          <ItineraryInput
-            value={currentItinerary}
-            onChange={(places) => {
-              app.itineraries.updateCurrentItinerary(places);
-            }}
-            onRouteFound={(points) => {
-              app.itineraries.displayCurrentItinerary(points);
-            }}
-          />
-        </div>
-      )}
 
       <div className="flex flex-col bg-gray-900 text-gray-200 w-32 md:w-48 lg:w-64 h-full overflow-y-auto">
         <div className="flex justify-between items-center px-3 h-8 py-2 bg-gray-800">
@@ -531,28 +496,32 @@ const ExportSidebar: React.FC = () => {
   };
 
   useEffect(() => {
-    const image = app.export.generateImage();
+    const timeout = setTimeout(() => {
+      const image = app.export.generateImage();
 
-    setImage(image);
+      setImage(image);
 
-    const data = new FormData();
-    data.append("image", dataUrlToBlob(image));
+      const data = new FormData();
+      data.append("image", dataUrlToBlob(image));
 
-    fetch("/api/upload-map", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-      },
-      body: data,
-    })
-      .then((res) => res.json())
-      .then((json) => {
-        setImageUrl(json.url);
+      fetch("/api/upload-map", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+        },
+        body: data,
       })
-      .catch((error) => {
-        // @todo handle error
-        console.error(error);
-      });
+        .then((res) => res.json())
+        .then((json) => {
+          setImageUrl(json.url);
+        })
+        .catch((error) => {
+          // @todo handle error
+          console.error(error);
+        });
+    });
+
+    return () => clearTimeout(timeout);
   }, []);
 
   return (

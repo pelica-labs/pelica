@@ -61,7 +61,7 @@ export const GeolocationButton: React.FC<Props> = ({ onChange }) => {
 
   return (
     <Button
-      className="group w-12 h-12 relative bg-gray-900 hover:bg-gray-900 text-gray-200 shadow flex flex-col justify-center transition-all duration-100 ease-in-out cursor-pointer rounded-full"
+      className="group w-12 h-12 relative bg-gray-900 border border-gray-700 hover:bg-gray-900 text-gray-200 shadow flex flex-col justify-center transition-all duration-100 ease-in-out cursor-pointer rounded-full"
       color="none"
       onClick={() => {
         onClick();

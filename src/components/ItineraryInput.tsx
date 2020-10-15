@@ -1,5 +1,5 @@
 import { DirectionsResponse } from "@mapbox/mapbox-sdk/services/directions";
-import classnames from "classnames";
+import classNames from "classnames";
 import React, { useEffect, useRef, useState } from "react";
 import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd";
 import BounceLoader from "react-spinners/BounceLoader";
@@ -21,27 +21,6 @@ import { Coordinates } from "~/core/geometries";
 import { Place } from "~/core/itineraries";
 import { mapboxDirections } from "~/lib/mapbox";
 import { theme } from "~/styles/tailwind";
-
-const getListClasses = (isDragging: boolean) => {
-  return classnames({
-    "p-1 pb-0 rounded": true,
-    "bg-gray-700": isDragging,
-  });
-};
-
-const getHandleClasses = (places: Place[]) => {
-  return classnames({
-    "ml-1 mr-2 text-gray-500": true,
-    "opacity-0": places.length === 1,
-  });
-};
-
-const getItemClasses = (isDragging: boolean) => {
-  return classnames({
-    "flex items-center rounded mb-1": true,
-    "bg-orange-800": isDragging,
-  });
-};
 
 type Profile = "walking" | "driving" | "cycling" | "direct";
 
@@ -197,7 +176,10 @@ export const ItineraryInput: React.FC<Props> = ({ value, onChange, onRouteFound 
         <Droppable droppableId="droppable">
           {(provided, snapshot) => (
             <div
-              className={getListClasses(snapshot.isDraggingOver)}
+              className={classNames({
+                "p-1 pb-0 rounded": true,
+                "bg-gray-700": snapshot.isDraggingOver,
+              })}
               {...provided.droppableProps}
               ref={provided.innerRef}
             >
@@ -207,10 +189,20 @@ export const ItineraryInput: React.FC<Props> = ({ value, onChange, onRouteFound 
                     {(provided, snapshot) => (
                       <div
                         ref={provided.innerRef}
-                        className={getItemClasses(snapshot.isDragging)}
+                        className={classNames({
+                          "relative group flex items-center rounded mb-1": true,
+                          "bg-orange-800": snapshot.isDragging,
+                        })}
                         {...provided.draggableProps}
                       >
-                        <div className={getHandleClasses(value)} {...provided.dragHandleProps} tabIndex={-1}>
+                        <div
+                          className={classNames({
+                            "ml-1 mr-2 text-gray-500": true,
+                            "opacity-0": value.length === 1,
+                          })}
+                          {...provided.dragHandleProps}
+                          tabIndex={-1}
+                        >
                           <DragHandleIcon className="w-4 h-4" />
                         </div>
 
@@ -226,8 +218,9 @@ export const ItineraryInput: React.FC<Props> = ({ value, onChange, onRouteFound 
                             }}
                           />
                         </div>
+
                         <button
-                          className="focus:outline-none"
+                          className="absolute right-0 mr-2 focus:outline-none hidden group-hover:block rounded-full border border-gray-700 bg-gray-900 hover:bg-orange-900 py-1"
                           tabIndex={-1}
                           onClick={() => {
                             onDeletePlace(index);
@@ -246,7 +239,7 @@ export const ItineraryInput: React.FC<Props> = ({ value, onChange, onRouteFound 
         </Droppable>
       </DragDropContext>
 
-      <div ref={newInputContainer} className="flex items-center mr-2">
+      <div ref={newInputContainer} className="flex items-center mr-1">
         <Icon className="mx-2 text-gray-500 w-4 h-4" />
         <PlaceAutocomplete
           dense
@@ -262,8 +255,10 @@ export const ItineraryInput: React.FC<Props> = ({ value, onChange, onRouteFound 
       </div>
 
       {hasErrored && (
-        <span className="mt-2 mb-1 ml-8 text-2xs text-red-500">
-          Unable to compute directions. Route might be too long.
+        <span className="mt-2 mb-1 ml-8 pl-1 text-2xs text-red-500">
+          Unable to compute directions.
+          <br />
+          Route might be too long.
         </span>
       )}
     </div>

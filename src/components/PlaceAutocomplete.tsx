@@ -195,11 +195,11 @@ export const PlaceAutocomplete: React.FC<Props> = ({
       className={classNames({
         "group relative bg-gray-900 text-gray-200 shadow flex flex-col transition-all duration-100 ease-in-out cursor-pointer": true,
         ...(collapsesWhenEmpty && {
-          "w-64 rounded": isFocused || search,
-          "w-12 rounded-full ": !(isFocused || search),
+          "w-56 rounded": isFocused || search,
+          "w-12 rounded-full border border-gray-700": !(isFocused || search),
         }),
         ...(!collapsesWhenEmpty && {
-          "w-64 rounded": true,
+          "w-56 rounded": true,
         }),
       })}
       onClick={() => onFocus()}
@@ -214,7 +214,7 @@ export const PlaceAutocomplete: React.FC<Props> = ({
           "p-2 bg-transparent text-gray-200 w-full outline-none border-2 border-transparent cursor-pointer rounded-sm focus:border-orange-700 placeholder-opacity-50": true,
           "text-gray-500 text-xs": value?.type === "Coordinates",
           "h-8 text-sm": dense && value?.type !== "Coordinates",
-          "h-12": !dense && value?.type !== "Coordinates",
+          "h-12 text-sm": !dense && value?.type !== "Coordinates",
         })}
         placeholder={placeholder}
         type="text"
@@ -253,7 +253,7 @@ export const PlaceAutocomplete: React.FC<Props> = ({
               <li key={place.id}>
                 <a
                   className={classNames({
-                    "block px-2 py-2 cursor-pointer border-b border-gray-700 hover:bg-orange-900": true,
+                    "block px-2 py-2 cursor-pointer border-b border-gray-700 hover:bg-orange-900 text-xs": true,
                     "bg-orange-900": isKeyboardSelected,
                   })}
                   onClick={(event) => onPlaceSelection(event, place)}
