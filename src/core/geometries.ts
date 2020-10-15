@@ -1,7 +1,7 @@
 import { GeoJSONSource } from "mapbox-gl";
 
 import { App } from "~/core/helpers";
-import { OutlineType } from "~/core/routes";
+import { RouteStyle } from "~/core/routes";
 import { outlineColor } from "~/lib/color";
 import { SmartMatching } from "~/lib/smartMatching";
 import { MapSource } from "~/map/sources";
@@ -57,16 +57,8 @@ export type PolyLine = {
   points: Coordinates[];
   smartPoints: Coordinates[];
   smartMatching: SmartMatching;
-  style: {
-    color: string;
-    width: number;
-    outline: OutlineType;
-  };
-  transientStyle?: {
-    color: string;
-    width: number;
-    outline: OutlineType;
-  };
+  style: RouteStyle;
+  transientStyle?: RouteStyle;
 };
 
 export type Point = {

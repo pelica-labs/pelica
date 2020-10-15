@@ -5,36 +5,30 @@ import { App } from "~/core/helpers";
 import { MapSource } from "~/map/sources";
 import { theme } from "~/styles/tailwind";
 
-export type Pins = {
+export type PinStyle = {
   icon: string;
   width: number;
   color: string;
 };
 
+export type Pins = {
+  style: PinStyle;
+};
+
 const initialState: Pins = {
-  icon: "fire",
-  width: 6,
-  color: theme.colors.yellow[500],
+  style: {
+    icon: "fire",
+    width: 6,
+    color: theme.colors.yellow[500],
+  },
 };
 
 export const pins = ({ mutate, get }: App) => ({
   ...initialState,
 
-  setIcon: (icon: string) => {
+  setStyle: (style: Partial<PinStyle>) => {
     mutate(({ pins }) => {
-      pins.icon = icon;
-    });
-  },
-
-  setWidth: (width: number) => {
-    mutate(({ pins }) => {
-      pins.width = width;
-    });
-  },
-
-  setColor: (color: string) => {
-    mutate(({ pins }) => {
-      pins.color = color;
+      Object.assign(pins.style, style);
     });
   },
 
@@ -48,28 +42,25 @@ export const pins = ({ mutate, get }: App) => ({
         id: nextGeometryId(),
         source: MapSource.Pins,
         coordinates: { latitude, longitude },
-        style: {
-          color: pins.color,
-          width: pins.width,
-          icon: pins.icon,
-        },
+        style: pins.style,
       },
     });
   },
 
-  transientUpdateSelectedPin: (icon: string, color: string, width: number) => {
+  transientUpdateSelectedPin: (style: Partial<PinStyle>) => {
     mutate(({ geometries, selection }) => {
       const point = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as Point;
 
-      point.transientStyle = {
-        color: color,
-        width: width,
-      };
+      if (!point.transientStyle) {
+        point.transientStyle = point.style;
+      }
+
+      Object.assign(point.transientStyle, style);
     });
   },
 
-  updateSelectedPin: (icon: string, color: string, width: number) => {
-    const { selection, history } = get();
+  updateSelectedPin: (style: Partial<PinStyle>) => {
+    const { selection, history, geometries } = get();
 
     if (!selection.selectedGeometryId) {
       return;
@@ -81,12 +72,15 @@ export const pins = ({ mutate, get }: App) => ({
       delete point.transientStyle;
     });
 
+    const point = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as Point;
+
     history.push({
       name: "updatePin",
       pinId: selection.selectedGeometryId,
-      icon,
-      color,
-      width,
+      style: {
+        ...point.style,
+        ...style,
+      },
     });
   },
 

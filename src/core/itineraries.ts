@@ -49,11 +49,7 @@ export const itineraries = ({ mutate }: App) => ({
         points,
         smartPoints: [],
         smartMatching: routes.smartMatching,
-        style: {
-          color: routes.color,
-          width: routes.width,
-          outline: routes.outline,
-        },
+        style: routes.style,
       };
     });
   },

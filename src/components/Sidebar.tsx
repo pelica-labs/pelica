@@ -154,20 +154,16 @@ const SelectSidebar: React.FC = () => {
             value={selectedGeometry.style.color}
             onChange={(color) => {
               if (selectedGeometry.type === "Line") {
-                app.routes.transientUpdateSelectedLine(
-                  color,
-                  selectedGeometry.style.width,
-                  selectedGeometry.style.outline
-                );
+                app.routes.transientUpdateSelectedLine({ color });
               } else if (selectedGeometry.type === "Point") {
-                app.pins.transientUpdateSelectedPin(selectedGeometry.style.icon, color, selectedGeometry.style.width);
+                app.pins.transientUpdateSelectedPin({ color });
               }
             }}
             onChangeComplete={(color) => {
               if (selectedGeometry.type === "Line") {
-                app.routes.updateSelectedLine(color, selectedGeometry.style.width, selectedGeometry.style.outline);
+                app.routes.updateSelectedLine({ color });
               } else if (selectedGeometry.type === "Point") {
-                app.pins.updateSelectedPin(selectedGeometry.style.icon, color, selectedGeometry.style.width);
+                app.pins.updateSelectedPin({ color });
               }
             }}
           />
@@ -196,20 +192,16 @@ const SelectSidebar: React.FC = () => {
             value={selectedGeometry.style.width}
             onChange={(width) => {
               if (selectedGeometry.type === "Line") {
-                app.routes.transientUpdateSelectedLine(
-                  selectedGeometry.style.color,
-                  width,
-                  selectedGeometry.style.outline
-                );
+                app.routes.transientUpdateSelectedLine({ width });
               } else if (selectedGeometry.type === "Point") {
-                app.pins.transientUpdateSelectedPin(selectedGeometry.style.icon, selectedGeometry.style.color, width);
+                app.pins.transientUpdateSelectedPin({ width });
               }
             }}
             onChangeComplete={(width) => {
               if (selectedGeometry.type === "Line") {
-                app.routes.updateSelectedLine(selectedGeometry.style.color, width, selectedGeometry.style.outline);
+                app.routes.updateSelectedLine({ width });
               } else if (selectedGeometry.type === "Point") {
-                app.pins.updateSelectedPin(selectedGeometry.style.icon, selectedGeometry.style.color, width);
+                app.pins.updateSelectedPin({ width });
               }
             }}
           />
@@ -225,7 +217,7 @@ const SelectSidebar: React.FC = () => {
             <OutlineSelector
               value={selectedGeometry.style.outline}
               onChange={(outline) => {
-                app.routes.updateSelectedLine(selectedGeometry.style.color, selectedGeometry.style.width, outline);
+                app.routes.updateSelectedLine({ outline });
               }}
             />
           </div>
@@ -240,7 +232,7 @@ const SelectSidebar: React.FC = () => {
             <IconSelector
               value={selectedGeometry.style.icon}
               onChange={(icon) => {
-                app.pins.updateSelectedPin(icon, selectedGeometry.style.color, selectedGeometry.style.width);
+                app.pins.updateSelectedPin({ icon });
               }}
             />
           </div>
@@ -267,9 +259,9 @@ const SelectSidebar: React.FC = () => {
 
 const PinSidebar: React.FC = () => {
   const app = useApp();
-  const color = useStore((store) => store.pins.color);
-  const width = useStore((store) => store.pins.width);
-  const icon = useStore((store) => store.pins.icon);
+  const color = useStore((store) => store.pins.style.color);
+  const width = useStore((store) => store.pins.style.width);
+  const icon = useStore((store) => store.pins.style.icon);
 
   return (
     <>
@@ -282,10 +274,10 @@ const PinSidebar: React.FC = () => {
           <ColorPicker
             value={color}
             onChange={(color) => {
-              app.pins.setColor(color);
+              app.pins.setStyle({ color });
             }}
             onChangeComplete={(color) => {
-              app.pins.setColor(color);
+              app.pins.setStyle({ color });
             }}
           />
         </div>
@@ -305,10 +297,10 @@ const PinSidebar: React.FC = () => {
             min={1}
             value={width}
             onChange={(width) => {
-              app.pins.setWidth(width);
+              app.pins.setStyle({ width });
             }}
             onChangeComplete={(width) => {
-              app.pins.setWidth(width);
+              app.pins.setStyle({ width });
             }}
           />
         </div>
@@ -321,7 +313,7 @@ const PinSidebar: React.FC = () => {
           <IconSelector
             value={icon}
             onChange={(icon) => {
-              app.pins.setIcon(icon);
+              app.pins.setStyle({ icon });
             }}
           />
         </div>
@@ -333,9 +325,9 @@ const PinSidebar: React.FC = () => {
 const DrawSidebar: React.FC = () => {
   const app = useApp();
   const fileInput = useRef<HTMLInputElement>(null);
-  const color = useStore((store) => store.routes.color);
-  const width = useStore((store) => store.routes.width);
-  const outline = useStore((store) => store.routes.outline);
+  const color = useStore((store) => store.routes.style.color);
+  const width = useStore((store) => store.routes.style.width);
+  const outline = useStore((store) => store.routes.style.outline);
   const smartMatching = useStore((store) => store.routes.smartMatching);
 
   return (
@@ -349,10 +341,10 @@ const DrawSidebar: React.FC = () => {
           <ColorPicker
             value={color}
             onChange={(color) => {
-              app.routes.setColor(color);
+              app.routes.setStyle({ color });
             }}
             onChangeComplete={(color) => {
-              app.routes.setColor(color);
+              app.routes.setStyle({ color });
             }}
           />
         </div>
@@ -372,10 +364,10 @@ const DrawSidebar: React.FC = () => {
             min={1}
             value={width}
             onChange={(width) => {
-              app.routes.setWidth(width);
+              app.routes.setStyle({ width });
             }}
             onChangeComplete={(width) => {
-              app.routes.setWidth(width);
+              app.routes.setStyle({ width });
             }}
           />
         </div>
@@ -389,7 +381,7 @@ const DrawSidebar: React.FC = () => {
           <OutlineSelector
             value={outline}
             onChange={(outline) => {
-              app.routes.setOutline(outline);
+              app.routes.setStyle({ outline });
             }}
           />
         </div>
@@ -435,9 +427,9 @@ const DrawSidebar: React.FC = () => {
 
 const ItinerarySidebar: React.FC = () => {
   const app = useApp();
-  const color = useStore((store) => store.routes.color);
-  const width = useStore((store) => store.routes.width);
-  const outline = useStore((store) => store.routes.outline);
+  const color = useStore((store) => store.routes.style.color);
+  const width = useStore((store) => store.routes.style.width);
+  const outline = useStore((store) => store.routes.style.outline);
 
   return (
     <>
@@ -450,10 +442,10 @@ const ItinerarySidebar: React.FC = () => {
           <ColorPicker
             value={color}
             onChange={(color) => {
-              app.routes.setColor(color);
+              app.routes.setStyle({ color });
             }}
             onChangeComplete={(color) => {
-              app.routes.setColor(color);
+              app.routes.setStyle({ color });
             }}
           />
         </div>
@@ -473,10 +465,10 @@ const ItinerarySidebar: React.FC = () => {
             min={1}
             value={width}
             onChange={(width) => {
-              app.routes.setWidth(width);
+              app.routes.setStyle({ width });
             }}
             onChangeComplete={(width) => {
-              app.routes.setWidth(width);
+              app.routes.setStyle({ width });
             }}
           />
         </div>
@@ -490,7 +482,7 @@ const ItinerarySidebar: React.FC = () => {
           <OutlineSelector
             value={outline}
             onChange={(outline) => {
-              app.routes.setOutline(outline);
+              app.routes.setStyle({ outline });
             }}
           />
         </div>

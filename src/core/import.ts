@@ -26,11 +26,7 @@ export const imports = ({ get }: App) => ({
           smartMatching: { enabled: false, profile: null },
           points,
           smartPoints: [],
-          style: {
-            color: routes.color,
-            width: routes.width,
-            outline: routes.outline,
-          },
+          style: routes.style,
         },
       });
 

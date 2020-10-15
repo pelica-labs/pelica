@@ -8,13 +8,17 @@ import { theme } from "~/styles/tailwind";
 
 export type OutlineType = "dark" | "light" | "black" | "none";
 
+export type RouteStyle = {
+  width: number;
+  color: string;
+  outline: OutlineType;
+};
+
 export type Routes = {
   currentRoute: PolyLine | null;
   drawing: boolean;
 
-  width: number;
-  color: string;
-  outline: OutlineType;
+  style: RouteStyle;
   smartMatching: SmartMatching;
 };
 
@@ -22,9 +26,11 @@ const initialState: Routes = {
   currentRoute: null,
   drawing: false,
 
-  width: 3,
-  color: theme.colors.red[500],
-  outline: "dark",
+  style: {
+    width: 3,
+    color: theme.colors.red[500],
+    outline: "dark",
+  },
   smartMatching: {
     enabled: false,
     profile: null,
@@ -36,32 +42,12 @@ export const STOP_DRAWING_CIRCLE_ID = 999999999; // 🙉
 export const routes = ({ mutate, get }: App) => ({
   ...initialState,
 
-  setWidth: (width: number) => {
+  setStyle: (style: Partial<RouteStyle>) => {
     mutate(({ routes }) => {
-      routes.width = width;
+      Object.assign(routes.style, style);
 
       if (routes.currentRoute) {
-        routes.currentRoute.style.width = width;
-      }
-    });
-  },
-
-  setColor: (color: string) => {
-    mutate(({ routes }) => {
-      routes.color = color;
-
-      if (routes.currentRoute) {
-        routes.currentRoute.style.color = color;
-      }
-    });
-  },
-
-  setOutline: (outline: OutlineType) => {
-    mutate(({ routes }) => {
-      routes.outline = outline;
-
-      if (routes.currentRoute) {
-        routes.currentRoute.style.outline = outline;
+        Object.assign(routes.currentRoute.style, style);
       }
     });
   },
@@ -88,11 +74,7 @@ export const routes = ({ mutate, get }: App) => ({
           points: [],
           smartPoints: [],
           smartMatching: routes.smartMatching,
-          style: {
-            color: routes.color,
-            width: routes.width,
-            outline: routes.outline,
-          },
+          style: routes.style,
         };
       }
 
@@ -164,20 +146,20 @@ export const routes = ({ mutate, get }: App) => ({
     });
   },
 
-  transientUpdateSelectedLine: (color: string, width: number, outline: OutlineType) => {
+  transientUpdateSelectedLine: (style: Partial<RouteStyle>) => {
     mutate(({ geometries, selection }) => {
       const line = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as PolyLine;
 
-      line.transientStyle = {
-        color,
-        width,
-        outline,
-      };
+      if (!line.transientStyle) {
+        line.transientStyle = line.style;
+      }
+
+      Object.assign(line.transientStyle, style);
     });
   },
 
-  updateSelectedLine: (color: string, width: number, outline: OutlineType) => {
-    const { selection, history } = get();
+  updateSelectedLine: (style: Partial<RouteStyle>) => {
+    const { selection, history, geometries } = get();
 
     if (!selection.selectedGeometryId) {
       return;
@@ -189,12 +171,15 @@ export const routes = ({ mutate, get }: App) => ({
       delete line.transientStyle;
     });
 
+    const line = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as PolyLine;
+
     history.push({
       name: "updateLine",
       lineId: selection.selectedGeometryId,
-      color,
-      width,
-      outline,
+      style: {
+        ...line.style,
+        ...style,
+      },
     });
   },
 

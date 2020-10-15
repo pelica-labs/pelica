@@ -1,6 +1,7 @@
 import { State } from "~/core/app";
 import { Coordinates, Geometry, Point, PolyLine } from "~/core/geometries";
-import { OutlineType } from "~/core/routes";
+import { PinStyle } from "~/core/pins";
+import { RouteStyle } from "~/core/routes";
 import { SmartMatching } from "~/lib/smartMatching";
 import { Style } from "~/lib/style";
 
@@ -169,15 +170,9 @@ const DeleteGeometryHandler: Handler<DeleteGeometryAction> = {
 type UpdatePinAction = {
   name: "updatePin";
   pinId: number;
-  color: string;
-  width: number;
-  icon: string;
+  style: PinStyle;
 
-  previousStyle?: {
-    color: string;
-    width: number;
-    icon: string;
-  };
+  previousStyle?: PinStyle;
 };
 
 const UpdatePinHandler: Handler<UpdatePinAction> = {
@@ -185,12 +180,7 @@ const UpdatePinHandler: Handler<UpdatePinAction> = {
     const point = geometries.items.find((geometry) => geometry.id === action.pinId) as Point;
 
     action.previousStyle = point.style;
-
-    point.style = {
-      width: action.width,
-      color: action.color,
-      icon: action.icon,
-    };
+    point.style = action.style;
   },
 
   undo: ({ geometries }, action) => {
@@ -205,15 +195,9 @@ const UpdatePinHandler: Handler<UpdatePinAction> = {
 type UpdateLineAction = {
   name: "updateLine";
   lineId: number;
-  color: string;
-  width: number;
-  outline: OutlineType;
+  style: RouteStyle;
 
-  previousStyle?: {
-    color: string;
-    width: number;
-    outline: OutlineType;
-  };
+  previousStyle?: RouteStyle;
 };
 
 const UpdateLineHandler: Handler<UpdateLineAction> = {
@@ -221,12 +205,7 @@ const UpdateLineHandler: Handler<UpdateLineAction> = {
     const line = geometries.items.find((geometry) => geometry.id === action.lineId) as PolyLine;
 
     action.previousStyle = line.style;
-
-    line.style = {
-      width: action.width,
-      color: action.color,
-      outline: action.outline,
-    };
+    line.style = action.style;
   },
 
   undo: ({ geometries }, action) => {
