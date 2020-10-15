@@ -59,6 +59,12 @@ export const ItineraryInput: React.FC<Props> = ({ value, onChange, onRouteFound,
     places.push(place);
 
     onChange(places);
+
+    if (places.length === 1) {
+      setTimeout(() => {
+        newInputContainer.current?.querySelector("input")?.focus();
+      }, 500);
+    }
   };
 
   const onChangePlace = (place: Place, index: number) => {
@@ -152,27 +158,29 @@ export const ItineraryInput: React.FC<Props> = ({ value, onChange, onRouteFound,
   return (
     <div className="flex flex-col bg-gray-800 rounded shadow pb-1 pt-1">
       <div className="flex items-center">
-        <div className="w-8 mr-1 flex justify-center">
+        <div className="w-8 flex mr-px justify-center">
           {isComputing && <BounceLoader color={theme.colors.orange[500]} size={8} />}
         </div>
 
-        {Profiles.map((profileConfiguration) => {
-          return (
-            <div key={profileConfiguration.profile}>
-              <Button
-                outlined
-                active={profile === profileConfiguration.profile}
-                className="text-gray-200"
-                shadow={false}
-                onClick={() => {
-                  setProfile(profileConfiguration.profile);
-                }}
-              >
-                <profileConfiguration.icon className="w-4 h-4" />
-              </Button>
-            </div>
-          );
-        })}
+        <div className="flex items-center bg-gray-900 rounded">
+          {Profiles.map((profileConfiguration) => {
+            return (
+              <div key={profileConfiguration.profile}>
+                <Button
+                  outlined
+                  active={profile === profileConfiguration.profile}
+                  className="text-gray-200"
+                  shadow={false}
+                  onClick={() => {
+                    setProfile(profileConfiguration.profile);
+                  }}
+                >
+                  <profileConfiguration.icon className="w-4 h-4" />
+                </Button>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       <DragDropContext onDragEnd={onMovePlace}>

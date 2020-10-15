@@ -82,7 +82,7 @@ export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange }) => {
       )}
 
       {value.enabled && (
-        <div className="ml-2 flex items-center bg-gray-800 rounded">
+        <div className="ml-2 flex items-center border border-gray-800 rounded">
           {Profiles.map((profileConfiguration) => {
             return (
               <div key={profileConfiguration.profile}>
