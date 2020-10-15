@@ -242,7 +242,7 @@ export const PlaceAutocomplete: React.FC<Props> = ({
             "mt-12": !dense,
           })}
         >
-          {showRecentSearches && recentSearches.length > 0 && (
+          {showRecentSearches && results.length > 0 && (
             <span className="p-2 text-xs text-gray-500 uppercase tracking-wide leading-none">Recent searches</span>
           )}
 
