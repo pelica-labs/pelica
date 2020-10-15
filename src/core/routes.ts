@@ -1,6 +1,6 @@
 import { Feature, MultiLineString, multiLineString, simplify } from "@turf/turf";
 
-import { nextGeometryId, PolyLine } from "~/core/geometries";
+import { Line, nextGeometryId } from "~/core/geometries";
 import { App } from "~/core/helpers";
 import { smartMatch, SmartMatching, SmartMatchingProfile } from "~/lib/smartMatching";
 import { MapSource } from "~/map/sources";
@@ -15,7 +15,7 @@ export type RouteStyle = {
 };
 
 export type Routes = {
-  currentRoute: PolyLine | null;
+  currentRoute: Line | null;
   drawing: boolean;
 
   style: RouteStyle;
@@ -148,7 +148,7 @@ export const routes = ({ mutate, get }: App) => ({
 
   transientUpdateSelectedLine: (style: Partial<RouteStyle>) => {
     mutate(({ geometries, selection }) => {
-      const line = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as PolyLine;
+      const line = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as Line;
 
       if (!line.transientStyle) {
         line.transientStyle = line.style;
@@ -166,12 +166,12 @@ export const routes = ({ mutate, get }: App) => ({
     }
 
     mutate(({ geometries, selection }) => {
-      const line = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as PolyLine;
+      const line = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as Line;
 
       delete line.transientStyle;
     });
 
-    const line = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as PolyLine;
+    const line = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as Line;
 
     history.push({
       name: "updateLine",
@@ -186,9 +186,7 @@ export const routes = ({ mutate, get }: App) => ({
   updateSelectedLineSmartMatching: async (smartMatching: SmartMatching): Promise<void> => {
     const { geometries, selection, history } = get();
 
-    const selectedGeometry = geometries.items.find(
-      (geometry) => geometry.id === selection.selectedGeometryId
-    ) as PolyLine;
+    const selectedGeometry = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as Line;
 
     if (selectedGeometry?.type !== "Line") {
       return;

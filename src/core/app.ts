@@ -18,6 +18,7 @@ import { routes } from "~/core/routes";
 import { screen } from "~/core/screen";
 import { selection } from "~/core/selection";
 import { sync } from "~/core/sync";
+import { units } from "~/core/units";
 
 export type State = {
   screen: ReturnType<typeof screen>;
@@ -35,6 +36,7 @@ export type State = {
   export: ReturnType<typeof exports>;
   import: ReturnType<typeof imports>;
   sync: ReturnType<typeof sync>;
+  units: ReturnType<typeof units>;
 };
 
 const state = (app: App) => {
@@ -54,6 +56,7 @@ const state = (app: App) => {
     export: exports(),
     import: imports(app),
     sync: sync(app),
+    units: units(app),
   };
 };
 

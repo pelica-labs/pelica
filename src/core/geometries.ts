@@ -1,3 +1,4 @@
+import { distance } from "@turf/turf";
 import { GeoJSONSource } from "mapbox-gl";
 
 import { App } from "~/core/helpers";
@@ -48,9 +49,9 @@ export type BoundingBox = {
   southEast: Coordinates;
 };
 
-export type Geometry = PolyLine | Point | Circle | Rectangle | Polygon;
+export type Geometry = Line | Point | Circle | Rectangle | Polygon;
 
-export type PolyLine = {
+export type Line = {
   id: number;
   source: MapSource;
   type: "Line";
@@ -59,6 +60,22 @@ export type PolyLine = {
   smartMatching: SmartMatching;
   style: RouteStyle;
   transientStyle?: RouteStyle;
+};
+
+export const computeDistance = (line: Line): number => {
+  if (line.points.length < 2) {
+    return 0;
+  }
+
+  let total = 0;
+  for (let i = 1; i < line.points.length; i += 1) {
+    const from = [line.points[i - 1].longitude, line.points[i - 1].latitude];
+    const to = [line.points[i].longitude, line.points[i].latitude];
+
+    total += distance(from, to);
+  }
+
+  return total;
 };
 
 export type Point = {

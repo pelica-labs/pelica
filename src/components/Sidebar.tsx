@@ -5,6 +5,7 @@ import BounceLoader from "react-spinners/BounceLoader";
 import { AspectRatioSelector } from "~/components/AspectRatioSelector";
 import { Button } from "~/components/Button";
 import { ColorPicker } from "~/components/ColorPicker";
+import { Distance } from "~/components/Distance";
 import { TrashIcon } from "~/components/Icon";
 import { IconSelector } from "~/components/IconSelector";
 import { MenuButton } from "~/components/MenuButton";
@@ -14,6 +15,7 @@ import { StyleSelector } from "~/components/StyleSelector";
 import { Toolbar } from "~/components/Toolbar";
 import { WidthSlider } from "~/components/WidthSlider";
 import { useApp, useStore } from "~/core/app";
+import { computeDistance } from "~/core/geometries";
 import { useBrowserFeatures } from "~/hooks/useBrowserFeatures";
 import { useDimensions } from "~/hooks/useDimensions";
 import { useHotkey } from "~/hooks/useHotkey";
@@ -253,6 +255,19 @@ const SelectSidebar: React.FC = () => {
           </div>
         </div>
       )}
+
+      {selectedGeometry.type === "Line" && (
+        <div className="mt-auto px-3 py-2 border-t border-gray-700">
+          <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Inspect</span>
+
+          <div className="mt-2">
+            <div className="flex items-center text-xs">
+              <span className="mr-4">Distance</span>
+              <Distance value={computeDistance(selectedGeometry)} />
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
@@ -325,6 +340,7 @@ const PinSidebar: React.FC = () => {
 const DrawSidebar: React.FC = () => {
   const app = useApp();
   const fileInput = useRef<HTMLInputElement>(null);
+  const currentRoute = useStore((store) => store.routes.currentRoute);
   const color = useStore((store) => store.routes.style.color);
   const width = useStore((store) => store.routes.style.width);
   const outline = useStore((store) => store.routes.style.outline);
@@ -421,12 +437,26 @@ const DrawSidebar: React.FC = () => {
           <span className="text-xs">GPX</span>
         </Button>
       </div>
+
+      {currentRoute && (
+        <div className="mt-auto px-3 py-2 border-t border-gray-700">
+          <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Inspect</span>
+
+          <div className="mt-2">
+            <div className="flex items-center text-xs">
+              <span className="mr-4">Distance</span>
+              <Distance value={computeDistance(currentRoute)} />
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
 
 const ItinerarySidebar: React.FC = () => {
   const app = useApp();
+  const currentRoute = useStore((store) => store.routes.currentRoute);
   const color = useStore((store) => store.routes.style.color);
   const width = useStore((store) => store.routes.style.width);
   const outline = useStore((store) => store.routes.style.outline);
@@ -487,6 +517,19 @@ const ItinerarySidebar: React.FC = () => {
           />
         </div>
       </div>
+
+      {currentRoute && (
+        <div className="mt-auto px-3 py-2 mb-1 border-t border-gray-700">
+          <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Inspect</span>
+
+          <div className="mt-2">
+            <div className="flex items-center text-xs">
+              <span className="mr-4">Distance</span>
+              <Distance value={computeDistance(currentRoute)} />
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
@@ -540,7 +583,7 @@ const ExportSidebar: React.FC = () => {
           setImageUrl(json.url);
         })
         .catch((error) => {
-          // @todo handle error
+          // @todo: handle error
           console.error(error);
         });
     }, 200);

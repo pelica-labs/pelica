@@ -1,5 +1,5 @@
 import { State } from "~/core/app";
-import { Coordinates, Geometry, Point, PolyLine } from "~/core/geometries";
+import { Coordinates, Geometry, Line, Point } from "~/core/geometries";
 import { PinStyle } from "~/core/pins";
 import { RouteStyle } from "~/core/routes";
 import { SmartMatching } from "~/lib/smartMatching";
@@ -25,7 +25,7 @@ export type Action =
 
 type DrawAction = {
   name: "draw";
-  line: PolyLine;
+  line: Line;
   previousLength?: number;
 };
 
@@ -39,7 +39,7 @@ const DrawHandler: Handler<DrawAction> = {
       action.previousLength = 0;
       geometries.items.push(action.line);
     } else {
-      action.previousLength = (geometries.items[lineIndex] as PolyLine).points.length;
+      action.previousLength = (geometries.items[lineIndex] as Line).points.length;
       geometries.items[lineIndex] = routes.currentRoute;
     }
   },
@@ -52,7 +52,7 @@ const DrawHandler: Handler<DrawAction> = {
     }
 
     routes.currentRoute.points = routes.currentRoute.points.slice(0, action.previousLength);
-    const savedLine = geometries.items[lineIndex] as PolyLine;
+    const savedLine = geometries.items[lineIndex] as Line;
     savedLine.points = savedLine.points.slice(0, action.previousLength);
 
     if (action.previousLength === 0) {
@@ -83,7 +83,7 @@ const PinHandler: Handler<PinAction> = {
 
 type ImportGpxAction = {
   name: "importGpx";
-  line: PolyLine;
+  line: Line;
 };
 
 const ImportGpxHandler: Handler<ImportGpxAction> = {
@@ -202,14 +202,14 @@ type UpdateLineAction = {
 
 const UpdateLineHandler: Handler<UpdateLineAction> = {
   apply: ({ geometries }, action) => {
-    const line = geometries.items.find((geometry) => geometry.id === action.lineId) as PolyLine;
+    const line = geometries.items.find((geometry) => geometry.id === action.lineId) as Line;
 
     action.previousStyle = line.style;
     line.style = action.style;
   },
 
   undo: ({ geometries }, action) => {
-    const line = geometries.items.find((geometry) => geometry.id === action.lineId) as PolyLine;
+    const line = geometries.items.find((geometry) => geometry.id === action.lineId) as Line;
 
     line.style = action.previousStyle;
   },
@@ -231,7 +231,7 @@ type UpdateLineSmartMatchingAction = {
 
 const UpdateLineSmartMatchingHandler: Handler<UpdateLineSmartMatchingAction> = {
   apply: ({ geometries }, action) => {
-    const line = geometries.items.find((geometry) => geometry.id === action.lineId) as PolyLine;
+    const line = geometries.items.find((geometry) => geometry.id === action.lineId) as Line;
 
     action.previousState = {
       smartPoints: action.smartPoints,
@@ -243,7 +243,7 @@ const UpdateLineSmartMatchingHandler: Handler<UpdateLineSmartMatchingAction> = {
   },
 
   undo: ({ geometries }, action) => {
-    const line = geometries.items.find((geometry) => geometry.id === action.lineId) as PolyLine;
+    const line = geometries.items.find((geometry) => geometry.id === action.lineId) as Line;
 
     line.smartMatching = action.previousState.smartMatching;
     line.smartPoints = action.previousState.smartPoints;
