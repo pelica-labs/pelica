@@ -543,7 +543,7 @@ const ExportSidebar: React.FC = () => {
           // @todo handle error
           console.error(error);
         });
-    });
+    }, 200);
 
     return () => clearTimeout(timeout);
   }, []);
