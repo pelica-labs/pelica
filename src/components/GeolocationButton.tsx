@@ -36,6 +36,9 @@ export const GeolocationButton: React.FC<Props> = ({ onChange }) => {
       } else {
         setGeolocationStatus("pending");
         setGeolocationAvailable(true);
+      }
+
+      if (result.state === "granted") {
         getPosition();
       }
     });
