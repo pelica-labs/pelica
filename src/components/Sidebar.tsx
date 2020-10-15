@@ -1,5 +1,6 @@
 import { throttle } from "lodash";
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import BounceLoader from "react-spinners/BounceLoader";
 
 import { AspectRatioSelector } from "~/components/AspectRatioSelector";
 import { Button } from "~/components/Button";
@@ -13,7 +14,9 @@ import { StyleSelector } from "~/components/StyleSelector";
 import { Toolbar } from "~/components/Toolbar";
 import { WidthSlider } from "~/components/WidthSlider";
 import { useApp, useStore, useStoreSubscription } from "~/core/app";
+import { useBrowserFeatures } from "~/hooks/useBrowserFeatures";
 import { useHotkey } from "~/hooks/useHotkey";
+import { dataUrlToBlob } from "~/lib/fileConversion";
 import { SmartMatching } from "~/lib/smartMatching";
 import { Style } from "~/lib/style";
 import { theme } from "~/styles/tailwind";
@@ -32,11 +35,9 @@ const computePanelOffset = (screenWidth: number) => {
 
 type Props = {
   initialStyles: Style[];
-
-  onImage: (image: string) => void;
 };
 
-export const Sidebar: React.FC<Props> = ({ onImage, initialStyles }) => {
+export const Sidebar: React.FC<Props> = ({ initialStyles }) => {
   const app = useApp();
   const itineraryContainer = useRef<HTMLDivElement>(null);
   const editor = useStore((store) => store.editor);
@@ -79,7 +80,7 @@ export const Sidebar: React.FC<Props> = ({ onImage, initialStyles }) => {
         className="fixed top-0 flex flex-col bg-gray-800 m-2 p-1 shadow rounded"
         style={{ right: computePanelOffset(screenWidth) }}
       >
-        <Toolbar onImage={onImage} />
+        <Toolbar />
       </div>
 
       {editor.mode === "itinerary" && (
@@ -132,6 +133,8 @@ export const Sidebar: React.FC<Props> = ({ onImage, initialStyles }) => {
             }}
           />
         )}
+
+        {editor.mode === "export" && <ExportSidebar />}
       </div>
     </div>
   );
@@ -495,6 +498,95 @@ const ItinerarySidebar: React.FC = () => {
           />
         </div>
       </div>
+    </>
+  );
+};
+
+const ExportSidebar: React.FC = () => {
+  const app = useApp();
+  const [image, setImage] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const { shareFeature } = useBrowserFeatures();
+
+  const onDownload = () => {
+    if (!image) {
+      return;
+    }
+
+    const a = document.createElement("a");
+    a.href = image;
+    a.download = "pelica";
+    a.click();
+  };
+
+  const onShare = () => {
+    if (!imageUrl) {
+      return;
+    }
+
+    navigator.share({
+      title: "Pelica Map",
+      url: imageUrl,
+    });
+  };
+
+  useEffect(() => {
+    const image = app.export.generateImage();
+
+    setImage(image);
+
+    const data = new FormData();
+    data.append("image", dataUrlToBlob(image));
+
+    fetch("/api/upload-map", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+      },
+      body: data,
+    })
+      .then((res) => res.json())
+      .then((json) => {
+        setImageUrl(json.url);
+      })
+      .catch((error) => {
+        // @todo handle error
+        console.error(error);
+      });
+  }, []);
+
+  return (
+    <>
+      <div className="mt-4 px-3 flex flex-col space-y-4">
+        <Button
+          className="bg-orange-700 text-gray-200 border border-orange-500 hover:border-orange-800 text-xs uppercase py-2 justify-center"
+          disabled={!image}
+          onClick={() => {
+            onDownload();
+          }}
+        >
+          Download
+        </Button>
+
+        {shareFeature && (
+          <Button
+            className="bg-orange-700 text-gray-200 border border-orange-500 hover:border-orange-800 text-xs uppercase py-2 justify-center"
+            disabled={!imageUrl}
+            onClick={() => {
+              onShare();
+            }}
+          >
+            Share
+            {!imageUrl && (
+              <div className="ml-4">
+                <BounceLoader color={theme.colors.orange[500]} size={10} />
+              </div>
+            )}
+          </Button>
+        )}
+      </div>
+
+      <img className="mt-auto mx-auto mb-12 w-32 h-32" src="/images/logo.png" />
     </>
   );
 };

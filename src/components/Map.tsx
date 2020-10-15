@@ -66,7 +66,7 @@ export const Map: React.FC = () => {
 
       map.getCanvas().style.outline = "none";
 
-      map.on("styledata", (d) => {
+      map.on("styledata", () => {
         applySources(map);
         applyLayers(map);
         applyGeometries(map, geometries.items);

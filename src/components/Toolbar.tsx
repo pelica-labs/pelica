@@ -12,11 +12,7 @@ import {
 } from "~/components/Icon";
 import { useApp, useStore } from "~/core/app";
 
-type Props = {
-  onImage: (image: string) => void;
-};
-
-export const Toolbar: React.FC<Props> = ({ onImage }) => {
+export const Toolbar: React.FC = () => {
   const app = useApp();
   const editorMode = useStore((store) => store.editor.mode);
 
@@ -99,10 +95,6 @@ export const Toolbar: React.FC<Props> = ({ onImage }) => {
           id="toolbar-export"
           onClick={() => {
             app.editor.setEditorMode("export");
-
-            const image = app.export.generateImage();
-
-            onImage(image);
           }}
         >
           <ExportIcon className="w-6 h-6" />

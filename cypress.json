@@ -8,10 +8,7 @@
     "openMode": 0
   },
 
-  "ignoreTestFiles": [
-    "**/__snapshots__/*",
-    "**/__image_snapshots__/*"
-  ],
+  "ignoreTestFiles": ["**/__snapshots__/*", "**/__image_snapshots__/*"],
 
   "env": {
     "cypress-plugin-snapshots": {

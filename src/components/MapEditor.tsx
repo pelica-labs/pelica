@@ -13,10 +13,9 @@ import { Style } from "~/lib/style";
 
 type Props = {
   initialStyles: Style[];
-  onImage: (image: string) => void;
 };
 
-export const MapEditor: React.FC<Props> = ({ initialStyles, onImage }) => {
+export const MapEditor: React.FC<Props> = ({ initialStyles }) => {
   const app = useApp();
   const place = useStore((store) => store.mapView.place);
 
@@ -37,7 +36,7 @@ export const MapEditor: React.FC<Props> = ({ initialStyles, onImage }) => {
         </div>
       </div>
 
-      <Sidebar initialStyles={initialStyles} onImage={onImage} />
+      <Sidebar initialStyles={initialStyles} />
 
       <div className="absolute top-0 left-0 flex flex-col space-y-2 mt-2 ml-2">
         <PlaceAutocomplete

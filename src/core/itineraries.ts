@@ -7,6 +7,7 @@ export type Place = {
   type: "Feature" | "Coordinates";
   center: number[];
   name: string;
+  bbox?: number[];
 };
 
 type Itinerary = Place[];

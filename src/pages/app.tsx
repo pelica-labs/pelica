@@ -1,8 +1,7 @@
 import { GetStaticProps, NextPage } from "next";
-import React, { useState } from "react";
+import React from "react";
 
 import { MapEditor } from "~/components/MapEditor";
-import { MapExport } from "~/components/MapExport";
 import { Style } from "~/lib/style";
 import { fetchStyles } from "~/pages/api/styles";
 
@@ -20,29 +19,7 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
 };
 
 const App: NextPage<Props> = ({ initialStyles }) => {
-  const [image, setImage] = useState<string | null>(null);
-
-  return (
-    <>
-      {image && (
-        <MapExport
-          image={image}
-          onBack={() => {
-            setImage(null);
-          }}
-        />
-      )}
-
-      {!image && (
-        <MapEditor
-          initialStyles={initialStyles}
-          onImage={(image) => {
-            setImage(image);
-          }}
-        />
-      )}
-    </>
-  );
+  return <MapEditor initialStyles={initialStyles} />;
 };
 
 export default App;

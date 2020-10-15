@@ -3,6 +3,7 @@ import { throttle } from "lodash";
 
 import { Coordinates } from "~/core/geometries";
 import { App } from "~/core/helpers";
+import { Place } from "~/core/itineraries";
 import { mapboxGeocoding } from "~/lib/mapbox";
 
 export type MapView = {
@@ -14,7 +15,7 @@ export type MapView = {
 
   bounds: [Coordinates, Coordinates] | null;
 
-  place: GeocodeFeature | null;
+  place: Place | null;
 
   features: GeocodeFeature[];
 };
@@ -71,7 +72,7 @@ export const mapView = ({ mutate }: App) => ({
     });
   }, 2000),
 
-  setPlace: (place: GeocodeFeature | null) => {
+  setPlace: (place: Place | null) => {
     mutate(({ mapView }) => {
       mapView.place = place;
     });
