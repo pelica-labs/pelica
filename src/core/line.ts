@@ -15,6 +15,7 @@ export type Line = {
   color: string;
   outlineColor: string;
   outlineWidth: number;
+  smartMatching: SmartMatching;
 };
 
 const initialState: Line = {
@@ -25,6 +26,10 @@ const initialState: Line = {
   color: theme.colors.red[500],
   outlineWidth: 1,
   outlineColor: outlineColor(theme.colors.red[500]),
+  smartMatching: {
+    enabled: false,
+    profile: null,
+  },
 };
 
 export const STOP_DRAWING_CIRCLE_ID = 999999999; // 🙉
@@ -45,9 +50,13 @@ export const line = ({ mutate, get }: App) => ({
     });
   },
 
-  startDrawing: (latitude: number, longitude: number) => {
-    const { editor } = get();
+  setSmartMatching: (smartMatching: SmartMatching) => {
+    mutate(({ line }) => {
+      line.smartMatching = smartMatching;
+    });
+  },
 
+  startDrawing: (latitude: number, longitude: number) => {
     mutate(({ line }) => {
       line.drawing = true;
 
@@ -58,7 +67,7 @@ export const line = ({ mutate, get }: App) => ({
           source: MapSource.Routes,
           points: [],
           smartPoints: [],
-          smartMatching: editor.smartMatching,
+          smartMatching: line.smartMatching,
           style: {
             color: line.color,
             width: line.width,

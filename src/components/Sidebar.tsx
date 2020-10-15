@@ -1,5 +1,6 @@
 import { throttle } from "lodash";
 import React, { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import BounceLoader from "react-spinners/BounceLoader";
 
 import { AspectRatioSelector } from "~/components/AspectRatioSelector";
@@ -14,23 +15,12 @@ import { Toolbar } from "~/components/Toolbar";
 import { WidthSlider } from "~/components/WidthSlider";
 import { useApp, useStore } from "~/core/app";
 import { useBrowserFeatures } from "~/hooks/useBrowserFeatures";
+import { useDimensions } from "~/hooks/useDimensions";
 import { useHotkey } from "~/hooks/useHotkey";
 import { dataUrlToBlob } from "~/lib/fileConversion";
 import { SmartMatching } from "~/lib/smartMatching";
 import { Style } from "~/lib/style";
 import { theme } from "~/styles/tailwind";
-
-const computePanelOffset = (screenWidth: number) => {
-  if (screenWidth <= parseInt(theme.screens.md)) {
-    return theme.width[32];
-  }
-
-  if (screenWidth <= parseInt(theme.screens.lg)) {
-    return theme.width[48];
-  }
-
-  return theme.width[64];
-};
 
 type Props = {
   initialStyles: Style[];
@@ -38,8 +28,10 @@ type Props = {
 
 export const Sidebar: React.FC<Props> = ({ initialStyles }) => {
   const app = useApp();
-  const editor = useStore((store) => store.editor);
-  const screenWidth = useStore((store) => store.screen.dimensions.width);
+  const { t } = useTranslation();
+  const editorMode = useStore((store) => store.editor.mode);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const sidebarDimensions = useDimensions(sidebarRef.current);
 
   useHotkey({ key: "1", meta: true }, () => {
     app.editor.setEditorMode("select");
@@ -58,50 +50,68 @@ export const Sidebar: React.FC<Props> = ({ initialStyles }) => {
   });
 
   return (
-    <div className="flex-grow relative flex items-end">
-      <div
-        className="fixed top-0 flex flex-col bg-gray-800 m-2 p-1 shadow rounded"
-        style={{ right: computePanelOffset(screenWidth) }}
-      >
-        <Toolbar />
-      </div>
+    <div ref={sidebarRef} className="flex-grow relative flex items-end">
+      {sidebarDimensions && (
+        <div
+          className="fixed top-0 flex flex-col bg-gray-800 m-2 p-1 shadow rounded"
+          style={{ right: sidebarDimensions.width }}
+        >
+          <Toolbar />
+        </div>
+      )}
 
       <div className="flex flex-col bg-gray-900 text-gray-200 w-32 md:w-48 lg:w-64 h-full overflow-y-auto">
         <div className="flex justify-between items-center px-3 h-8 py-2 bg-gray-800">
-          <span className="text-xs uppercase text-gray-300 font-light tracking-wide leading-none">{editor.mode}</span>
+          <span className="text-xs uppercase text-gray-300 font-light tracking-wide leading-none">
+            {t(`editor.mode.${editorMode}`)}
+          </span>
           <MenuButton />
         </div>
 
-        {editor.mode === "style" && (
-          <StyleSelector
-            initialStyles={initialStyles}
-            value={editor.style}
-            onChange={(style) => {
-              app.editor.setStyle(style);
-            }}
-          />
-        )}
+        {editorMode === "style" && <StyleSidebar initialStyles={initialStyles} />}
 
-        {editor.mode === "select" && <MoveSidebar />}
+        {editorMode === "select" && <MoveSidebar />}
 
-        {editor.mode === "pin" && <PinSidebar />}
+        {editorMode === "pin" && <PinSidebar />}
 
-        {editor.mode === "draw" && <DrawSidebar />}
+        {editorMode === "draw" && <DrawSidebar />}
 
-        {editor.mode === "itinerary" && <ItinerarySidebar />}
+        {editorMode === "itinerary" && <ItinerarySidebar />}
 
-        {editor.mode === "aspectRatio" && (
-          <AspectRatioSelector
-            value={editor.aspectRatio}
-            onChange={(aspectRatio) => {
-              app.editor.setAspectRatio(aspectRatio);
-            }}
-          />
-        )}
+        {editorMode === "aspectRatio" && <AspectRatioSidebar />}
 
-        {editor.mode === "export" && <ExportSidebar />}
+        {editorMode === "export" && <ExportSidebar />}
       </div>
     </div>
+  );
+};
+
+const StyleSidebar: React.FC<Props> = ({ initialStyles }) => {
+  const app = useApp();
+  const style = useStore((store) => store.editor.style);
+
+  return (
+    <StyleSelector
+      initialStyles={initialStyles}
+      value={style}
+      onChange={(style) => {
+        app.editor.setStyle(style);
+      }}
+    />
+  );
+};
+
+const AspectRatioSidebar: React.FC = () => {
+  const app = useApp();
+  const aspectRatio = useStore((store) => store.editor.aspectRatio);
+
+  return (
+    <AspectRatioSelector
+      value={aspectRatio}
+      onChange={(aspectRatio) => {
+        app.editor.setAspectRatio(aspectRatio);
+      }}
+    />
   );
 };
 
@@ -321,7 +331,7 @@ const DrawSidebar: React.FC = () => {
   const fileInput = useRef<HTMLInputElement>(null);
   const color = useStore((store) => store.line.color);
   const width = useStore((store) => store.line.width);
-  const smartMatching = useStore((store) => store.editor.smartMatching);
+  const smartMatching = useStore((store) => store.line.smartMatching);
 
   return (
     <>
@@ -372,7 +382,7 @@ const DrawSidebar: React.FC = () => {
           <SmartMatchingSelector
             value={smartMatching}
             onChange={(smartMatching) => {
-              app.editor.setEditorSmartMatching(smartMatching);
+              app.line.setSmartMatching(smartMatching);
             }}
           />
         </div>
@@ -407,7 +417,6 @@ const ItinerarySidebar: React.FC = () => {
   const app = useApp();
   const color = useStore((store) => store.line.color);
   const width = useStore((store) => store.line.width);
-  const smartMatching = useStore((store) => store.editor.smartMatching);
 
   return (
     <>
@@ -446,19 +455,6 @@ const ItinerarySidebar: React.FC = () => {
             }}
             onChangeComplete={(width) => {
               app.line.setWidth(width);
-            }}
-          />
-        </div>
-      </div>
-
-      <div className="px-3 pb-2 mb-2 border-b border-gray-700">
-        <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Routes</span>
-
-        <div className="mt-2">
-          <SmartMatchingSelector
-            value={smartMatching}
-            onChange={(smartMatching) => {
-              app.editor.setEditorSmartMatching(smartMatching);
             }}
           />
         </div>

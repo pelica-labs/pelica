@@ -41,14 +41,14 @@ export const itineraries = ({ mutate }: App) => ({
   },
 
   displayCurrentItinerary: (points: Coordinates[]) => {
-    mutate(({ line, editor }) => {
+    mutate(({ line }) => {
       line.currentLine = {
         type: "Line",
         id: nextGeometryId(),
         source: MapSource.Routes,
         points,
         smartPoints: [],
-        smartMatching: editor.smartMatching,
+        smartMatching: line.smartMatching,
         style: {
           color: line.color,
           width: line.width,
