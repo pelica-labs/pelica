@@ -52,7 +52,7 @@ export const itineraries = ({ mutate }: App) => ({
         style: {
           color: routes.color,
           width: routes.width,
-          outlineColor: routes.outlineColor,
+          outline: routes.outline,
         },
       };
     });

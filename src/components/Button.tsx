@@ -5,6 +5,7 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
   active?: boolean;
   color?: string;
   rounded?: boolean;
+  outlined?: boolean;
   shadow?: boolean;
 };
 
@@ -12,6 +13,7 @@ export const Button: React.FC<Props> = ({
   rounded = true,
   shadow = true,
   active = false,
+  outlined = false,
   color = "orange",
   className,
   ...attributes
@@ -24,7 +26,9 @@ export const Button: React.FC<Props> = ({
     "rounded": rounded,
     "shadow": shadow,
     [`hover:bg-${color}-900`]: !active && !attributes.disabled,
-    [`bg-${color}-700`]: active,
+    [`bg-${color}-700`]: !outlined && active,
+    [`border border-${color}-700`]: outlined && active,
+    "border border-transparent": outlined && !active,
     ["opacity-50 cursor-auto"]: attributes.disabled,
   });
 

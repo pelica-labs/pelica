@@ -1,6 +1,8 @@
 import { GeoJSONSource } from "mapbox-gl";
 
 import { App } from "~/core/helpers";
+import { OutlineType } from "~/core/routes";
+import { outlineColor } from "~/lib/color";
 import { SmartMatching } from "~/lib/smartMatching";
 import { MapSource } from "~/map/sources";
 
@@ -58,12 +60,12 @@ export type PolyLine = {
   style: {
     color: string;
     width: number;
-    outlineColor: string;
+    outline: OutlineType;
   };
   transientStyle?: {
     color: string;
     width: number;
-    outlineColor: string;
+    outline: OutlineType;
   };
 };
 
@@ -151,6 +153,11 @@ const geometryToFeature = (geometry: Geometry): GeoJSON.Feature<GeoJSON.Geometry
     const points =
       geometry.smartMatching.enabled && geometry.smartPoints.length ? geometry.smartPoints : geometry.points;
 
+    const style = {
+      ...geometry.style,
+      ...geometry.transientStyle,
+    };
+
     return {
       type: "Feature",
       id: geometry.id,
@@ -163,8 +170,9 @@ const geometryToFeature = (geometry: Geometry): GeoJSON.Feature<GeoJSON.Geometry
         }),
       },
       properties: {
-        ...geometry.style,
-        ...geometry.transientStyle,
+        ...style,
+        outlineColor: outlineColor(style.color, style.outline),
+        outlineWidth: style.outline !== "none" ? 1 : -1,
       },
     };
   }

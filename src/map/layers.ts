@@ -64,7 +64,7 @@ export const applyLayers = (map: mapboxgl.Map): void => {
     },
     paint: {
       "line-color": ["get", "outlineColor"],
-      "line-width": ["+", ["get", "width"], 1],
+      "line-width": ["+", ["get", "width"], ["get", "outlineWidth"]],
       "line-opacity": 1,
     },
   });

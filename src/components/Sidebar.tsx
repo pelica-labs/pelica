@@ -8,6 +8,7 @@ import { ColorPicker } from "~/components/ColorPicker";
 import { TrashIcon } from "~/components/Icon";
 import { IconSelector } from "~/components/IconSelector";
 import { MenuButton } from "~/components/MenuButton";
+import { OutlineSelector } from "~/components/OutlineSelector";
 import { SmartMatchingSelector } from "~/components/SmartMatchingSelector";
 import { StyleSelector } from "~/components/StyleSelector";
 import { Toolbar } from "~/components/Toolbar";
@@ -145,7 +146,7 @@ const SelectSidebar: React.FC = () => {
           <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Color</span>
           <div
             className="ml-2 w-3 h-3 rounded-full border border-gray-200"
-            style={{ backgroundColor: selectedGeometry.style.color }}
+            style={{ backgroundColor: selectedGeometry.transientStyle?.color ?? selectedGeometry.style.color }}
           />
         </div>
         <div className="mt-4">
@@ -153,14 +154,18 @@ const SelectSidebar: React.FC = () => {
             value={selectedGeometry.style.color}
             onChange={(color) => {
               if (selectedGeometry.type === "Line") {
-                app.routes.transientUpdateSelectedLine(color, selectedGeometry.style.width);
+                app.routes.transientUpdateSelectedLine(
+                  color,
+                  selectedGeometry.style.width,
+                  selectedGeometry.style.outline
+                );
               } else if (selectedGeometry.type === "Point") {
                 app.pins.transientUpdateSelectedPin(selectedGeometry.style.icon, color, selectedGeometry.style.width);
               }
             }}
             onChangeComplete={(color) => {
               if (selectedGeometry.type === "Line") {
-                app.routes.updateSelectedLine(color, selectedGeometry.style.width);
+                app.routes.updateSelectedLine(color, selectedGeometry.style.width, selectedGeometry.style.outline);
               } else if (selectedGeometry.type === "Point") {
                 app.pins.updateSelectedPin(selectedGeometry.style.icon, color, selectedGeometry.style.width);
               }
@@ -169,31 +174,40 @@ const SelectSidebar: React.FC = () => {
         </div>
       </div>
 
-      <div className="mt-4 px-3 pb-3 mb-2 border-b border-gray-700">
+      <div className="mt-2 px-3 pb-3 mb-2 border-b border-gray-700">
         <div className="flex items-center">
           <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Width</span>
           <div className="ml-2 flex justify-center items-center w-3 h-3 rounded-full">
             <div
-              className="rounded-full bg-gray-200"
-              style={{ width: selectedGeometry.style.width, height: selectedGeometry.style.width }}
+              className="rounded-full"
+              style={{
+                width: selectedGeometry.transientStyle?.width ?? selectedGeometry.style.width,
+                height: selectedGeometry.transientStyle?.width ?? selectedGeometry.style.width,
+                backgroundColor: selectedGeometry.transientStyle?.color ?? selectedGeometry.style.color,
+              }}
             />
           </div>
         </div>
         <div className="mt-4 px-1">
           <WidthSlider
+            color={selectedGeometry.style.color}
             max={12}
             min={1}
             value={selectedGeometry.style.width}
             onChange={(width) => {
               if (selectedGeometry.type === "Line") {
-                app.routes.transientUpdateSelectedLine(selectedGeometry.style.color, width);
+                app.routes.transientUpdateSelectedLine(
+                  selectedGeometry.style.color,
+                  width,
+                  selectedGeometry.style.outline
+                );
               } else if (selectedGeometry.type === "Point") {
                 app.pins.transientUpdateSelectedPin(selectedGeometry.style.icon, selectedGeometry.style.color, width);
               }
             }}
             onChangeComplete={(width) => {
               if (selectedGeometry.type === "Line") {
-                app.routes.updateSelectedLine(selectedGeometry.style.color, width);
+                app.routes.updateSelectedLine(selectedGeometry.style.color, width, selectedGeometry.style.outline);
               } else if (selectedGeometry.type === "Point") {
                 app.pins.updateSelectedPin(selectedGeometry.style.icon, selectedGeometry.style.color, width);
               }
@@ -202,8 +216,24 @@ const SelectSidebar: React.FC = () => {
         </div>
       </div>
 
+      {selectedGeometry.type === "Line" && (
+        <div className="mt-2 px-3 pb-3 mb-2 border-b border-gray-700">
+          <div className="flex items-center">
+            <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Outline</span>
+          </div>
+          <div className="mt-4">
+            <OutlineSelector
+              value={selectedGeometry.style.outline}
+              onChange={(outline) => {
+                app.routes.updateSelectedLine(selectedGeometry.style.color, selectedGeometry.style.width, outline);
+              }}
+            />
+          </div>
+        </div>
+      )}
+
       {selectedGeometry.type === "Point" && (
-        <div className="mt-2 px-3 pb-2 mb-2 border-b border-gray-700">
+        <div className="mt-2 px-3 pb-2 border-b border-gray-700">
           <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Icon</span>
 
           <div className="mt-2">
@@ -218,7 +248,7 @@ const SelectSidebar: React.FC = () => {
       )}
 
       {selectedGeometry.type === "Line" && (
-        <div className="mt-2 px-3 pb-2 mb-2 border-b border-gray-700">
+        <div className="px-3 pb-2 mb-2 border-b border-gray-700">
           <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Routes</span>
 
           <div className="mt-2">
@@ -265,11 +295,12 @@ const PinSidebar: React.FC = () => {
         <div className="flex items-center">
           <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Width</span>
           <div className="ml-2 flex justify-center items-center w-3 h-3 rounded-full">
-            <div className="rounded-full bg-gray-200" style={{ width: width, height: width }} />
+            <div className="rounded-full" style={{ width: width, height: width, backgroundColor: color }} />
           </div>
         </div>
         <div className="mt-4 px-1">
           <WidthSlider
+            color={color}
             max={12}
             min={1}
             value={width}
@@ -304,6 +335,7 @@ const DrawSidebar: React.FC = () => {
   const fileInput = useRef<HTMLInputElement>(null);
   const color = useStore((store) => store.routes.color);
   const width = useStore((store) => store.routes.width);
+  const outline = useStore((store) => store.routes.outline);
   const smartMatching = useStore((store) => store.routes.smartMatching);
 
   return (
@@ -330,11 +362,12 @@ const DrawSidebar: React.FC = () => {
         <div className="flex items-center">
           <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Width</span>
           <div className="ml-2 flex justify-center items-center w-3 h-3 rounded-full">
-            <div className="rounded-full bg-gray-200" style={{ width: width, height: width }} />
+            <div className="rounded-full" style={{ width: width, height: width, backgroundColor: color }} />
           </div>
         </div>
         <div className="mt-4 px-1">
           <WidthSlider
+            color={color}
             max={12}
             min={1}
             value={width}
@@ -343,6 +376,20 @@ const DrawSidebar: React.FC = () => {
             }}
             onChangeComplete={(width) => {
               app.routes.setWidth(width);
+            }}
+          />
+        </div>
+      </div>
+
+      <div className="mt-2 px-3 pb-3 mb-2 border-b border-gray-700">
+        <div className="flex items-center">
+          <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Outline</span>
+        </div>
+        <div className="mt-4">
+          <OutlineSelector
+            value={outline}
+            onChange={(outline) => {
+              app.routes.setOutline(outline);
             }}
           />
         </div>
@@ -390,6 +437,7 @@ const ItinerarySidebar: React.FC = () => {
   const app = useApp();
   const color = useStore((store) => store.routes.color);
   const width = useStore((store) => store.routes.width);
+  const outline = useStore((store) => store.routes.outline);
 
   return (
     <>
@@ -415,11 +463,12 @@ const ItinerarySidebar: React.FC = () => {
         <div className="flex items-center">
           <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Width</span>
           <div className="ml-2 flex justify-center items-center w-3 h-3 rounded-full">
-            <div className="rounded-full bg-gray-200" style={{ width: width, height: width }} />
+            <div className="rounded-full" style={{ width: width, height: width, backgroundColor: color }} />
           </div>
         </div>
         <div className="mt-4 px-1">
           <WidthSlider
+            color={color}
             max={12}
             min={1}
             value={width}
@@ -428,6 +477,20 @@ const ItinerarySidebar: React.FC = () => {
             }}
             onChangeComplete={(width) => {
               app.routes.setWidth(width);
+            }}
+          />
+        </div>
+      </div>
+
+      <div className="mt-2 px-3 pb-3 mb-2 border-b border-gray-700">
+        <div className="flex items-center">
+          <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Outline</span>
+        </div>
+        <div className="mt-4">
+          <OutlineSelector
+            value={outline}
+            onChange={(outline) => {
+              app.routes.setOutline(outline);
             }}
           />
         </div>

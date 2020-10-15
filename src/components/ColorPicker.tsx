@@ -59,8 +59,12 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete
         }}
         triangle={"hide"}
         width={"256"}
-        onChangeComplete={(event) => {
+        onChange={(event) => {
+          setColor(event.hex);
           onChange(event.hex);
+        }}
+        onChangeComplete={(event) => {
+          onChangeComplete(event.hex);
         }}
       />
 

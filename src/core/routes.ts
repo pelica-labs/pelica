@@ -2,10 +2,11 @@ import { Feature, MultiLineString, multiLineString, simplify } from "@turf/turf"
 
 import { nextGeometryId, PolyLine } from "~/core/geometries";
 import { App } from "~/core/helpers";
-import { outlineColor } from "~/lib/color";
 import { smartMatch, SmartMatching, SmartMatchingProfile } from "~/lib/smartMatching";
 import { MapSource } from "~/map/sources";
 import { theme } from "~/styles/tailwind";
+
+export type OutlineType = "dark" | "light" | "black" | "none";
 
 export type Routes = {
   currentRoute: PolyLine | null;
@@ -13,8 +14,7 @@ export type Routes = {
 
   width: number;
   color: string;
-  outlineColor: string;
-  outlineWidth: number;
+  outline: OutlineType;
   smartMatching: SmartMatching;
 };
 
@@ -24,8 +24,7 @@ const initialState: Routes = {
 
   width: 3,
   color: theme.colors.red[500],
-  outlineWidth: 1,
-  outlineColor: outlineColor(theme.colors.red[500]),
+  outline: "dark",
   smartMatching: {
     enabled: false,
     profile: null,
@@ -46,7 +45,12 @@ export const routes = ({ mutate, get }: App) => ({
   setColor: (color: string) => {
     mutate(({ routes }) => {
       routes.color = color;
-      routes.outlineColor = outlineColor(color);
+    });
+  },
+
+  setOutline: (outline: OutlineType) => {
+    mutate(({ routes }) => {
+      routes.outline = outline;
     });
   },
 
@@ -71,7 +75,7 @@ export const routes = ({ mutate, get }: App) => ({
           style: {
             color: routes.color,
             width: routes.width,
-            outlineColor: routes.outlineColor,
+            outline: routes.outline,
           },
         };
       }
@@ -144,19 +148,19 @@ export const routes = ({ mutate, get }: App) => ({
     });
   },
 
-  transientUpdateSelectedLine: (color: string, width: number) => {
+  transientUpdateSelectedLine: (color: string, width: number, outline: OutlineType) => {
     mutate(({ geometries, selection }) => {
       const line = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as PolyLine;
 
       line.transientStyle = {
-        color: color,
-        width: width,
-        outlineColor: outlineColor(color),
+        color,
+        width,
+        outline,
       };
     });
   },
 
-  updateSelectedLine: (color: string, width: number) => {
+  updateSelectedLine: (color: string, width: number, outline: OutlineType) => {
     const { selection, history } = get();
 
     if (!selection.selectedGeometryId) {
@@ -172,8 +176,9 @@ export const routes = ({ mutate, get }: App) => ({
     history.push({
       name: "updateLine",
       lineId: selection.selectedGeometryId,
-      color: color,
-      width: width,
+      color,
+      width,
+      outline,
     });
   },
 

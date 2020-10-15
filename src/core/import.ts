@@ -29,7 +29,7 @@ export const imports = ({ get }: App) => ({
           style: {
             color: routes.color,
             width: routes.width,
-            outlineColor: routes.outlineColor,
+            outline: routes.outline,
           },
         },
       });
