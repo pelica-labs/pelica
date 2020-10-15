@@ -3,6 +3,7 @@ import PuffLoader from "react-spinners/PuffLoader";
 
 import { Button } from "~/components/Button";
 import { TargetIcon } from "~/components/Icon";
+import { useApp } from "~/core/app";
 import { theme } from "~/styles/tailwind";
 
 type GeolocationStatus = "pending" | "loading" | "granted";
@@ -12,6 +13,7 @@ type Props = {
 };
 
 export const GeolocationButton: React.FC<Props> = ({ onChange }) => {
+  const app = useApp();
   const [geolocationIsAvailable, setGeolocationAvailable] = useState(false);
   const [geolocationStatus, setGeolocationStatus] = useState<GeolocationStatus>("pending");
 
@@ -34,21 +36,27 @@ export const GeolocationButton: React.FC<Props> = ({ onChange }) => {
       } else {
         setGeolocationStatus("pending");
         setGeolocationAvailable(true);
+        getPosition();
       }
     });
   };
 
-  const onClick = () => {
-    setGeolocationStatus("loading");
+  const getPosition = () => {
     window.navigator.geolocation.getCurrentPosition(
       (position) => {
         setGeolocationStatus("granted");
         onChange(position.coords);
+        app.geolocation.updateCurrentLocation(position.coords);
       },
       () => {
         updateGeolocationAvailability();
       }
     );
+  };
+
+  const onClick = () => {
+    setGeolocationStatus("loading");
+    getPosition();
   };
 
   useEffect(() => {

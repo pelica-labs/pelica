@@ -5,6 +5,7 @@ import shallow from "zustand/shallow";
 import { dragAndDrop } from "~/core/dragAndDrop";
 import { editor } from "~/core/editor";
 import { exports } from "~/core/export";
+import { geolocation } from "~/core/geolocation";
 import { geometries } from "~/core/geometries";
 import { App, immer } from "~/core/helpers";
 import { history } from "~/core/history";
@@ -21,6 +22,7 @@ import { sync } from "~/core/sync";
 export type State = {
   screen: ReturnType<typeof screen>;
   keyboard: ReturnType<typeof keyboard>;
+  geolocation: ReturnType<typeof geolocation>;
   map: ReturnType<typeof map>;
   editor: ReturnType<typeof editor>;
   routes: ReturnType<typeof routes>;
@@ -39,6 +41,7 @@ const state = (app: App) => {
   return {
     screen: screen(app),
     keyboard: keyboard(app),
+    geolocation: geolocation(app),
     map: map(app),
     editor: editor(app),
     routes: routes(app),

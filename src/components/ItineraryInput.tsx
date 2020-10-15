@@ -41,9 +41,11 @@ type Props = {
   value: Place[];
   onChange: (value: Place[]) => void;
   onRouteFound: (value: Coordinates[]) => void;
+
+  bias?: Coordinates;
 };
 
-export const ItineraryInput: React.FC<Props> = ({ value, onChange, onRouteFound }) => {
+export const ItineraryInput: React.FC<Props> = ({ value, onChange, onRouteFound, bias }) => {
   const [profile, setProfile] = useState<Profile>("driving");
   const [isComputing, setIsComputing] = useState(false);
   const [hasErrored, setHasErrored] = useState(false);
@@ -209,6 +211,7 @@ export const ItineraryInput: React.FC<Props> = ({ value, onChange, onRouteFound 
                         <div>
                           <PlaceAutocomplete
                             dense
+                            bias={bias}
                             clearable={false}
                             value={place}
                             onChange={(place) => {
@@ -243,6 +246,7 @@ export const ItineraryInput: React.FC<Props> = ({ value, onChange, onRouteFound 
         <Icon className="mx-2 text-gray-500 w-4 h-4" />
         <PlaceAutocomplete
           dense
+          bias={bias}
           excludeRecentSearches={value.length ? [value[value.length - 1]] : []}
           leftIcon={null}
           value={null}

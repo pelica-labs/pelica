@@ -4,6 +4,7 @@ import * as KeyCode from "keycode-js";
 import React, { useEffect, useRef, useState } from "react";
 
 import { CloseIcon, Icon, SearchIcon } from "~/components/Icon";
+import { Coordinates } from "~/core/geometries";
 import { Place } from "~/core/itineraries";
 import { useAsyncStorage } from "~/hooks/useAsyncStorage";
 import { mapboxGeocoding } from "~/lib/mapbox";
@@ -12,6 +13,7 @@ type Props = {
   value: Place | null;
   onChange: (value: Place | null) => void;
 
+  bias?: Coordinates;
   collapsesWhenEmpty?: boolean;
   clearable?: boolean;
   dense?: boolean;
@@ -26,6 +28,7 @@ export const PlaceAutocomplete: React.FC<Props> = ({
   value,
   onChange,
 
+  bias,
   collapsesWhenEmpty = false,
   dense = false,
   clearable = true,
@@ -74,7 +77,11 @@ export const PlaceAutocomplete: React.FC<Props> = ({
     }
 
     mapboxGeocoding
-      .forwardGeocode({ query: search, mode: "mapbox.places" })
+      .forwardGeocode({
+        query: search,
+        mode: "mapbox.places",
+        ...(bias && { proximity: [bias.longitude, bias.latitude] }),
+      })
       .send()
       .then((res) => {
         const places = res.body as GeocodeResponse;

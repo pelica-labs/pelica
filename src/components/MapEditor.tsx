@@ -20,6 +20,7 @@ export const MapEditor: React.FC<Props> = ({ initialStyles }) => {
   const app = useApp();
   const place = useStore((store) => store.map.place);
   const editorMode = useStore((store) => store.editor.mode);
+  const currentLocation = useStore((store) => store.geolocation.currentLocation);
   const currentItinerary = useStore((store) => store.itineraries.currentItinerary);
   const itineraryContainer = useRef<HTMLDivElement>(null);
 
@@ -65,6 +66,7 @@ export const MapEditor: React.FC<Props> = ({ initialStyles }) => {
           {editorMode === "itinerary" && (
             <div ref={itineraryContainer}>
               <ItineraryInput
+                bias={currentLocation ?? undefined}
                 value={currentItinerary}
                 onChange={(places) => {
                   app.itineraries.updateCurrentItinerary(places);
@@ -80,6 +82,7 @@ export const MapEditor: React.FC<Props> = ({ initialStyles }) => {
             <>
               <PlaceAutocomplete
                 collapsesWhenEmpty
+                bias={currentLocation ?? undefined}
                 value={place}
                 onChange={(place) => {
                   app.map.setPlace(place);
