@@ -2,7 +2,15 @@ import React, { useState } from "react";
 import Popover from "react-popover";
 
 import { Button } from "~/components/Button";
-import { CheckboxIcon, EmptyCheckboxIcon, InformationIcon } from "~/components/Icon";
+import {
+  BicycleIcon,
+  CarIcon,
+  CheckboxIcon,
+  EmptyCheckboxIcon,
+  Icon,
+  InformationIcon,
+  WalkingIcon,
+} from "~/components/Icon";
 import { SmartMatching, SmartMatchingProfile } from "~/lib/smartMatching";
 import { theme } from "~/styles/tailwind";
 
@@ -10,6 +18,18 @@ type Props = {
   value: SmartMatching;
   onChange: (value: SmartMatching) => void;
 };
+
+type ProfileConfiguration = {
+  name: string;
+  icon: Icon;
+  profile: SmartMatchingProfile;
+};
+
+const Profiles: ProfileConfiguration[] = [
+  { name: "Driving", icon: CarIcon, profile: "driving" },
+  { name: "Cycling", icon: BicycleIcon, profile: "cycling" },
+  { name: "Walking", icon: WalkingIcon, profile: "walking" },
+];
 
 export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange }) => {
   const [showTooltip, setShowTooltip] = useState(false);
@@ -62,24 +82,28 @@ export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange }) => {
       )}
 
       {value.enabled && (
-        <select
-          className="ml-2 p-1 mt-2 md:mt-0 bg-gray-900 border border-gray-500 hover:border-orange-900 text-xs rounded cursor-pointer focus:outline-none"
-          value={value.profile as string}
-          onChange={(event) => {
-            onChange({
-              enabled: true,
-              profile: event.target.value as SmartMatchingProfile,
-            });
-          }}
-        >
-          {["walking", "cycling", "driving"].map((profile) => {
+        <div className="ml-2 flex items-center bg-gray-800 rounded">
+          {Profiles.map((profileConfiguration) => {
             return (
-              <option key={profile} value={profile}>
-                {profile}
-              </option>
+              <div key={profileConfiguration.profile}>
+                <Button
+                  outlined
+                  active={value.profile === profileConfiguration.profile}
+                  className="text-gray-200"
+                  shadow={false}
+                  onClick={() => {
+                    onChange({
+                      enabled: true,
+                      profile: profileConfiguration.profile,
+                    });
+                  }}
+                >
+                  <profileConfiguration.icon className="w-3 h-3" />
+                </Button>
+              </div>
             );
           })}
-        </select>
+        </div>
       )}
     </div>
   );

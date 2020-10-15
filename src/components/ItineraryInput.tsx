@@ -160,6 +160,7 @@ export const ItineraryInput: React.FC<Props> = ({ value, onChange, onRouteFound,
           return (
             <div key={profileConfiguration.profile}>
               <Button
+                outlined
                 active={profile === profileConfiguration.profile}
                 className="text-gray-200"
                 shadow={false}
