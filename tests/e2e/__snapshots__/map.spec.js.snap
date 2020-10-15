@@ -40,13 +40,13 @@ exports[`Map editor > loads the map #0`] =
   },
   "line": {
     "color": "#f56565",
-    "currentLine": null,
+    "currentRoute": null,
     "drawing": false,
     "outlineColor": "#ac1515",
     "outlineWidth": 1,
     "width": 3
   },
-  "mapView": {
+  "map": {
     "bearing": 0,
     "bounds": [
       {
@@ -455,13 +455,13 @@ exports[`Map editor > allows placing pins #0`] =
   "keyboard": {},
   "line": {
     "color": "#f56565",
-    "currentLine": null,
+    "currentRoute": null,
     "drawing": false,
     "outlineColor": "#ac1515",
     "outlineWidth": 1,
     "width": 3
   },
-  "mapView": {
+  "map": {
     "bearing": 0,
     "bounds": [
       {
@@ -970,13 +970,13 @@ exports[`Map editor > allows drawing routes #0`] =
   },
   "line": {
     "color": "#f56565",
-    "currentLine": null,
+    "currentRoute": null,
     "drawing": false,
     "outlineColor": "#ac1515",
     "outlineWidth": 1,
     "width": 3
   },
-  "mapView": {
+  "map": {
     "bearing": 0,
     "bounds": [
       {

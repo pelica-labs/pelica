@@ -62,7 +62,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     event.preventDefault();
   };
 
-  const updateMapView = () => {
+  const updatemap = () => {
     const { lng, lat } = map.getCenter();
     const zoom = map.getZoom();
     const bearing = map.getBearing();
@@ -74,27 +74,27 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
       { latitude: bounds.getSouthEast().lat, longitude: bounds.getSouthEast().lng },
     ];
 
-    app.mapView.move({ latitude: lat, longitude: lng }, zoom, bearing, pitch, bbox);
+    app.map.move({ latitude: lat, longitude: lng }, zoom, bearing, pitch, bbox);
 
-    app.mapView.updateFeatures({ latitude: lat, longitude: lng });
+    app.map.updateFeatures({ latitude: lat, longitude: lng });
   };
 
   const onMouseMove = throttle((event: MapMouseEvent | MapTouchEvent) => {
     const {
-      line: { currentLine },
+      routes: { currentRoute },
       dragAndDrop: { draggedGeometryId },
     } = getState();
 
     touch();
     if (justTouched && isMultitouchEvent(event)) {
-      app.line.stopDrawing();
+      app.routes.stopDrawing();
       return;
     }
 
     const { lat, lng } = event.lngLat;
 
-    if (currentLine) {
-      app.line.draw(lat, lng);
+    if (currentRoute) {
+      app.routes.draw(lat, lng);
     }
 
     if (draggedGeometryId) {
@@ -107,7 +107,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
 
     touch();
     if (justTouched && isMultitouchEvent(event)) {
-      app.line.stopDrawing();
+      app.routes.stopDrawing();
       return;
     }
 
@@ -120,13 +120,13 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     }
 
     event.preventDefault();
-    app.line.startDrawing(event.lngLat.lat, event.lngLat.lng);
+    app.routes.startDrawing(event.lngLat.lat, event.lngLat.lng);
   };
 
   const onMouseUp = (event?: MapMouseEvent | MapTouchEvent) => {
     touch();
     if (justTouched && isMultitouchEvent(event)) {
-      app.line.stopDrawing();
+      app.routes.stopDrawing();
       return;
     }
 
@@ -136,7 +136,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     } = getState();
 
     if (editor.mode === "draw") {
-      app.line.stopSegment();
+      app.routes.stopSegment();
     }
 
     if (draggedGeometryId && event) {
@@ -150,11 +150,11 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     const { editor } = getState();
 
     if (editor.mode === "pin") {
-      app.pin.place(event.lngLat.lat, event.lngLat.lng);
+      app.pins.place(event.lngLat.lat, event.lngLat.lng);
     }
 
     if (editor.mode === "draw") {
-      app.line.draw(event.lngLat.lat, event.lngLat.lng);
+      app.routes.draw(event.lngLat.lat, event.lngLat.lng);
     }
 
     if (!justClickedLayer && editor.mode === "itinerary") {
@@ -233,7 +233,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
       event.preventDefault();
       event.stopPropagation();
 
-      app.pin.nudgeSelectedPin(keyCodeToDirection[event.keyCode]);
+      app.pins.nudgeSelectedPin(keyCodeToDirection[event.keyCode]);
     }
 
     if (event.keyCode === KeyCode.KEY_BACK_SPACE && selectedGeometry) {
@@ -248,7 +248,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
       event.stopPropagation();
 
       app.selection.unselectGeometry();
-      app.line.stopDrawing();
+      app.routes.stopDrawing();
     }
   };
 
@@ -285,7 +285,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
 
   const onRouteStopClick = (event: MapMouseEvent | MapTouchEvent) => {
     clickLayer();
-    app.line.stopDrawing();
+    app.routes.stopDrawing();
 
     event.preventDefault();
     event.originalEvent.stopPropagation();
@@ -297,7 +297,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
 
   map.scrollZoom.setZoomRate(0.03);
 
-  updateMapView();
+  updatemap();
 
   map.on("mouseenter", "pins", onFeatureHoverStart);
   map.on("mouseleave", "pins", onFeatureHoverEnd);
@@ -316,7 +316,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   map.on("mousedown", "pins", onFeatureMouseDown);
   map.on("touchstart", "pins", onFeatureMouseDown);
 
-  map.on("moveend", updateMapView);
+  map.on("moveend", updatemap);
   map.on("mousemove", onMouseMove);
   map.on("mousedown", onMouseDown);
   map.on("mouseup", onMouseUp);

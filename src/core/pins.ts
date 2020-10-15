@@ -5,41 +5,41 @@ import { App } from "~/core/helpers";
 import { MapSource } from "~/map/sources";
 import { theme } from "~/styles/tailwind";
 
-export type Pin = {
+export type Pins = {
   icon: string;
   width: number;
   color: string;
 };
 
-const initialState: Pin = {
+const initialState: Pins = {
   icon: "fire",
   width: 6,
   color: theme.colors.yellow[500],
 };
 
-export const pin = ({ mutate, get }: App) => ({
+export const pins = ({ mutate, get }: App) => ({
   ...initialState,
 
   setIcon: (icon: string) => {
-    mutate(({ pin }) => {
-      pin.icon = icon;
+    mutate(({ pins }) => {
+      pins.icon = icon;
     });
   },
 
   setWidth: (width: number) => {
-    mutate(({ pin }) => {
-      pin.width = width;
+    mutate(({ pins }) => {
+      pins.width = width;
     });
   },
 
   setColor: (color: string) => {
-    mutate(({ pin }) => {
-      pin.color = color;
+    mutate(({ pins }) => {
+      pins.color = color;
     });
   },
 
   place: (latitude: number, longitude: number) => {
-    const { history, pin } = get();
+    const { history, pins } = get();
 
     history.push({
       name: "pin",
@@ -49,9 +49,9 @@ export const pin = ({ mutate, get }: App) => ({
         source: MapSource.Pins,
         coordinates: { latitude, longitude },
         style: {
-          color: pin.color,
-          width: pin.width,
-          icon: pin.icon,
+          color: pins.color,
+          width: pins.width,
+          icon: pins.icon,
         },
       },
     });
@@ -116,14 +116,14 @@ export const pin = ({ mutate, get }: App) => ({
   },
 
   nudgeSelectedPin: (direction: Position) => {
-    const { geometries, selection, history, mapView } = get();
+    const { geometries, selection, history, map } = get();
     const point = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as Point;
 
     const pointCoordinates = MercatorCoordinate.fromLngLat(
       { lng: point.coordinates.longitude, lat: point.coordinates.latitude },
       0
     );
-    const base = 2 ** (-mapView.zoom - 1);
+    const base = 2 ** (-map.zoom - 1);
     pointCoordinates.x += base * direction.x;
     pointCoordinates.y += base * direction.y;
     const { lat, lng } = pointCoordinates.toLngLat();

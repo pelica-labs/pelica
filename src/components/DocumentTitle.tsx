@@ -7,8 +7,8 @@ import { useStore } from "~/core/app";
 
 export const DocumentTitle: React.FC = () => {
   const { t } = useTranslation();
-  const mapBounds = useStore((store) => store.mapView.bounds);
-  const features = useStore((store) => store.mapView.features);
+  const mapBounds = useStore((store) => store.map.bounds);
+  const features = useStore((store) => store.map.features);
 
   const feature = features
     .filter((feature) => {

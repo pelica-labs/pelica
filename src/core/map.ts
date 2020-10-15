@@ -6,7 +6,7 @@ import { App } from "~/core/helpers";
 import { Place } from "~/core/itineraries";
 import { mapboxGeocoding } from "~/lib/mapbox";
 
-export type MapView = {
+export type Map = {
   coordinates: Coordinates;
 
   zoom: number;
@@ -20,7 +20,7 @@ export type MapView = {
   features: GeocodeFeature[];
 };
 
-const initialState: MapView = {
+const initialState: Map = {
   coordinates: {
     latitude: 48.856614,
     longitude: 2.3522219,
@@ -37,7 +37,7 @@ const initialState: MapView = {
   features: [],
 };
 
-export const mapView = ({ mutate }: App) => ({
+export const map = ({ mutate }: App) => ({
   ...initialState,
 
   move: (
@@ -47,14 +47,14 @@ export const mapView = ({ mutate }: App) => ({
     pitch: number,
     bounds?: [Coordinates, Coordinates]
   ) => {
-    mutate(({ mapView }) => {
-      mapView.coordinates = coordinates;
-      mapView.zoom = zoom;
-      mapView.bearing = bearing;
-      mapView.pitch = pitch;
+    mutate(({ map }) => {
+      map.coordinates = coordinates;
+      map.zoom = zoom;
+      map.bearing = bearing;
+      map.pitch = pitch;
 
       if (bounds) {
-        mapView.bounds = bounds;
+        map.bounds = bounds;
       }
     });
   },
@@ -67,25 +67,25 @@ export const mapView = ({ mutate }: App) => ({
       })
       .send();
 
-    mutate(({ mapView }) => {
-      mapView.features = res.body.features;
+    mutate(({ map }) => {
+      map.features = res.body.features;
     });
   }, 2000),
 
   setPlace: (place: Place | null) => {
-    mutate(({ mapView }) => {
-      mapView.place = place;
+    mutate(({ map }) => {
+      map.place = place;
     });
   },
 
   resetOrientation: () => {
-    mutate(({ mapView }) => {
-      mapView.bearing = 0;
+    mutate(({ map }) => {
+      map.bearing = 0;
     });
 
     setTimeout(() => {
-      mutate(({ mapView }) => {
-        mapView.pitch = 0;
+      mutate(({ map }) => {
+        map.pitch = 0;
       });
     });
   },

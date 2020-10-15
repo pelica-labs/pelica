@@ -11,9 +11,9 @@ import { history } from "~/core/history";
 import { imports } from "~/core/import";
 import { itineraries } from "~/core/itineraries";
 import { keyboard } from "~/core/keyboard";
-import { line } from "~/core/line";
-import { mapView } from "~/core/mapView";
-import { pin } from "~/core/pin";
+import { map } from "~/core/map";
+import { pins } from "~/core/pins";
+import { routes } from "~/core/routes";
 import { screen } from "~/core/screen";
 import { selection } from "~/core/selection";
 import { sync } from "~/core/sync";
@@ -21,11 +21,11 @@ import { sync } from "~/core/sync";
 export type State = {
   screen: ReturnType<typeof screen>;
   keyboard: ReturnType<typeof keyboard>;
-  mapView: ReturnType<typeof mapView>;
+  map: ReturnType<typeof map>;
   editor: ReturnType<typeof editor>;
-  line: ReturnType<typeof line>;
+  routes: ReturnType<typeof routes>;
   itineraries: ReturnType<typeof itineraries>;
-  pin: ReturnType<typeof pin>;
+  pins: ReturnType<typeof pins>;
   history: ReturnType<typeof history>;
   geometries: ReturnType<typeof geometries>;
   selection: ReturnType<typeof selection>;
@@ -39,10 +39,10 @@ const state = (app: App) => {
   return {
     screen: screen(app),
     keyboard: keyboard(app),
-    mapView: mapView(app),
+    map: map(app),
     editor: editor(app),
-    line: line(app),
-    pin: pin(app),
+    routes: routes(app),
+    pins: pins(app),
     itineraries: itineraries(app),
     history: history(app),
     geometries: geometries(app),

@@ -7,8 +7,8 @@ import { smartMatch, SmartMatching, SmartMatchingProfile } from "~/lib/smartMatc
 import { MapSource } from "~/map/sources";
 import { theme } from "~/styles/tailwind";
 
-export type Line = {
-  currentLine: PolyLine | null;
+export type Routes = {
+  currentRoute: PolyLine | null;
   drawing: boolean;
 
   width: number;
@@ -18,8 +18,8 @@ export type Line = {
   smartMatching: SmartMatching;
 };
 
-const initialState: Line = {
-  currentLine: null,
+const initialState: Routes = {
+  currentRoute: null,
   drawing: false,
 
   width: 3,
@@ -34,113 +34,113 @@ const initialState: Line = {
 
 export const STOP_DRAWING_CIRCLE_ID = 999999999; // 🙉
 
-export const line = ({ mutate, get }: App) => ({
+export const routes = ({ mutate, get }: App) => ({
   ...initialState,
 
   setWidth: (width: number) => {
-    mutate(({ line }) => {
-      line.width = width;
+    mutate(({ routes }) => {
+      routes.width = width;
     });
   },
 
   setColor: (color: string) => {
-    mutate(({ line }) => {
-      line.color = color;
-      line.outlineColor = outlineColor(color);
+    mutate(({ routes }) => {
+      routes.color = color;
+      routes.outlineColor = outlineColor(color);
     });
   },
 
   setSmartMatching: (smartMatching: SmartMatching) => {
-    mutate(({ line }) => {
-      line.smartMatching = smartMatching;
+    mutate(({ routes }) => {
+      routes.smartMatching = smartMatching;
     });
   },
 
   startDrawing: (latitude: number, longitude: number) => {
-    mutate(({ line }) => {
-      line.drawing = true;
+    mutate(({ routes }) => {
+      routes.drawing = true;
 
-      if (!line.currentLine) {
-        line.currentLine = {
+      if (!routes.currentRoute) {
+        routes.currentRoute = {
           type: "Line",
           id: nextGeometryId(),
           source: MapSource.Routes,
           points: [],
           smartPoints: [],
-          smartMatching: line.smartMatching,
+          smartMatching: routes.smartMatching,
           style: {
-            color: line.color,
-            width: line.width,
-            outlineColor: line.outlineColor,
+            color: routes.color,
+            width: routes.width,
+            outlineColor: routes.outlineColor,
           },
         };
       }
 
-      line.currentLine.points.push({ latitude, longitude });
+      routes.currentRoute.points.push({ latitude, longitude });
     });
   },
 
   draw: (latitude: number, longitude: number) => {
-    mutate(({ line, mapView }) => {
-      if (!line.drawing) {
+    mutate(({ routes, map }) => {
+      if (!routes.drawing) {
         return;
       }
 
-      if (!line.currentLine) {
+      if (!routes.currentRoute) {
         return;
       }
 
-      line.currentLine.points.push({ latitude, longitude });
+      routes.currentRoute.points.push({ latitude, longitude });
 
-      if (line.currentLine.points.length <= 2) {
+      if (routes.currentRoute.points.length <= 2) {
         return;
       }
 
       const feature = multiLineString([
-        line.currentLine.points.map((point) => {
+        routes.currentRoute.points.map((point) => {
           return [point.longitude, point.latitude];
         }),
       ]);
-      const tolerance = 2 ** (-mapView.zoom - 1) * 0.8;
+      const tolerance = 2 ** (-map.zoom - 1) * 0.8;
       const simplified = simplify(feature, { tolerance }) as Feature<MultiLineString>;
 
       if (!simplified.geometry) {
         return;
       }
 
-      line.currentLine.points = simplified.geometry.coordinates[0].map((point) => {
+      routes.currentRoute.points = simplified.geometry.coordinates[0].map((point) => {
         return { latitude: point[1], longitude: point[0] };
       });
     });
   },
 
   stopSegment: async () => {
-    mutate(({ line }) => {
-      line.drawing = false;
+    mutate(({ routes }) => {
+      routes.drawing = false;
     });
 
-    const { line, history } = get();
+    const { routes, history } = get();
 
-    if (!line.currentLine) {
+    if (!routes.currentRoute) {
       return;
     }
 
-    const smartPoints = line.currentLine.smartMatching.enabled
-      ? await smartMatch(line.currentLine, line.currentLine.smartMatching.profile as SmartMatchingProfile)
+    const smartPoints = routes.currentRoute.smartMatching.enabled
+      ? await smartMatch(routes.currentRoute, routes.currentRoute.smartMatching.profile as SmartMatchingProfile)
       : [];
 
     history.push({
       name: "draw",
       line: {
-        ...line.currentLine,
+        ...routes.currentRoute,
         smartPoints,
       },
     });
   },
 
   stopDrawing: () => {
-    mutate(({ line }) => {
-      line.currentLine = null;
+    mutate(({ routes }) => {
+      routes.currentRoute = null;
     });
   },
 

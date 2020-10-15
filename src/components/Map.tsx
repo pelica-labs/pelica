@@ -7,7 +7,7 @@ import React, { useEffect, useRef } from "react";
 import { DocumentTitle } from "~/components/DocumentTitle";
 import { useApp, useStoreSubscription } from "~/core/app";
 import { applyGeometries } from "~/core/geometries";
-import { STOP_DRAWING_CIRCLE_ID } from "~/core/line";
+import { STOP_DRAWING_CIRCLE_ID } from "~/core/routes";
 import { computeMapDimensions } from "~/lib/aspectRatio";
 import { getEnv } from "~/lib/config";
 import { styleToUrl } from "~/lib/style";
@@ -33,7 +33,7 @@ export const Map: React.FC = () => {
     const accessToken = getEnv("NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN", process.env.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN);
 
     const {
-      mapView: { coordinates, zoom, bearing, pitch },
+      map: { coordinates, zoom, bearing, pitch },
       editor: { style },
       geometries,
     } = app;
@@ -88,7 +88,7 @@ export const Map: React.FC = () => {
    * Sync coordinates
    */
   useStoreSubscription(
-    (store) => store.mapView.coordinates,
+    (store) => store.map.coordinates,
     (coordinates) => {
       map.current?.flyTo({
         center: {
@@ -103,7 +103,7 @@ export const Map: React.FC = () => {
    * Sync zoom
    */
   useStoreSubscription(
-    (store) => store.mapView.zoom,
+    (store) => store.map.zoom,
     (zoom) => {
       map.current?.zoomTo(zoom);
     }
@@ -113,7 +113,7 @@ export const Map: React.FC = () => {
    * Sync bearing
    */
   useStoreSubscription(
-    (store) => store.mapView.bearing,
+    (store) => store.map.bearing,
     (bearing) => {
       map.current?.setBearing(bearing);
     }
@@ -123,7 +123,7 @@ export const Map: React.FC = () => {
    * Sync pitch
    */
   useStoreSubscription(
-    (store) => store.mapView.pitch,
+    (store) => store.map.pitch,
     (pitch) => {
       map.current?.setPitch(pitch);
     }
@@ -158,7 +158,7 @@ export const Map: React.FC = () => {
    * Sync place
    */
   useStoreSubscription(
-    (store) => store.mapView.place,
+    (store) => store.map.place,
     (place) => {
       if (!place) {
         return;
@@ -227,29 +227,29 @@ export const Map: React.FC = () => {
     (store) => ({
       editorMode: store.editor.mode,
       geometries: store.geometries.items,
-      currentLine: store.line.currentLine,
-      drawing: store.line.drawing,
+      currentRoute: store.routes.currentRoute,
+      drawing: store.routes.drawing,
       selectedGeometryId: store.selection.selectedGeometryId,
     }),
-    ({ editorMode, geometries, currentLine, drawing, selectedGeometryId }) => {
+    ({ editorMode, geometries, currentRoute, drawing, selectedGeometryId }) => {
       if (!map.current) {
         return;
       }
 
       const allGeometries = [...geometries];
 
-      if (currentLine) {
-        allGeometries.push(currentLine);
+      if (currentRoute) {
+        allGeometries.push(currentRoute);
 
-        if (!drawing && currentLine.points.length > 1) {
+        if (!drawing && currentRoute.points.length > 1) {
           allGeometries.push({
             id: STOP_DRAWING_CIRCLE_ID,
             type: "Circle",
             source: MapSource.Routes,
-            coordinates: currentLine.points[currentLine.points.length - 1],
+            coordinates: currentRoute.points[currentRoute.points.length - 1],
             style: {
-              color: currentLine.style.color,
-              width: currentLine.style.width,
+              color: currentRoute.style.color,
+              width: currentRoute.style.width,
             },
           });
         }

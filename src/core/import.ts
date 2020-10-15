@@ -5,7 +5,7 @@ import { MapSource } from "~/map/sources";
 
 export const imports = ({ get }: App) => ({
   importGpx: (file: File) => {
-    const { mapView, history, line } = get();
+    const { map, history, routes } = get();
 
     const reader = new FileReader();
 
@@ -27,14 +27,14 @@ export const imports = ({ get }: App) => ({
           points,
           smartPoints: [],
           style: {
-            color: line.color,
-            width: line.width,
-            outlineColor: line.outlineColor,
+            color: routes.color,
+            width: routes.width,
+            outlineColor: routes.outlineColor,
           },
         },
       });
 
-      mapView.move(points[0], 6, 0, 0);
+      map.move(points[0], 6, 0, 0);
     };
 
     reader.readAsText(file);

@@ -1,6 +1,5 @@
-import { throttle } from "lodash";
 import React, { useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { Trans } from "react-i18next";
 import BounceLoader from "react-spinners/BounceLoader";
 
 import { AspectRatioSelector } from "~/components/AspectRatioSelector";
@@ -18,7 +17,6 @@ import { useBrowserFeatures } from "~/hooks/useBrowserFeatures";
 import { useDimensions } from "~/hooks/useDimensions";
 import { useHotkey } from "~/hooks/useHotkey";
 import { dataUrlToBlob } from "~/lib/fileConversion";
-import { SmartMatching } from "~/lib/smartMatching";
 import { Style } from "~/lib/style";
 import { theme } from "~/styles/tailwind";
 
@@ -28,7 +26,6 @@ type Props = {
 
 export const Sidebar: React.FC<Props> = ({ initialStyles }) => {
   const app = useApp();
-  const { t } = useTranslation();
   const editorMode = useStore((store) => store.editor.mode);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const sidebarDimensions = useDimensions(sidebarRef.current);
@@ -63,14 +60,14 @@ export const Sidebar: React.FC<Props> = ({ initialStyles }) => {
       <div className="flex flex-col bg-gray-900 text-gray-200 w-32 md:w-48 lg:w-64 h-full overflow-y-auto">
         <div className="flex justify-between items-center px-3 h-8 py-2 bg-gray-800">
           <span className="text-xs uppercase text-gray-300 font-light tracking-wide leading-none">
-            {t(`editor.mode.${editorMode}`)}
+            <Trans i18nKey={`editor.mode.${editorMode}`} />
           </span>
           <MenuButton />
         </div>
 
         {editorMode === "style" && <StyleSidebar initialStyles={initialStyles} />}
 
-        {editorMode === "select" && <MoveSidebar />}
+        {editorMode === "select" && <SelectSidebar />}
 
         {editorMode === "pin" && <PinSidebar />}
 
@@ -115,63 +112,23 @@ const AspectRatioSidebar: React.FC = () => {
   );
 };
 
-const MoveSidebar: React.FC = () => {
+const SelectSidebar: React.FC = () => {
   const app = useApp();
   const selectedGeometryId = useStore((store) => store.selection.selectedGeometryId);
   const selectedGeometry = useStore((store) => store.geometries.items).find(
     (geometry) => geometry.id === selectedGeometryId
   );
 
-  if (!selectedGeometry) {
+  if (selectedGeometry?.type !== "Point" && selectedGeometry?.type !== "Line") {
     return null;
   }
-
-  if (selectedGeometry.type !== "Point" && selectedGeometry.type !== "Line") {
-    return null;
-  }
-
-  const onColorChange = throttle((color: string) => {
-    if (selectedGeometry.type === "Line") {
-      app.line.transientUpdateSelectedLine(color, selectedGeometry.style.width);
-    } else if (selectedGeometry.type === "Point") {
-      app.pin.transientUpdateSelectedPin(selectedGeometry.style.icon, color, selectedGeometry.style.width);
-    }
-  }, 200);
-
-  const onColorChangeComplete = (color: string) => {
-    if (selectedGeometry.type === "Line") {
-      app.line.updateSelectedLine(color, selectedGeometry.style.width);
-    } else if (selectedGeometry.type === "Point") {
-      app.pin.updateSelectedPin(selectedGeometry.style.icon, color, selectedGeometry.style.width);
-    }
-  };
-
-  const onWidthChange = (width: number) => {
-    if (selectedGeometry.type === "Line") {
-      app.line.transientUpdateSelectedLine(selectedGeometry.style.color, width);
-    } else if (selectedGeometry.type === "Point") {
-      app.pin.transientUpdateSelectedPin(selectedGeometry.style.icon, selectedGeometry.style.color, width);
-    }
-  };
-
-  const onWidthChangeComplete = (width: number) => {
-    if (selectedGeometry.type === "Line") {
-      app.line.updateSelectedLine(selectedGeometry.style.color, width);
-    } else if (selectedGeometry.type === "Point") {
-      app.pin.updateSelectedPin(selectedGeometry.style.icon, selectedGeometry.style.color, width);
-    }
-  };
-
-  const onSmartMatchingChange = (smartMatching: SmartMatching) => {
-    app.line.updateSelectedLineSmartMatching(smartMatching);
-  };
 
   return (
     <>
       <div className="flex items-center justify-between px-3 py-2 border-b border-t bg-gray-800 border-gray-700">
         <span className="text-xs uppercase font-light tracking-wide leading-none">
           <span className="text-gray-500">Selection:</span>
-          <span className="ml-2">{selectedGeometry?.type}</span>
+          <span className="ml-2">{selectedGeometry.type}</span>
         </span>
         <Button
           className="bg-gray-900 text-gray-200"
@@ -195,10 +152,18 @@ const MoveSidebar: React.FC = () => {
           <ColorPicker
             value={selectedGeometry.style.color}
             onChange={(color) => {
-              onColorChange(color);
+              if (selectedGeometry.type === "Line") {
+                app.routes.transientUpdateSelectedLine(color, selectedGeometry.style.width);
+              } else if (selectedGeometry.type === "Point") {
+                app.pins.transientUpdateSelectedPin(selectedGeometry.style.icon, color, selectedGeometry.style.width);
+              }
             }}
             onChangeComplete={(color) => {
-              onColorChangeComplete(color);
+              if (selectedGeometry.type === "Line") {
+                app.routes.updateSelectedLine(color, selectedGeometry.style.width);
+              } else if (selectedGeometry.type === "Point") {
+                app.pins.updateSelectedPin(selectedGeometry.style.icon, color, selectedGeometry.style.width);
+              }
             }}
           />
         </div>
@@ -220,10 +185,18 @@ const MoveSidebar: React.FC = () => {
             min={1}
             value={selectedGeometry.style.width}
             onChange={(width) => {
-              onWidthChange(width);
+              if (selectedGeometry.type === "Line") {
+                app.routes.transientUpdateSelectedLine(selectedGeometry.style.color, width);
+              } else if (selectedGeometry.type === "Point") {
+                app.pins.transientUpdateSelectedPin(selectedGeometry.style.icon, selectedGeometry.style.color, width);
+              }
             }}
             onChangeComplete={(width) => {
-              onWidthChangeComplete(width);
+              if (selectedGeometry.type === "Line") {
+                app.routes.updateSelectedLine(selectedGeometry.style.color, width);
+              } else if (selectedGeometry.type === "Point") {
+                app.pins.updateSelectedPin(selectedGeometry.style.icon, selectedGeometry.style.color, width);
+              }
             }}
           />
         </div>
@@ -237,7 +210,7 @@ const MoveSidebar: React.FC = () => {
             <IconSelector
               value={selectedGeometry.style.icon}
               onChange={(icon) => {
-                app.pin.updateSelectedPin(icon, selectedGeometry.style.color, selectedGeometry.style.width);
+                app.pins.updateSelectedPin(icon, selectedGeometry.style.color, selectedGeometry.style.width);
               }}
             />
           </div>
@@ -252,7 +225,7 @@ const MoveSidebar: React.FC = () => {
             <SmartMatchingSelector
               value={selectedGeometry.smartMatching}
               onChange={(smartMatching) => {
-                onSmartMatchingChange(smartMatching);
+                app.routes.updateSelectedLineSmartMatching(smartMatching);
               }}
             />
           </div>
@@ -264,9 +237,9 @@ const MoveSidebar: React.FC = () => {
 
 const PinSidebar: React.FC = () => {
   const app = useApp();
-  const color = useStore((store) => store.pin.color);
-  const width = useStore((store) => store.pin.width);
-  const icon = useStore((store) => store.pin.icon);
+  const color = useStore((store) => store.pins.color);
+  const width = useStore((store) => store.pins.width);
+  const icon = useStore((store) => store.pins.icon);
 
   return (
     <>
@@ -279,10 +252,10 @@ const PinSidebar: React.FC = () => {
           <ColorPicker
             value={color}
             onChange={(color) => {
-              app.pin.setColor(color);
+              app.pins.setColor(color);
             }}
             onChangeComplete={(color) => {
-              app.pin.setColor(color);
+              app.pins.setColor(color);
             }}
           />
         </div>
@@ -301,10 +274,10 @@ const PinSidebar: React.FC = () => {
             min={1}
             value={width}
             onChange={(width) => {
-              app.pin.setWidth(width);
+              app.pins.setWidth(width);
             }}
             onChangeComplete={(width) => {
-              app.pin.setWidth(width);
+              app.pins.setWidth(width);
             }}
           />
         </div>
@@ -317,7 +290,7 @@ const PinSidebar: React.FC = () => {
           <IconSelector
             value={icon}
             onChange={(icon) => {
-              app.pin.setIcon(icon);
+              app.pins.setIcon(icon);
             }}
           />
         </div>
@@ -329,9 +302,9 @@ const PinSidebar: React.FC = () => {
 const DrawSidebar: React.FC = () => {
   const app = useApp();
   const fileInput = useRef<HTMLInputElement>(null);
-  const color = useStore((store) => store.line.color);
-  const width = useStore((store) => store.line.width);
-  const smartMatching = useStore((store) => store.line.smartMatching);
+  const color = useStore((store) => store.routes.color);
+  const width = useStore((store) => store.routes.width);
+  const smartMatching = useStore((store) => store.routes.smartMatching);
 
   return (
     <>
@@ -344,10 +317,10 @@ const DrawSidebar: React.FC = () => {
           <ColorPicker
             value={color}
             onChange={(color) => {
-              app.line.setColor(color);
+              app.routes.setColor(color);
             }}
             onChangeComplete={(color) => {
-              app.line.setColor(color);
+              app.routes.setColor(color);
             }}
           />
         </div>
@@ -366,10 +339,10 @@ const DrawSidebar: React.FC = () => {
             min={1}
             value={width}
             onChange={(width) => {
-              app.line.setWidth(width);
+              app.routes.setWidth(width);
             }}
             onChangeComplete={(width) => {
-              app.line.setWidth(width);
+              app.routes.setWidth(width);
             }}
           />
         </div>
@@ -382,7 +355,7 @@ const DrawSidebar: React.FC = () => {
           <SmartMatchingSelector
             value={smartMatching}
             onChange={(smartMatching) => {
-              app.line.setSmartMatching(smartMatching);
+              app.routes.setSmartMatching(smartMatching);
             }}
           />
         </div>
@@ -415,8 +388,8 @@ const DrawSidebar: React.FC = () => {
 
 const ItinerarySidebar: React.FC = () => {
   const app = useApp();
-  const color = useStore((store) => store.line.color);
-  const width = useStore((store) => store.line.width);
+  const color = useStore((store) => store.routes.color);
+  const width = useStore((store) => store.routes.width);
 
   return (
     <>
@@ -429,10 +402,10 @@ const ItinerarySidebar: React.FC = () => {
           <ColorPicker
             value={color}
             onChange={(color) => {
-              app.line.setColor(color);
+              app.routes.setColor(color);
             }}
             onChangeComplete={(color) => {
-              app.line.setColor(color);
+              app.routes.setColor(color);
             }}
           />
         </div>
@@ -451,10 +424,10 @@ const ItinerarySidebar: React.FC = () => {
             min={1}
             value={width}
             onChange={(width) => {
-              app.line.setWidth(width);
+              app.routes.setWidth(width);
             }}
             onChangeComplete={(width) => {
-              app.line.setWidth(width);
+              app.routes.setWidth(width);
             }}
           />
         </div>

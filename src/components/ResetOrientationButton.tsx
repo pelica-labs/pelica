@@ -6,8 +6,8 @@ import { useApp, useStore } from "~/core/app";
 
 export const ResetOrientationButton: React.FC = () => {
   const app = useApp();
-  const bearing = useStore((store) => store.mapView.bearing);
-  const pitch = useStore((store) => store.mapView.pitch);
+  const bearing = useStore((store) => store.map.bearing);
+  const pitch = useStore((store) => store.map.pitch);
 
   const showControls = bearing || pitch;
 
@@ -20,7 +20,7 @@ export const ResetOrientationButton: React.FC = () => {
       color="none"
       shadow={false}
       onClick={() => {
-        app.mapView.resetOrientation();
+        app.map.resetOrientation();
       }}
     >
       <CompassIcon className="w-5 h-5 text-gray-900" />

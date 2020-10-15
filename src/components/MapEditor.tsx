@@ -18,7 +18,7 @@ type Props = {
 
 export const MapEditor: React.FC<Props> = ({ initialStyles }) => {
   const app = useApp();
-  const place = useStore((store) => store.mapView.place);
+  const place = useStore((store) => store.map.place);
   const editorMode = useStore((store) => store.editor.mode);
   const currentItinerary = useStore((store) => store.itineraries.currentItinerary);
   const itineraryContainer = useRef<HTMLDivElement>(null);
@@ -82,13 +82,13 @@ export const MapEditor: React.FC<Props> = ({ initialStyles }) => {
                 collapsesWhenEmpty
                 value={place}
                 onChange={(place) => {
-                  app.mapView.setPlace(place);
+                  app.map.setPlace(place);
                 }}
               />
 
               <GeolocationButton
                 onChange={(coordinates) => {
-                  app.mapView.move(coordinates, 16, 0, 0);
+                  app.map.move(coordinates, 16, 0, 0);
                 }}
               />
             </>

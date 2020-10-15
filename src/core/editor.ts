@@ -36,7 +36,7 @@ export const editor = ({ mutate, get }: App) => ({
   },
 
   setEditorMode: (mode: EditorMode) => {
-    mutate(({ editor, selection, line }) => {
+    mutate(({ editor, selection, routes }) => {
       editor.mode = mode;
 
       if (editor.mode !== "select") {
@@ -44,7 +44,7 @@ export const editor = ({ mutate, get }: App) => ({
       }
 
       if (editor.mode !== "draw") {
-        line.currentLine = null;
+        routes.currentRoute = null;
       }
     });
   },

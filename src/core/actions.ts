@@ -29,8 +29,8 @@ type DrawAction = {
 };
 
 const DrawHandler: Handler<DrawAction> = {
-  apply: ({ geometries, line }, action) => {
-    line.currentLine = action.line;
+  apply: ({ geometries, routes }, action) => {
+    routes.currentRoute = action.line;
 
     const lineIndex = geometries.items.findIndex((line) => line.id === action.line.id);
 
@@ -39,23 +39,23 @@ const DrawHandler: Handler<DrawAction> = {
       geometries.items.push(action.line);
     } else {
       action.previousLength = (geometries.items[lineIndex] as PolyLine).points.length;
-      geometries.items[lineIndex] = line.currentLine;
+      geometries.items[lineIndex] = routes.currentRoute;
     }
   },
 
-  undo: ({ geometries, line }, action) => {
+  undo: ({ geometries, routes }, action) => {
     const lineIndex = geometries.items.findIndex((line) => line.id === action.line.id);
 
-    if (line.currentLine?.id !== action.line.id) {
-      line.currentLine = action.line;
+    if (routes.currentRoute?.id !== action.line.id) {
+      routes.currentRoute = action.line;
     }
 
-    line.currentLine.points = line.currentLine.points.slice(0, action.previousLength);
+    routes.currentRoute.points = routes.currentRoute.points.slice(0, action.previousLength);
     const savedLine = geometries.items[lineIndex] as PolyLine;
     savedLine.points = savedLine.points.slice(0, action.previousLength);
 
     if (action.previousLength === 0) {
-      line.currentLine = null;
+      routes.currentRoute = null;
       geometries.items.splice(lineIndex, 1);
     }
   },

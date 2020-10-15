@@ -34,7 +34,7 @@ export const StyleSelector: React.FC<Props> = ({ value, onChange, initialStyles 
     }
 
     const {
-      mapView: { coordinates, zoom, bearing, pitch },
+      map: { coordinates, zoom, bearing, pitch },
     } = getState();
 
     const stylesById = keyBy(data.styles, (style) => style.id);
