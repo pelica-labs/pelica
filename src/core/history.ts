@@ -1,5 +1,3 @@
-import { last } from "lodash";
-
 import { Action, Handler, handlers } from "~/core/actions";
 import { App } from "~/core/helpers";
 
@@ -35,8 +33,7 @@ export const history = ({ mutate }: App) => ({
 
   undo: () => {
     mutate((state) => {
-      const { history } = state;
-      const lastAction = history.actions.pop();
+      const lastAction = state.history.actions.pop();
       if (!lastAction) {
         return;
       }
@@ -50,18 +47,16 @@ export const history = ({ mutate }: App) => ({
         throw error;
       }
 
-      history.redoStack.push(lastAction);
+      state.history.redoStack.push(lastAction);
     });
   },
 
   redo: () => {
     mutate((state) => {
-      const lastUndoneAction = last(state.history.redoStack);
+      const lastUndoneAction = state.history.redoStack.pop();
       if (!lastUndoneAction) {
         return;
       }
-
-      state.history.redoStack.splice(state.history.redoStack.length - 1);
 
       state.history.actions.push(lastUndoneAction);
 

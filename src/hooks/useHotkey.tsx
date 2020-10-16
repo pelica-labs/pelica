@@ -14,10 +14,10 @@ export const useHotkey = (hotkey: Hotkey, callback: Callback): (() => ReturnType
   const onKey = useCallback((event: KeyboardEvent) => {
     const match =
       event.key === hotkey.key &&
-      (!(hotkey.ctrl ?? false) || event.ctrlKey === hotkey.ctrl) &&
-      (!(hotkey.shift ?? false) || event.shiftKey === hotkey.shift) &&
-      (!(hotkey.alt ?? false) || event.altKey === hotkey.alt) &&
-      (!(hotkey.meta ?? false) || event.metaKey === hotkey.meta);
+      (hotkey.ctrl === undefined || event.ctrlKey === hotkey.ctrl) &&
+      (hotkey.shift === undefined || event.shiftKey === hotkey.shift) &&
+      (hotkey.alt === undefined || event.altKey === hotkey.alt) &&
+      (hotkey.meta === undefined || event.metaKey === hotkey.meta);
 
     if (!match) {
       return;
@@ -35,7 +35,7 @@ export const useHotkey = (hotkey: Hotkey, callback: Callback): (() => ReturnType
     window.addEventListener("keydown", onKey, false);
 
     return () => {
-      window.removeEventListener("keydown", onKey, false);
+      window.addEventListener("keydown", onKey, false);
     };
   }, []);
 

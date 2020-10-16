@@ -179,34 +179,6 @@ export const Map: React.FC = () => {
   );
 
   /**
-   * Sync current itinerary
-   */
-  useStoreSubscription(
-    (store) => store.itineraries.currentItinerary,
-    (itinerary) => {
-      const places = itinerary.filter((place) => !!place.bbox);
-      if (!places.length) {
-        return;
-      }
-
-      const box = bbox(
-        transformScale(
-          lineString(
-            places.map((place) => {
-              return place.center;
-            })
-          ),
-          1.2
-        )
-      );
-
-      map.current?.fitBounds(box as LngLatBoundsLike, {
-        padding: 10,
-      });
-    }
-  );
-
-  /**
    * Sync style
    */
   useStoreSubscription(

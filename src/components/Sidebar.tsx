@@ -241,7 +241,7 @@ const SelectSidebar: React.FC = () => {
         </div>
       )}
 
-      {selectedGeometry.type === "Line" && (
+      {selectedGeometry.type === "Line" && !selectedGeometry.steps && (
         <div className="px-3 pb-2 mb-2 border-b border-gray-700">
           <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Routes</span>
 

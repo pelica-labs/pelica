@@ -142,6 +142,7 @@ export const routes = ({ mutate, get }: App) => ({
 
   stopDrawing: () => {
     mutate(({ routes }) => {
+      routes.drawing = false;
       routes.currentRoute = null;
     });
   },

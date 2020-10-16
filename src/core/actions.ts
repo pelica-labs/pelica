@@ -1,5 +1,6 @@
 import { State } from "~/core/app";
-import { Coordinates, Geometry, Line, Point } from "~/core/geometries";
+import { Coordinates, Geometry, ItineraryLine, Line, Point } from "~/core/geometries";
+import { Place } from "~/core/itineraries";
 import { PinStyle } from "~/core/pins";
 import { RouteStyle } from "~/core/routes";
 import { SmartMatching } from "~/lib/smartMatching";
@@ -12,6 +13,10 @@ export type Handler<T extends Action> = {
 
 export type Action =
   | DrawAction
+  | AddRouteStepAction
+  | UpdateRouteStepAction
+  | MoveRouteStepAction
+  | DeleteRouteStepAction
   | PinAction
   | ImportGpxAction
   | UpdateStyleAction
@@ -252,8 +257,110 @@ const UpdateLineSmartMatchingHandler: Handler<UpdateLineSmartMatchingAction> = {
 
 // ---
 
+type AddRouteStepAction = {
+  name: "addRouteStep";
+  geometryId: number;
+  place: Place;
+};
+
+const AddRouteStepActionHandler: Handler<AddRouteStepAction> = {
+  apply: (state, action) => {
+    const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as ItineraryLine;
+
+    geometry.steps.push(action.place);
+  },
+
+  undo: (state, action) => {
+    const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as ItineraryLine;
+
+    geometry.steps.splice(geometry.steps.length - 1, 1);
+  },
+};
+
+// ---
+
+type UpdateRouteStepAction = {
+  name: "updateRouteStep";
+  geometryId: number;
+  index: number;
+  place: Place;
+
+  previousPlace?: Place;
+};
+
+const UpdateRouteStepActionHandler: Handler<UpdateRouteStepAction> = {
+  apply: (state, action) => {
+    const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as ItineraryLine;
+
+    action.previousPlace = geometry.steps[action.index];
+    geometry.steps[action.index] = action.place;
+  },
+
+  undo: (state, action) => {
+    const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as ItineraryLine;
+
+    geometry.steps[action.index] = action.previousPlace;
+  },
+};
+
+// ---
+
+type MoveRouteStepAction = {
+  name: "moveRouteStep";
+  geometryId: number;
+  from: number;
+  to: number;
+};
+
+const MoveRouteStepActionHandler: Handler<MoveRouteStepAction> = {
+  apply: (state, action) => {
+    const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as ItineraryLine;
+
+    const [place] = geometry.steps.splice(action.from, 1);
+    geometry.steps.splice(action.to, 0, place);
+  },
+
+  undo: (state, action) => {
+    const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as ItineraryLine;
+
+    const [place] = geometry.steps.splice(action.to, 1);
+    geometry.steps.splice(action.from, 0, place);
+  },
+};
+
+// ---
+
+type DeleteRouteStepAction = {
+  name: "deleteRouteStep";
+  geometryId: number;
+  index: number;
+
+  place?: Place;
+};
+
+const DeleteRouteStepActionHandler: Handler<DeleteRouteStepAction> = {
+  apply: (state, action) => {
+    const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as ItineraryLine;
+
+    action.place = geometry.steps[action.index];
+    geometry.steps.splice(action.index, 1);
+  },
+
+  undo: (state, action) => {
+    const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as ItineraryLine;
+
+    geometry.steps.splice(action.index, 0, action.place);
+  },
+};
+
+// ---
+
 export const handlers = {
   draw: DrawHandler,
+  addRouteStep: AddRouteStepActionHandler,
+  updateRouteStep: UpdateRouteStepActionHandler,
+  moveRouteStep: MoveRouteStepActionHandler,
+  deleteRouteStep: DeleteRouteStepActionHandler,
   pin: PinHandler,
   importGpx: ImportGpxHandler,
   movePin: MovePinHandler,

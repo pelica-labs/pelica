@@ -36,16 +36,28 @@ export const editor = ({ mutate, get }: App) => ({
   },
 
   setEditorMode: (mode: EditorMode) => {
-    mutate(({ editor, selection, routes }) => {
-      editor.mode = mode;
+    if (mode === get().editor.mode) {
+      return;
+    }
 
-      if (editor.mode !== "select") {
-        selection.selectedGeometryId = null;
-      }
-
-      if (editor.mode !== "draw") {
-        routes.currentRoute = null;
-      }
+    mutate((state) => {
+      state.editor.mode = mode;
     });
+
+    if (mode !== "select") {
+      get().selection.unselectGeometry();
+    }
+
+    if (mode !== "draw") {
+      get().routes.stopDrawing();
+    }
+
+    if (mode !== "itinerary") {
+      get().itineraries.close();
+    }
+
+    if (mode === "itinerary") {
+      get().itineraries.startNewItininerary();
+    }
   },
 });

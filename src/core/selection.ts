@@ -13,15 +13,25 @@ export const selection = ({ mutate, get }: App) => ({
   ...initialState,
 
   selectGeometry: (feature: GeoJSON.Feature<GeoJSON.Geometry>) => {
-    mutate(({ selection }) => {
-      selection.selectedGeometryId = feature.id as number;
+    get().selection.unselectGeometry();
+
+    mutate((state) => {
+      state.selection.selectedGeometryId = feature.id as number;
     });
+
+    const selectedGeometry = get().geometries.items.find((item) => item.id === get().selection.selectedGeometryId);
+
+    if (selectedGeometry?.type === "Line" && selectedGeometry.steps) {
+      get().itineraries.open(selectedGeometry.id);
+    }
   },
 
   unselectGeometry: () => {
-    mutate(({ selection }) => {
-      selection.selectedGeometryId = null;
+    mutate((state) => {
+      state.selection.selectedGeometryId = null;
     });
+
+    get().itineraries.close();
   },
 
   deleteSelectedGeometry: () => {
@@ -32,5 +42,7 @@ export const selection = ({ mutate, get }: App) => ({
       name: "deleteGeometry",
       geometryId: selectedGeometry.id,
     });
+
+    get().itineraries.close();
   },
 });

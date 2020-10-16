@@ -1,7 +1,7 @@
 import { DirectionsResponse } from "@mapbox/mapbox-sdk/services/directions";
 import classNames from "classnames";
 import React, { useEffect, useRef, useState } from "react";
-import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import BounceLoader from "react-spinners/BounceLoader";
 
 import { Button } from "~/components/Button";
@@ -39,13 +39,28 @@ const Profiles: ProfileConfiguration[] = [
 
 type Props = {
   value: Place[];
-  onChange: (value: Place[]) => void;
+
+  onStepAdded: (value: Place) => void;
+  onStepUpdated: (index: number, place: Place | null) => void;
+  onStepMoved: (from: number, to: number) => void;
+  onStepDeleted: (index: number) => void;
+
+  onLoadingRoute: () => void;
   onRouteFound: (value: Coordinates[]) => void;
 
   bias?: Coordinates;
 };
 
-export const ItineraryInput: React.FC<Props> = ({ value, onChange, onRouteFound, bias }) => {
+export const ItineraryInput: React.FC<Props> = ({
+  value,
+  onStepAdded,
+  onStepUpdated,
+  onStepMoved,
+  onStepDeleted,
+  onLoadingRoute,
+  onRouteFound,
+  bias,
+}) => {
   const [profile, setProfile] = useState<Profile>("driving");
   const [isComputing, setIsComputing] = useState(false);
   const [hasErrored, setHasErrored] = useState(false);
@@ -53,46 +68,6 @@ export const ItineraryInput: React.FC<Props> = ({ value, onChange, onRouteFound,
   const newInputContainer = useRef<HTMLDivElement>(null);
 
   const Icon = value.length ? PlusIcon : SearchIcon;
-
-  const onAddPlace = (place: Place) => {
-    const places = [...value];
-    places.push(place);
-
-    onChange(places);
-
-    if (places.length === 1) {
-      setTimeout(() => {
-        newInputContainer.current?.querySelector("input")?.focus();
-      }, 500);
-    }
-  };
-
-  const onChangePlace = (place: Place, index: number) => {
-    const places = [...value];
-    places[index] = place;
-
-    onChange(places);
-  };
-
-  const onDeletePlace = (index: number) => {
-    const places = [...value];
-    places.splice(index, 1);
-
-    onChange(places);
-  };
-
-  const onMovePlace = (result: DropResult | null) => {
-    if (!result || !result.destination) {
-      return;
-    }
-
-    const places = [...value];
-
-    const [place] = places.splice(result.source.index, 1);
-    places.splice(result.destination.index, 0, place);
-
-    onChange(places);
-  };
 
   const computeItinerary = async () => {
     if (profile === "direct") {
@@ -136,9 +111,11 @@ export const ItineraryInput: React.FC<Props> = ({ value, onChange, onRouteFound,
 
   useEffect(() => {
     if (value.length <= 1) {
+      onRouteFound([]);
       return;
     }
 
+    onLoadingRoute();
     setIsComputing(true);
     setHasErrored(false);
 
@@ -183,7 +160,15 @@ export const ItineraryInput: React.FC<Props> = ({ value, onChange, onRouteFound,
         </div>
       </div>
 
-      <DragDropContext onDragEnd={onMovePlace}>
+      <DragDropContext
+        onDragEnd={(result) => {
+          if (!result || !result.destination) {
+            return;
+          }
+
+          onStepMoved(result.source.index, result.destination.index);
+        }}
+      >
         <Droppable droppableId="droppable">
           {(provided, snapshot) => (
             <div
@@ -224,9 +209,7 @@ export const ItineraryInput: React.FC<Props> = ({ value, onChange, onRouteFound,
                             clearable={false}
                             value={place}
                             onChange={(place) => {
-                              if (place) {
-                                onChangePlace(place, index);
-                              }
+                              onStepUpdated(index, place);
                             }}
                           />
                         </div>
@@ -235,7 +218,7 @@ export const ItineraryInput: React.FC<Props> = ({ value, onChange, onRouteFound,
                           className="absolute right-0 mr-2 focus:outline-none hidden group-hover:block rounded-full border border-gray-700 bg-gray-900 hover:bg-orange-900 py-1"
                           tabIndex={-1}
                           onClick={() => {
-                            onDeletePlace(index);
+                            onStepDeleted(index);
                           }}
                         >
                           <CloseIcon className="mx-1 w-3 h-3 text-gray-500" />
@@ -260,9 +243,11 @@ export const ItineraryInput: React.FC<Props> = ({ value, onChange, onRouteFound,
           leftIcon={null}
           value={null}
           onChange={(place) => {
-            if (place) {
-              onAddPlace(place);
+            if (!place) {
+              return;
             }
+
+            onStepAdded(place);
           }}
         />
       </div>

@@ -8,6 +8,7 @@ import { ResetOrientationButton } from "~/components/ResetOrientationButton";
 import { Sidebar } from "~/components/Sidebar";
 import { Tips } from "~/components/Tips";
 import { useApp, useStore, useStoreSubscription } from "~/core/app";
+import { ItineraryLine } from "~/core/geometries";
 import { useKeyboard } from "~/hooks/useKeyboard";
 import { useScreenDimensions } from "~/hooks/useScreenDimensions";
 import { Style } from "~/lib/style";
@@ -21,7 +22,9 @@ export const MapEditor: React.FC<Props> = ({ initialStyles }) => {
   const place = useStore((store) => store.map.place);
   const editorMode = useStore((store) => store.editor.mode);
   const currentLocation = useStore((store) => store.geolocation.currentLocation);
-  const currentItinerary = useStore((store) => store.itineraries.currentItinerary);
+  const currentItinerary = useStore(
+    (store) => store.geometries.items.find((item) => item.id === store.itineraries.geometryId) as ItineraryLine
+  );
   const itineraryContainer = useRef<HTMLDivElement>(null);
 
   useKeyboard();
@@ -63,22 +66,34 @@ export const MapEditor: React.FC<Props> = ({ initialStyles }) => {
 
       {editorMode !== "export" && (
         <div className="absolute top-0 left-0 flex flex-col space-y-2 mt-2 ml-2">
-          {editorMode === "itinerary" && (
+          {currentItinerary?.steps && (
             <div ref={itineraryContainer}>
               <ItineraryInput
                 bias={currentLocation ?? undefined}
-                value={currentItinerary}
-                onChange={(places) => {
-                  app.itineraries.updateCurrentItinerary(places);
+                value={currentItinerary.steps}
+                onLoadingRoute={() => {
+                  app.itineraries.toggleLoading();
                 }}
                 onRouteFound={(points) => {
-                  app.itineraries.displayCurrentItinerary(points);
+                  app.itineraries.resolveCurrentItinerary(points);
+                }}
+                onStepAdded={(place) => {
+                  app.itineraries.addStep(place);
+                }}
+                onStepDeleted={(index) => {
+                  app.itineraries.deleteStep(index);
+                }}
+                onStepMoved={(from, to) => {
+                  app.itineraries.moveStep(from, to);
+                }}
+                onStepUpdated={(index, place) => {
+                  app.itineraries.updateStep(index, place);
                 }}
               />
             </div>
           )}
 
-          {editorMode !== "itinerary" && (
+          {!currentItinerary && (
             <>
               <PlaceAutocomplete
                 collapsesWhenEmpty

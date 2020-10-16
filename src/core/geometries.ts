@@ -2,6 +2,7 @@ import { distance } from "@turf/turf";
 import { GeoJSONSource } from "mapbox-gl";
 
 import { App } from "~/core/helpers";
+import { Place } from "~/core/itineraries";
 import { RouteStyle } from "~/core/routes";
 import { outlineColor } from "~/lib/color";
 import { SmartMatching } from "~/lib/smartMatching";
@@ -60,6 +61,11 @@ export type Line = {
   smartMatching: SmartMatching;
   style: RouteStyle;
   transientStyle?: RouteStyle;
+  steps?: Place[];
+};
+
+export type ItineraryLine = Line & {
+  steps: Place[];
 };
 
 export const computeDistance = (line: Line): number => {

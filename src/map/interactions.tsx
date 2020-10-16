@@ -147,7 +147,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   };
 
   const onClick = (event: MapMouseEvent) => {
-    const { editor } = getState();
+    const { editor, itineraries } = getState();
 
     if (editor.mode === "pin") {
       app.pins.place(event.lngLat.lat, event.lngLat.lng);
@@ -157,13 +157,11 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
       app.routes.draw(event.lngLat.lat, event.lngLat.lng);
     }
 
-    if (!justClickedLayer && editor.mode === "itinerary") {
+    if (!justClickedLayer && itineraries.geometryId) {
       const { lat, lng } = event.lngLat;
 
-      app.itineraries.addStep({ latitude: lat, longitude: lng });
-    }
-
-    if (!justClickedLayer) {
+      app.itineraries.addManualStep({ latitude: lat, longitude: lng });
+    } else if (!justClickedLayer) {
       app.selection.unselectGeometry();
     }
   };
