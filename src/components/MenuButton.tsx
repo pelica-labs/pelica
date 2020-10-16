@@ -108,7 +108,7 @@ export const MenuButton: React.FC = () => {
                       )}
                     </Menu.Item>
 
-                    <div className="border-t border-gray-700 my-1" />
+                    <div className="border-t my-1" />
 
                     <Menu.Item>
                       {({ active }) => (

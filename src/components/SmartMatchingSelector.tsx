@@ -105,7 +105,7 @@ export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange }) => {
                     });
                   }}
                 >
-                  <profileConfiguration.icon className="w-4 h-4" />
+                  <profileConfiguration.icon className="w-6 h-6" />
                 </IconButton>
               </div>
             );
