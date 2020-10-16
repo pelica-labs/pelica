@@ -1,11 +1,12 @@
 import { bbox, lineString, transformScale } from "@turf/turf";
+import classNames from "classnames";
 import { debounce } from "lodash";
 import mapboxgl, { LngLatBoundsLike } from "mapbox-gl";
 import Head from "next/head";
 import React, { useEffect, useRef } from "react";
 
 import { DocumentTitle } from "~/components/DocumentTitle";
-import { useApp, useStoreSubscription } from "~/core/app";
+import { useApp, useStore, useStoreSubscription } from "~/core/app";
 import { applyGeometries } from "~/core/geometries";
 import { STOP_DRAWING_CIRCLE_ID } from "~/core/routes";
 import { computeMapDimensions } from "~/lib/aspectRatio";
@@ -21,6 +22,7 @@ export const Map: React.FC = () => {
   const map = useRef<mapboxgl.Map>();
   const container = useRef<HTMLDivElement>(null);
   const wrapper = useRef<HTMLDivElement>(null);
+  const aspectRatio = useStore((state) => state.editor.aspectRatio);
 
   /**
    * Initialize map
@@ -78,20 +80,20 @@ export const Map: React.FC = () => {
     }, 1000)
   );
 
-  // /**
-  //  * Sync coordinates
-  //  */
-  // useStoreSubscription(
-  //   (store) => store.map.coordinates,
-  //   (coordinates) => {
-  //     map.current?.flyTo({
-  //       center: {
-  //         lng: coordinates.longitude,
-  //         lat: coordinates.latitude,
-  //       },
-  //     });
-  //   }
-  // );
+  /**
+   * Sync coordinates
+   */
+  useStoreSubscription(
+    (store) => store.map.coordinates,
+    (coordinates) => {
+      map.current?.flyTo({
+        center: {
+          lng: coordinates.longitude,
+          lat: coordinates.latitude,
+        },
+      });
+    }
+  );
 
   /**
    * Sync zoom
@@ -144,7 +146,8 @@ export const Map: React.FC = () => {
 
       canvas.style.width = "100%";
       canvas.style.height = "100%";
-      map.current?.resize();
+      // queues this up for after all rerender occurs.
+      setTimeout(() => map.current?.resize(), 0);
     }
   );
 
@@ -157,7 +160,6 @@ export const Map: React.FC = () => {
       if (!place) {
         return;
       }
-      console.log(place);
       if (place.bbox) {
         map.current?.fitBounds(place.bbox as LngLatBoundsLike, { padding: 10 });
       } else {
@@ -322,7 +324,11 @@ export const Map: React.FC = () => {
         <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
       </Head>
       <DocumentTitle />
-      <div className="flex justify-center items-center w-full h-full bg-gray-200 lg:px-20 lg:py-6">
+      <div
+        className={classNames("flex justify-center items-center w-full h-full bg-gray-200", {
+          "lg:px-20 lg:py-6": aspectRatio !== "fill",
+        })}
+      >
         <div ref={container} className="w-full h-full flex justify-center items-center">
           <div ref={wrapper} className="w-full h-full shadow-md border border-gray-400" id="map" />
         </div>
