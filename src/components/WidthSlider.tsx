@@ -31,7 +31,7 @@ export const WidthSlider: React.FC<Props> = ({ value, onChange, onChangeComplete
       min={min}
       railStyle={{
         height: 4,
-        backgroundColor: theme.colors.gray[200],
+        backgroundColor: theme.colors.gray[400],
       }}
       trackStyle={{ backgroundColor: color, height: 4 }}
       value={width}

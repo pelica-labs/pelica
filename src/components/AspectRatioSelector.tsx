@@ -27,7 +27,7 @@ export const AspectRatioSelector: React.FC<Props> = ({ value, onChange }) => {
 
               <span className="text-xs flex-1 text-left ml-2">{configuration.name}</span>
               {configuration.ratio && (
-                <span className="ml-4 text-xs text-gray-500">
+                <span className="ml-4 text-xs text-gray-600">
                   {configuration.ratio[0]} x {configuration.ratio[1]}
                 </span>
               )}

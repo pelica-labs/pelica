@@ -58,25 +58,25 @@ export const StyleSelector: React.FC<Props> = ({ value, onChange, initialStyles 
   }
 
   return (
-    <div className="bg-gray-900 text-white rounded shadow flex flex-col items-start space-y-1 p-1">
+    <div className="flex flex-col items-start space-y-1 p-1">
       {data.styles.map((style) => {
         const isSelectedStyle = value.id === style.id;
         const containerClasses = classnames({
-          "flex flex-col items-start p-2 rounded font-medium cursor-pointer hover:bg-orange-900 w-full h-40": true,
-          "bg-orange-700": isSelectedStyle,
+          "flex flex-col items-start p-2 rounded font-medium cursor-pointer hover:bg-orange-200 w-full h-40": true,
+          "bg-orange-300": isSelectedStyle,
         });
 
         return (
-          <div
+          <button
             key={style.id}
             className={containerClasses}
             onClick={() => {
               onChange(style);
             }}
           >
-            <span className="text-xs uppercase text-gray-200  inline-flex whitespace-no-wrap">{style.name}</span>
+            <span className="text-xs uppercase text-gray-800  inline-flex whitespace-no-wrap">{style.name}</span>
             <StylePreview src={previews[style.id]} />
-          </div>
+          </button>
         );
       })}
     </div>

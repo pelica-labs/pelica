@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import BounceLoader from "react-spinners/BounceLoader";
 
-import { Button } from "~/components/Button";
+import { ToolbarButton } from "~/components/Button";
 import {
   BicycleIcon,
   CarIcon,
@@ -139,27 +139,27 @@ export const ItineraryInput: React.FC<Props> = ({
   }, [value, profile]);
 
   return (
-    <div className="flex flex-col bg-gray-800 rounded shadow pb-1 pt-1">
+    <div className="flex flex-col bg-white rounded shadow p-4">
       <div className="flex items-center">
         <div className="w-8 flex mr-px justify-center">
           {isComputing && <BounceLoader color={theme.colors.orange[500]} size={8} />}
         </div>
 
-        <div className="flex items-center bg-gray-900 rounded">
+        <div className="flex items-center bg-white gap-1">
           {Profiles.map((profileConfiguration) => {
             return (
               <div key={profileConfiguration.profile}>
-                <Button
+                <ToolbarButton
                   outlined
                   active={profile === profileConfiguration.profile}
-                  className="text-gray-200"
+                  className="text-gray-800"
                   shadow={false}
                   onClick={() => {
                     onProfileUpdated(profileConfiguration.profile);
                   }}
                 >
-                  <profileConfiguration.icon className="w-4 h-4" />
-                </Button>
+                  <profileConfiguration.icon className="w-6 h-6" />
+                </ToolbarButton>
               </div>
             );
           })}
@@ -193,7 +193,7 @@ export const ItineraryInput: React.FC<Props> = ({
             <div
               className={classNames({
                 "p-1 pb-0 rounded": true,
-                "bg-gray-700": snapshot.isDraggingOver,
+                "bg-gray-200": snapshot.isDraggingOver,
               })}
               {...provided.droppableProps}
               ref={provided.innerRef}
@@ -206,13 +206,13 @@ export const ItineraryInput: React.FC<Props> = ({
                         ref={provided.innerRef}
                         className={classNames({
                           "relative group flex items-center rounded mb-1": true,
-                          "bg-orange-800": snapshot.isDragging,
+                          "bg-orange-100": snapshot.isDragging,
                         })}
                         {...provided.draggableProps}
                       >
                         <div
                           className={classNames({
-                            "ml-1 mr-2 text-gray-500": true,
+                            "ml-1 mr-2 text-gray-600": true,
                             "opacity-0": value.length === 1,
                           })}
                           {...provided.dragHandleProps}
@@ -234,13 +234,13 @@ export const ItineraryInput: React.FC<Props> = ({
                         </div>
 
                         <button
-                          className="absolute right-0 mr-2 focus:outline-none hidden group-hover:block rounded-full border border-gray-700 bg-gray-900 hover:bg-orange-900 py-1"
+                          className="absolute right-0 mr-2 focus:outline-none hidden group-hover:block rounded-full border border-gray-600 bg-white hover:bg-orange-100 py-1"
                           tabIndex={-1}
                           onClick={() => {
                             onStepDeleted(index);
                           }}
                         >
-                          <CloseIcon className="mx-1 w-3 h-3 text-gray-500" />
+                          <CloseIcon className="mx-1 w-3 h-3 text-gray-600" />
                         </button>
                       </div>
                     )}
@@ -254,7 +254,7 @@ export const ItineraryInput: React.FC<Props> = ({
       </DragDropContext>
 
       <div ref={newInputContainer} className="flex items-center mr-1">
-        <Icon className="mx-2 text-gray-500 w-4 h-4" />
+        <Icon className="mx-2 text-gray-600 w-4 h-4" />
         <PlaceAutocomplete
           dense
           bias={bias}
