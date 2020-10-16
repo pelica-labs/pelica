@@ -19,15 +19,15 @@ export const Button: React.FC<Props> = ({
   ...attributes
 }) => {
   const buttonClasses = classnames({
-    "flex items-center py-1 px-2 focus:outline-none": true,
+    "flex items-center py-1 px-2 focus:outline-none focus:border-orange-300": true,
     ...(className && {
       [className]: true,
     }),
     "rounded": rounded,
     "shadow": shadow,
-    [`hover:bg-${color}-900`]: !active && !attributes.disabled,
-    [`bg-${color}-700`]: !outlined && active,
-    [`border border-${color}-700`]: outlined && active,
+    [`hover:bg-${color}-200`]: !active && !attributes.disabled,
+    [`bg-${color}-300`]: !outlined && active,
+    [`border border-${color}-500`]: outlined && active,
     "border border-transparent": outlined && !active,
     ["opacity-50 cursor-auto"]: attributes.disabled,
   });

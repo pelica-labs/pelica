@@ -6,7 +6,7 @@ import { smartMatch, SmartMatching, SmartMatchingProfile } from "~/lib/smartMatc
 import { MapSource } from "~/map/sources";
 import { theme } from "~/styles/tailwind";
 
-export type OutlineType = "dark" | "light" | "black" | "none";
+export type OutlineType = "dark" | "light" | "black" | "glow" | "none";
 
 export type RouteStyle = {
   width: number;

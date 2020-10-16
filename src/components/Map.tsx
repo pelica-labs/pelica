@@ -35,7 +35,6 @@ export const Map: React.FC = () => {
     const {
       map: { coordinates, zoom, bearing, pitch },
       editor: { style },
-      geometries,
     } = app;
 
     map.current = new mapboxgl.Map({
@@ -46,6 +45,7 @@ export const Map: React.FC = () => {
       zoom,
       bearing,
       pitch,
+      doubleClickZoom: false,
       fadeDuration: 0,
       logoPosition: "bottom-right",
       preserveDrawingBuffer: true,
@@ -65,12 +65,6 @@ export const Map: React.FC = () => {
       applyImageMissingHandler(map);
 
       map.getCanvas().style.outline = "none";
-
-      map.on("styledata", () => {
-        applySources(map);
-        applyLayers(map);
-        applyGeometries(map, geometries.items);
-      });
     });
   }, []);
 
@@ -84,20 +78,20 @@ export const Map: React.FC = () => {
     }, 1000)
   );
 
-  /**
-   * Sync coordinates
-   */
-  useStoreSubscription(
-    (store) => store.map.coordinates,
-    (coordinates) => {
-      map.current?.flyTo({
-        center: {
-          lng: coordinates.longitude,
-          lat: coordinates.latitude,
-        },
-      });
-    }
-  );
+  // /**
+  //  * Sync coordinates
+  //  */
+  // useStoreSubscription(
+  //   (store) => store.map.coordinates,
+  //   (coordinates) => {
+  //     map.current?.flyTo({
+  //       center: {
+  //         lng: coordinates.longitude,
+  //         lat: coordinates.latitude,
+  //       },
+  //     });
+  //   }
+  // );
 
   /**
    * Sync zoom
@@ -163,7 +157,7 @@ export const Map: React.FC = () => {
       if (!place) {
         return;
       }
-
+      console.log(place);
       if (place.bbox) {
         map.current?.fitBounds(place.bbox as LngLatBoundsLike, { padding: 10 });
       } else {
@@ -179,16 +173,25 @@ export const Map: React.FC = () => {
   );
 
   /**
-   * Sync style
+   * Sync style then reapply layers and geometries
    */
   useStoreSubscription(
     (store) => store.editor.style,
     (style) => {
-      if (!style) {
+      if (!style || !map.current) {
         return;
       }
 
+      const geometries = useApp().geometries;
+
       map.current?.setStyle(styleToUrl(style));
+
+      map.current?.once("styledata", () => {
+        if (!map.current) return;
+        applySources(map.current);
+        applyLayers(map.current);
+        applyGeometries(map.current, geometries.items);
+      });
     }
   );
 
@@ -299,14 +302,30 @@ export const Map: React.FC = () => {
     }
   );
 
+  /**
+   * Sync events
+   */
+  useStoreSubscription(
+    (store) => store.editor.mode,
+    (mode) => {
+      if (mode === "draw") {
+        map.current?.dragPan.disable();
+      } else {
+        map.current?.dragPan.enable();
+      }
+    }
+  );
+
   return (
     <>
       <Head>
         <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
       </Head>
       <DocumentTitle />
-      <div ref={container} className="flex justify-center items-center w-full h-full p-1 bg-gray-700">
-        <div ref={wrapper} className="w-full h-full shadow" id="map" />
+      <div className="flex justify-center items-center w-full h-full bg-gray-200 lg:px-20 lg:py-6">
+        <div ref={container} className="w-full h-full flex justify-center items-center">
+          <div ref={wrapper} className="w-full h-full shadow-md border border-gray-400" id="map" />
+        </div>
       </div>
     </>
   );

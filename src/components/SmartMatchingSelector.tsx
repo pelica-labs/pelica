@@ -1,16 +1,10 @@
+import { Switch } from "@headlessui/react";
+import classNames from "classnames";
 import React, { useState } from "react";
 import Popover from "react-popover";
 
-import { Button } from "~/components/Button";
-import {
-  BicycleIcon,
-  CarIcon,
-  CheckboxIcon,
-  EmptyCheckboxIcon,
-  Icon,
-  InformationIcon,
-  WalkingIcon,
-} from "~/components/Icon";
+import { BicycleIcon, CarIcon, Icon, InformationIcon, WalkingIcon } from "~/components/Icon";
+import { IconButton } from "~/components/IconButton";
 import { SmartMatching, SmartMatchingProfile } from "~/lib/smartMatching";
 import { theme } from "~/styles/tailwind";
 
@@ -35,30 +29,47 @@ export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange }) => {
   const [showTooltip, setShowTooltip] = useState(false);
 
   return (
-    <div className="flex flex-wrap items-center">
-      <Button
-        className="bg-gray-900 text-gray-200 mt-px"
-        onClick={() => {
-          onChange({
-            enabled: !value.enabled,
-            profile: value.enabled ? null : "driving",
-          });
-        }}
-      >
-        {value.enabled ? <CheckboxIcon className="w-3 h-3" /> : <EmptyCheckboxIcon className="w-3 h-3" />}
-        <span className="ml-2 text-xs text-left">Smart matching</span>
-      </Button>
+    <div className="text-sm">
+      <div className="w-full flex items-center">
+        <Switch.Group as="div" className="flex items-center space-x-4">
+          <Switch.Label>Smart matching</Switch.Label>
+          <Switch
+            as="button"
+            checked={value.enabled}
+            className={classNames(
+              { "bg-orange-600": value.enabled, "bg-gray-400": !value.enabled },
+              "relative inline-flex flex-shrink-0 h-4 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer w-7 focus:outline-none focus:shadow-outline"
+            )}
+            onChange={() => {
+              onChange({
+                enabled: !value.enabled,
+                profile: value.enabled ? null : "driving",
+              });
+            }}
+          >
+            {({ checked }) => (
+              <span
+                className={classNames(
+                  {
+                    "translate-x-3": checked,
+                    "translate-x-0": !checked,
+                  },
+                  "inline-block w-3 h-3 transition duration-200 ease-in-out transform bg-white rounded-full"
+                )}
+              />
+            )}
+          </Switch>
+        </Switch.Group>
 
-      {!value.enabled && (
         <Popover
           body={
-            <div className="bg-gray-900 rounded px-2 py-2 text-xs border border-orange-500 shadow text-gray-200 w-64 flex flex-col space-y-2">
-              <span className="text-xs uppercase font-light tracking-wide leading-none border-b border-gray-700 pb-2 flex items-center">
+            <div className="bg-white rounded px-2 py-2 text-xs border shadow text-gray-800 w-64 flex flex-col space-y-2">
+              <span className="text-xs uppercase font-light tracking-wide leading-none border-b border-gray-500 pb-2 flex items-center">
                 <InformationIcon className="w-3 h-3" />
                 <span className="ml-1">Smart matching</span>
               </span>
               <span>Match your drawing to nearby roads.</span>
-              <span className="text-gray-500">Works best when fully zoomed.</span>
+              <span className="text-gray-600">Works best when fully zoomed.</span>
               <img className="w-full mt-2 rounded-sm" src="/images/smart-matching-demo.gif" />
             </div>
           }
@@ -68,29 +79,25 @@ export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange }) => {
           place="left"
           style={{ fill: theme.colors.orange[500] }}
           tipSize={4}
+          onOuterAction={() => setShowTooltip(false)}
         >
           <InformationIcon
             className="ml-2 w-3 h-3 cursor-pointer"
-            onMouseEnter={() => {
-              setShowTooltip(true);
-            }}
-            onMouseLeave={() => {
-              setShowTooltip(false);
+            onClick={() => {
+              setShowTooltip(!showTooltip);
             }}
           />
         </Popover>
-      )}
+      </div>
 
       {value.enabled && (
-        <div className="ml-2 flex items-center border border-gray-800 rounded">
+        <div className="mt-2 inline-flex items-center gap-2 rounded border">
           {Profiles.map((profileConfiguration) => {
             return (
               <div key={profileConfiguration.profile}>
-                <Button
-                  outlined
+                <IconButton
                   active={value.profile === profileConfiguration.profile}
-                  className="text-gray-200"
-                  shadow={false}
+                  className="text-gray-800"
                   onClick={() => {
                     onChange({
                       enabled: true,
@@ -98,8 +105,8 @@ export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange }) => {
                     });
                   }}
                 >
-                  <profileConfiguration.icon className="w-3 h-3" />
-                </Button>
+                  <profileConfiguration.icon className="w-6 h-6" />
+                </IconButton>
               </div>
             );
           })}

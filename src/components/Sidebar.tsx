@@ -53,16 +53,16 @@ export const Sidebar: React.FC<Props> = ({ initialStyles }) => {
     <div ref={sidebarRef} className="flex-grow relative flex items-end">
       {sidebarDimensions && (
         <div
-          className="fixed top-0 flex flex-col bg-gray-900 border border-gray-800 m-2 p-1 shadow rounded"
+          className="fixed top-0 flex flex-col bg-white border m-2 p-1 shadow rounded"
           style={{ right: sidebarDimensions.width }}
         >
           <Toolbar />
         </div>
       )}
 
-      <div className="flex flex-col bg-gray-900 text-gray-200 w-32 md:w-48 lg:w-64 h-full overflow-y-auto">
-        <div className="flex justify-between items-center px-3 h-8 py-2 bg-gray-800">
-          <span className="text-xs uppercase text-gray-300 font-light tracking-wide leading-none">
+      <div className="flex flex-col bg-white text-gray-800 w-32 md:w-48 lg:w-64 h-full overflow-y-auto shadow-md">
+        <div className="flex justify-between items-center px-3 h-8 py-2 bg-gray-100 border-b">
+          <span className="text-xs uppercase text-gray-800 font-light tracking-wide leading-none">
             <Trans i18nKey={`editor.mode.${editorMode}`} />
           </span>
           <MenuButton />
@@ -128,13 +128,13 @@ const SelectSidebar: React.FC = () => {
 
   return (
     <>
-      <div className="flex items-center justify-between px-3 py-2 border-b border-t bg-gray-800 border-gray-700">
+      <div className="flex items-center justify-between px-3 py-2 border-b border-t bg-white">
         <span className="text-xs uppercase font-light tracking-wide leading-none">
-          <span className="text-gray-500">Selection:</span>
+          <span className="text-gray-600">Selection:</span>
           <span className="ml-2">{selectedGeometry.type}</span>
         </span>
         <Button
-          className="bg-gray-900 text-gray-200"
+          className="bg-gray-300 text-gray-800"
           onClick={() => {
             app.selection.deleteSelectedGeometry();
           }}
@@ -143,9 +143,9 @@ const SelectSidebar: React.FC = () => {
         </Button>
       </div>
 
-      <div className="mt-4 px-2 pb-2 mb-2 border-b border-gray-700">
+      <div className="mt-4 px-2 pb-2 mb-2 border-b">
         <div className="flex items-center px-1">
-          <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Color</span>
+          <SidebarHeading>Color</SidebarHeading>
           <div
             className="ml-2 w-3 h-3 rounded-full border border-gray-200"
             style={{ backgroundColor: selectedGeometry.transientStyle?.color ?? selectedGeometry.style.color }}
@@ -172,9 +172,9 @@ const SelectSidebar: React.FC = () => {
         </div>
       </div>
 
-      <div className="mt-2 px-3 pb-3 mb-2 border-b border-gray-700">
+      <div className="mt-2 px-3 pb-3 mb-2 border-b">
         <div className="flex items-center">
-          <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Width</span>
+          <SidebarHeading>Width</SidebarHeading>
           <div className="ml-2 flex justify-center items-center w-3 h-3 rounded-full">
             <div
               className="rounded-full"
@@ -211,9 +211,9 @@ const SelectSidebar: React.FC = () => {
       </div>
 
       {selectedGeometry.type === "Line" && (
-        <div className="mt-2 px-3 pb-3 mb-2 border-b border-gray-700">
+        <div className="mt-2 px-3 pb-3 mb-2 border-b">
           <div className="flex items-center">
-            <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Outline</span>
+            <SidebarHeading>Outline</SidebarHeading>
           </div>
           <div className="mt-4">
             <OutlineSelector
@@ -227,8 +227,8 @@ const SelectSidebar: React.FC = () => {
       )}
 
       {selectedGeometry.type === "Point" && (
-        <div className="mt-2 px-3 pb-2 border-b border-gray-700">
-          <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Icon</span>
+        <div className="mt-2 px-3 pb-2 border-b">
+          <SidebarHeading>Icon</SidebarHeading>
 
           <div className="mt-2">
             <IconSelector
@@ -242,9 +242,8 @@ const SelectSidebar: React.FC = () => {
       )}
 
       {selectedGeometry.type === "Line" && !selectedGeometry.itinerary && (
-        <div className="px-3 pb-2 mb-2 border-b border-gray-700">
-          <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Routes</span>
-
+        <div className="px-3 pb-2 mb-2 border-b">
+          <SidebarHeading>Routes</SidebarHeading>
           <div className="mt-2">
             <SmartMatchingSelector
               value={selectedGeometry.smartMatching}
@@ -257,8 +256,8 @@ const SelectSidebar: React.FC = () => {
       )}
 
       {selectedGeometry.type === "Line" && (
-        <div className="mt-auto px-3 py-2 border-t border-gray-700">
-          <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Inspect</span>
+        <div className="mt-auto px-3 py-2 border-t">
+          <SidebarHeading>Inspect</SidebarHeading>
 
           <div className="mt-2">
             <div className="flex items-center text-xs">
@@ -280,9 +279,9 @@ const PinSidebar: React.FC = () => {
 
   return (
     <>
-      <div className="mt-4 px-2 pb-2 mb-2 border-b border-gray-700">
+      <div className="mt-4 px-2 pb-2 mb-2 border-b">
         <div className="flex items-center px-1">
-          <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Color</span>
+          <SidebarHeading>Color</SidebarHeading>
           <div className="ml-2 w-3 h-3 rounded-full border border-gray-200" style={{ backgroundColor: color }} />
         </div>
         <div className="mt-4">
@@ -298,9 +297,9 @@ const PinSidebar: React.FC = () => {
         </div>
       </div>
 
-      <div className="mt-2 px-3 pb-3 mb-2 border-b border-gray-700">
+      <div className="mt-2 px-3 pb-3 mb-2 border-b">
         <div className="flex items-center">
-          <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Width</span>
+          <SidebarHeading>Width</SidebarHeading>
           <div className="ml-2 flex justify-center items-center w-3 h-3 rounded-full">
             <div className="rounded-full" style={{ width: width, height: width, backgroundColor: color }} />
           </div>
@@ -321,8 +320,8 @@ const PinSidebar: React.FC = () => {
         </div>
       </div>
 
-      <div className="px-3 pb-2 mb-2 border-b border-gray-700">
-        <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Icon</span>
+      <div className="px-3 pb-2 mb-2 border-b">
+        <SidebarHeading>Icon</SidebarHeading>
 
         <div className="mt-2">
           <IconSelector
@@ -350,9 +349,9 @@ const DrawSidebar: React.FC = () => {
 
   return (
     <>
-      <div className="mt-4 px-2 pb-2 mb-2 border-b border-gray-700">
+      <div className="mt-4 px-2 pb-2 mb-2 border-b">
         <div className="flex items-center px-1">
-          <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Color</span>
+          <SidebarHeading>Color</SidebarHeading>
           <div className="ml-2 w-3 h-3 rounded-full border border-gray-200" style={{ backgroundColor: color }} />
         </div>
         <div className="mt-4">
@@ -368,9 +367,9 @@ const DrawSidebar: React.FC = () => {
         </div>
       </div>
 
-      <div className="mt-2 px-3 pb-3 mb-2 border-b border-gray-700">
+      <div className="mt-2 px-3 pb-3 mb-2 border-b">
         <div className="flex items-center">
-          <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Width</span>
+          <SidebarHeading>Width</SidebarHeading>
           <div className="ml-2 flex justify-center items-center w-3 h-3 rounded-full">
             <div className="rounded-full" style={{ width: width, height: width, backgroundColor: color }} />
           </div>
@@ -391,9 +390,9 @@ const DrawSidebar: React.FC = () => {
         </div>
       </div>
 
-      <div className="mt-2 px-3 pb-3 mb-2 border-b border-gray-700">
+      <div className="mt-2 px-3 pb-3 mb-2 border-b">
         <div className="flex items-center">
-          <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Outline</span>
+          <SidebarHeading>Outline</SidebarHeading>
         </div>
         <div className="mt-4">
           <OutlineSelector
@@ -405,8 +404,8 @@ const DrawSidebar: React.FC = () => {
         </div>
       </div>
 
-      <div className="px-3 pb-2 mb-2 border-b border-gray-700">
-        <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Routes</span>
+      <div className="px-3 pb-2 mb-2 border-b">
+        <SidebarHeading>Routes</SidebarHeading>
 
         <div className="mt-2">
           <SmartMatchingSelector
@@ -419,9 +418,9 @@ const DrawSidebar: React.FC = () => {
       </div>
 
       <div className="px-3 flex justify-between items-center">
-        <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Import</span>
+        <SidebarHeading>Import</SidebarHeading>
         <Button
-          className="bg-gray-900 text-gray-200 mt-1"
+          className="bg-gray-300 text-gray-800 mt-1"
           onClick={() => {
             fileInput.current?.click();
           }}
@@ -441,9 +440,8 @@ const DrawSidebar: React.FC = () => {
       </div>
 
       {selectedGeometry && (
-        <div className="mt-auto px-3 py-2 border-t border-gray-700">
-          <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Inspect</span>
-
+        <div className="mt-auto px-3 py-2 border-t">
+          <SidebarHeading>Inspect</SidebarHeading>
           <div className="mt-2">
             <div className="flex items-center text-xs">
               <span className="mr-4">Distance</span>
@@ -467,9 +465,9 @@ const ItinerarySidebar: React.FC = () => {
 
   return (
     <>
-      <div className="mt-4 px-2 pb-2 mb-2 border-b border-gray-700">
+      <div className="mt-4 px-2 pb-2 mb-2 border-b">
         <div className="flex items-center px-1">
-          <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Color</span>
+          <SidebarHeading>Color</SidebarHeading>
           <div className="ml-2 w-3 h-3 rounded-full border border-gray-200" style={{ backgroundColor: color }} />
         </div>
         <div className="mt-4">
@@ -485,9 +483,9 @@ const ItinerarySidebar: React.FC = () => {
         </div>
       </div>
 
-      <div className="mt-2 px-3 pb-3 mb-2 border-b border-gray-700">
+      <div className="mt-2 px-3 pb-3 mb-2 border-b">
         <div className="flex items-center">
-          <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Width</span>
+          <SidebarHeading>Width</SidebarHeading>
           <div className="ml-2 flex justify-center items-center w-3 h-3 rounded-full">
             <div className="rounded-full" style={{ width: width, height: width, backgroundColor: color }} />
           </div>
@@ -508,9 +506,9 @@ const ItinerarySidebar: React.FC = () => {
         </div>
       </div>
 
-      <div className="mt-2 px-3 pb-3 mb-2 border-b border-gray-700">
+      <div className="mt-2 px-3 pb-3 mb-2 border-b">
         <div className="flex items-center">
-          <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Outline</span>
+          <SidebarHeading>Outline</SidebarHeading>
         </div>
         <div className="mt-4">
           <OutlineSelector
@@ -523,9 +521,8 @@ const ItinerarySidebar: React.FC = () => {
       </div>
 
       {selectedGeometry && (
-        <div className="mt-auto px-3 py-2 mb-1 border-t border-gray-700">
-          <span className="text-xs uppercase text-gray-500 font-light tracking-wide leading-none">Inspect</span>
-
+        <div className="mt-auto px-3 py-2 mb-1 border-t">
+          <SidebarHeading>Inspect</SidebarHeading>
           <div className="mt-2">
             <div className="flex items-center text-xs">
               <span className="mr-4">Distance</span>
@@ -599,7 +596,7 @@ const ExportSidebar: React.FC = () => {
     <>
       <div className="mt-4 px-3 flex flex-col space-y-4">
         <Button
-          className="bg-orange-700 text-gray-200 border border-orange-500 hover:border-orange-800 text-xs uppercase py-2 justify-center"
+          className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-100 text-xs uppercase py-2 justify-center"
           disabled={!image}
           onClick={() => {
             onDownload();
@@ -610,7 +607,7 @@ const ExportSidebar: React.FC = () => {
 
         {shareFeature && (
           <Button
-            className="bg-orange-700 text-gray-200 border border-orange-500 hover:border-orange-800 text-xs uppercase py-2 justify-center"
+            className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-100 text-xs uppercase py-2 justify-center"
             disabled={!imageUrl}
             onClick={() => {
               onShare();
@@ -629,4 +626,8 @@ const ExportSidebar: React.FC = () => {
       <img className="mt-auto mx-auto mb-12 w-32 h-32" src="/images/logo.png" />
     </>
   );
+};
+
+const SidebarHeading: React.FC = ({ children }) => {
+  return <span className="text-xs uppercase text-gray-800 font-light tracking-wide leading-none">{children}</span>;
 };

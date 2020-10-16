@@ -198,12 +198,12 @@ export const PlaceAutocomplete: React.FC<Props> = ({
   };
 
   return (
-    <div
+    <button
       className={classNames({
-        "group relative bg-gray-900 text-gray-200 shadow flex flex-col transition-all duration-100 ease-in-out cursor-pointer": true,
+        "group relative bg-white border text-gray-800 shadow flex flex-col transition-all duration-100 ease-in-out cursor-pointer": true,
         ...(collapsesWhenEmpty && {
-          "w-56 rounded": isFocused || search,
-          "w-12 rounded-full border border-gray-700": !(isFocused || search),
+          "w-56 rounded-lg": isFocused || search,
+          "w-12 rounded-full": !(isFocused || search),
         }),
         ...(!collapsesWhenEmpty && {
           "w-56 rounded": true,
@@ -212,14 +212,14 @@ export const PlaceAutocomplete: React.FC<Props> = ({
       onClick={() => onFocus()}
     >
       {!!LeftIcon && !isFocused && !search.length && (
-        <LeftIcon className="absolute left-0 ml-3 mt-3 text-gray-600 w-6 h-6 group-hover:text-orange-500" />
+        <LeftIcon className="absolute left-0 ml-3 mt-3 text-gray-700 w-6 h-6 group-hover:text-orange-600" />
       )}
 
       <input
         ref={input}
         className={classNames({
-          "p-2 bg-transparent text-gray-200 w-full outline-none border-2 border-transparent cursor-pointer rounded-sm focus:border-orange-700 placeholder-opacity-50": true,
-          "text-gray-500 text-xs": value?.type === "Coordinates",
+          "p-2 bg-transparent text-gray-800 w-full outline-none border-2 border-transparent cursor-pointer rounded focus:border-orange-100 placeholder-opacity-50": true,
+          "text-gray-600 text-xs": value?.type === "Coordinates",
           "h-8 text-sm": dense && value?.type !== "Coordinates",
           "h-12 text-sm": !dense && value?.type !== "Coordinates",
         })}
@@ -234,7 +234,7 @@ export const PlaceAutocomplete: React.FC<Props> = ({
 
       {clearable && !!value && (
         <button
-          className="absolute flex justify-center items-center mt-3 mr-2 right-0 bg-gray-900 hover:bg-gray-800 outline-none rounded-full w-6 h-6 text-gray-600"
+          className="absolute flex justify-center items-center mt-3 mr-2 right-0 bg-gray-300 hover:bg-gray-200 outline-none rounded-full w-6 h-6 text-gray-700"
           onClick={() => onClearClick()}
         >
           <CloseIcon className="w-4 h-4" />
@@ -244,13 +244,15 @@ export const PlaceAutocomplete: React.FC<Props> = ({
       {isFocused && (
         <ul
           className={classNames({
-            "absolute left-0 right-0 flex flex-col text-sm bg-gray-900 z-10": true,
+            "absolute left-0 right-0 flex flex-col text-sm bg-white z-10 rounded border shadow": true,
             "mt-8": dense,
             "mt-12": !dense,
           })}
         >
           {showRecentSearches && results.length > 0 && (
-            <span className="p-2 text-xs text-gray-500 uppercase tracking-wide leading-none">Recent searches</span>
+            <span className="p-2 text-xs text-gray-600 uppercase tracking-wide leading-none border-b">
+              Recent searches
+            </span>
           )}
 
           {results.map((place, index) => {
@@ -260,8 +262,8 @@ export const PlaceAutocomplete: React.FC<Props> = ({
               <li key={place.id}>
                 <a
                   className={classNames({
-                    "block px-2 py-2 cursor-pointer border-b border-gray-700 hover:bg-orange-900 text-xs": true,
-                    "bg-orange-900": isKeyboardSelected,
+                    "w-full text-left block px-2 py-2 cursor-pointer border-b hover:bg-orange-200 text-xs": true,
+                    "bg-orange-200": isKeyboardSelected,
                   })}
                   onClick={(event) => onPlaceSelection(event, place)}
                   onMouseEnter={() => onPlaceHover(index)}
@@ -273,6 +275,6 @@ export const PlaceAutocomplete: React.FC<Props> = ({
           })}
         </ul>
       )}
-    </div>
+    </button>
   );
 };

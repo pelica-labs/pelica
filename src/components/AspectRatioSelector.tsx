@@ -18,16 +18,17 @@ export const AspectRatioSelector: React.FC<Props> = ({ value, onChange }) => {
             active={value === ratio}
             className="rounded-none"
             rounded={false}
+            shadow={false}
             onClick={() => {
               onChange(ratio);
             }}
           >
             <div className="flex items-center justify-between w-full">
-              <configuration.icon className="w-4 h-4" />
+              <configuration.icon className="w-6 h-6" />
 
               <span className="text-xs flex-1 text-left ml-2">{configuration.name}</span>
               {configuration.ratio && (
-                <span className="ml-4 text-xs text-gray-500">
+                <span className="ml-4 text-xs text-gray-600">
                   {configuration.ratio[0]} x {configuration.ratio[1]}
                 </span>
               )}

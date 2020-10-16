@@ -187,17 +187,14 @@ const geometryToFeature = (geometry: Geometry): GeoJSON.Feature<GeoJSON.Geometry
       type: "Feature",
       id: geometry.id,
       geometry: {
-        type: "MultiLineString",
-        coordinates: joinPoints(allPoints).map((line) => {
-          return line.map((point) => {
-            return [point.longitude, point.latitude];
-          });
-        }),
+        type: "LineString",
+        coordinates: allPoints.map((point) => [point.longitude, point.latitude]),
       },
       properties: {
         ...style,
         outlineColor: outlineColor(style.color, style.outline),
-        outlineWidth: style.outline !== "none" ? 1 : -1,
+        outlineWidth: style.outline === "none" ? -1 : style.outline === "glow" ? 7 : 1,
+        outlineBlur: style.outline === "glow" ? 5 : 0,
       },
     };
   }
@@ -270,17 +267,4 @@ export const applyGeometries = (map: mapboxgl.Map, geometries: Geometry[]): void
         }),
     });
   });
-};
-
-export const joinPoints = (points: Coordinates[]): Coordinates[][] => {
-  const lines: Coordinates[][] = [];
-
-  for (let i = 1; i < points.length; i++) {
-    const previousPoint = points[i - 1];
-    const point = points[i];
-
-    lines.push([previousPoint, point]);
-  }
-
-  return lines;
 };

@@ -28,8 +28,8 @@ export const MenuButton: React.FC = () => {
               <span className="flex rounded-md shadow-sm">
                 <Menu.Button
                   className={classNames({
-                    "inline-flex justify-center w-full text-sm font-medium leading-5 transition duration-150 ease-in-out text-gray-200 rounded-md focus:outline-none p-1": true,
-                    "bg-orange-900 rounded": open,
+                    "inline-flex justify-center w-full text-sm font-medium leading-5 transition duration-150 ease-in-out text-gray-800 rounded-md focus:outline-none p-1": true,
+                    "bg-orange-200 rounded": open,
                     "hover:text-orange-600": !open,
                   })}
                 >
@@ -40,7 +40,7 @@ export const MenuButton: React.FC = () => {
               {open && (
                 <Menu.Items
                   static
-                  className="absolute z-10 right-0 w-56 mt-1 origin-top-right bg-gray-900 border rounded border-orange-500 outline-none py-1"
+                  className="absolute z-10 right-0 w-56 mt-1 origin-top-right bg-white border rounded shadow outline-none py-1"
                 >
                   <div className="flex flex-col">
                     <Menu.Item disabled={!canUndo}>
@@ -48,9 +48,9 @@ export const MenuButton: React.FC = () => {
                         <a
                           className={classNames({
                             "flex items-center justify-between px-2 py-1": true,
-                            "bg-orange-900": active,
-                            "hover:bg-orange-900 cursor-pointer": !disabled,
-                            "text-gray-600": disabled,
+                            "bg-orange-200": active,
+                            "hover:bg-orange-200 cursor-pointer": !disabled,
+                            "text-gray-700": disabled,
                           })}
                           onClick={() => {
                             app.history.undo();
@@ -58,7 +58,7 @@ export const MenuButton: React.FC = () => {
                         >
                           <span className="flex items-center space-x-2">
                             <span className="text-sm">Undo</span>
-                            <UndoIcon className="w-3 h-3 text-gray-500" />
+                            <UndoIcon className="w-3 h-3 text-gray-700" />
                           </span>
                           <UndoHotkey />
                         </a>
@@ -70,9 +70,9 @@ export const MenuButton: React.FC = () => {
                         <a
                           className={classNames({
                             "flex items-center justify-between px-2 py-1": true,
-                            "bg-orange-900": active,
-                            "hover:bg-orange-900 cursor-pointer": !disabled,
-                            "text-gray-600": disabled,
+                            "bg-orange-200": active,
+                            "hover:bg-orange-200 cursor-pointer": !disabled,
+                            "text-gray-700": disabled,
                           })}
                           onClick={() => {
                             app.history.redo();
@@ -80,7 +80,7 @@ export const MenuButton: React.FC = () => {
                         >
                           <span className="flex items-center space-x-2">
                             <span className="text-sm">Redo</span>
-                            <RedoIcon className="w-3 h-3 text-gray-500" />
+                            <RedoIcon className="w-3 h-3 text-gray-600" />
                           </span>
                           <RedoHotkey />
                         </a>
@@ -92,9 +92,9 @@ export const MenuButton: React.FC = () => {
                         <a
                           className={classNames({
                             "flex items-center justify-between px-2 py-1": true,
-                            "bg-orange-900": active,
-                            "hover:bg-orange-900 cursor-pointer": !disabled,
-                            "text-gray-600": disabled,
+                            "bg-orange-200": active,
+                            "hover:bg-orange-200 cursor-pointer": !disabled,
+                            "text-gray-700": disabled,
                           })}
                           onClick={() => {
                             app.history.clear();
@@ -102,21 +102,21 @@ export const MenuButton: React.FC = () => {
                         >
                           <span className="flex items-center space-x-2">
                             <span className="text-sm">Clear canvas</span>
-                            <TrashIcon className="w-3 h-3 text-gray-500" />
+                            <TrashIcon className="w-3 h-3 text-gray-600" />
                           </span>
                         </a>
                       )}
                     </Menu.Item>
 
-                    <div className="border-t border-gray-700 my-1" />
+                    <div className="border-t my-1" />
 
                     <Menu.Item>
                       {({ active }) => (
                         <Link href="/">
                           <a
                             className={classNames({
-                              "text-gray-200 text-sm px-2 py-1 hover:bg-orange-900": true,
-                              "bg-orange-900": active,
+                              "text-gray-800 text-sm px-2 py-1 hover:bg-orange-200": true,
+                              "bg-orange-200": active,
                             })}
                           >
                             About Pelica
@@ -130,8 +130,8 @@ export const MenuButton: React.FC = () => {
                         <Link href="mailto:hey@pelica.co">
                           <a
                             className={classNames({
-                              "text-gray-200 text-sm px-2 py-1 hover:bg-orange-900": true,
-                              "bg-orange-900": active,
+                              "text-gray-800 text-sm px-2 py-1 hover:bg-orange-200": true,
+                              "bg-orange-200": active,
                             })}
                           >
                             Contact us
