@@ -241,7 +241,7 @@ export const PlaceAutocomplete: React.FC<Props> = ({
         </button>
       )}
 
-      {isFocused && (
+      {isFocused && results.length > 0 && (
         <ul
           className={classNames({
             "absolute left-0 right-0 flex flex-col text-sm bg-white z-10 rounded border shadow": true,
