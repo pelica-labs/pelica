@@ -122,6 +122,16 @@ export const applyLayers = (map: mapboxgl.Map): void => {
       "text-allow-overlap": true,
     },
   });
+
+  addLayer(map, {
+    id: "pinsInteractions",
+    type: "circle",
+    source: MapSource.Pins,
+    paint: {
+      "circle-radius": ["+", ["get", "width"], 5],
+      "circle-opacity": 0,
+    },
+  });
 };
 
 const addLayer = (map: mapboxgl.Map, layer: mapboxgl.Layer & { before?: string }) => {

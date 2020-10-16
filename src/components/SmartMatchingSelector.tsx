@@ -29,7 +29,7 @@ export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange }) => {
   const [showTooltip, setShowTooltip] = useState(false);
 
   return (
-    <div className="text-sm">
+    <div className="text-xs">
       <div className="w-full flex items-center">
         <Switch.Group as="div" className="flex items-center space-x-4">
           <Switch.Label>Smart matching</Switch.Label>
@@ -60,7 +60,6 @@ export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange }) => {
             )}
           </Switch>
         </Switch.Group>
-
         <Popover
           body={
             <div className="bg-white rounded px-2 py-2 text-xs border shadow text-gray-800 w-64 flex flex-col space-y-2">

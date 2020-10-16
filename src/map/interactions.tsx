@@ -297,22 +297,22 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
 
   updatemap();
 
-  map.on("mouseenter", "pins", onFeatureHoverStart);
-  map.on("mouseleave", "pins", onFeatureHoverEnd);
+  map.on("mouseenter", "pinsInteractions", onFeatureHoverStart);
+  map.on("mouseleave", "pinsInteractions", onFeatureHoverEnd);
   map.on("mouseenter", "routesInteractions", onFeatureHoverStart);
   map.on("mouseleave", "routesInteractions", onFeatureHoverEnd);
   map.on("mouseenter", "routesStop", onFeatureHoverStart);
   map.on("mouseleave", "routesStop", onFeatureHoverEnd);
   map.on("mousedown", "routesStop", onRouteStopClick);
   map.on("touchstart", "routesStop", onRouteStopClick);
-  map.on("click", "pins", onFeatureClick);
+  map.on("click", "pinsInteractions", onFeatureClick);
   map.on("click", "routesInteractions", onFeatureClick);
-  map.on("touchend", "pins", onFeatureClick);
+  map.on("touchend", "pinsInteractions", onFeatureClick);
   map.on("touchend", "routesInteractions", onFeatureClick);
-  map.on("contextmenu", "pins", onFeatureRightClick);
+  map.on("contextmenu", "pinsInteractions", onFeatureRightClick);
   map.on("contextmenu", "routesInteractions", onFeatureRightClick);
-  map.on("mousedown", "pins", onFeatureMouseDown);
-  map.on("touchstart", "pins", onFeatureMouseDown);
+  map.on("mousedown", "pinsInteractions", onFeatureMouseDown);
+  map.on("touchstart", "pinsInteractions", onFeatureMouseDown);
 
   map.on("moveend", updatemap);
   map.on("mousemove", onMouseMove);
