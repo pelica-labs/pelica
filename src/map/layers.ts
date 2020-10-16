@@ -71,6 +71,17 @@ export const applyLayers = (map: mapboxgl.Map): void => {
   });
 
   addLayer(map, {
+    id: "routesInteractions",
+    before: "routes",
+    type: "line",
+    source: MapSource.Routes,
+    paint: {
+      "line-width": ["+", ["get", "width"], 15],
+      "line-opacity": 0,
+    },
+  });
+
+  addLayer(map, {
     id: "routesStop",
     before: "waterway-label",
     type: "circle",

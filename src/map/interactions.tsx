@@ -299,18 +299,18 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
 
   map.on("mouseenter", "pins", onFeatureHoverStart);
   map.on("mouseleave", "pins", onFeatureHoverEnd);
-  map.on("mouseenter", "routes", onFeatureHoverStart);
-  map.on("mouseleave", "routes", onFeatureHoverEnd);
+  map.on("mouseenter", "routesInteractions", onFeatureHoverStart);
+  map.on("mouseleave", "routesInteractions", onFeatureHoverEnd);
   map.on("mouseenter", "routesStop", onFeatureHoverStart);
   map.on("mouseleave", "routesStop", onFeatureHoverEnd);
   map.on("mousedown", "routesStop", onRouteStopClick);
   map.on("touchstart", "routesStop", onRouteStopClick);
   map.on("click", "pins", onFeatureClick);
-  map.on("click", "routes", onFeatureClick);
+  map.on("click", "routesInteractions", onFeatureClick);
   map.on("touchend", "pins", onFeatureClick);
-  map.on("touchend", "routes", onFeatureClick);
+  map.on("touchend", "routesInteractions", onFeatureClick);
   map.on("contextmenu", "pins", onFeatureRightClick);
-  map.on("contextmenu", "routes", onFeatureRightClick);
+  map.on("contextmenu", "routesInteractions", onFeatureRightClick);
   map.on("mousedown", "pins", onFeatureMouseDown);
   map.on("touchstart", "pins", onFeatureMouseDown);
 
