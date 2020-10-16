@@ -77,20 +77,20 @@ export const Map: React.FC = () => {
     }, 1000)
   );
 
-  /**
-   * Sync coordinates
-   */
-  useStoreSubscription(
-    (store) => store.map.coordinates,
-    (coordinates) => {
-      map.current?.flyTo({
-        center: {
-          lng: coordinates.longitude,
-          lat: coordinates.latitude,
-        },
-      });
-    }
-  );
+  // /**
+  //  * Sync coordinates
+  //  */
+  // useStoreSubscription(
+  //   (store) => store.map.coordinates,
+  //   (coordinates) => {
+  //     map.current?.flyTo({
+  //       center: {
+  //         lng: coordinates.longitude,
+  //         lat: coordinates.latitude,
+  //       },
+  //     });
+  //   }
+  // );
 
   /**
    * Sync zoom
@@ -156,7 +156,7 @@ export const Map: React.FC = () => {
       if (!place) {
         return;
       }
-
+      console.log(place);
       if (place.bbox) {
         map.current?.fitBounds(place.bbox as LngLatBoundsLike, { padding: 10 });
       } else {

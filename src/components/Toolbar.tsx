@@ -3,12 +3,12 @@ import React from "react";
 import { ToolbarButton } from "~/components/Button";
 import {
   ExportIcon,
-  FireIcon,
   ImageSizeIcon,
   MousePointerIcon,
-  PaintIcon,
+  PencilIcon,
   PinIcon,
   RouteIcon,
+  StyleIcon,
 } from "~/components/Icon";
 import { useApp, useStore } from "~/core/app";
 
@@ -27,7 +27,7 @@ export const Toolbar: React.FC = () => {
             app.editor.setEditorMode("style");
           }}
         >
-          <FireIcon className="w-6 h-6" />
+          <StyleIcon className="w-6 h-6" />
         </ToolbarButton>
       </div>
 
@@ -49,7 +49,7 @@ export const Toolbar: React.FC = () => {
             app.editor.setEditorMode("draw");
           }}
         >
-          <PaintIcon className="w-6 h-6" />
+          <PencilIcon className="w-6 h-6" />
         </ToolbarButton>
 
         <ToolbarButton
