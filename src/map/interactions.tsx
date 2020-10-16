@@ -160,7 +160,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
       app.routes.addRouteStep({ latitude: lat, longitude: lng });
     }
 
-    if (editor.mode === "select" && !justClickedLayer) {
+    if ((editor.mode === "select" || editor.mode === "itinerary") && !justClickedLayer) {
       const { lat, lng } = event.lngLat;
 
       const geometry = geometries.items.find((item) => item.id === selection.selectedGeometryId);
