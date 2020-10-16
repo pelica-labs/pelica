@@ -4,9 +4,6 @@ import { MapLayerMouseEvent, MapLayerTouchEvent, MapMouseEvent, MapTouchEvent, M
 
 import { getState, State } from "~/core/app";
 import { Coordinates, Point, Position } from "~/core/geometries";
-import { isClient } from "~/lib/ssr";
-
-const touchDevice = isClient && "ontouchstart" in document.documentElement;
 
 const isMultitouchEvent = (event?: MapMouseEvent | MapTouchEvent) => {
   return event && "touches" in event.originalEvent && event.originalEvent?.touches?.length > 1;

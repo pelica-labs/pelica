@@ -35,7 +35,6 @@ export const Map: React.FC = () => {
     const {
       map: { coordinates, zoom, bearing, pitch },
       editor: { style },
-      geometries,
     } = app;
 
     map.current = new mapboxgl.Map({
@@ -65,12 +64,6 @@ export const Map: React.FC = () => {
       applyImageMissingHandler(map);
 
       map.getCanvas().style.outline = "none";
-
-      map.on("styledata", () => {
-        applySources(map);
-        applyLayers(map);
-        applyGeometries(map, geometries.items);
-      });
     });
   }, []);
 
@@ -179,16 +172,25 @@ export const Map: React.FC = () => {
   );
 
   /**
-   * Sync style
+   * Sync style then reapply layers and geometries
    */
   useStoreSubscription(
     (store) => store.editor.style,
     (style) => {
-      if (!style) {
+      if (!style || !map.current) {
         return;
       }
 
+      const geometries = useApp().geometries;
+
       map.current?.setStyle(styleToUrl(style));
+
+      map.current?.once("styledata", () => {
+        if (!map.current) return;
+        applySources(map.current);
+        applyLayers(map.current);
+        applyGeometries(map.current, geometries.items);
+      });
     }
   );
 
