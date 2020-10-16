@@ -1,5 +1,6 @@
 import { DirectionsResponse } from "@mapbox/mapbox-sdk/services/directions";
 import polyline from "@mapbox/polyline";
+import { greatCircle, point } from "@turf/turf";
 import classNames from "classnames";
 import React, { useEffect, useRef, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
@@ -78,11 +79,19 @@ export const ItineraryInput: React.FC<Props> = ({
 
   const computeItinerary = async () => {
     if (profile === "direct") {
-      return value.map((place) => {
-        return {
-          latitude: place.center[1],
-          longitude: place.center[0],
-        };
+      return value.flatMap((place, i): Coordinates[] => {
+        if (value[i + 1]) {
+          // great-circle is the shortest path between two points, which projects in mercator to a curve
+          const lineString = greatCircle(point(place.center), point(value[i + 1].center));
+          return (
+            lineString.geometry?.coordinates.map((coord) => ({
+              latitude: coord[1],
+              longitude: coord[0],
+            })) || []
+          );
+        } else {
+          return [];
+        }
       });
     }
 
