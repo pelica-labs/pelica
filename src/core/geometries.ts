@@ -76,14 +76,16 @@ export type ItineraryLine = Line & {
 };
 
 export const computeDistance = (line: Line): number => {
-  if (line.points.length < 2) {
+  const points = [...line.points, ...line.transientPoints];
+
+  if (points.length < 2) {
     return 0;
   }
 
   let total = 0;
-  for (let i = 1; i < line.points.length; i += 1) {
-    const from = [line.points[i - 1].longitude, line.points[i - 1].latitude];
-    const to = [line.points[i].longitude, line.points[i].latitude];
+  for (let i = 1; i < points.length; i += 1) {
+    const from = [points[i - 1].longitude, points[i - 1].latitude];
+    const to = [points[i].longitude, points[i].latitude];
 
     total += distance(from, to);
   }
@@ -172,9 +174,9 @@ const geometryToFeature = (geometry: Geometry): GeoJSON.Feature<GeoJSON.Geometry
   }
 
   if (geometry.type === "Line") {
-    const allPoints = [...geometry.points, ...geometry.transientPoints];
+    const points = [...geometry.points, ...geometry.transientPoints];
 
-    if (allPoints.length === 0) {
+    if (points.length === 0) {
       return null;
     }
 
@@ -188,7 +190,7 @@ const geometryToFeature = (geometry: Geometry): GeoJSON.Feature<GeoJSON.Geometry
       id: geometry.id,
       geometry: {
         type: "LineString",
-        coordinates: allPoints.map((point) => [point.longitude, point.latitude]),
+        coordinates: points.map((point) => [point.longitude, point.latitude]),
       },
       properties: {
         ...style,
