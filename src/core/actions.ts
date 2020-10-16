@@ -47,6 +47,8 @@ const DrawHandler: Handler<DrawAction> = {
     geometry.rawPoints.push(...action.rawPoints);
     geometry.points.push(...action.points);
     geometry.transientPoints = [];
+
+    state.selection.selectedGeometryId = geometry.id;
   },
 
   undo: (state, action) => {
@@ -54,6 +56,10 @@ const DrawHandler: Handler<DrawAction> = {
 
     geometry.points = geometry.points.slice(0, action.previousLength);
     geometry.rawPoints = geometry.rawPoints.slice(0, action.previousLength);
+
+    if (action.previousLength) {
+      state.selection.selectedGeometryId = geometry.id;
+    }
   },
 };
 
