@@ -1,10 +1,11 @@
 import { DirectionsResponse } from "@mapbox/mapbox-sdk/services/directions";
+import polyline from "@mapbox/polyline";
+import { greatCircle, point } from "@turf/turf";
 import classNames from "classnames";
 import React, { useEffect, useRef, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import BounceLoader from "react-spinners/BounceLoader";
 
-import { Button } from "~/components/Button";
 import {
   BicycleIcon,
   CarIcon,
@@ -16,6 +17,7 @@ import {
   SearchIcon,
   WalkingIcon,
 } from "~/components/Icon";
+import { IconButton } from "~/components/IconButton";
 import { PlaceAutocomplete } from "~/components/PlaceAutocomplete";
 import { Coordinates } from "~/core/geometries";
 import { ItineraryProfile, Place } from "~/core/itineraries";
@@ -77,17 +79,26 @@ export const ItineraryInput: React.FC<Props> = ({
 
   const computeItinerary = async () => {
     if (profile === "direct") {
-      return value.map((place) => {
-        return {
-          latitude: place.center[1],
-          longitude: place.center[0],
-        };
+      return value.flatMap((place, i): Coordinates[] => {
+        if (value[i + 1]) {
+          // great-circle is the shortest path between two points, which projects in mercator to a curve
+          const lineString = greatCircle(point(place.center), point(value[i + 1].center));
+          return (
+            lineString.geometry?.coordinates.map((coord) => ({
+              latitude: coord[1],
+              longitude: coord[0],
+            })) || []
+          );
+        } else {
+          return [];
+        }
       });
     }
 
     const res = await mapboxDirections
       .getDirections({
         profile: profile,
+        overview: "simplified",
         steps: true,
         waypoints: value.map((place) => {
           return {
@@ -104,15 +115,9 @@ export const ItineraryInput: React.FC<Props> = ({
       return [];
     }
 
-    return directions.routes[0].legs.flatMap((leg) => {
-      return leg.steps.map((step) => {
-        const location = step.intersections[0].location;
-        return {
-          latitude: location[1],
-          longitude: location[0],
-        };
-      });
-    });
+    return polyline
+      .decode((directions.routes[0].geometry as unknown) as string) // it's a polyline mistyped as LineString
+      .map((coords) => ({ latitude: coords[0], longitude: coords[1] }));
   };
 
   useEffect(() => {
@@ -139,27 +144,25 @@ export const ItineraryInput: React.FC<Props> = ({
   }, [value, profile]);
 
   return (
-    <div className="flex flex-col bg-gray-800 rounded shadow pb-1 pt-1">
+    <div className="flex flex-col bg-white rounded shadow p-2">
       <div className="flex items-center">
         <div className="w-8 flex mr-px justify-center">
           {isComputing && <BounceLoader color={theme.colors.orange[500]} size={8} />}
         </div>
 
-        <div className="flex items-center bg-gray-900 rounded">
+        <div className="flex items-center bg-white gap-1">
           {Profiles.map((profileConfiguration) => {
             return (
               <div key={profileConfiguration.profile}>
-                <Button
-                  outlined
+                <IconButton
                   active={profile === profileConfiguration.profile}
-                  className="text-gray-200"
-                  shadow={false}
+                  className="text-gray-800"
                   onClick={() => {
                     onProfileUpdated(profileConfiguration.profile);
                   }}
                 >
-                  <profileConfiguration.icon className="w-4 h-4" />
-                </Button>
+                  <profileConfiguration.icon className="w-6 h-6" />
+                </IconButton>
               </div>
             );
           })}
@@ -193,7 +196,7 @@ export const ItineraryInput: React.FC<Props> = ({
             <div
               className={classNames({
                 "p-1 pb-0 rounded": true,
-                "bg-gray-700": snapshot.isDraggingOver,
+                "bg-gray-200": snapshot.isDraggingOver,
               })}
               {...provided.droppableProps}
               ref={provided.innerRef}
@@ -206,13 +209,13 @@ export const ItineraryInput: React.FC<Props> = ({
                         ref={provided.innerRef}
                         className={classNames({
                           "relative group flex items-center rounded mb-1": true,
-                          "bg-orange-800": snapshot.isDragging,
+                          "bg-orange-100": snapshot.isDragging,
                         })}
                         {...provided.draggableProps}
                       >
                         <div
                           className={classNames({
-                            "ml-1 mr-2 text-gray-500": true,
+                            "ml-1 mr-2 text-gray-600": true,
                             "opacity-0": value.length === 1,
                           })}
                           {...provided.dragHandleProps}
@@ -234,13 +237,13 @@ export const ItineraryInput: React.FC<Props> = ({
                         </div>
 
                         <button
-                          className="absolute right-0 mr-2 focus:outline-none hidden group-hover:block rounded-full border border-gray-700 bg-gray-900 hover:bg-orange-900 py-1"
+                          className="absolute right-0 mr-2 focus:outline-none hidden group-hover:block rounded-full border border-gray-600 bg-white hover:bg-orange-100 py-1"
                           tabIndex={-1}
                           onClick={() => {
                             onStepDeleted(index);
                           }}
                         >
-                          <CloseIcon className="mx-1 w-3 h-3 text-gray-500" />
+                          <CloseIcon className="mx-1 w-3 h-3 text-gray-600" />
                         </button>
                       </div>
                     )}
@@ -254,7 +257,7 @@ export const ItineraryInput: React.FC<Props> = ({
       </DragDropContext>
 
       <div ref={newInputContainer} className="flex items-center mr-1">
-        <Icon className="mx-2 text-gray-500 w-4 h-4" />
+        <Icon className="mx-2 text-gray-600 w-4 h-4" />
         <PlaceAutocomplete
           dense
           bias={bias}

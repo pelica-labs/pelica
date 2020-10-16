@@ -50,7 +50,7 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete
         colors={defaultColors}
         styles={{
           default: {
-            card: { backgroundColor: theme.colors.gray[900], boxShadow: "none" },
+            card: { boxShadow: "none" },
             swatch: { width: 14, height: 14 },
             hash: { display: "none" },
             input: { display: "none" },

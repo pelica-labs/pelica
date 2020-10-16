@@ -9,7 +9,7 @@ type Props = {
 
 export const StylePreview: React.FC<Props> = ({ src }) => {
   return (
-    <div className="flex relative justify-center items-center w-full h-full mt-1 border border-gray-700 overflow-hidden">
+    <div className="flex relative justify-center items-center w-full h-full mt-1 border overflow-hidden">
       <BounceLoader color={theme.colors.orange[500]} size={20} />
 
       {src && <img className="absolute" src={src} />}

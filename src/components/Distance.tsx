@@ -20,7 +20,7 @@ export const Distance: React.FC<Props> = ({ value }) => {
       }}
     >
       <span className="mr-px">{convertedValue.toFixed(2)}</span>
-      <span className="ml-px text-gray-500">{unit === "metric" ? "km" : "mi"}</span>
+      <span className="ml-px text-gray-600">{unit === "metric" ? "km" : "mi"}</span>
     </div>
   );
 };

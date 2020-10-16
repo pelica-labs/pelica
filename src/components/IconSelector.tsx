@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 import { Button } from "~/components/Button";
 import { icons } from "~/components/Icon";
+import { IconButton } from "~/components/IconButton";
 import { useClickOutside } from "~/hooks/useClickOutside";
 
 type Props = {
@@ -32,19 +33,18 @@ export const IconSelector: React.FC<Props> = ({ value, onChange }) => {
         >
           <div className="flex items-start">
             <SelectedIcon className="w-4 h-4" />
-            <span className="ml-2 text-gray-500 text-xs">{value}</span>
+            <span className="ml-2 text-gray-600 text-xs">{value}</span>
           </div>
         </Button>
       </div>
 
       {showMenu && (
-        <div className="absolute left-0 top-0 mt-6 bg-gray-900 text-white rounded border border-orange-500 flex flex-wrap pr-1 pb-1 shadow">
+        <div className="absolute left-0 top-0 mt-6 bg-white text-gray-800 rounded border flex flex-wrap pr-1 pb-1 shadow">
           {Object.entries(allIcons).map(([iconName, Icon]) => {
             return (
               <div key={iconName} className="w-1/5 pl-1 pt-1">
-                <Button
+                <IconButton
                   active={value === iconName}
-                  className="w-full py-3 bg-gray-900 border border-gray-800"
                   onClick={() => {
                     onChange(iconName);
                   }}
@@ -52,7 +52,7 @@ export const IconSelector: React.FC<Props> = ({ value, onChange }) => {
                   <div className="flex items-center justify-center w-full">
                     <Icon className="w-4 h-4" />
                   </div>
-                </Button>
+                </IconButton>
               </div>
             );
           })}
