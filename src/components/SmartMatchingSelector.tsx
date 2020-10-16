@@ -58,7 +58,7 @@ export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange }) => {
         <Popover
           body={
             <div className="bg-white rounded px-2 py-2 text-xs border shadow text-gray-800 w-64 flex flex-col space-y-2">
-              <span className="text-xs uppercase font-light tracking-wide leading-none border-b border-gray-700 pb-2 flex items-center">
+              <span className="text-xs uppercase font-light tracking-wide leading-none border-b border-gray-500 pb-2 flex items-center">
                 <InformationIcon className="w-3 h-3" />
                 <span className="ml-1">Smart matching</span>
               </span>
@@ -73,6 +73,7 @@ export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange }) => {
           place="left"
           style={{ fill: theme.colors.orange[500] }}
           tipSize={4}
+          onOuterAction={() => setShowTooltip(false)}
         >
           <InformationIcon
             className="ml-2 w-3 h-3 cursor-pointer"

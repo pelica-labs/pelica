@@ -19,7 +19,7 @@ export const Button: React.FC<Props> = ({
   ...attributes
 }) => {
   const buttonClasses = classnames({
-    "flex items-center py-1 px-2 focus:outline-none": true,
+    "flex items-center py-1 px-2 focus:outline-none focus:border-orange-300": true,
     ...(className && {
       [className]: true,
     }),
@@ -27,7 +27,7 @@ export const Button: React.FC<Props> = ({
     "shadow": shadow,
     [`hover:bg-${color}-200`]: !active && !attributes.disabled,
     [`bg-${color}-300`]: !outlined && active,
-    [`border border-${color}-400`]: outlined && active,
+    [`border border-${color}-500`]: outlined && active,
     "border border-transparent": outlined && !active,
     ["opacity-50 cursor-auto"]: attributes.disabled,
   });
@@ -36,13 +36,16 @@ export const Button: React.FC<Props> = ({
 };
 
 export const ToolbarButton: React.FC<Props> = ({ active = false, className, ...attributes }) => {
-  const buttonClasses = classnames("text-gray-800 py-2 flex-1 justify-center flex items-center py-1 px-2", {
-    ...(className && {
-      [className]: true,
-    }),
-    [`hover:text-orange-500`]: !active && !attributes.disabled,
-    [`text-orange-600`]: active,
-  });
+  const buttonClasses = classnames(
+    "text-gray-800 py-2 flex-1 justify-center flex items-center py-1 px-2 focus:outline-none rounded focus:shadow-outline",
+    {
+      ...(className && {
+        [className]: true,
+      }),
+      [`hover:text-orange-500`]: !active && !attributes.disabled,
+      [`text-orange-600`]: active,
+    }
+  );
 
   return <button className={buttonClasses} {...attributes} />;
 };

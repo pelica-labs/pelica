@@ -250,7 +250,9 @@ export const PlaceAutocomplete: React.FC<Props> = ({
           })}
         >
           {showRecentSearches && results.length > 0 && (
-            <span className="p-2 text-xs text-gray-600 uppercase tracking-wide leading-none">Recent searches</span>
+            <span className="p-2 text-xs text-gray-600 uppercase tracking-wide leading-none border-b">
+              Recent searches
+            </span>
           )}
 
           {results.map((place, index) => {
@@ -260,8 +262,8 @@ export const PlaceAutocomplete: React.FC<Props> = ({
               <li key={place.id}>
                 <a
                   className={classNames({
-                    "block px-2 py-2 cursor-pointer border-b hover:bg-orange-100 text-xs": true,
-                    "bg-orange-100": isKeyboardSelected,
+                    "w-full text-left block px-2 py-2 cursor-pointer border-b hover:bg-orange-200 text-xs": true,
+                    "bg-orange-200": isKeyboardSelected,
                   })}
                   onClick={(event) => onPlaceSelection(event, place)}
                   onMouseEnter={() => onPlaceHover(index)}

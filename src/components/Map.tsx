@@ -305,7 +305,7 @@ export const Map: React.FC = () => {
         <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
       </Head>
       <DocumentTitle />
-      <div className="flex justify-center items-center w-full h-full bg-gray-200 lg:px-20 lg:py-12">
+      <div className="flex justify-center items-center w-full h-full bg-gray-200 lg:px-20 lg:py-6">
         <div ref={container} className="w-full h-full flex justify-center items-center">
           <div ref={wrapper} className="w-full h-full shadow-md border border-gray-400" id="map" />
         </div>

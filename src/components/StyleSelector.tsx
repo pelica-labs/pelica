@@ -62,7 +62,7 @@ export const StyleSelector: React.FC<Props> = ({ value, onChange, initialStyles 
       {data.styles.map((style) => {
         const isSelectedStyle = value.id === style.id;
         const containerClasses = classnames({
-          "flex flex-col items-start p-2 rounded font-medium cursor-pointer hover:bg-orange-200 w-full h-40": true,
+          "flex flex-col items-start p-2 rounded font-medium cursor-pointer hover:bg-orange-200 w-full h-40 focus:outline-none focus:shadow-outline": true,
           "bg-orange-300": isSelectedStyle,
         });
 

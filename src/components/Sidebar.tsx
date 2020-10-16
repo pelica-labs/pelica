@@ -62,7 +62,7 @@ export const Sidebar: React.FC<Props> = ({ initialStyles }) => {
 
       <div className="flex flex-col bg-white text-gray-800 w-32 md:w-48 lg:w-64 h-full overflow-y-auto shadow-md">
         <div className="flex justify-between items-center px-3 h-8 py-2 bg-gray-100 border-b">
-          <span className="text-xs uppercase text-gray-700 font-light tracking-wide leading-none">
+          <span className="text-xs uppercase text-gray-800 font-light tracking-wide leading-none">
             <Trans i18nKey={`editor.mode.${editorMode}`} />
           </span>
           <MenuButton />
@@ -629,5 +629,5 @@ const ExportSidebar: React.FC = () => {
 };
 
 const SidebarHeading = ({ children }: { children: React.ReactNode }) => {
-  return <span className="text-xs uppercase text-gray-700 font-light tracking-wide leading-none">{children}</span>;
+  return <span className="text-xs uppercase text-gray-800 font-light tracking-wide leading-none">{children}</span>;
 };
