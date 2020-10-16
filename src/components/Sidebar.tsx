@@ -227,7 +227,7 @@ const SelectSidebar: React.FC = () => {
       )}
 
       {selectedGeometry.type === "Point" && (
-        <div className="mt-2 px-3 pb-2 border-b">
+        <div className="px-3 pb-2 border-b">
           <SidebarHeading>Icon</SidebarHeading>
 
           <div className="mt-2">
