@@ -48,6 +48,9 @@ type Props = {
   onLoadingRoute: () => void;
   onRouteFound: (value: Coordinates[]) => void;
 
+  canClose: boolean;
+  onClose: () => void;
+
   bias?: Coordinates;
 };
 
@@ -59,6 +62,8 @@ export const ItineraryInput: React.FC<Props> = ({
   onStepDeleted,
   onLoadingRoute,
   onRouteFound,
+  canClose,
+  onClose,
   bias,
 }) => {
   const [profile, setProfile] = useState<Profile>("driving");
@@ -158,6 +163,19 @@ export const ItineraryInput: React.FC<Props> = ({
             );
           })}
         </div>
+
+        {canClose && (
+          <div className="ml-auto mr-2">
+            <button
+              className="focus:outline-none h-4 mt-1 text-gray-500"
+              onClick={() => {
+                onClose();
+              }}
+            >
+              <CloseIcon className="w-4 h-4" />
+            </button>
+          </div>
+        )}
       </div>
 
       <DragDropContext

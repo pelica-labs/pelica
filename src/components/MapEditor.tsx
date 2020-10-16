@@ -70,7 +70,12 @@ export const MapEditor: React.FC<Props> = ({ initialStyles }) => {
             <div ref={itineraryContainer}>
               <ItineraryInput
                 bias={currentLocation ?? undefined}
+                canClose={editorMode === "select"}
                 value={currentItinerary.steps}
+                onClose={() => {
+                  app.itineraries.close();
+                  app.selection.unselectGeometry();
+                }}
                 onLoadingRoute={() => {
                   app.itineraries.toggleLoading();
                 }}
