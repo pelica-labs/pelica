@@ -628,6 +628,6 @@ const ExportSidebar: React.FC = () => {
   );
 };
 
-const SidebarHeading = ({ children }: { children: React.ReactNode }) => {
+const SidebarHeading: React.FC = ({ children }) => {
   return <span className="text-xs uppercase text-gray-800 font-light tracking-wide leading-none">{children}</span>;
 };

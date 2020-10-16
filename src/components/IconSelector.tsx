@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 
-import { Button, ToolbarButton } from "~/components/Button";
+import { Button } from "~/components/Button";
 import { icons } from "~/components/Icon";
+import { IconButton } from "~/components/IconButton";
 import { useClickOutside } from "~/hooks/useClickOutside";
 
 type Props = {
@@ -42,7 +43,7 @@ export const IconSelector: React.FC<Props> = ({ value, onChange }) => {
           {Object.entries(allIcons).map(([iconName, Icon]) => {
             return (
               <div key={iconName} className="w-1/5 pl-1 pt-1">
-                <ToolbarButton
+                <IconButton
                   active={value === iconName}
                   onClick={() => {
                     onChange(iconName);
@@ -51,7 +52,7 @@ export const IconSelector: React.FC<Props> = ({ value, onChange }) => {
                   <div className="flex items-center justify-center w-full">
                     <Icon className="w-4 h-4" />
                   </div>
-                </ToolbarButton>
+                </IconButton>
               </div>
             );
           })}

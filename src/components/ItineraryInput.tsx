@@ -5,7 +5,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import BounceLoader from "react-spinners/BounceLoader";
 
-import { ToolbarButton } from "~/components/Button";
 import {
   BicycleIcon,
   CarIcon,
@@ -17,6 +16,7 @@ import {
   SearchIcon,
   WalkingIcon,
 } from "~/components/Icon";
+import { IconButton } from "~/components/IconButton";
 import { PlaceAutocomplete } from "~/components/PlaceAutocomplete";
 import { Coordinates } from "~/core/geometries";
 import { ItineraryProfile, Place } from "~/core/itineraries";
@@ -145,17 +145,15 @@ export const ItineraryInput: React.FC<Props> = ({
           {Profiles.map((profileConfiguration) => {
             return (
               <div key={profileConfiguration.profile}>
-                <ToolbarButton
-                  outlined
+                <IconButton
                   active={profile === profileConfiguration.profile}
                   className="text-gray-800"
-                  shadow={false}
                   onClick={() => {
                     onProfileUpdated(profileConfiguration.profile);
                   }}
                 >
                   <profileConfiguration.icon className="w-6 h-6" />
-                </ToolbarButton>
+                </IconButton>
               </div>
             );
           })}

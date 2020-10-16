@@ -304,13 +304,16 @@ export const Map: React.FC = () => {
   /**
    * Sync events
    */
-  useEffect(() => {
-    if (app.editor.mode === "draw") {
-      map.current?.dragPan.disable();
-    } else {
-      map.current?.dragPan.enable();
+  useStoreSubscription(
+    (store) => store.editor.mode,
+    (mode) => {
+      if (mode === "draw") {
+        map.current?.dragPan.disable();
+      } else {
+        map.current?.dragPan.enable();
+      }
     }
-  }, [app.editor.mode]);
+  );
 
   return (
     <>

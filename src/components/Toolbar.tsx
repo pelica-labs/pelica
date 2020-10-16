@@ -1,6 +1,5 @@
 import React from "react";
 
-import { ToolbarButton } from "~/components/Button";
 import {
   ExportIcon,
   ImageSizeIcon,
@@ -10,6 +9,7 @@ import {
   RouteIcon,
   StyleIcon,
 } from "~/components/Icon";
+import { IconButton } from "~/components/IconButton";
 import { useApp, useStore } from "~/core/app";
 
 export const Toolbar: React.FC = () => {
@@ -19,7 +19,7 @@ export const Toolbar: React.FC = () => {
   return (
     <>
       <div className="flex flex-col space-y-1">
-        <ToolbarButton
+        <IconButton
           active={editorMode === "style"}
           className="bg-white text-gray-800 py-2 flex-1 justify-center"
           id="toolbar-style"
@@ -28,11 +28,11 @@ export const Toolbar: React.FC = () => {
           }}
         >
           <StyleIcon className="w-6 h-6" />
-        </ToolbarButton>
+        </IconButton>
       </div>
 
       <div className="flex flex-col space-y-1 mt-6">
-        <ToolbarButton
+        <IconButton
           active={editorMode === "select"}
           id="toolbar-select"
           onClick={() => {
@@ -40,9 +40,9 @@ export const Toolbar: React.FC = () => {
           }}
         >
           <MousePointerIcon className="w-6 h-6" />
-        </ToolbarButton>
+        </IconButton>
 
-        <ToolbarButton
+        <IconButton
           active={editorMode === "draw"}
           id="toolbar-draw"
           onClick={() => {
@@ -50,9 +50,9 @@ export const Toolbar: React.FC = () => {
           }}
         >
           <PencilIcon className="w-6 h-6" />
-        </ToolbarButton>
+        </IconButton>
 
-        <ToolbarButton
+        <IconButton
           active={editorMode === "itinerary"}
           id="toolbar-itinerary"
           onClick={() => {
@@ -60,9 +60,9 @@ export const Toolbar: React.FC = () => {
           }}
         >
           <RouteIcon className="w-6 h-6" />
-        </ToolbarButton>
+        </IconButton>
 
-        <ToolbarButton
+        <IconButton
           active={editorMode === "pin"}
           id="toolbar-pin"
           onClick={() => {
@@ -70,11 +70,11 @@ export const Toolbar: React.FC = () => {
           }}
         >
           <PinIcon className="w-6 h-6" />
-        </ToolbarButton>
+        </IconButton>
       </div>
 
       <div className="flex flex-col space-y-1 mt-6">
-        <ToolbarButton
+        <IconButton
           active={editorMode === "aspectRatio"}
           id="toolbar-aspect-ratio"
           onClick={() => {
@@ -82,9 +82,9 @@ export const Toolbar: React.FC = () => {
           }}
         >
           <ImageSizeIcon className="w-6 h-6" />
-        </ToolbarButton>
+        </IconButton>
 
-        <ToolbarButton
+        <IconButton
           active={editorMode === "export"}
           id="toolbar-export"
           onClick={() => {
@@ -92,7 +92,7 @@ export const Toolbar: React.FC = () => {
           }}
         >
           <ExportIcon className="w-6 h-6" />
-        </ToolbarButton>
+        </IconButton>
       </div>
     </>
   );

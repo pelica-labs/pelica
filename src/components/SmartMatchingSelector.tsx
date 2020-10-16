@@ -1,9 +1,10 @@
 import { Switch } from "@headlessui/react";
+import classNames from "classnames";
 import React, { useState } from "react";
 import Popover from "react-popover";
 
-import { ToolbarButton } from "~/components/Button";
 import { BicycleIcon, CarIcon, Icon, InformationIcon, WalkingIcon } from "~/components/Icon";
+import { IconButton } from "~/components/IconButton";
 import { SmartMatching, SmartMatchingProfile } from "~/lib/smartMatching";
 import { theme } from "~/styles/tailwind";
 
@@ -35,9 +36,10 @@ export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange }) => {
           <Switch
             as="button"
             checked={value.enabled}
-            className={`${
-              value.enabled ? "bg-orange-600" : "bg-gray-400"
-            } relative inline-flex flex-shrink-0 h-4 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer w-7 focus:outline-none focus:shadow-outline`}
+            className={classNames(
+              { "bg-orange-600": value.enabled, "bg-gray-400": !value.enabled },
+              "relative inline-flex flex-shrink-0 h-4 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer w-7 focus:outline-none focus:shadow-outline"
+            )}
             onChange={() => {
               onChange({
                 enabled: !value.enabled,
@@ -47,9 +49,13 @@ export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange }) => {
           >
             {({ checked }) => (
               <span
-                className={`${
-                  checked ? "translate-x-3" : "translate-x-0"
-                } inline-block w-3 h-3 transition duration-200 ease-in-out transform bg-white rounded-full`}
+                className={classNames(
+                  {
+                    "translate-x-3": checked,
+                    "translate-x-0": !checked,
+                  },
+                  "inline-block w-3 h-3 transition duration-200 ease-in-out transform bg-white rounded-full"
+                )}
               />
             )}
           </Switch>
@@ -89,11 +95,9 @@ export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange }) => {
           {Profiles.map((profileConfiguration) => {
             return (
               <div key={profileConfiguration.profile}>
-                <ToolbarButton
-                  outlined
+                <IconButton
                   active={value.profile === profileConfiguration.profile}
                   className="text-gray-800"
-                  shadow={false}
                   onClick={() => {
                     onChange({
                       enabled: true,
@@ -102,7 +106,7 @@ export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange }) => {
                   }}
                 >
                   <profileConfiguration.icon className="w-4 h-4" />
-                </ToolbarButton>
+                </IconButton>
               </div>
             );
           })}
