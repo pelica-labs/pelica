@@ -54,12 +54,9 @@ export const routes = ({ mutate, get }: App) => ({
   setSmartMatching: (smartMatching: SmartMatching) => {
     mutate((state) => {
       state.routes.smartMatching = smartMatching;
-
-      const selectedGeometry = state.geometries.items.find((item) => item.id === state.selection.selectedGeometryId);
-      if (selectedGeometry?.type === "Line") {
-        selectedGeometry.smartMatching = smartMatching;
-      }
     });
+
+    get().routes.updateSelectedLineSmartMatching(smartMatching);
   },
 
   startNewRoute: () => {
