@@ -4,6 +4,7 @@ import PuffLoader from "react-spinners/PuffLoader";
 import { Button } from "~/components/Button";
 import { TargetIcon } from "~/components/Icon";
 import { useApp } from "~/core/app";
+import { Coordinates } from "~/core/geometries";
 import { theme } from "~/styles/tailwind";
 
 type GeolocationStatus = "pending" | "loading" | "granted";
@@ -45,21 +46,27 @@ export const GeolocationButton: React.FC<Props> = ({ onChange }) => {
   };
 
   const getPosition = () => {
-    window.navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setGeolocationStatus("granted");
-        onChange(position.coords);
-        app.geolocation.updateCurrentLocation(position.coords);
-      },
-      () => {
-        updateGeolocationAvailability();
-      }
-    );
+    return new Promise<Coordinates>((resolve) => {
+      window.navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setGeolocationStatus("granted");
+          app.geolocation.updateCurrentLocation(position.coords);
+
+          return resolve(position.coords);
+        },
+        () => {
+          updateGeolocationAvailability();
+        }
+      );
+    });
   };
 
   const onClick = () => {
     setGeolocationStatus("loading");
-    getPosition();
+
+    getPosition().then((coords) => {
+      onChange(coords);
+    });
   };
 
   useEffect(() => {
