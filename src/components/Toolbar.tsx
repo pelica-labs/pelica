@@ -23,7 +23,6 @@ export const Toolbar: React.FC = () => {
           active={editorMode === "style"}
           className="bg-white text-gray-800 py-2 flex-1 justify-center"
           id="toolbar-style"
-          shadow={false}
           onClick={() => {
             app.editor.setEditorMode("style");
           }}

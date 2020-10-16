@@ -296,10 +296,6 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     event.originalEvent.stopPropagation();
   };
 
-  if (!touchDevice) {
-    map.dragPan.disable();
-  }
-
   map.scrollZoom.setZoomRate(0.03);
 
   updatemap();
