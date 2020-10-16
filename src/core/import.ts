@@ -24,8 +24,9 @@ export const imports = ({ get }: App) => ({
           id: nextGeometryId(),
           source: MapSource.Routes,
           smartMatching: { enabled: false, profile: null },
+          transientPoints: [],
+          rawPoints: [],
           points,
-          smartPoints: [],
           style: routes.style,
         },
       });

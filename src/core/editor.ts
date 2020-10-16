@@ -44,12 +44,10 @@ export const editor = ({ mutate, get }: App) => ({
       state.editor.mode = mode;
     });
 
-    if (mode !== "select") {
-      get().selection.unselectGeometry();
-    }
+    get().selection.unselectGeometry();
 
     if (mode !== "draw") {
-      get().routes.stopDrawing();
+      get().routes.stopRoute();
     }
 
     if (mode !== "itinerary") {
@@ -58,6 +56,10 @@ export const editor = ({ mutate, get }: App) => ({
 
     if (mode === "itinerary") {
       get().itineraries.startNewItininerary();
+    }
+
+    if (mode === "draw") {
+      get().routes.startNewRoute();
     }
   },
 });

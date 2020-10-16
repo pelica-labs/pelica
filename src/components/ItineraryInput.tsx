@@ -18,16 +18,14 @@ import {
 } from "~/components/Icon";
 import { PlaceAutocomplete } from "~/components/PlaceAutocomplete";
 import { Coordinates } from "~/core/geometries";
-import { Place } from "~/core/itineraries";
+import { ItineraryProfile, Place } from "~/core/itineraries";
 import { mapboxDirections } from "~/lib/mapbox";
 import { theme } from "~/styles/tailwind";
-
-type Profile = "walking" | "driving" | "cycling" | "direct";
 
 type ProfileConfiguration = {
   name: string;
   icon: Icon;
-  profile: Profile;
+  profile: ItineraryProfile;
 };
 
 const Profiles: ProfileConfiguration[] = [
@@ -39,11 +37,13 @@ const Profiles: ProfileConfiguration[] = [
 
 type Props = {
   value: Place[];
+  profile: ItineraryProfile;
 
   onStepAdded: (value: Place) => void;
   onStepUpdated: (index: number, place: Place | null) => void;
   onStepMoved: (from: number, to: number) => void;
   onStepDeleted: (index: number) => void;
+  onProfileUpdated: (profile: ItineraryProfile) => void;
 
   onLoadingRoute: () => void;
   onRouteFound: (value: Coordinates[]) => void;
@@ -56,17 +56,18 @@ type Props = {
 
 export const ItineraryInput: React.FC<Props> = ({
   value,
+  profile,
   onStepAdded,
   onStepUpdated,
   onStepMoved,
   onStepDeleted,
+  onProfileUpdated,
   onLoadingRoute,
   onRouteFound,
   canClose,
   onClose,
   bias,
 }) => {
-  const [profile, setProfile] = useState<Profile>("driving");
   const [isComputing, setIsComputing] = useState(false);
   const [hasErrored, setHasErrored] = useState(false);
 
@@ -154,7 +155,7 @@ export const ItineraryInput: React.FC<Props> = ({
                   className="text-gray-200"
                   shadow={false}
                   onClick={() => {
-                    setProfile(profileConfiguration.profile);
+                    onProfileUpdated(profileConfiguration.profile);
                   }}
                 >
                   <profileConfiguration.icon className="w-4 h-4" />

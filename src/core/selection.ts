@@ -12,17 +12,17 @@ const initialState: Selection = {
 export const selection = ({ mutate, get }: App) => ({
   ...initialState,
 
-  selectGeometry: (feature: GeoJSON.Feature<GeoJSON.Geometry>) => {
+  selectGeometry: (geometryId: number) => {
     get().selection.unselectGeometry();
 
     mutate((state) => {
-      state.selection.selectedGeometryId = feature.id as number;
+      state.selection.selectedGeometryId = geometryId;
     });
 
     const selectedGeometry = get().geometries.items.find((item) => item.id === get().selection.selectedGeometryId);
 
-    if (selectedGeometry?.type === "Line" && selectedGeometry.steps) {
-      get().itineraries.open(selectedGeometry.id);
+    if (selectedGeometry?.type === "Line" && selectedGeometry.itinerary) {
+      get().itineraries.open();
     }
   },
 

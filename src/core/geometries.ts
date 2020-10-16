@@ -2,7 +2,7 @@ import { distance } from "@turf/turf";
 import { GeoJSONSource } from "mapbox-gl";
 
 import { App } from "~/core/helpers";
-import { Place } from "~/core/itineraries";
+import { ItineraryProfile, Place } from "~/core/itineraries";
 import { RouteStyle } from "~/core/routes";
 import { outlineColor } from "~/lib/color";
 import { SmartMatching } from "~/lib/smartMatching";
@@ -56,16 +56,23 @@ export type Line = {
   id: number;
   source: MapSource;
   type: "Line";
+  transientPoints: Coordinates[];
+  rawPoints: Coordinates[];
   points: Coordinates[];
-  smartPoints: Coordinates[];
   smartMatching: SmartMatching;
   style: RouteStyle;
   transientStyle?: RouteStyle;
-  steps?: Place[];
+  itinerary?: {
+    steps: Place[];
+    profile: ItineraryProfile;
+  };
 };
 
 export type ItineraryLine = Line & {
-  steps: Place[];
+  itinerary: {
+    steps: Place[];
+    profile: ItineraryProfile;
+  };
 };
 
 export const computeDistance = (line: Line): number => {
@@ -133,7 +140,7 @@ export const nextGeometryId = (): number => {
   return _nextId;
 };
 
-const geometryToFeature = (geometry: Geometry): GeoJSON.Feature<GeoJSON.Geometry> => {
+const geometryToFeature = (geometry: Geometry): GeoJSON.Feature<GeoJSON.Geometry> | null => {
   if (geometry.type === "Point") {
     return {
       type: "Feature",
@@ -165,8 +172,11 @@ const geometryToFeature = (geometry: Geometry): GeoJSON.Feature<GeoJSON.Geometry
   }
 
   if (geometry.type === "Line") {
-    const points =
-      geometry.smartMatching.enabled && geometry.smartPoints.length ? geometry.smartPoints : geometry.points;
+    const allPoints = [...geometry.points, ...geometry.transientPoints];
+
+    if (allPoints.length === 0) {
+      return null;
+    }
 
     const style = {
       ...geometry.style,
@@ -178,7 +188,7 @@ const geometryToFeature = (geometry: Geometry): GeoJSON.Feature<GeoJSON.Geometry
       id: geometry.id,
       geometry: {
         type: "MultiLineString",
-        coordinates: joinPoints(points).map((line) => {
+        coordinates: joinPoints(allPoints).map((line) => {
           return line.map((point) => {
             return [point.longitude, point.latitude];
           });
@@ -251,9 +261,13 @@ export const applyGeometries = (map: mapboxgl.Map, geometries: Geometry[]): void
 
     source.setData({
       type: "FeatureCollection",
-      features: geometriesForSource.map((geometry) => {
-        return geometryToFeature(geometry);
-      }),
+      features: geometriesForSource
+        .map((geometry) => {
+          return geometryToFeature(geometry) as GeoJSON.Feature<GeoJSON.Geometry>;
+        })
+        .filter((feature) => {
+          return !!feature;
+        }),
     });
   });
 };
