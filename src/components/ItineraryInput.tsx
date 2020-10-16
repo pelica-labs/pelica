@@ -1,4 +1,5 @@
 import { DirectionsResponse } from "@mapbox/mapbox-sdk/services/directions";
+import polyline from "@mapbox/polyline";
 import classNames from "classnames";
 import React, { useEffect, useRef, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
@@ -88,6 +89,7 @@ export const ItineraryInput: React.FC<Props> = ({
     const res = await mapboxDirections
       .getDirections({
         profile: profile,
+        overview: "simplified",
         steps: true,
         waypoints: value.map((place) => {
           return {
@@ -104,15 +106,9 @@ export const ItineraryInput: React.FC<Props> = ({
       return [];
     }
 
-    return directions.routes[0].legs.flatMap((leg) => {
-      return leg.steps.map((step) => {
-        const location = step.intersections[0].location;
-        return {
-          latitude: location[1],
-          longitude: location[0],
-        };
-      });
-    });
+    return polyline
+      .decode((directions.routes[0].geometry as unknown) as string) // it's a polyline mistyped as LineString
+      .map((coords) => ({ latitude: coords[0], longitude: coords[1] }));
   };
 
   useEffect(() => {
@@ -139,7 +135,7 @@ export const ItineraryInput: React.FC<Props> = ({
   }, [value, profile]);
 
   return (
-    <div className="flex flex-col bg-white rounded shadow p-4">
+    <div className="flex flex-col bg-white rounded shadow p-2">
       <div className="flex items-center">
         <div className="w-8 flex mr-px justify-center">
           {isComputing && <BounceLoader color={theme.colors.orange[500]} size={8} />}

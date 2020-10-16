@@ -1573,7 +1573,7 @@
   resolved "https://registry.yarnpkg.com/@mapbox/point-geometry/-/point-geometry-0.1.0.tgz#8a83f9335c7860effa2eeeca254332aa0aeed8f2"
   integrity sha1-ioP5M1x4YO/6Lu7KJUMyqgru2PI=
 
-"@mapbox/polyline@^1.0.0":
+"@mapbox/polyline@^1.0.0", "@mapbox/polyline@^1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@mapbox/polyline/-/polyline-1.1.1.tgz#ab96e5e6936f4847a4894e14558daf43e40e3bd2"
   integrity sha512-z9Sl7NYzsEIrAza658H92mc0OvpBjQwjp7Snv4xREKhsCMat7m1IKdWJMjQ5opiPYa0veMf7kCaSd1yx55AhmQ==
@@ -2891,6 +2891,13 @@
     "@types/geojson" "*"
     "@types/mapbox-gl" "*"
     "@types/mapbox__mapbox-sdk" "*"
+
+"@types/mapbox__polyline@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@types/mapbox__polyline/-/mapbox__polyline-1.0.1.tgz#d4f4916eb4ca0bc931b9c486ff6bc8af8cfc7080"
+  integrity sha512-x2Z5N3mA4Y5W0MFjbe+8K4mVfPPxb9sbUTG3YjlYCyv8CjmqPr0PeAWmjjKgD/Sxs1SKK8SjKgXyxaINy52K/w==
+  dependencies:
+    "@types/geojson" "*"
 
 "@types/minimist@^1.2.0":
   version "1.2.0"
