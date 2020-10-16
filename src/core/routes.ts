@@ -1,6 +1,6 @@
 import { Feature, MultiLineString, multiLineString, simplify } from "@turf/turf";
 
-import { Line, nextGeometryId } from "~/core/geometries";
+import { Coordinates, Line, nextGeometryId } from "~/core/geometries";
 import { App } from "~/core/helpers";
 import { smartMatch, SmartMatching, SmartMatchingProfile } from "~/lib/smartMatching";
 import { MapSource } from "~/map/sources";
@@ -15,16 +15,14 @@ export type RouteStyle = {
 };
 
 export type Routes = {
-  currentRoute: Line | null;
-  drawing: boolean;
+  isDrawing: boolean;
 
   style: RouteStyle;
   smartMatching: SmartMatching;
 };
 
 const initialState: Routes = {
-  currentRoute: null,
-  drawing: false,
+  isDrawing: false,
 
   style: {
     width: 3,
@@ -43,108 +41,109 @@ export const routes = ({ mutate, get }: App) => ({
   ...initialState,
 
   setStyle: (style: Partial<RouteStyle>) => {
-    mutate(({ routes }) => {
-      Object.assign(routes.style, style);
+    mutate((state) => {
+      Object.assign(state.routes.style, style);
 
-      if (routes.currentRoute) {
-        Object.assign(routes.currentRoute.style, style);
+      const selectedGeometry = state.geometries.items.find((item) => item.id === state.selection.selectedGeometryId);
+      if (selectedGeometry?.type === "Line") {
+        Object.assign(selectedGeometry.style, style);
       }
     });
   },
 
   setSmartMatching: (smartMatching: SmartMatching) => {
-    mutate(({ routes }) => {
-      routes.smartMatching = smartMatching;
+    mutate((state) => {
+      state.routes.smartMatching = smartMatching;
 
-      if (routes.currentRoute) {
-        routes.currentRoute.smartMatching = smartMatching;
+      const selectedGeometry = state.geometries.items.find((item) => item.id === state.selection.selectedGeometryId);
+      if (selectedGeometry?.type === "Line") {
+        selectedGeometry.smartMatching = smartMatching;
       }
     });
   },
 
-  startDrawing: (latitude: number, longitude: number) => {
-    mutate(({ routes }) => {
-      routes.drawing = true;
-
-      if (!routes.currentRoute) {
-        routes.currentRoute = {
-          type: "Line",
-          id: nextGeometryId(),
-          source: MapSource.Routes,
-          points: [],
-          smartPoints: [],
-          smartMatching: routes.smartMatching,
-          style: routes.style,
-        };
-      }
-
-      routes.currentRoute.points.push({ latitude, longitude });
+  startNewRoute: () => {
+    mutate((state) => {
+      state.selection.selectedGeometryId = nextGeometryId();
+      state.geometries.items.push({
+        type: "Line",
+        id: state.selection.selectedGeometryId,
+        source: MapSource.Routes,
+        transientPoints: [],
+        rawPoints: [],
+        points: [],
+        smartMatching: state.routes.smartMatching,
+        style: state.routes.style,
+      });
     });
   },
 
-  draw: (latitude: number, longitude: number) => {
-    mutate(({ routes, map }) => {
-      if (!routes.drawing) {
+  startRoute: (coordinates: Coordinates) => {
+    mutate((state) => {
+      state.routes.isDrawing = true;
+
+      const geometry = state.geometries.items.find((item) => item.id === state.selection.selectedGeometryId) as Line;
+
+      geometry.transientPoints.push(coordinates);
+    });
+  },
+
+  addRouteStep: (coordinates: Coordinates) => {
+    mutate((state) => {
+      if (!state.routes.isDrawing) {
         return;
       }
 
-      if (!routes.currentRoute) {
+      const geometry = state.geometries.items.find((item) => item.id === state.selection.selectedGeometryId) as Line;
+
+      geometry.transientPoints = [...geometry.transientPoints, coordinates];
+
+      if (geometry.transientPoints.length <= 2) {
         return;
       }
-
-      routes.currentRoute.points.push({ latitude, longitude });
-
-      if (routes.currentRoute.points.length <= 2) {
-        return;
-      }
-
       const feature = multiLineString([
-        routes.currentRoute.points.map((point) => {
+        geometry.transientPoints.map((point) => {
           return [point.longitude, point.latitude];
         }),
       ]);
-      const tolerance = 2 ** (-map.zoom - 1) * 0.8;
+      const tolerance = 2 ** (-state.map.zoom - 1) * 0.8;
       const simplified = simplify(feature, { tolerance }) as Feature<MultiLineString>;
 
       if (!simplified.geometry) {
         return;
       }
 
-      routes.currentRoute.points = simplified.geometry.coordinates[0].map((point) => {
+      geometry.transientPoints = simplified.geometry.coordinates[0].map((point) => {
         return { latitude: point[1], longitude: point[0] };
       });
     });
   },
 
   stopSegment: async () => {
-    mutate(({ routes }) => {
-      routes.drawing = false;
+    mutate((state) => {
+      state.routes.isDrawing = false;
     });
 
-    const { routes, history } = get();
+    const geometry = get().geometries.items.find((item) => item.id === get().selection.selectedGeometryId) as Line;
 
-    if (!routes.currentRoute) {
-      return;
-    }
+    const points = geometry.smartMatching.enabled
+      ? await smartMatch(geometry.transientPoints, geometry.smartMatching.profile as SmartMatchingProfile)
+      : geometry.transientPoints;
 
-    const smartPoints = routes.currentRoute.smartMatching.enabled
-      ? await smartMatch(routes.currentRoute, routes.currentRoute.smartMatching.profile as SmartMatchingProfile)
-      : [];
-
-    history.push({
+    get().history.push({
       name: "draw",
-      line: {
-        ...routes.currentRoute,
-        smartPoints,
-      },
+      geometryId: geometry.id,
+      points,
+      rawPoints: geometry.transientPoints,
     });
   },
 
-  stopDrawing: () => {
+  stopRoute: () => {
     mutate(({ routes }) => {
-      routes.drawing = false;
-      routes.currentRoute = null;
+      routes.isDrawing = false;
     });
+
+    get().routes.startNewRoute();
   },
 
   transientUpdateSelectedLine: (style: Partial<RouteStyle>) => {
@@ -193,15 +192,15 @@ export const routes = ({ mutate, get }: App) => ({
       return;
     }
 
-    const smartPoints = smartMatching.enabled
-      ? await smartMatch(selectedGeometry, smartMatching.profile as SmartMatchingProfile)
-      : [];
+    const points = smartMatching.enabled
+      ? await smartMatch(selectedGeometry.rawPoints, smartMatching.profile as SmartMatchingProfile)
+      : selectedGeometry.rawPoints;
 
     history.push({
       name: "updateLineSmartMatching",
       lineId: selectedGeometry.id,
       smartMatching,
-      smartPoints,
+      points,
     });
   },
 });

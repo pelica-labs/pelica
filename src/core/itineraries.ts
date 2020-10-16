@@ -10,29 +10,27 @@ export type Place = {
   bbox?: number[];
 };
 
+export type ItineraryProfile = "walking" | "driving" | "cycling" | "direct";
+
 type Itineraries = {
-  geometryId: number | null;
   isLoadingRoute: boolean;
 };
 
 const initialState: Itineraries = {
-  geometryId: null,
   isLoadingRoute: false,
 };
 
 export const itineraries = ({ mutate, get }: App) => ({
   ...initialState,
 
-  open: (geometryId: number) => {
+  open: () => {
     mutate((state) => {
-      state.itineraries.geometryId = geometryId;
       state.itineraries.isLoadingRoute = false;
     });
   },
 
   close: () => {
     mutate((state) => {
-      state.itineraries.geometryId = null;
       state.itineraries.isLoadingRoute = false;
     });
   },
@@ -45,16 +43,20 @@ export const itineraries = ({ mutate, get }: App) => ({
 
   startNewItininerary: () => {
     mutate((state) => {
-      state.itineraries.geometryId = nextGeometryId();
+      state.selection.selectedGeometryId = nextGeometryId();
       state.geometries.items.push({
         type: "Line",
-        id: state.itineraries.geometryId,
+        id: state.selection.selectedGeometryId,
         source: MapSource.Routes,
+        transientPoints: [],
+        rawPoints: [],
         points: [],
-        smartPoints: [],
         smartMatching: state.routes.smartMatching,
         style: state.routes.style,
-        steps: [],
+        itinerary: {
+          profile: "driving",
+          steps: [],
+        },
       });
     });
   },
@@ -62,7 +64,7 @@ export const itineraries = ({ mutate, get }: App) => ({
   addStep: (place: Place) => {
     get().history.push({
       name: "addRouteStep",
-      geometryId: get().itineraries.geometryId as number,
+      geometryId: get().selection.selectedGeometryId as number,
       place,
     });
   },
@@ -70,7 +72,7 @@ export const itineraries = ({ mutate, get }: App) => ({
   addManualStep: (coordinates: Coordinates) => {
     get().history.push({
       name: "addRouteStep",
-      geometryId: get().itineraries.geometryId as number,
+      geometryId: get().selection.selectedGeometryId as number,
       place: {
         id: `${coordinates.latitude};${coordinates.longitude}`,
         type: "Coordinates",
@@ -88,7 +90,7 @@ export const itineraries = ({ mutate, get }: App) => ({
 
     get().history.push({
       name: "updateRouteStep",
-      geometryId: get().itineraries.geometryId as number,
+      geometryId: get().selection.selectedGeometryId as number,
 
       index,
       place,
@@ -98,7 +100,7 @@ export const itineraries = ({ mutate, get }: App) => ({
   moveStep: (from: number, to: number) => {
     get().history.push({
       name: "moveRouteStep",
-      geometryId: get().itineraries.geometryId as number,
+      geometryId: get().selection.selectedGeometryId as number,
 
       from,
       to,
@@ -108,18 +110,28 @@ export const itineraries = ({ mutate, get }: App) => ({
   deleteStep: (index: number) => {
     get().history.push({
       name: "deleteRouteStep",
-      geometryId: get().itineraries.geometryId as number,
+      geometryId: get().selection.selectedGeometryId as number,
       index,
+    });
+  },
+
+  updateProfile: (profile: ItineraryProfile) => {
+    get().history.push({
+      name: "updateRouteProfile",
+      geometryId: get().selection.selectedGeometryId as number,
+      profile,
     });
   },
 
   resolveCurrentItinerary: (points: Coordinates[]) => {
     mutate((state) => {
-      if (!state.itineraries.geometryId) {
+      if (!state.selection.selectedGeometryId) {
         return;
       }
 
-      const geometry = state.geometries.items.find((item) => item.id === state.itineraries.geometryId) as ItineraryLine;
+      const geometry = state.geometries.items.find(
+        (item) => item.id === state.selection.selectedGeometryId
+      ) as ItineraryLine;
 
       geometry.points = points;
 

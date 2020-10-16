@@ -8,7 +8,7 @@ import { ResetOrientationButton } from "~/components/ResetOrientationButton";
 import { Sidebar } from "~/components/Sidebar";
 import { Tips } from "~/components/Tips";
 import { useApp, useStore, useStoreSubscription } from "~/core/app";
-import { ItineraryLine } from "~/core/geometries";
+import { Line } from "~/core/geometries";
 import { useKeyboard } from "~/hooks/useKeyboard";
 import { useScreenDimensions } from "~/hooks/useScreenDimensions";
 import { Style } from "~/lib/style";
@@ -19,13 +19,13 @@ type Props = {
 
 export const MapEditor: React.FC<Props> = ({ initialStyles }) => {
   const app = useApp();
+  const itineraryContainer = useRef<HTMLDivElement>(null);
   const place = useStore((store) => store.map.place);
   const editorMode = useStore((store) => store.editor.mode);
   const currentLocation = useStore((store) => store.geolocation.currentLocation);
-  const currentItinerary = useStore(
-    (store) => store.geometries.items.find((item) => item.id === store.itineraries.geometryId) as ItineraryLine
-  );
-  const itineraryContainer = useRef<HTMLDivElement>(null);
+  const selectedItinerary = useStore(
+    (store) => store.geometries.items.find((item) => item.id === store.selection.selectedGeometryId) as Line | null
+  )?.itinerary;
 
   useKeyboard();
   useScreenDimensions();
@@ -66,18 +66,21 @@ export const MapEditor: React.FC<Props> = ({ initialStyles }) => {
 
       {editorMode !== "export" && (
         <div className="absolute top-0 left-0 flex flex-col space-y-2 mt-2 ml-2">
-          {currentItinerary?.steps && (
+          {selectedItinerary && (
             <div ref={itineraryContainer}>
               <ItineraryInput
                 bias={currentLocation ?? undefined}
                 canClose={editorMode === "select"}
-                value={currentItinerary.steps}
+                profile={selectedItinerary.profile}
+                value={selectedItinerary.steps}
                 onClose={() => {
-                  app.itineraries.close();
                   app.selection.unselectGeometry();
                 }}
                 onLoadingRoute={() => {
                   app.itineraries.toggleLoading();
+                }}
+                onProfileUpdated={(profile) => {
+                  app.itineraries.updateProfile(profile);
                 }}
                 onRouteFound={(points) => {
                   app.itineraries.resolveCurrentItinerary(points);
@@ -98,7 +101,7 @@ export const MapEditor: React.FC<Props> = ({ initialStyles }) => {
             </div>
           )}
 
-          {!currentItinerary && (
+          {!selectedItinerary && (
             <>
               <PlaceAutocomplete
                 collapsesWhenEmpty

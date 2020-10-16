@@ -199,35 +199,37 @@ export const Map: React.FC = () => {
     (store) => ({
       editorMode: store.editor.mode,
       geometries: store.geometries.items,
-      currentRoute: store.routes.currentRoute,
-      drawing: store.routes.drawing,
+      drawing: store.routes.isDrawing,
       selectedGeometryId: store.selection.selectedGeometryId,
     }),
-    ({ editorMode, geometries, currentRoute, drawing, selectedGeometryId }) => {
+    ({ editorMode, geometries, drawing, selectedGeometryId }) => {
       if (!map.current) {
         return;
       }
 
+      const selectedGeometry = geometries.find((geometry) => geometry.id === selectedGeometryId);
+
       const allGeometries = [...geometries];
 
-      if (currentRoute) {
-        allGeometries.push(currentRoute);
-
-        if (!drawing && currentRoute.points.length > 1) {
-          allGeometries.push({
-            id: STOP_DRAWING_CIRCLE_ID,
-            type: "Circle",
-            source: MapSource.Routes,
-            coordinates: currentRoute.points[currentRoute.points.length - 1],
-            style: {
-              color: currentRoute.style.color,
-              width: currentRoute.style.width,
-            },
-          });
-        }
+      if (
+        editorMode === "draw" &&
+        selectedGeometry?.type === "Line" &&
+        !drawing &&
+        selectedGeometry.points.length > 0
+      ) {
+        allGeometries.push({
+          id: STOP_DRAWING_CIRCLE_ID,
+          type: "Circle",
+          source: MapSource.Routes,
+          coordinates: selectedGeometry.points[selectedGeometry.points.length - 1],
+          style: {
+            color: selectedGeometry.style.color,
+            width: selectedGeometry.style.width,
+          },
+        });
       }
 
-      if (editorMode !== "export") {
+      if (editorMode === "select") {
         const selectedGeometry = geometries.find((geometry) => geometry.id === selectedGeometryId);
 
         if (selectedGeometry?.type === "Line") {

@@ -1,6 +1,6 @@
 import { State } from "~/core/app";
 import { Coordinates, Geometry, ItineraryLine, Line, Point } from "~/core/geometries";
-import { Place } from "~/core/itineraries";
+import { ItineraryProfile, Place } from "~/core/itineraries";
 import { PinStyle } from "~/core/pins";
 import { RouteStyle } from "~/core/routes";
 import { SmartMatching } from "~/lib/smartMatching";
@@ -17,6 +17,7 @@ export type Action =
   | UpdateRouteStepAction
   | MoveRouteStepAction
   | DeleteRouteStepAction
+  | UpdateRouteProfileAction
   | PinAction
   | ImportGpxAction
   | UpdateStyleAction
@@ -30,40 +31,29 @@ export type Action =
 
 type DrawAction = {
   name: "draw";
-  line: Line;
+  geometryId: number;
+  rawPoints: Coordinates[];
+  points: Coordinates[];
+
   previousLength?: number;
 };
 
 const DrawHandler: Handler<DrawAction> = {
-  apply: ({ geometries, routes }, action) => {
-    routes.currentRoute = action.line;
+  apply: (state, action) => {
+    const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as Line;
 
-    const lineIndex = geometries.items.findIndex((line) => line.id === action.line.id);
+    action.previousLength = geometry.points.length;
 
-    if (lineIndex === -1) {
-      action.previousLength = 0;
-      geometries.items.push(action.line);
-    } else {
-      action.previousLength = (geometries.items[lineIndex] as Line).points.length;
-      geometries.items[lineIndex] = routes.currentRoute;
-    }
+    geometry.rawPoints.push(...action.rawPoints);
+    geometry.points.push(...action.points);
+    geometry.transientPoints = [];
   },
 
-  undo: ({ geometries, routes }, action) => {
-    const lineIndex = geometries.items.findIndex((line) => line.id === action.line.id);
+  undo: (state, action) => {
+    const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as Line;
 
-    if (routes.currentRoute?.id !== action.line.id) {
-      routes.currentRoute = action.line;
-    }
-
-    routes.currentRoute.points = routes.currentRoute.points.slice(0, action.previousLength);
-    const savedLine = geometries.items[lineIndex] as Line;
-    savedLine.points = savedLine.points.slice(0, action.previousLength);
-
-    if (action.previousLength === 0) {
-      routes.currentRoute = null;
-      geometries.items.splice(lineIndex, 1);
-    }
+    geometry.points = geometry.points.slice(0, action.previousLength);
+    geometry.rawPoints = geometry.rawPoints.slice(0, action.previousLength);
   },
 };
 
@@ -75,12 +65,12 @@ type PinAction = {
 };
 
 const PinHandler: Handler<PinAction> = {
-  apply: ({ geometries }, action) => {
-    geometries.items.push({ ...action.point });
+  apply: (state, action) => {
+    state.geometries.items.push(action.point);
   },
 
-  undo: ({ geometries }, action) => {
-    geometries.items.splice(geometries.items.findIndex((geometry) => geometry.id === action.point.id));
+  undo: (state, action) => {
+    state.geometries.items.splice(state.geometries.items.findIndex((geometry) => geometry.id === action.point.id));
   },
 };
 
@@ -225,11 +215,11 @@ const UpdateLineHandler: Handler<UpdateLineAction> = {
 type UpdateLineSmartMatchingAction = {
   name: "updateLineSmartMatching";
   lineId: number;
-  smartPoints: Coordinates[];
+  points: Coordinates[];
   smartMatching: SmartMatching;
 
   previousState?: {
-    smartPoints: Coordinates[];
+    points: Coordinates[];
     smartMatching: SmartMatching;
   };
 };
@@ -239,19 +229,19 @@ const UpdateLineSmartMatchingHandler: Handler<UpdateLineSmartMatchingAction> = {
     const line = geometries.items.find((geometry) => geometry.id === action.lineId) as Line;
 
     action.previousState = {
-      smartPoints: action.smartPoints,
+      points: action.points,
       smartMatching: action.smartMatching,
     };
 
     line.smartMatching = action.smartMatching;
-    line.smartPoints = action.smartPoints;
+    line.points = action.points;
   },
 
   undo: ({ geometries }, action) => {
     const line = geometries.items.find((geometry) => geometry.id === action.lineId) as Line;
 
     line.smartMatching = action.previousState.smartMatching;
-    line.smartPoints = action.previousState.smartPoints;
+    line.points = action.previousState.points;
   },
 };
 
@@ -267,13 +257,13 @@ const AddRouteStepActionHandler: Handler<AddRouteStepAction> = {
   apply: (state, action) => {
     const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as ItineraryLine;
 
-    geometry.steps.push(action.place);
+    geometry.itinerary.steps.push(action.place);
   },
 
   undo: (state, action) => {
     const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as ItineraryLine;
 
-    geometry.steps.splice(geometry.steps.length - 1, 1);
+    geometry.itinerary.steps.splice(geometry.itinerary.steps.length - 1, 1);
   },
 };
 
@@ -292,14 +282,14 @@ const UpdateRouteStepActionHandler: Handler<UpdateRouteStepAction> = {
   apply: (state, action) => {
     const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as ItineraryLine;
 
-    action.previousPlace = geometry.steps[action.index];
-    geometry.steps[action.index] = action.place;
+    action.previousPlace = geometry.itinerary.steps[action.index];
+    geometry.itinerary.steps[action.index] = action.place;
   },
 
   undo: (state, action) => {
     const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as ItineraryLine;
 
-    geometry.steps[action.index] = action.previousPlace;
+    geometry.itinerary.steps[action.index] = action.previousPlace;
   },
 };
 
@@ -316,15 +306,15 @@ const MoveRouteStepActionHandler: Handler<MoveRouteStepAction> = {
   apply: (state, action) => {
     const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as ItineraryLine;
 
-    const [place] = geometry.steps.splice(action.from, 1);
-    geometry.steps.splice(action.to, 0, place);
+    const [place] = geometry.itinerary.steps.splice(action.from, 1);
+    geometry.itinerary.steps.splice(action.to, 0, place);
   },
 
   undo: (state, action) => {
     const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as ItineraryLine;
 
-    const [place] = geometry.steps.splice(action.to, 1);
-    geometry.steps.splice(action.from, 0, place);
+    const [place] = geometry.itinerary.steps.splice(action.to, 1);
+    geometry.itinerary.steps.splice(action.from, 0, place);
   },
 };
 
@@ -342,14 +332,39 @@ const DeleteRouteStepActionHandler: Handler<DeleteRouteStepAction> = {
   apply: (state, action) => {
     const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as ItineraryLine;
 
-    action.place = geometry.steps[action.index];
-    geometry.steps.splice(action.index, 1);
+    action.place = geometry.itinerary.steps[action.index];
+    geometry.itinerary.steps.splice(action.index, 1);
   },
 
   undo: (state, action) => {
     const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as ItineraryLine;
 
-    geometry.steps.splice(action.index, 0, action.place);
+    geometry.itinerary.steps.splice(action.index, 0, action.place);
+  },
+};
+
+// ---
+
+type UpdateRouteProfileAction = {
+  name: "updateRouteProfile";
+  geometryId: number;
+  profile: ItineraryProfile;
+
+  previousProfile?: ItineraryProfile;
+};
+
+const UpdateRouteProfileActionHandler: Handler<UpdateRouteProfileAction> = {
+  apply: (state, action) => {
+    const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as ItineraryLine;
+
+    action.previousProfile = geometry.itinerary.profile;
+    geometry.itinerary.profile = action.profile;
+  },
+
+  undo: (state, action) => {
+    const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as ItineraryLine;
+
+    geometry.itinerary.profile = action.previousProfile;
   },
 };
 
@@ -361,6 +376,7 @@ export const handlers = {
   updateRouteStep: UpdateRouteStepActionHandler,
   moveRouteStep: MoveRouteStepActionHandler,
   deleteRouteStep: DeleteRouteStepActionHandler,
+  updateRouteProfile: UpdateRouteProfileActionHandler,
   pin: PinHandler,
   importGpx: ImportGpxHandler,
   movePin: MovePinHandler,

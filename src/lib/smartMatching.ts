@@ -2,7 +2,7 @@ import { MapboxProfile } from "@mapbox/mapbox-sdk/lib/classes/mapi-request";
 import { Tracepoint } from "@mapbox/mapbox-sdk/services/map-matching";
 import { chunk } from "lodash";
 
-import { Coordinates, Line } from "~/core/geometries";
+import { Coordinates } from "~/core/geometries";
 import { mapboxMapMatching } from "~/lib/mapbox";
 
 export type SmartMatching = {
@@ -12,9 +12,9 @@ export type SmartMatching = {
 
 export type SmartMatchingProfile = MapboxProfile;
 
-export const smartMatch = async (line: Line, profile: SmartMatchingProfile): Promise<Coordinates[]> => {
+export const smartMatch = async (points: Coordinates[], profile: SmartMatchingProfile): Promise<Coordinates[]> => {
   const chunks = await Promise.all(
-    chunk(line.points, 100).map(async (points) => {
+    chunk(points, 100).map(async (points) => {
       if (points.length < 2) {
         return points;
       }

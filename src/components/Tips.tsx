@@ -3,12 +3,19 @@ import { Trans } from "react-i18next";
 
 import { InformationIcon } from "~/components/Icon";
 import { useApp, useStore } from "~/core/app";
+import { Line } from "~/core/geometries";
 
 export const Tips: React.FC = () => {
   const app = useApp();
-  const currentRoute = useStore((store) => store.routes.currentRoute);
+  const showRouteModeTip = useStore((store) => {
+    const selectedGeometry = store.geometries.items.find(
+      (item) => item.id === store.selection.selectedGeometryId
+    ) as Line;
 
-  if (currentRoute) {
+    return store.editor.mode === "draw" && selectedGeometry?.points.length > 1;
+  });
+
+  if (showRouteModeTip) {
     return (
       <div className="flex justify-between items-center bg-gray-900 text-gray-200 rounded-lg shadow pl-2 pr-3 py-2 border border-l-4 border-orange-600 pointer-events-auto">
         <InformationIcon className="w-4 h-4" />
@@ -23,7 +30,7 @@ export const Tips: React.FC = () => {
               <a
                 className="underline cursor-pointer"
                 onClick={() => {
-                  app.routes.stopDrawing();
+                  app.routes.stopRoute();
                 }}
               />
             </Trans>

@@ -81,20 +81,20 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
 
   const onMouseMove = throttle((event: MapMouseEvent | MapTouchEvent) => {
     const {
-      routes: { currentRoute },
+      routes: { isDrawing },
       dragAndDrop: { draggedGeometryId },
     } = getState();
 
     touch();
     if (justTouched && isMultitouchEvent(event)) {
-      app.routes.stopDrawing();
+      app.routes.stopRoute();
       return;
     }
 
     const { lat, lng } = event.lngLat;
 
-    if (currentRoute) {
-      app.routes.draw(lat, lng);
+    if (isDrawing) {
+      app.routes.addRouteStep({ latitude: lat, longitude: lng });
     }
 
     if (draggedGeometryId) {
@@ -107,7 +107,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
 
     touch();
     if (justTouched && isMultitouchEvent(event)) {
-      app.routes.stopDrawing();
+      app.routes.stopRoute();
       return;
     }
 
@@ -120,13 +120,15 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     }
 
     event.preventDefault();
-    app.routes.startDrawing(event.lngLat.lat, event.lngLat.lng);
+
+    const { lat, lng } = event.lngLat;
+    app.routes.startRoute({ latitude: lat, longitude: lng });
   };
 
   const onMouseUp = (event?: MapMouseEvent | MapTouchEvent) => {
     touch();
     if (justTouched && isMultitouchEvent(event)) {
-      app.routes.stopDrawing();
+      app.routes.stopRoute();
       return;
     }
 
@@ -147,22 +149,27 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   };
 
   const onClick = (event: MapMouseEvent) => {
-    const { editor, itineraries } = getState();
+    const { editor, geometries, selection } = getState();
 
     if (editor.mode === "pin") {
       app.pins.place(event.lngLat.lat, event.lngLat.lng);
     }
 
     if (editor.mode === "draw") {
-      app.routes.draw(event.lngLat.lat, event.lngLat.lng);
+      const { lat, lng } = event.lngLat;
+      app.routes.addRouteStep({ latitude: lat, longitude: lng });
     }
 
-    if (!justClickedLayer && itineraries.geometryId) {
+    if (editor.mode === "select" && !justClickedLayer) {
       const { lat, lng } = event.lngLat;
 
-      app.itineraries.addManualStep({ latitude: lat, longitude: lng });
-    } else if (!justClickedLayer) {
-      app.selection.unselectGeometry();
+      const geometry = geometries.items.find((item) => item.id === selection.selectedGeometryId);
+
+      if (geometry?.type === "Line" && geometry.itinerary) {
+        app.itineraries.addManualStep({ latitude: lat, longitude: lng });
+      } else {
+        app.selection.unselectGeometry();
+      }
     }
   };
 
@@ -178,7 +185,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
       return;
     }
 
-    app.selection.selectGeometry(event.features[0]);
+    app.selection.selectGeometry(event.features[0].id as number);
   };
 
   const onFeatureRightClick = (event: MapLayerMouseEvent) => {
@@ -187,7 +194,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     }
 
     app.editor.setEditorMode("select");
-    app.selection.selectGeometry(event.features[0]);
+    app.selection.selectGeometry(event.features[0].id as number);
   };
 
   const onFeatureMouseDown = (event: MapLayerMouseEvent | MapLayerTouchEvent) => {
@@ -246,7 +253,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
       event.stopPropagation();
 
       app.selection.unselectGeometry();
-      app.routes.stopDrawing();
+      app.routes.stopRoute();
     }
   };
 
@@ -283,7 +290,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
 
   const onRouteStopClick = (event: MapMouseEvent | MapTouchEvent) => {
     clickLayer();
-    app.routes.stopDrawing();
+    app.routes.stopRoute();
 
     event.preventDefault();
     event.originalEvent.stopPropagation();
