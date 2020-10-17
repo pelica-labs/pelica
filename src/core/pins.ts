@@ -27,24 +27,31 @@ export const pins = ({ mutate, get }: App) => ({
   ...initialState,
 
   setStyle: (style: Partial<PinStyle>) => {
-    mutate(({ pins }) => {
-      Object.assign(pins.style, style);
+    mutate((state) => {
+      Object.assign(state.pins.style, style);
+
+      const selectedGeometry = state.geometries.items.find((item) => item.id === state.selection.selectedGeometryId);
+      if (selectedGeometry?.type === "Point") {
+        Object.assign(selectedGeometry.style, style);
+      }
     });
   },
 
   place: (latitude: number, longitude: number) => {
-    const { history, pins } = get();
+    const pinId = nextGeometryId();
 
-    history.push({
+    get().history.push({
       name: "pin",
       point: {
         type: "Point",
-        id: nextGeometryId(),
+        id: pinId,
         source: MapSource.Pins,
         coordinates: { latitude, longitude },
-        style: pins.style,
+        style: get().pins.style,
       },
     });
+
+    get().selection.selectGeometry(pinId);
   },
 
   transientUpdateSelectedPin: (style: Partial<PinStyle>) => {
