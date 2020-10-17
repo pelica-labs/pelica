@@ -3,7 +3,7 @@ import classNames from "classnames";
 import * as KeyCode from "keycode-js";
 import React, { useEffect, useRef, useState } from "react";
 
-import { CloseIcon, Icon, SearchIcon } from "~/components/Icon";
+import { CloseIcon, Icon, SearchIcon, TrashIcon } from "~/components/Icon";
 import { Coordinates } from "~/core/geometries";
 import { Place } from "~/core/itineraries";
 import { useAsyncStorage } from "~/hooks/useAsyncStorage";
@@ -40,6 +40,7 @@ export const PlaceAutocomplete: React.FC<Props> = ({
   const [search, setSearch] = useState(value?.name ?? "");
   const [places, setPlaces] = useState<Place[]>([]);
   const [isFocused, setIsFocused] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const [selectionIndex, setSelectionIndex] = useState(0);
   const [recentSearches, setRecentSearches] = useAsyncStorage<Place[]>("recentSearches", []);
 
@@ -103,6 +104,7 @@ export const PlaceAutocomplete: React.FC<Props> = ({
    * Handles focus & blur to toggle results list
    */
   const onFocus = () => {
+    setIsClosing(false);
     setIsFocused(true);
     input.current?.focus();
 
@@ -115,12 +117,15 @@ export const PlaceAutocomplete: React.FC<Props> = ({
     event?.preventDefault();
     event?.stopPropagation();
 
-    input.current?.blur();
+    setIsClosing(true);
+  };
 
-    // @todo: this triggers a react state update warning
-    setTimeout(() => {
-      setIsFocused(false);
-    }, 300);
+  const onClose = (event?: React.FocusEvent | React.KeyboardEvent) => {
+    event?.preventDefault();
+    event?.stopPropagation();
+
+    input.current?.blur();
+    setIsFocused(false);
   };
 
   /**
@@ -128,7 +133,7 @@ export const PlaceAutocomplete: React.FC<Props> = ({
    */
   const onKeyUp = (event: React.KeyboardEvent) => {
     if (event.keyCode === KeyCode.KEY_ESCAPE) {
-      onBlur(event);
+      onClose(event);
     }
 
     if (!results.length) {
@@ -175,7 +180,6 @@ export const PlaceAutocomplete: React.FC<Props> = ({
     onChange(place);
 
     onBlur();
-    setIsFocused(false);
   };
 
   /**
@@ -196,6 +200,18 @@ export const PlaceAutocomplete: React.FC<Props> = ({
 
     input.current?.focus();
   };
+
+  useEffect(() => {
+    if (!isClosing) {
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      onClose();
+    }, 300);
+
+    return () => clearTimeout(timeout);
+  }, [isClosing]);
 
   return (
     <button
@@ -233,12 +249,12 @@ export const PlaceAutocomplete: React.FC<Props> = ({
       />
 
       {clearable && !!value && (
-        <button
+        <a
           className="absolute flex justify-center items-center mt-3 mr-2 right-0 bg-gray-300 hover:bg-gray-200 outline-none rounded-full w-6 h-6 text-gray-700"
           onClick={() => onClearClick()}
         >
           <CloseIcon className="w-4 h-4" />
-        </button>
+        </a>
       )}
 
       {isFocused && results.length > 0 && (
@@ -250,9 +266,17 @@ export const PlaceAutocomplete: React.FC<Props> = ({
           })}
         >
           {showRecentSearches && results.length > 0 && (
-            <span className="p-2 text-xs text-gray-600 uppercase tracking-wide leading-none border-b">
-              Recent searches
-            </span>
+            <div className="flex items-center justify-between border-b p-2">
+              <span className="text-xs text-gray-600 uppercase tracking-wide leading-none">Recent searches</span>
+              <a
+                className="ml-1 py-px px-px cursor-pointer border rounded hover:border-gray-500 flex items-center justify-center"
+                onClick={() => {
+                  setRecentSearches([]);
+                }}
+              >
+                <TrashIcon className="w-3 h-3 text-gray-600" />
+              </a>
+            </div>
           )}
 
           {results.map((place, index) => {

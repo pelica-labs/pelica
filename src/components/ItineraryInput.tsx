@@ -117,7 +117,9 @@ export const ItineraryInput: React.FC<Props> = ({
 
     return polyline
       .decode((directions.routes[0].geometry as unknown) as string) // it's a polyline mistyped as LineString
-      .map((coords) => ({ latitude: coords[0], longitude: coords[1] }));
+      .map((coords) => {
+        return { latitude: coords[0], longitude: coords[1] };
+      });
   };
 
   useEffect(() => {
