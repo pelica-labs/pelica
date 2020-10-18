@@ -1,8 +1,9 @@
-import MapboxStyles from "@mapbox/mapbox-sdk/services/styles";
+import MapboxStyles, { Style as MapboxStyle } from "@mapbox/mapbox-sdk/services/styles";
+import { intersectionBy } from "lodash";
 import { NextApiHandler } from "next";
 
 import { getEnv } from "~/lib/config";
-import { Style } from "~/lib/style";
+import { availableStyles, Style } from "~/lib/style";
 
 const accessToken = getEnv("MAPBOX_SECRET_TOKEN", process.env.MAPBOX_SECRET_TOKEN);
 
@@ -11,7 +12,7 @@ const mapboxStyles = MapboxStyles({ accessToken });
 export const fetchStyles = async (): Promise<Style[]> => {
   const styles = await mapboxStyles.listStyles({}).send();
 
-  return styles.body;
+  return intersectionBy(availableStyles, styles.body as MapboxStyle[], (style) => style.id);
 };
 
 const Styles: NextApiHandler = async (req, res) => {
