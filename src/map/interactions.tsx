@@ -126,7 +126,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
       app.routes.startRoute({ latitude: lat, longitude: lng });
     }
 
-    if (state.editor.mode === "select") {
+    if (state.editor.mode === "select" && !state.dragAndDrop.draggedGeometryId) {
       event.preventDefault();
 
       if (state.keyboard.shiftKey) {
@@ -324,6 +324,8 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
 
   map.on("mouseenter", "pinsInteractions", onFeatureHoverStart);
   map.on("mouseleave", "pinsInteractions", onFeatureHoverEnd);
+  map.on("mouseenter", "pins", onFeatureHoverStart);
+  map.on("mouseleave", "pins", onFeatureHoverEnd);
   map.on("mouseenter", "routesInteractions", onFeatureHoverStart);
   map.on("mouseleave", "routesInteractions", onFeatureHoverEnd);
   map.on("mouseenter", "routesStop", onFeatureHoverStart);
@@ -336,8 +338,8 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   map.on("touchend", "routesInteractions", onFeatureClick);
   map.on("contextmenu", "pinsInteractions", onFeatureRightClick);
   map.on("contextmenu", "routesInteractions", onFeatureRightClick);
-  map.on("mousedown", "pinsInteractions", onFeatureMouseDown);
-  map.on("touchstart", "pinsInteractions", onFeatureMouseDown);
+  map.on("mousedown", "pins", onFeatureMouseDown);
+  map.on("touchstart", "pins", onFeatureMouseDown);
 
   map.on("moveend", updateMap);
   map.on("mousemove", onMouseMove);
