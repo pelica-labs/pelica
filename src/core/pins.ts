@@ -2,7 +2,7 @@ import { MercatorCoordinate } from "mapbox-gl";
 
 import { Coordinates, nextGeometryId, Point, Position } from "~/core/geometries";
 import { App } from "~/core/helpers";
-import { getSelectedGeometry } from "~/core/selectors";
+import { getSelectedGeometry, getSelectedPins } from "~/core/selectors";
 import { MapSource } from "~/map/sources";
 import { theme } from "~/styles/tailwind";
 
@@ -58,34 +58,28 @@ export const pins = ({ mutate, get }: App) => ({
 
   transientUpdateSelectedPin: (style: Partial<PinStyle>) => {
     mutate((state) => {
-      const selectedPin = getSelectedGeometry(state) as Point;
-      if (!selectedPin.transientStyle) {
-        selectedPin.transientStyle = selectedPin.style;
-      }
+      getSelectedPins(state).forEach((pin) => {
+        if (!pin.transientStyle) {
+          pin.transientStyle = pin.style;
+        }
 
-      Object.assign(selectedPin.transientStyle, style);
+        Object.assign(pin.transientStyle, style);
+      });
     });
   },
 
   updateSelectedPin: (style: Partial<PinStyle>) => {
-    const selectedPin = getSelectedGeometry(get()) as Point;
-    if (!selectedPin) {
-      return;
-    }
-
     mutate((state) => {
-      const selectedPin = getSelectedGeometry(state) as Point;
-
-      delete selectedPin.transientStyle;
+      getSelectedPins(state).forEach((pin) => {
+        delete pin.transientStyle;
+      });
     });
 
+    const selectedPins = getSelectedPins(get());
     get().history.push({
       name: "updatePin",
-      pinId: selectedPin.id,
-      style: {
-        ...selectedPin.style,
-        ...style,
-      },
+      pinIds: selectedPins.map((pin) => pin.id),
+      style,
     });
   },
 

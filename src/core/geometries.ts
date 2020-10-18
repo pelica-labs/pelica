@@ -262,9 +262,9 @@ export const applyGeometries = (map: mapboxgl.Map, geometries: Geometry[]): void
       type: "FeatureCollection",
       features: geometriesForSource
         .map((geometry) => {
-          return geometryToFeature(geometry) as GeoJSON.Feature<GeoJSON.Geometry>;
+          return geometryToFeature(geometry);
         })
-        .filter((feature) => {
+        .filter((feature): feature is GeoJSON.Feature<GeoJSON.Geometry> => {
           return !!feature;
         }),
     });

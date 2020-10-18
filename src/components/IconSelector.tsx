@@ -15,6 +15,7 @@ const allIcons = icons();
 export const IconSelector: React.FC<Props> = ({ value, onChange }) => {
   const [showMenu, setShowMenu] = useState(false);
   const buttonContainer = useClickOutside<HTMLDivElement>(() => {
+    // @todo: find a way to cleanup
     setTimeout(() => {
       setShowMenu(false);
     }, 50);

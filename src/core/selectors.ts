@@ -1,4 +1,5 @@
 import { State } from "~/core/app";
+import { Geometry, Line, Point } from "~/core/geometries";
 
 export const getSelectedGeometries = (state: State) => {
   return state.geometries.items.filter((geometry) => {
@@ -24,4 +25,16 @@ export const getSelectedItinerary = (state: State) => {
   }
 
   return geometry.itinerary ?? null;
+};
+
+export const getSelectedRoutes = (state: State) => {
+  return getSelectedGeometries(state).filter((geometry: Geometry): geometry is Line => {
+    return geometry.type === "Line";
+  });
+};
+
+export const getSelectedPins = (state: State) => {
+  return getSelectedGeometries(state).filter((geometry: Geometry): geometry is Point => {
+    return geometry.type === "Point";
+  });
 };

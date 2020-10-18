@@ -25,7 +25,7 @@ export type Action =
   | UpdateStyleAction
   | MovePinAction
   | UpdatePinAction
-  | UpdateLineAction
+  | UpdateRouteAction
   | UpdateLineSmartMatchingAction
   | DeleteGeometryAction;
 
@@ -172,49 +172,68 @@ const DeleteGeometryHandler: Handler<DeleteGeometryAction> = {
 
 type UpdatePinAction = {
   name: "updatePin";
-  pinId: number;
-  style: PinStyle;
+  pinIds: number[];
 
-  previousStyle?: PinStyle;
+  style: Partial<PinStyle>;
+
+  previousStyles?: { [key: number]: PinStyle };
 };
 
 const UpdatePinHandler: Handler<UpdatePinAction> = {
-  apply: ({ geometries }, action) => {
-    const point = geometries.items.find((geometry) => geometry.id === action.pinId) as Point;
+  apply: (state, action) => {
+    const pins = state.geometries.items.filter((item): item is Point => action.pinIds.includes(item.id));
 
-    action.previousStyle = point.style;
-    point.style = action.style;
+    action.previousStyles = {};
+    pins.forEach((pin) => {
+      if (!action.previousStyles) {
+        return;
+      }
+
+      action.previousStyles[pin.id] = { ...pin.style };
+      Object.assign(pin.style, action.style);
+    });
   },
 
-  undo: ({ geometries }, action) => {
-    const point = geometries.items.find((geometry) => geometry.id === action.pinId) as Point;
+  undo: (state, action) => {
+    const pins = state.geometries.items.filter((item): item is Point => action.pinIds.includes(item.id));
 
-    point.style = action.previousStyle;
+    pins.forEach((pin) => {
+      pin.style = action.previousStyles[pin.id];
+    });
   },
 };
 
 // ---
 
-type UpdateLineAction = {
-  name: "updateLine";
-  lineId: number;
-  style: RouteStyle;
+type UpdateRouteAction = {
+  name: "updateRoute";
+  routeIds: number[];
+  style: Partial<RouteStyle>;
 
-  previousStyle?: RouteStyle;
+  previousStyles?: { [key: number]: RouteStyle };
 };
 
-const UpdateLineHandler: Handler<UpdateLineAction> = {
-  apply: ({ geometries }, action) => {
-    const line = geometries.items.find((geometry) => geometry.id === action.lineId) as Line;
+const UpdateRouteHandler: Handler<UpdateRouteAction> = {
+  apply: (state, action) => {
+    const routes = state.geometries.items.filter((item): item is Line => action.routeIds.includes(item.id));
 
-    action.previousStyle = line.style;
-    line.style = action.style;
+    action.previousStyles = {};
+    routes.forEach((route) => {
+      if (!action.previousStyles) {
+        return;
+      }
+
+      action.previousStyles[route.id] = { ...route.style };
+      Object.assign(route.style, action.style);
+    });
   },
 
-  undo: ({ geometries }, action) => {
-    const line = geometries.items.find((geometry) => geometry.id === action.lineId) as Line;
+  undo: (state, action) => {
+    const routes = state.geometries.items.filter((item): item is Line => action.routeIds.includes(item.id));
 
-    line.style = action.previousStyle;
+    routes.forEach((route) => {
+      route.style = action.previousStyles[route.id];
+    });
   },
 };
 
@@ -389,7 +408,7 @@ export const handlers = {
   importGpx: ImportGpxHandler,
   movePin: MovePinHandler,
   updatePin: UpdatePinHandler,
-  updateLine: UpdateLineHandler,
+  updateRoute: UpdateRouteHandler,
   updateLineSmartMatching: UpdateLineSmartMatchingHandler,
   deleteGeometry: DeleteGeometryHandler,
   updateStyle: UpdateStyleHandler,

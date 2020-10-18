@@ -129,8 +129,8 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     if (state.editor.mode === "select") {
       event.preventDefault();
 
-      if (!state.keyboard.shiftKey) {
-        app.selection.clear();
+      if (state.keyboard.shiftKey) {
+        app.selection.preserveSelection();
       }
 
       app.selection.startArea({ latitude: lat, longitude: lng });

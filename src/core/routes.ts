@@ -2,7 +2,7 @@ import { Feature, MultiLineString, multiLineString, simplify } from "@turf/turf"
 
 import { Coordinates, Line, nextGeometryId } from "~/core/geometries";
 import { App } from "~/core/helpers";
-import { getSelectedGeometry } from "~/core/selectors";
+import { getSelectedGeometry, getSelectedRoutes } from "~/core/selectors";
 import { smartMatch, SmartMatching, SmartMatchingProfile } from "~/lib/smartMatching";
 import { MapSource } from "~/map/sources";
 import { theme } from "~/styles/tailwind";
@@ -151,32 +151,28 @@ export const routes = ({ mutate, get }: App) => ({
 
   transientUpdateSelectedLine: (style: Partial<RouteStyle>) => {
     mutate((state) => {
-      const selectedRoute = getSelectedGeometry(state) as Line;
+      getSelectedRoutes(state).forEach((route) => {
+        if (!route.transientStyle) {
+          route.transientStyle = route.style;
+        }
 
-      if (!selectedRoute.transientStyle) {
-        selectedRoute.transientStyle = selectedRoute.style;
-      }
-
-      Object.assign(selectedRoute.transientStyle, style);
+        Object.assign(route.transientStyle, style);
+      });
     });
   },
 
   updateSelectedLine: (style: Partial<RouteStyle>) => {
-    const selectedRoute = getSelectedGeometry(get()) as Line;
-
     mutate((state) => {
-      const selectedRoute = getSelectedGeometry(state) as Line;
-
-      delete selectedRoute.transientStyle;
+      getSelectedRoutes(state).forEach((route) => {
+        delete route.transientStyle;
+      });
     });
 
+    const selectedRoutes = getSelectedRoutes(get());
     get().history.push({
-      name: "updateLine",
-      lineId: selectedRoute.id,
-      style: {
-        ...selectedRoute.style,
-        ...style,
-      },
+      name: "updateRoute",
+      routeIds: selectedRoutes.map((route) => route.id),
+      style,
     });
   },
 

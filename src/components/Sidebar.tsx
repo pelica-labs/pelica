@@ -15,8 +15,8 @@ import { StyleSelector } from "~/components/StyleSelector";
 import { Toolbar } from "~/components/Toolbar";
 import { WidthSlider } from "~/components/WidthSlider";
 import { useApp, useStore } from "~/core/app";
-import { computeDistance, Line } from "~/core/geometries";
-import { getSelectedGeometry } from "~/core/selectors";
+import { computeDistance, Line, Point } from "~/core/geometries";
+import { getSelectedGeometries, getSelectedGeometry } from "~/core/selectors";
 import { useBrowserFeatures } from "~/hooks/useBrowserFeatures";
 import { useDimensions } from "~/hooks/useDimensions";
 import { useHotkey } from "~/hooks/useHotkey";
@@ -118,18 +118,32 @@ const AspectRatioSidebar: React.FC = () => {
 
 const SelectSidebar: React.FC = () => {
   const app = useApp();
-  const selectedGeometry = useStore((store) => getSelectedGeometry(store));
+  const selectedGeometries = useStore((store) => getSelectedGeometries(store));
 
-  if (selectedGeometry?.type !== "Point" && selectedGeometry?.type !== "Line") {
+  if (selectedGeometries.length === 0) {
     return null;
+  }
+
+  const selectedGeometry = selectedGeometries[0] as Line | Point;
+  const allRoutes = selectedGeometries.every((geometry) => geometry.type === "Line");
+  const allNonItineraryRoutes = selectedGeometries.every((geometry) => geometry.type === "Line" && !geometry.itinerary);
+  const allPins = selectedGeometries.every((geometry) => geometry.type === "Point");
+  const allSame = allRoutes || allPins;
+
+  let name = "Mixed";
+  if (allRoutes) {
+    name = selectedGeometries.length > 1 ? "Routes" : "Route";
+  }
+  if (allPins) {
+    name = selectedGeometries.length > 1 ? "Pins" : "pin";
   }
 
   return (
     <>
       <div className="flex items-center justify-between px-3 py-2 border-b border-t bg-white">
         <span className="text-xs uppercase font-light tracking-wide leading-none">
-          <span className="text-gray-600">Selection:</span>
-          <span className="ml-2">{selectedGeometry.type}</span>
+          <span>{name}</span>
+          <span className="ml-1 text-gray-600">({selectedGeometries.length})</span>
         </span>
         <Button
           className="bg-gray-300 text-gray-800"
@@ -141,74 +155,78 @@ const SelectSidebar: React.FC = () => {
         </Button>
       </div>
 
-      <div className="mt-4 px-2 pb-2 mb-2 border-b">
-        <div className="flex items-center px-1">
-          <SidebarHeading>Color</SidebarHeading>
-          <div
-            className="ml-2 w-3 h-3 rounded-full border border-gray-200"
-            style={{ backgroundColor: selectedGeometry.transientStyle?.color ?? selectedGeometry.style.color }}
-          />
-        </div>
-        <div className="mt-4">
-          <ColorPicker
-            value={selectedGeometry.style.color}
-            onChange={(color) => {
-              if (selectedGeometry.type === "Line") {
-                app.routes.transientUpdateSelectedLine({ color });
-              } else if (selectedGeometry.type === "Point") {
-                app.pins.transientUpdateSelectedPin({ color });
-              }
-            }}
-            onChangeComplete={(color) => {
-              if (selectedGeometry.type === "Line") {
-                app.routes.updateSelectedLine({ color });
-              } else if (selectedGeometry.type === "Point") {
-                app.pins.updateSelectedPin({ color });
-              }
-            }}
-          />
-        </div>
-      </div>
-
-      <div className="mt-2 px-3 pb-3 mb-2 border-b">
-        <div className="flex items-center">
-          <SidebarHeading>Width</SidebarHeading>
-          <div className="ml-2 flex justify-center items-center w-3 h-3 rounded-full">
+      {allSame && (
+        <div className="mt-4 px-2 pb-2 mb-2 border-b">
+          <div className="flex items-center px-1">
+            <SidebarHeading>Color</SidebarHeading>
             <div
-              className="rounded-full"
-              style={{
-                width: selectedGeometry.transientStyle?.width ?? selectedGeometry.style.width,
-                height: selectedGeometry.transientStyle?.width ?? selectedGeometry.style.width,
-                backgroundColor: selectedGeometry.transientStyle?.color ?? selectedGeometry.style.color,
+              className="ml-2 w-3 h-3 rounded-full border border-gray-200"
+              style={{ backgroundColor: selectedGeometry.transientStyle?.color ?? selectedGeometry.style.color }}
+            />
+          </div>
+          <div className="mt-4">
+            <ColorPicker
+              value={selectedGeometry.style.color}
+              onChange={(color) => {
+                if (allRoutes) {
+                  app.routes.transientUpdateSelectedLine({ color });
+                } else if (allPins) {
+                  app.pins.transientUpdateSelectedPin({ color });
+                }
+              }}
+              onChangeComplete={(color) => {
+                if (allRoutes) {
+                  app.routes.updateSelectedLine({ color });
+                } else if (allPins) {
+                  app.pins.updateSelectedPin({ color });
+                }
               }}
             />
           </div>
         </div>
-        <div className="mt-4 px-1">
-          <WidthSlider
-            color={selectedGeometry.style.color}
-            max={12}
-            min={1}
-            value={selectedGeometry.style.width}
-            onChange={(width) => {
-              if (selectedGeometry.type === "Line") {
-                app.routes.transientUpdateSelectedLine({ width });
-              } else if (selectedGeometry.type === "Point") {
-                app.pins.transientUpdateSelectedPin({ width });
-              }
-            }}
-            onChangeComplete={(width) => {
-              if (selectedGeometry.type === "Line") {
-                app.routes.updateSelectedLine({ width });
-              } else if (selectedGeometry.type === "Point") {
-                app.pins.updateSelectedPin({ width });
-              }
-            }}
-          />
-        </div>
-      </div>
+      )}
 
-      {selectedGeometry.type === "Line" && (
+      {allSame && (
+        <div className="mt-2 px-3 pb-3 mb-2 border-b">
+          <div className="flex items-center">
+            <SidebarHeading>Width</SidebarHeading>
+            <div className="ml-2 flex justify-center items-center w-3 h-3 rounded-full">
+              <div
+                className="rounded-full"
+                style={{
+                  width: selectedGeometry.transientStyle?.width ?? selectedGeometry.style.width,
+                  height: selectedGeometry.transientStyle?.width ?? selectedGeometry.style.width,
+                  backgroundColor: selectedGeometry.transientStyle?.color ?? selectedGeometry.style.color,
+                }}
+              />
+            </div>
+          </div>
+          <div className="mt-4 px-1">
+            <WidthSlider
+              color={selectedGeometry.style.color}
+              max={12}
+              min={1}
+              value={selectedGeometry.style.width}
+              onChange={(width) => {
+                if (allRoutes) {
+                  app.routes.transientUpdateSelectedLine({ width });
+                } else if (allPins) {
+                  app.pins.transientUpdateSelectedPin({ width });
+                }
+              }}
+              onChangeComplete={(width) => {
+                if (allRoutes) {
+                  app.routes.updateSelectedLine({ width });
+                } else if (allPins) {
+                  app.pins.updateSelectedPin({ width });
+                }
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {allRoutes && (
         <div className="mt-2 px-3 pb-3 mb-2 border-b">
           <div className="flex items-center">
             <SidebarHeading>Outline</SidebarHeading>
@@ -224,7 +242,7 @@ const SelectSidebar: React.FC = () => {
         </div>
       )}
 
-      {selectedGeometry.type === "Point" && (
+      {allPins && (
         <div className="px-3 pb-2 border-b">
           <SidebarHeading>Icon</SidebarHeading>
 
@@ -239,7 +257,7 @@ const SelectSidebar: React.FC = () => {
         </div>
       )}
 
-      {selectedGeometry.type === "Line" && !selectedGeometry.itinerary && (
+      {allNonItineraryRoutes && (
         <div className="px-3 pb-2 mb-2 border-b">
           <SidebarHeading>Routes</SidebarHeading>
           <div className="mt-2">

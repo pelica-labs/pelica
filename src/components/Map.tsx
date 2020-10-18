@@ -206,7 +206,6 @@ export const Map: React.FC = () => {
       geometries: store.geometries.items,
       drawing: store.routes.isDrawing,
       selectionArea: store.selection.area,
-      // selectedGeometryId: store.selection.selectedGeometryId,
       selectedIds: store.selection.ids,
     }),
     ({ editorMode, geometries, drawing, selectionArea, selectedIds }) => {

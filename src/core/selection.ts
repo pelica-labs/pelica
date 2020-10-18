@@ -9,16 +9,24 @@ export type Selection = {
   area: BoundingBox | null;
 
   ids: number[];
+  preservedIds: number[];
 };
 
 const initialState: Selection = {
   area: null,
 
   ids: [],
+  preservedIds: [],
 };
 
 export const selection = ({ mutate, get }: App) => ({
   ...initialState,
+
+  preserveSelection: () => {
+    mutate((state) => {
+      state.selection.preservedIds = state.selection.ids;
+    });
+  },
 
   startArea: (coordinates: Coordinates) => {
     mutate((state) => {
@@ -51,12 +59,13 @@ export const selection = ({ mutate, get }: App) => ({
       };
 
       const selectedFeatureIds = state.geometries.items
-        .filter((item) => {
-          const feature = geometryToFeature(item) as GeoJSON.Feature<GeoJSON.Geometry>;
-          if (!feature) {
-            return false;
-          }
-
+        .map((item) => {
+          return geometryToFeature(item);
+        })
+        .filter((feature): feature is GeoJSON.Feature<GeoJSON.Geometry> => {
+          return !!feature;
+        })
+        .filter((feature) => {
           const crosses = feature.geometry.type !== "Point" && booleanCrosses(geometry, feature);
           const contains = booleanContains(geometry, feature);
 
@@ -66,13 +75,15 @@ export const selection = ({ mutate, get }: App) => ({
           return feature.id as number;
         });
 
-      state.selection.ids = uniq([...state.selection.ids, ...selectedFeatureIds]);
+      // @todo: maybe preserve selection order
+      state.selection.ids = uniq([...state.selection.preservedIds, ...selectedFeatureIds]);
     });
   },
 
   endArea: () => {
     mutate((state) => {
       state.selection.area = null;
+      state.selection.preservedIds = [];
     });
   },
 
@@ -103,6 +114,7 @@ export const selection = ({ mutate, get }: App) => ({
   clear: () => {
     mutate((state) => {
       state.selection.ids = [];
+      state.selection.preservedIds = [];
     });
 
     get().itineraries.close();
