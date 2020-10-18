@@ -8,7 +8,7 @@ export const applyLayers = (map: mapboxgl.Map): void => {
     source: MapSource.SelectionArea,
     interactive: false,
     paint: {
-      "fill-color": theme.colors.blue[500],
+      "fill-color": theme.colors.orange[500],
       "fill-opacity": 0.1,
     },
   });
@@ -19,7 +19,7 @@ export const applyLayers = (map: mapboxgl.Map): void => {
     source: MapSource.SelectionArea,
     interactive: false,
     paint: {
-      "line-color": theme.colors.blue[500],
+      "line-color": theme.colors.orange[500],
       "line-width": 1,
     },
   });
@@ -93,6 +93,22 @@ export const applyLayers = (map: mapboxgl.Map): void => {
   });
 
   addLayer(map, {
+    id: "routesHover",
+    before: "routes",
+    type: "line",
+    interactive: false,
+    source: MapSource.Routes,
+    layout: {
+      "line-cap": "round",
+    },
+    paint: {
+      "line-width": ["+", ["get", "width"], 5],
+      "line-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 0.5, 0],
+      "line-color": theme.colors.orange[500],
+    },
+  });
+
+  addLayer(map, {
     id: "routesInteractions",
     before: "routes",
     type: "line",
@@ -151,6 +167,35 @@ export const applyLayers = (map: mapboxgl.Map): void => {
     paint: {
       "circle-radius": ["+", ["get", "width"], 5],
       "circle-opacity": 0,
+    },
+  });
+
+  addLayer(map, {
+    id: "pinsHover",
+    before: "pins",
+    type: "circle",
+    interactive: false,
+    source: MapSource.Pins,
+    paint: {
+      "circle-radius": 8,
+      "circle-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 0.5, 0],
+      "circle-color": theme.colors.orange[300],
+      "circle-stroke-color": theme.colors.orange[500],
+      "circle-stroke-width": 1,
+      "circle-stroke-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 1, 0],
+    },
+  });
+
+  addLayer(map, {
+    id: "pinsHoverCenter",
+    before: "pins",
+    type: "circle",
+    interactive: false,
+    source: MapSource.Pins,
+    paint: {
+      "circle-radius": 2,
+      "circle-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 1, 0],
+      "circle-color": theme.colors.orange[500],
     },
   });
 };

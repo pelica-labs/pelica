@@ -30,26 +30,9 @@ type Props = {
 };
 
 export const Sidebar: React.FC<Props> = ({ initialStyles }) => {
-  const app = useApp();
   const editorMode = useStore((store) => store.editor.mode);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const sidebarDimensions = useDimensions(sidebarRef);
-
-  useHotkey({ key: "1", meta: true }, () => {
-    app.editor.setEditorMode("select");
-  });
-
-  useHotkey({ key: "2", meta: true }, () => {
-    app.editor.setEditorMode("draw");
-  });
-
-  useHotkey({ key: "3", meta: true }, () => {
-    app.editor.setEditorMode("itinerary");
-  });
-
-  useHotkey({ key: "4", meta: true }, () => {
-    app.editor.setEditorMode("pin");
-  });
 
   return (
     <div ref={sidebarRef} className="flex-grow relative flex items-end">

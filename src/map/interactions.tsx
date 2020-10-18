@@ -266,7 +266,13 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   };
 
   const onFeatureHoverStart = (event: MapLayerMouseEvent) => {
+    const state = getState();
+
     if (!event.features?.length) {
+      return;
+    }
+
+    if (state.editor.mode !== "select") {
       return;
     }
 
