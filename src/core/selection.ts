@@ -61,7 +61,7 @@ export const selection = ({ mutate, get }: App) => ({
           return crosses || contains;
         })
         .map((feature) => {
-          return feature.id as number;
+          return feature.id;
         });
 
       // @todo: maybe preserve selection order

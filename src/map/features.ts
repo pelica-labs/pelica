@@ -3,7 +3,10 @@ import { GeoJSONSource } from "mapbox-gl";
 
 import { MapSource } from "~/map/sources";
 
-export type RawFeature = Feature<Geometry> & { id: number; source: MapSource };
+export type RawFeature = Feature<Geometry> & {
+  id: number;
+  source: MapSource;
+};
 
 export const applyFeatures = (map: mapboxgl.Map, features: RawFeature[], sources: MapSource[]): void => {
   sources.forEach((sourceId) => {
