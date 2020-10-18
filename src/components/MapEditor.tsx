@@ -8,7 +8,7 @@ import { ResetOrientationButton } from "~/components/ResetOrientationButton";
 import { Sidebar } from "~/components/Sidebar";
 import { Tips } from "~/components/Tips";
 import { useApp, useStore, useStoreSubscription } from "~/core/app";
-import { Line } from "~/core/geometries";
+import { getSelectedItinerary } from "~/core/selectors";
 import { useKeyboard } from "~/hooks/useKeyboard";
 import { useScreenDimensions } from "~/hooks/useScreenDimensions";
 import { Style } from "~/lib/style";
@@ -23,9 +23,7 @@ export const MapEditor: React.FC<Props> = ({ initialStyles }) => {
   const place = useStore((store) => store.map.place);
   const editorMode = useStore((store) => store.editor.mode);
   const currentLocation = useStore((store) => store.geolocation.currentLocation);
-  const selectedItinerary = useStore(
-    (store) => store.geometries.items.find((item) => item.id === store.selection.selectedGeometryId) as Line | null
-  )?.itinerary;
+  const selectedItinerary = useStore((store) => getSelectedItinerary(store));
 
   useKeyboard();
   useScreenDimensions();
@@ -74,7 +72,7 @@ export const MapEditor: React.FC<Props> = ({ initialStyles }) => {
                 profile={selectedItinerary.profile}
                 value={selectedItinerary.steps}
                 onClose={() => {
-                  app.selection.unselectGeometry();
+                  app.selection.clear();
                 }}
                 onLoadingRoute={() => {
                   app.itineraries.toggleLoading();

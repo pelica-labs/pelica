@@ -2,6 +2,7 @@ import { MercatorCoordinate } from "mapbox-gl";
 
 import { Coordinates, nextGeometryId, Point, Position } from "~/core/geometries";
 import { App } from "~/core/helpers";
+import { getSelectedGeometry } from "~/core/selectors";
 import { MapSource } from "~/map/sources";
 import { theme } from "~/styles/tailwind";
 
@@ -27,10 +28,11 @@ export const pins = ({ mutate, get }: App) => ({
   ...initialState,
 
   setStyle: (style: Partial<PinStyle>) => {
+    const selectedGeometry = getSelectedGeometry(get());
+
     mutate((state) => {
       Object.assign(state.pins.style, style);
 
-      const selectedGeometry = state.geometries.items.find((item) => item.id === state.selection.selectedGeometryId);
       if (selectedGeometry?.type === "Point") {
         Object.assign(selectedGeometry.style, style);
       }
@@ -55,83 +57,71 @@ export const pins = ({ mutate, get }: App) => ({
   },
 
   transientUpdateSelectedPin: (style: Partial<PinStyle>) => {
-    mutate(({ geometries, selection }) => {
-      const point = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as Point;
-
-      if (!point.transientStyle) {
-        point.transientStyle = point.style;
+    mutate((state) => {
+      const selectedPin = getSelectedGeometry(state) as Point;
+      if (!selectedPin.transientStyle) {
+        selectedPin.transientStyle = selectedPin.style;
       }
 
-      Object.assign(point.transientStyle, style);
+      Object.assign(selectedPin.transientStyle, style);
     });
   },
 
   updateSelectedPin: (style: Partial<PinStyle>) => {
-    const { selection, history, geometries } = get();
-
-    if (!selection.selectedGeometryId) {
+    const selectedPin = getSelectedGeometry(get()) as Point;
+    if (!selectedPin) {
       return;
     }
 
-    mutate(({ geometries, selection }) => {
-      const point = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as Point;
+    mutate((state) => {
+      const selectedPin = getSelectedGeometry(state) as Point;
 
-      delete point.transientStyle;
+      delete selectedPin.transientStyle;
     });
 
-    const point = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as Point;
-
-    history.push({
+    get().history.push({
       name: "updatePin",
-      pinId: selection.selectedGeometryId,
+      pinId: selectedPin.id,
       style: {
-        ...point.style,
+        ...selectedPin.style,
         ...style,
       },
     });
   },
 
   editSelectedPinCoordinates: (coordinates: Coordinates) => {
-    mutate(({ geometries, selection }) => {
-      const selectedGeometry = geometries.items.find(
-        (geometry) => geometry.id === selection.selectedGeometryId
-      ) as Point;
+    mutate((state) => {
+      const selectedPin = getSelectedGeometry(state) as Point;
 
-      selectedGeometry.coordinates = coordinates;
+      selectedPin.coordinates = coordinates;
     });
   },
 
   endEditSelectedPinCoordinates: (coordinates: Coordinates) => {
-    const { geometries, selection, history } = get();
-    const selectedGeometry = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as Point;
+    const selectedPin = getSelectedGeometry(get()) as Point;
 
-    if (selectedGeometry?.type !== "Point") {
-      return;
-    }
-
-    history.push({
+    get().history.push({
       name: "movePin",
-      pinId: selectedGeometry.id,
+      pinId: selectedPin.id,
       coordinates,
     });
   },
 
   nudgeSelectedPin: (direction: Position) => {
-    const { geometries, selection, history, map } = get();
-    const point = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as Point;
+    const selectedPin = getSelectedGeometry(get()) as Point;
 
     const pointCoordinates = MercatorCoordinate.fromLngLat(
-      { lng: point.coordinates.longitude, lat: point.coordinates.latitude },
+      { lng: selectedPin.coordinates.longitude, lat: selectedPin.coordinates.latitude },
       0
     );
-    const base = 2 ** (-map.zoom - 1);
+    const base = 2 ** (-get().map.zoom - 1);
     pointCoordinates.x += base * direction.x;
     pointCoordinates.y += base * direction.y;
     const { lat, lng } = pointCoordinates.toLngLat();
 
-    history.push({
+    get().history.push({
       name: "movePin",
-      pinId: point.id,
+      pinId: selectedPin.id,
       coordinates: { latitude: lat, longitude: lng },
     });
   },

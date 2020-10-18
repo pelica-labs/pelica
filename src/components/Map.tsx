@@ -205,17 +205,20 @@ export const Map: React.FC = () => {
       editorMode: store.editor.mode,
       geometries: store.geometries.items,
       drawing: store.routes.isDrawing,
-      selectedGeometryId: store.selection.selectedGeometryId,
+      selectionArea: store.selection.area,
+      // selectedGeometryId: store.selection.selectedGeometryId,
+      selectedIds: store.selection.ids,
     }),
-    ({ editorMode, geometries, drawing, selectedGeometryId }) => {
+    ({ editorMode, geometries, drawing, selectionArea, selectedIds }) => {
       if (!map.current) {
         return;
       }
 
-      const selectedGeometry = geometries.find((geometry) => geometry.id === selectedGeometryId);
+      const selectedGeometries = geometries.filter((geometry) => selectedIds.includes(geometry.id));
 
       const allGeometries = [...geometries];
 
+      const selectedGeometry = selectedGeometries[0];
       if (
         editorMode === "draw" &&
         selectedGeometry?.type === "Line" &&
@@ -234,40 +237,49 @@ export const Map: React.FC = () => {
         });
       }
 
+      if (selectionArea) {
+        allGeometries.push({
+          id: -1,
+          type: "Rectangle",
+          source: MapSource.SelectionArea,
+          box: selectionArea,
+        });
+      }
+
       if (editorMode === "select") {
-        const selectedGeometry = geometries.find((geometry) => geometry.id === selectedGeometryId);
+        selectedGeometries.forEach((geometry) => {
+          if (geometry.type === "Line") {
+            const box = bbox(
+              transformScale(
+                lineString(
+                  geometry.points.map((point) => {
+                    return [point.longitude, point.latitude];
+                  })
+                ),
+                1.05 + 0.01 * geometry.style.width
+              )
+            );
 
-        if (selectedGeometry?.type === "Line") {
-          const box = bbox(
-            transformScale(
-              lineString(
-                selectedGeometry.points.map((point) => {
-                  return [point.longitude, point.latitude];
-                })
-              ),
-              1.05 + 0.01 * selectedGeometry.style.width
-            )
-          );
+            allGeometries.push({
+              id: -1,
+              type: "Rectangle",
+              source: MapSource.Overlays,
+              box: {
+                northWest: { longitude: box[0], latitude: box[1] },
+                southEast: { longitude: box[2], latitude: box[3] },
+              },
+            });
+          }
 
-          allGeometries.push({
-            id: -1,
-            type: "Rectangle",
-            source: MapSource.Overlays,
-            box: {
-              northWest: { longitude: box[0], latitude: box[1] },
-              southEast: { longitude: box[2], latitude: box[3] },
-            },
-          });
-        }
-
-        if (selectedGeometry?.type === "Point") {
-          allGeometries.push({
-            id: -1,
-            type: "Circle",
-            source: MapSource.Overlays,
-            coordinates: selectedGeometry.coordinates,
-          });
-        }
+          if (geometry.type === "Point") {
+            allGeometries.push({
+              id: -1,
+              type: "Circle",
+              source: MapSource.Overlays,
+              coordinates: geometry.coordinates,
+            });
+          }
+        });
       }
 
       applyGeometries(map.current, allGeometries);
@@ -310,7 +322,7 @@ export const Map: React.FC = () => {
   useStoreSubscription(
     (store) => store.editor.mode,
     (mode) => {
-      if (mode === "draw") {
+      if (mode === "draw" || mode === "select") {
         map.current?.dragPan.disable();
       } else {
         map.current?.dragPan.enable();

@@ -50,7 +50,7 @@ export const MenuButton: React.FC = () => {
                             "flex items-center justify-between px-2 py-1": true,
                             "bg-orange-200": active,
                             "hover:bg-orange-200 cursor-pointer": !disabled,
-                            "text-gray-700": disabled,
+                            "text-gray-400": disabled,
                           })}
                           onClick={() => {
                             app.history.undo();
@@ -72,7 +72,7 @@ export const MenuButton: React.FC = () => {
                             "flex items-center justify-between px-2 py-1": true,
                             "bg-orange-200": active,
                             "hover:bg-orange-200 cursor-pointer": !disabled,
-                            "text-gray-700": disabled,
+                            "text-gray-400": disabled,
                           })}
                           onClick={() => {
                             app.history.redo();
@@ -94,7 +94,7 @@ export const MenuButton: React.FC = () => {
                             "flex items-center justify-between px-2 py-1": true,
                             "bg-orange-200": active,
                             "hover:bg-orange-200 cursor-pointer": !disabled,
-                            "text-gray-700": disabled,
+                            "text-gray-400": disabled,
                           })}
                           onClick={() => {
                             app.history.clear();

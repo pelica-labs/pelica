@@ -3,7 +3,8 @@ import { throttle } from "lodash";
 import { MapLayerMouseEvent, MapLayerTouchEvent, MapMouseEvent, MapTouchEvent, MapWheelEvent } from "mapbox-gl";
 
 import { getState, State } from "~/core/app";
-import { Coordinates, Point, Position } from "~/core/geometries";
+import { Coordinates, Position } from "~/core/geometries";
+import { getSelectedGeometries, getSelectedGeometry, getSelectedItinerary } from "~/core/selectors";
 
 const isMultitouchEvent = (event?: MapMouseEvent | MapTouchEvent) => {
   return event && "touches" in event.originalEvent && event.originalEvent?.touches?.length > 1;
@@ -59,7 +60,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     event.preventDefault();
   };
 
-  const updatemap = () => {
+  const updateMap = () => {
     const { lng, lat } = map.getCenter();
     const zoom = map.getZoom();
     const bearing = map.getBearing();
@@ -80,6 +81,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     const {
       routes: { isDrawing },
       dragAndDrop: { draggedGeometryId },
+      selection: { area },
     } = getState();
 
     touch();
@@ -97,10 +99,14 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     if (draggedGeometryId) {
       app.dragAndDrop.dragSelectedPin({ latitude: lat, longitude: lng });
     }
+
+    if (area) {
+      app.selection.updateArea({ latitude: lat, longitude: lng });
+    }
   }, 1000 / 30);
 
   const onMouseDown = (event: MapMouseEvent | MapTouchEvent) => {
-    const { editor } = getState();
+    const state = getState();
 
     touch();
     if (justTouched && isMultitouchEvent(event)) {
@@ -112,14 +118,23 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
       return;
     }
 
-    if (editor.mode !== "draw") {
-      return;
+    const { lat, lng } = event.lngLat;
+
+    if (state.editor.mode === "draw") {
+      event.preventDefault();
+
+      app.routes.startRoute({ latitude: lat, longitude: lng });
     }
 
-    event.preventDefault();
+    if (state.editor.mode === "select") {
+      event.preventDefault();
 
-    const { lat, lng } = event.lngLat;
-    app.routes.startRoute({ latitude: lat, longitude: lng });
+      if (!state.keyboard.shiftKey) {
+        app.selection.clear();
+      }
+
+      app.selection.startArea({ latitude: lat, longitude: lng });
+    }
   };
 
   const onMouseUp = (event?: MapMouseEvent | MapTouchEvent) => {
@@ -132,10 +147,15 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     const {
       editor,
       dragAndDrop: { draggedGeometryId },
+      selection: { area },
     } = getState();
 
     if (editor.mode === "draw") {
       app.routes.stopSegment();
+    }
+
+    if (area) {
+      app.selection.endArea();
     }
 
     if (draggedGeometryId && event) {
@@ -146,35 +166,36 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   };
 
   const onClick = (event: MapMouseEvent) => {
-    const { editor, geometries, selection } = getState();
+    const state = getState();
 
-    if (editor.mode === "pin") {
+    if (state.editor.mode === "pin") {
       app.pins.place(event.lngLat.lat, event.lngLat.lng);
     }
 
-    if (editor.mode === "draw") {
+    if (state.editor.mode === "draw") {
       const { lat, lng } = event.lngLat;
       app.routes.addRouteStep({ latitude: lat, longitude: lng });
     }
 
-    if ((editor.mode === "select" || editor.mode === "itinerary") && !justClickedLayer) {
+    if ((state.editor.mode === "select" || state.editor.mode === "itinerary") && !justClickedLayer) {
       const { lat, lng } = event.lngLat;
 
-      const geometry = geometries.items.find((item) => item.id === selection.selectedGeometryId);
+      const itinerary = getSelectedItinerary(state);
 
-      if (geometry?.type === "Line" && geometry.itinerary) {
+      if (!!itinerary) {
         app.itineraries.addManualStep({ latitude: lat, longitude: lng });
       } else {
-        app.selection.unselectGeometry();
+        app.selection.clear();
       }
     }
   };
 
   const onFeatureClick = (event: MapLayerMouseEvent | MapLayerTouchEvent) => {
-    const { editor } = getState();
+    const state = getState();
+
     clickLayer();
 
-    if (editor.mode !== "select") {
+    if (state.editor.mode !== "select") {
       return;
     }
 
@@ -182,7 +203,13 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
       return;
     }
 
-    app.selection.selectGeometry(event.features[0].id as number);
+    const featureId = event.features[0].id as number;
+
+    if (state.keyboard.shiftKey) {
+      app.selection.toggleGeometrySelection(featureId);
+    } else {
+      app.selection.selectGeometry(featureId);
+    }
   };
 
   const onFeatureRightClick = (event: MapLayerMouseEvent) => {
@@ -215,12 +242,10 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   };
 
   const onCanvasKeyUp = (event: KeyboardEvent) => {
-    const {
-      selection: { selectedGeometryId },
-      geometries,
-    } = getState();
+    const state = getState();
 
-    const selectedGeometry = geometries.items.find((geometry) => geometry.id === selectedGeometryId) as Point;
+    const selectedGeometries = getSelectedGeometries(state);
+    const selectedGeometry = getSelectedGeometry(state);
 
     const coefficient = event.shiftKey ? 0.1 : 0.01;
 
@@ -238,18 +263,18 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
       app.pins.nudgeSelectedPin(keyCodeToDirection[event.keyCode]);
     }
 
-    if (event.keyCode === KeyCode.KEY_BACK_SPACE && selectedGeometry) {
+    if (event.keyCode === KeyCode.KEY_BACK_SPACE && selectedGeometries.length > 0) {
       event.preventDefault();
       event.stopPropagation();
 
-      app.selection.deleteSelectedGeometry();
+      app.selection.deleteSelectedGeometries();
     }
 
     if (event.keyCode === KeyCode.KEY_ESCAPE) {
       event.preventDefault();
       event.stopPropagation();
 
-      app.selection.unselectGeometry();
+      app.selection.clear();
       app.routes.stopRoute();
     }
   };
@@ -295,7 +320,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
 
   map.scrollZoom.setZoomRate(0.03);
 
-  updatemap();
+  updateMap();
 
   map.on("mouseenter", "pinsInteractions", onFeatureHoverStart);
   map.on("mouseleave", "pinsInteractions", onFeatureHoverEnd);
@@ -314,7 +339,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   map.on("mousedown", "pinsInteractions", onFeatureMouseDown);
   map.on("touchstart", "pinsInteractions", onFeatureMouseDown);
 
-  map.on("moveend", updatemap);
+  map.on("moveend", updateMap);
   map.on("mousemove", onMouseMove);
   map.on("mousedown", onMouseDown);
   map.on("mouseup", onMouseUp);

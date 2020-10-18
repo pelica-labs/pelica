@@ -2,6 +2,7 @@ import { Feature, MultiLineString, multiLineString, simplify } from "@turf/turf"
 
 import { Coordinates, Line, nextGeometryId } from "~/core/geometries";
 import { App } from "~/core/helpers";
+import { getSelectedGeometry } from "~/core/selectors";
 import { smartMatch, SmartMatching, SmartMatchingProfile } from "~/lib/smartMatching";
 import { MapSource } from "~/map/sources";
 import { theme } from "~/styles/tailwind";
@@ -41,10 +42,11 @@ export const routes = ({ mutate, get }: App) => ({
   ...initialState,
 
   setStyle: (style: Partial<RouteStyle>) => {
+    const selectedGeometry = getSelectedGeometry(get());
+
     mutate((state) => {
       Object.assign(state.routes.style, style);
 
-      const selectedGeometry = state.geometries.items.find((item) => item.id === state.selection.selectedGeometryId);
       if (selectedGeometry?.type === "Line") {
         Object.assign(selectedGeometry.style, style);
       }
@@ -61,10 +63,12 @@ export const routes = ({ mutate, get }: App) => ({
 
   startNewRoute: () => {
     mutate((state) => {
-      state.selection.selectedGeometryId = nextGeometryId();
+      const id = nextGeometryId();
+
+      state.selection.ids = [id];
       state.geometries.items.push({
         type: "Line",
-        id: state.selection.selectedGeometryId,
+        id,
         source: MapSource.Routes,
         transientPoints: [],
         rawPoints: [],
@@ -79,9 +83,9 @@ export const routes = ({ mutate, get }: App) => ({
     mutate((state) => {
       state.routes.isDrawing = true;
 
-      const geometry = state.geometries.items.find((item) => item.id === state.selection.selectedGeometryId) as Line;
+      const selectedRoute = getSelectedGeometry(state) as Line;
 
-      geometry.transientPoints.push(coordinates);
+      selectedRoute.transientPoints.push(coordinates);
     });
   },
 
@@ -91,15 +95,15 @@ export const routes = ({ mutate, get }: App) => ({
         return;
       }
 
-      const geometry = state.geometries.items.find((item) => item.id === state.selection.selectedGeometryId) as Line;
+      const selectedRoute = getSelectedGeometry(state) as Line;
 
-      geometry.transientPoints = [...geometry.transientPoints, coordinates];
+      selectedRoute.transientPoints = [...selectedRoute.transientPoints, coordinates];
 
-      if (geometry.transientPoints.length <= 2) {
+      if (selectedRoute.transientPoints.length <= 2) {
         return;
       }
       const feature = multiLineString([
-        geometry.transientPoints.map((point) => {
+        selectedRoute.transientPoints.map((point) => {
           return [point.longitude, point.latitude];
         }),
       ]);
@@ -110,92 +114,82 @@ export const routes = ({ mutate, get }: App) => ({
         return;
       }
 
-      geometry.transientPoints = simplified.geometry.coordinates[0].map((point) => {
+      selectedRoute.transientPoints = simplified.geometry.coordinates[0].map((point) => {
         return { latitude: point[1], longitude: point[0] };
       });
     });
   },
 
   stopSegment: async () => {
+    const selectedRoute = getSelectedGeometry(get()) as Line;
+
     mutate((state) => {
       state.routes.isDrawing = false;
     });
 
-    const geometry = get().geometries.items.find((item) => item.id === get().selection.selectedGeometryId) as Line;
-
-    const points = geometry.smartMatching.enabled
-      ? await smartMatch(geometry.transientPoints, geometry.smartMatching.profile as SmartMatchingProfile)
-      : geometry.transientPoints;
+    const points = selectedRoute.smartMatching.enabled
+      ? await smartMatch(selectedRoute.transientPoints, selectedRoute.smartMatching.profile as SmartMatchingProfile)
+      : selectedRoute.transientPoints;
 
     get().history.push({
       name: "draw",
-      geometryId: geometry.id,
+      geometryId: selectedRoute.id,
       points,
-      rawPoints: geometry.transientPoints,
+      rawPoints: selectedRoute.transientPoints,
     });
   },
 
   stopRoute: () => {
-    mutate(({ routes }) => {
-      routes.isDrawing = false;
+    mutate((state) => {
+      state.routes.isDrawing = false;
     });
 
-    get().routes.startNewRoute();
+    if (get().editor.mode === "draw") {
+      get().routes.startNewRoute();
+    }
   },
 
   transientUpdateSelectedLine: (style: Partial<RouteStyle>) => {
-    mutate(({ geometries, selection }) => {
-      const line = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as Line;
+    mutate((state) => {
+      const selectedRoute = getSelectedGeometry(state) as Line;
 
-      if (!line.transientStyle) {
-        line.transientStyle = line.style;
+      if (!selectedRoute.transientStyle) {
+        selectedRoute.transientStyle = selectedRoute.style;
       }
 
-      Object.assign(line.transientStyle, style);
+      Object.assign(selectedRoute.transientStyle, style);
     });
   },
 
   updateSelectedLine: (style: Partial<RouteStyle>) => {
-    const { selection, history, geometries } = get();
+    const selectedRoute = getSelectedGeometry(get()) as Line;
 
-    if (!selection.selectedGeometryId) {
-      return;
-    }
+    mutate((state) => {
+      const selectedRoute = getSelectedGeometry(state) as Line;
 
-    mutate(({ geometries, selection }) => {
-      const line = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as Line;
-
-      delete line.transientStyle;
+      delete selectedRoute.transientStyle;
     });
 
-    const line = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as Line;
-
-    history.push({
+    get().history.push({
       name: "updateLine",
-      lineId: selection.selectedGeometryId,
+      lineId: selectedRoute.id,
       style: {
-        ...line.style,
+        ...selectedRoute.style,
         ...style,
       },
     });
   },
 
   updateSelectedLineSmartMatching: async (smartMatching: SmartMatching): Promise<void> => {
-    const { geometries, selection, history } = get();
-
-    const selectedGeometry = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as Line;
-
-    if (selectedGeometry?.type !== "Line") {
-      return;
-    }
+    const selectedRoute = getSelectedGeometry(get()) as Line;
 
     const points = smartMatching.enabled
-      ? await smartMatch(selectedGeometry.rawPoints, smartMatching.profile as SmartMatchingProfile)
-      : selectedGeometry.rawPoints;
+      ? await smartMatch(selectedRoute.rawPoints, smartMatching.profile as SmartMatchingProfile)
+      : selectedRoute.rawPoints;
 
-    history.push({
+    get().history.push({
       name: "updateLineSmartMatching",
-      lineId: selectedGeometry.id,
+      lineId: selectedRoute.id,
       smartMatching,
       points,
     });

@@ -1,46 +1,121 @@
-import { Point } from "~/core/geometries";
+import { booleanContains, booleanCrosses, Polygon } from "@turf/turf";
+import { uniq } from "lodash";
+
+import { BoundingBox, Coordinates, geometryToFeature } from "~/core/geometries";
 import { App } from "~/core/helpers";
+import { getSelectedGeometries } from "~/core/selectors";
 
 export type Selection = {
-  selectedGeometryId: number | null;
+  area: BoundingBox | null;
+
+  ids: number[];
 };
 
 const initialState: Selection = {
-  selectedGeometryId: null,
+  area: null,
+
+  ids: [],
 };
 
 export const selection = ({ mutate, get }: App) => ({
   ...initialState,
 
+  startArea: (coordinates: Coordinates) => {
+    mutate((state) => {
+      state.selection.area = {
+        northWest: coordinates,
+        southEast: coordinates,
+      };
+    });
+  },
+
+  updateArea: (coordinates: Coordinates) => {
+    mutate((state) => {
+      if (!state.selection.area) {
+        throw new Error("Updating inexistent selection area");
+      }
+
+      state.selection.area.southEast = coordinates;
+
+      const geometry: Polygon = {
+        type: "Polygon",
+        coordinates: [
+          [
+            [state.selection.area.northWest.longitude, state.selection.area.northWest.latitude],
+            [state.selection.area.northWest.longitude, state.selection.area.southEast.latitude],
+            [state.selection.area.southEast.longitude, state.selection.area.southEast.latitude],
+            [state.selection.area.southEast.longitude, state.selection.area.northWest.latitude],
+            [state.selection.area.northWest.longitude, state.selection.area.northWest.latitude],
+          ],
+        ],
+      };
+
+      const selectedFeatureIds = state.geometries.items
+        .filter((item) => {
+          const feature = geometryToFeature(item) as GeoJSON.Feature<GeoJSON.Geometry>;
+          if (!feature) {
+            return false;
+          }
+
+          const crosses = feature.geometry.type !== "Point" && booleanCrosses(geometry, feature);
+          const contains = booleanContains(geometry, feature);
+
+          return crosses || contains;
+        })
+        .map((feature) => {
+          return feature.id as number;
+        });
+
+      state.selection.ids = uniq([...state.selection.ids, ...selectedFeatureIds]);
+    });
+  },
+
+  endArea: () => {
+    mutate((state) => {
+      state.selection.area = null;
+    });
+  },
+
   selectGeometry: (geometryId: number) => {
-    get().selection.unselectGeometry();
+    get().selection.clear();
 
     mutate((state) => {
-      state.selection.selectedGeometryId = geometryId;
+      state.selection.ids = [geometryId];
     });
 
-    const selectedGeometry = get().geometries.items.find((item) => item.id === get().selection.selectedGeometryId);
-
-    if (selectedGeometry?.type === "Line" && selectedGeometry.itinerary) {
+    const selectedGeometries = getSelectedGeometries(get());
+    if (selectedGeometries.length === 1 && selectedGeometries[0].type === "Line" && selectedGeometries[0].itinerary) {
       get().itineraries.open();
     }
   },
 
-  unselectGeometry: () => {
+  toggleGeometrySelection: (geometryId: number) => {
     mutate((state) => {
-      state.selection.selectedGeometryId = null;
+      const geometryIndex = state.selection.ids.indexOf(geometryId);
+      if (geometryIndex >= 0) {
+        state.selection.ids.splice(geometryIndex, 1);
+      } else {
+        state.selection.ids.push(geometryId);
+      }
+    });
+  },
+
+  clear: () => {
+    mutate((state) => {
+      state.selection.ids = [];
     });
 
     get().itineraries.close();
   },
 
-  deleteSelectedGeometry: () => {
-    const { geometries, selection, history } = get();
-    const selectedGeometry = geometries.items.find((geometry) => geometry.id === selection.selectedGeometryId) as Point;
+  deleteSelectedGeometries: () => {
+    const selectedGeometries = getSelectedGeometries(get());
 
-    history.push({
+    get().history.push({
       name: "deleteGeometry",
-      geometryId: selectedGeometry.id,
+      geometryIds: selectedGeometries.map((geometry) => {
+        return geometry.id;
+      }),
     });
 
     get().itineraries.close();

@@ -14,10 +14,10 @@ export const useHotkey = (hotkey: Hotkey, callback: Callback): (() => ReturnType
   const onKey = useCallback((event: KeyboardEvent) => {
     const match =
       event.key === hotkey.key &&
-      (hotkey.ctrl === undefined || event.ctrlKey === hotkey.ctrl) &&
-      (hotkey.shift === undefined || event.shiftKey === hotkey.shift) &&
-      (hotkey.alt === undefined || event.altKey === hotkey.alt) &&
-      (hotkey.meta === undefined || event.metaKey === hotkey.meta);
+      event.ctrlKey === (hotkey.ctrl ?? false) &&
+      event.shiftKey === (hotkey.shift ?? false) &&
+      event.altKey === (hotkey.alt ?? false) &&
+      event.metaKey === (hotkey.meta ?? false);
 
     if (!match) {
       return;
@@ -45,12 +45,12 @@ export const useHotkey = (hotkey: Hotkey, callback: Callback): (() => ReturnType
 export const HotkeyView: React.FC<Hotkey> = (hotkey) => {
   return (
     // @todo: hotkey symbols are MacOS only for now
-    <span className="text-2xs uppercase text-gray-800 font-light tracking-wide leading-none flex space-x-px">
-      {hotkey.ctrl && <span className="border border-gray-600 rounded p-1 w-5 flex justify-center">⌃</span>}
-      {hotkey.shift && <span className="border border-gray-600 rounded p-1 w-5 flex justify-center">⇧</span>}
-      {hotkey.alt && <span className="border border-gray-600 rounded p-1 w-5 flex justify-center">⌥</span>}
-      {hotkey.meta && <span className="border border-gray-600 rounded p-1 w-5 flex justify-center">⌘</span>}
-      <span className="border border-gray-600 rounded p-1 w-5 flex justify-center capitalize">{hotkey.key}</span>
+    <span className="text-2xs uppercase text-gray-500 font-light tracking-wide leading-none flex space-x-px">
+      {hotkey.ctrl && <span className="border border-gray-800 rounded p-1 w-5 flex justify-center">⌃</span>}
+      {hotkey.shift && <span className="border border-gray-800 rounded p-1 w-5 flex justify-center">⇧</span>}
+      {hotkey.alt && <span className="border border-gray-800 rounded p-1 w-5 flex justify-center">⌥</span>}
+      {hotkey.meta && <span className="border border-gray-800 rounded p-1 w-5 flex justify-center">⌘</span>}
+      <span className="border border-gray-800 rounded p-1 w-5 flex justify-center capitalize">{hotkey.key}</span>
     </span>
   );
 };

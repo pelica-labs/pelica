@@ -1,5 +1,6 @@
-import { Coordinates, ItineraryLine, nextGeometryId } from "~/core/geometries";
+import { Coordinates, ItineraryLine, Line, nextGeometryId } from "~/core/geometries";
 import { App } from "~/core/helpers";
+import { getSelectedGeometry } from "~/core/selectors";
 import { MapSource } from "~/map/sources";
 
 export type Place = {
@@ -43,10 +44,12 @@ export const itineraries = ({ mutate, get }: App) => ({
 
   startNewItininerary: () => {
     mutate((state) => {
-      state.selection.selectedGeometryId = nextGeometryId();
+      const id = nextGeometryId();
+
+      state.selection.ids = [id];
       state.geometries.items.push({
         type: "Line",
-        id: state.selection.selectedGeometryId,
+        id,
         source: MapSource.Routes,
         transientPoints: [],
         rawPoints: [],
@@ -62,17 +65,21 @@ export const itineraries = ({ mutate, get }: App) => ({
   },
 
   addStep: (place: Place) => {
+    const selectedRoute = getSelectedGeometry(get()) as Line;
+
     get().history.push({
       name: "addRouteStep",
-      geometryId: get().selection.selectedGeometryId as number,
+      geometryId: selectedRoute.id,
       place,
     });
   },
 
   addManualStep: (coordinates: Coordinates) => {
+    const selectedRoute = getSelectedGeometry(get()) as Line;
+
     get().history.push({
       name: "addRouteStep",
-      geometryId: get().selection.selectedGeometryId as number,
+      geometryId: selectedRoute.id,
       place: {
         id: `${coordinates.latitude};${coordinates.longitude}`,
         type: "Coordinates",
@@ -84,56 +91,60 @@ export const itineraries = ({ mutate, get }: App) => ({
 
   updateStep: (index: number, place: Place | null) => {
     if (!place) {
-      // @todo
+      // @todo?
       return;
     }
 
+    const selectedRoute = getSelectedGeometry(get()) as Line;
+
     get().history.push({
       name: "updateRouteStep",
-      geometryId: get().selection.selectedGeometryId as number,
-
+      geometryId: selectedRoute.id,
       index,
       place,
     });
   },
 
   moveStep: (from: number, to: number) => {
+    const selectedRoute = getSelectedGeometry(get()) as Line;
+
     get().history.push({
       name: "moveRouteStep",
-      geometryId: get().selection.selectedGeometryId as number,
-
+      geometryId: selectedRoute.id,
       from,
       to,
     });
   },
 
   deleteStep: (index: number) => {
+    const selectedRoute = getSelectedGeometry(get()) as Line;
+
     get().history.push({
       name: "deleteRouteStep",
-      geometryId: get().selection.selectedGeometryId as number,
+      geometryId: selectedRoute.id,
       index,
     });
   },
 
   updateProfile: (profile: ItineraryProfile) => {
+    const selectedRoute = getSelectedGeometry(get()) as Line;
+
     get().history.push({
       name: "updateRouteProfile",
-      geometryId: get().selection.selectedGeometryId as number,
+      geometryId: selectedRoute.id,
       profile,
     });
   },
 
   resolveCurrentItinerary: (points: Coordinates[]) => {
+    // @todo: this might be bugged since called aysnchrounously, if the selection changes between calls.
     mutate((state) => {
-      if (!state.selection.selectedGeometryId) {
+      const route = getSelectedGeometry(state) as ItineraryLine;
+      if (!route) {
         return;
       }
 
-      const geometry = state.geometries.items.find(
-        (item) => item.id === state.selection.selectedGeometryId
-      ) as ItineraryLine;
-
-      geometry.points = points;
+      route.points = points;
 
       state.itineraries.isLoadingRoute = false;
     });

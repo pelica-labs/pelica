@@ -3,6 +3,28 @@ import { theme } from "~/styles/tailwind";
 
 export const applyLayers = (map: mapboxgl.Map): void => {
   addLayer(map, {
+    id: "selectionAreaFill",
+    type: "fill",
+    source: MapSource.SelectionArea,
+    interactive: false,
+    paint: {
+      "fill-color": theme.colors.blue[500],
+      "fill-opacity": 0.1,
+    },
+  });
+
+  addLayer(map, {
+    id: "selectionAreaContour",
+    type: "line",
+    source: MapSource.SelectionArea,
+    interactive: false,
+    paint: {
+      "line-color": theme.colors.blue[500],
+      "line-width": 1,
+    },
+  });
+
+  addLayer(map, {
     id: "overlaysBackground",
     type: "fill",
     source: MapSource.Overlays,

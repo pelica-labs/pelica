@@ -142,7 +142,7 @@ export const nextGeometryId = (): number => {
   return _nextId;
 };
 
-const geometryToFeature = (geometry: Geometry): GeoJSON.Feature<GeoJSON.Geometry> | null => {
+export const geometryToFeature = (geometry: Geometry): GeoJSON.Feature<GeoJSON.Geometry> | null => {
   if (geometry.type === "Point") {
     return {
       type: "Feature",

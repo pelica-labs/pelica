@@ -16,6 +16,7 @@ import { Toolbar } from "~/components/Toolbar";
 import { WidthSlider } from "~/components/WidthSlider";
 import { useApp, useStore } from "~/core/app";
 import { computeDistance, Line } from "~/core/geometries";
+import { getSelectedGeometry } from "~/core/selectors";
 import { useBrowserFeatures } from "~/hooks/useBrowserFeatures";
 import { useDimensions } from "~/hooks/useDimensions";
 import { useHotkey } from "~/hooks/useHotkey";
@@ -117,10 +118,7 @@ const AspectRatioSidebar: React.FC = () => {
 
 const SelectSidebar: React.FC = () => {
   const app = useApp();
-  const selectedGeometryId = useStore((store) => store.selection.selectedGeometryId);
-  const selectedGeometry = useStore((store) => store.geometries.items).find(
-    (geometry) => geometry.id === selectedGeometryId
-  );
+  const selectedGeometry = useStore((store) => getSelectedGeometry(store));
 
   if (selectedGeometry?.type !== "Point" && selectedGeometry?.type !== "Line") {
     return null;
@@ -136,7 +134,7 @@ const SelectSidebar: React.FC = () => {
         <Button
           className="bg-gray-300 text-gray-800"
           onClick={() => {
-            app.selection.deleteSelectedGeometry();
+            app.selection.deleteSelectedGeometries();
           }}
         >
           <TrashIcon className="w-2 h-2 md:w-3 md:h-3" />
@@ -343,9 +341,7 @@ const DrawSidebar: React.FC = () => {
   const width = useStore((store) => store.routes.style.width);
   const outline = useStore((store) => store.routes.style.outline);
   const smartMatching = useStore((store) => store.routes.smartMatching);
-  const selectedGeometry = useStore(
-    (store) => store.geometries.items.find((item) => item.id === store.selection.selectedGeometryId) as Line
-  );
+  const route = useStore((store) => getSelectedGeometry(store) as Line);
 
   return (
     <>
@@ -439,13 +435,13 @@ const DrawSidebar: React.FC = () => {
         </Button>
       </div>
 
-      {selectedGeometry && (
+      {route && (
         <div className="mt-auto px-3 py-2 border-t">
           <SidebarHeading>Inspect</SidebarHeading>
           <div className="mt-2">
             <div className="flex items-center text-xs">
               <span className="mr-4">Distance</span>
-              <Distance value={computeDistance(selectedGeometry)} />
+              <Distance value={computeDistance(route)} />
             </div>
           </div>
         </div>
@@ -459,9 +455,7 @@ const ItinerarySidebar: React.FC = () => {
   const color = useStore((store) => store.routes.style.color);
   const width = useStore((store) => store.routes.style.width);
   const outline = useStore((store) => store.routes.style.outline);
-  const selectedGeometry = useStore(
-    (store) => store.geometries.items.find((item) => item.id === store.selection.selectedGeometryId) as Line
-  );
+  const route = useStore((store) => getSelectedGeometry(store) as Line);
 
   return (
     <>
@@ -520,13 +514,13 @@ const ItinerarySidebar: React.FC = () => {
         </div>
       </div>
 
-      {selectedGeometry && (
+      {route && (
         <div className="mt-auto px-3 py-2 mb-1 border-t">
           <SidebarHeading>Inspect</SidebarHeading>
           <div className="mt-2">
             <div className="flex items-center text-xs">
               <span className="mr-4">Distance</span>
-              <Distance value={computeDistance(selectedGeometry)} />
+              <Distance value={computeDistance(route)} />
             </div>
           </div>
         </div>

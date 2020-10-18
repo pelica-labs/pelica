@@ -1,3 +1,5 @@
+import { partition } from "lodash";
+
 import { State } from "~/core/app";
 import { Coordinates, Geometry, ItineraryLine, Line, Point } from "~/core/geometries";
 import { ItineraryProfile, Place } from "~/core/itineraries";
@@ -48,7 +50,7 @@ const DrawHandler: Handler<DrawAction> = {
     geometry.points.push(...action.points);
     geometry.transientPoints = [];
 
-    state.selection.selectedGeometryId = geometry.id;
+    state.selection.ids = [geometry.id];
   },
 
   undo: (state, action) => {
@@ -58,7 +60,7 @@ const DrawHandler: Handler<DrawAction> = {
     geometry.rawPoints = geometry.rawPoints.slice(0, action.previousLength);
 
     if (action.previousLength) {
-      state.selection.selectedGeometryId = geometry.id;
+      state.selection.ids = [geometry.id];
     }
   },
 };
@@ -146,23 +148,23 @@ const UpdateStyleHandler: Handler<UpdateStyleAction> = {
 
 type DeleteGeometryAction = {
   name: "deleteGeometry";
-  geometryId: number;
+  geometryIds: number[];
 
-  deletedGeometry?: Geometry;
+  deletedGeometries?: Geometry[];
 };
 
 const DeleteGeometryHandler: Handler<DeleteGeometryAction> = {
-  apply: ({ geometries }, action) => {
-    const geometryIndex = geometries.items.findIndex((geometry) => geometry.id === action.geometryId);
+  apply: (state, action) => {
+    const [deleted, remaining] = partition(state.geometries.items, (item) => {
+      return action.geometryIds.includes(item.id);
+    });
 
-    if (geometryIndex >= 0) {
-      action.deletedGeometry = geometries.items[geometryIndex] as Geometry;
-      geometries.items.splice(geometryIndex, 1);
-    }
+    action.deletedGeometries = deleted;
+    state.geometries.items = remaining;
   },
 
-  undo: ({ geometries }, action) => {
-    geometries.items.push(action.deletedGeometry);
+  undo: (state, action) => {
+    state.geometries.items.push(...action.deletedGeometries);
   },
 };
 

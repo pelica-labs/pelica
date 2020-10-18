@@ -4,13 +4,12 @@ import { Trans } from "react-i18next";
 import { InformationIcon } from "~/components/Icon";
 import { useApp, useStore } from "~/core/app";
 import { Line } from "~/core/geometries";
+import { getSelectedGeometry } from "~/core/selectors";
 
 export const Tips: React.FC = () => {
   const app = useApp();
   const showRouteModeTip = useStore((store) => {
-    const selectedGeometry = store.geometries.items.find(
-      (item) => item.id === store.selection.selectedGeometryId
-    ) as Line;
+    const selectedGeometry = getSelectedGeometry(store) as Line;
 
     return store.editor.mode === "draw" && selectedGeometry?.points.length > 1;
   });

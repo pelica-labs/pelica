@@ -143,6 +143,8 @@ export const ItineraryInput: React.FC<Props> = ({
       .finally(() => {
         setIsComputing(false);
       });
+
+    // @todo: effect cleanup
   }, [value, profile]);
 
   return (

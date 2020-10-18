@@ -44,7 +44,8 @@ export const editor = ({ mutate, get }: App) => ({
       state.editor.mode = mode;
     });
 
-    get().selection.unselectGeometry();
+    get().selection.endArea();
+    get().selection.clear();
 
     if (mode !== "draw") {
       get().routes.stopRoute();
