@@ -4,17 +4,20 @@ import { App } from "~/core/helpers";
 export type DragAndDrop = {
   draggedGeometryId: number | null;
   dragMoved: boolean;
+  // @todo: this probably should be stored as a mercator projection
+  dragOffset: Coordinates | null;
+
   hoveredGeometryId: number | null;
   hoveredGeometrySource: string | null;
-  hoveringAction: boolean;
 };
 
 const initialState: DragAndDrop = {
   draggedGeometryId: null,
   dragMoved: false,
+  dragOffset: null,
+
   hoveredGeometryId: null,
   hoveredGeometrySource: null,
-  hoveringAction: false,
 };
 
 export const dragAndDrop = ({ mutate, get }: App) => ({
@@ -24,7 +27,6 @@ export const dragAndDrop = ({ mutate, get }: App) => ({
     mutate(({ dragAndDrop: drag }) => {
       drag.hoveredGeometryId = id;
       drag.hoveredGeometrySource = source;
-      drag.hoveringAction = id === -2;
     });
   },
 
@@ -32,40 +34,66 @@ export const dragAndDrop = ({ mutate, get }: App) => ({
     mutate(({ dragAndDrop: drag }) => {
       drag.hoveredGeometryId = null;
       drag.hoveredGeometrySource = null;
-      drag.hoveringAction = false;
     });
   },
 
-  startDrag: (geometryId: number) => {
-    mutate(({ dragAndDrop: drag }) => {
-      drag.draggedGeometryId = geometryId;
-      drag.dragMoved = false;
+  startDrag: (geometryId: number, coordinates: Coordinates) => {
+    mutate((state) => {
+      const draggedGeometry = state.geometries.items.find((geometry) => geometry.id === geometryId) as Point;
+
+      state.dragAndDrop.draggedGeometryId = draggedGeometry.id;
+      state.dragAndDrop.dragMoved = false;
+      state.dragAndDrop.dragOffset = {
+        latitude: coordinates.latitude - draggedGeometry.coordinates.latitude,
+        longitude: coordinates.longitude - draggedGeometry.coordinates.longitude,
+      };
     });
   },
 
   dragSelectedPin: (coordinates: Coordinates) => {
-    mutate(({ geometries, dragAndDrop: drag }) => {
-      const draggedGeometry = geometries.items.find((geometry) => geometry.id === drag.draggedGeometryId) as Point;
+    mutate((state) => {
+      if (!state.dragAndDrop.dragOffset) {
+        return;
+      }
 
-      drag.dragMoved = true;
-      draggedGeometry.coordinates = coordinates;
+      const draggedGeometry = state.geometries.items.find(
+        (geometry) => geometry.id === state.dragAndDrop.draggedGeometryId
+      ) as Point;
+
+      state.dragAndDrop.dragMoved = true;
+
+      draggedGeometry.coordinates = {
+        latitude: coordinates.latitude - state.dragAndDrop.dragOffset.latitude,
+        longitude: coordinates.longitude - state.dragAndDrop.dragOffset.longitude,
+      };
     });
   },
 
   endDragSelectedPin: (coordinates: Coordinates) => {
-    const { geometries, dragAndDrop, history } = get();
-    const draggedGeometry = geometries.items.find((geometry) => geometry.id === dragAndDrop.draggedGeometryId) as Point;
+    const draggedGeometry = get().geometries.items.find(
+      (geometry) => geometry.id === get().dragAndDrop.draggedGeometryId
+    ) as Point;
 
-    if (dragAndDrop.dragMoved) {
-      history.push({
+    const dragOffset = get().dragAndDrop.dragOffset;
+    if (!dragOffset) {
+      return;
+    }
+
+    if (get().dragAndDrop.dragMoved) {
+      get().history.push({
         name: "movePin",
         pinId: draggedGeometry.id,
-        coordinates,
+        coordinates: {
+          latitude: coordinates.latitude - dragOffset.latitude,
+          longitude: coordinates.longitude - dragOffset.longitude,
+        },
       });
     }
 
     mutate(({ dragAndDrop }) => {
       dragAndDrop.draggedGeometryId = null;
+      dragAndDrop.dragMoved = false;
+      dragAndDrop.dragOffset = null;
     });
   },
 });

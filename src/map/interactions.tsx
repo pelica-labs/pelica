@@ -234,7 +234,9 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
 
     event.preventDefault();
 
-    app.dragAndDrop.startDrag(event.features[0].id as number);
+    const { lat, lng } = event.lngLat;
+
+    app.dragAndDrop.startDrag(event.features[0].id as number, { latitude: lat, longitude: lng });
   };
 
   const onWindowBlur = () => {
@@ -291,19 +293,22 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     });
   };
 
-  const onFeatureHoverEnd = () => {
-    const {
-      dragAndDrop: { hoveredGeometryId, hoveredGeometrySource },
-    } = getState();
+  const onFeatureHoverEnd = (event: MapLayerMouseEvent) => {
+    const state = getState();
 
-    if (!hoveredGeometryId || !hoveredGeometrySource) {
+    const features = map.queryRenderedFeatures(event.point);
+
+    if (!state.dragAndDrop.hoveredGeometryId || !state.dragAndDrop.hoveredGeometrySource) {
       return;
     }
 
-    app.dragAndDrop.endHover();
+    const stillHovering = features.find((feature) => feature.state.hover);
+    if (!stillHovering) {
+      app.dragAndDrop.endHover();
+    }
 
     map.setFeatureState(
-      { id: hoveredGeometryId, source: hoveredGeometrySource },
+      { id: state.dragAndDrop.hoveredGeometryId, source: state.dragAndDrop.hoveredGeometrySource },
       {
         hover: false,
       }
@@ -339,6 +344,8 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   map.on("contextmenu", "pinsInteractions", onFeatureRightClick);
   map.on("contextmenu", "routesInteractions", onFeatureRightClick);
   map.on("mousedown", "pins", onFeatureMouseDown);
+  map.on("mousedown", "pinsInteractions", onFeatureMouseDown);
+  map.on("touchstart", "pinsInteractions", onFeatureMouseDown);
   map.on("touchstart", "pins", onFeatureMouseDown);
 
   map.on("moveend", updateMap);

@@ -6,7 +6,7 @@ import Head from "next/head";
 import React, { useEffect, useRef } from "react";
 
 import { DocumentTitle } from "~/components/DocumentTitle";
-import { useApp, useStore, useStoreSubscription } from "~/core/app";
+import { getState, useApp, useStore, useStoreSubscription } from "~/core/app";
 import { applyGeometries } from "~/core/geometries";
 import { STOP_DRAWING_CIRCLE_ID } from "~/core/routes";
 import { computeMapDimensions } from "~/lib/aspectRatio";
@@ -299,6 +299,8 @@ export const Map: React.FC = () => {
         return null;
       }
 
+      const hoveredGeometry = getState().geometries.items.find((item) => item.id === hoveredGeometryId);
+
       const containerClasses = map.current.getCanvasContainer().classList;
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
@@ -306,10 +308,14 @@ export const Map: React.FC = () => {
       containerClasses.add("mapboxgl-canvas-container");
 
       if (draggedGeometryId) {
-        containerClasses.add("grab");
+        containerClasses.add("grabbing");
       } else if ((editorMode === "draw" || editorMode === "pin") && hoveredGeometryId !== STOP_DRAWING_CIRCLE_ID) {
         containerClasses.add("crosshair");
-      } else if (hoveredGeometryId) {
+      } else if (hoveredGeometry?.type === "Point") {
+        containerClasses.add("grab");
+      } else if (hoveredGeometry?.type === "Line") {
+        containerClasses.add("pointer");
+      } else if (hoveredGeometryId === STOP_DRAWING_CIRCLE_ID) {
         containerClasses.add("pointer");
       }
     }
@@ -339,6 +345,11 @@ export const Map: React.FC = () => {
         className={classNames("flex justify-center items-center w-full h-full bg-gray-200", {
           "lg:px-20 lg:py-6": aspectRatio !== "fill",
         })}
+        onClick={(event) => {
+          if (event.target === event.currentTarget) {
+            app.selection.clear();
+          }
+        }}
       >
         <div ref={container} className="w-full h-full flex justify-center items-center">
           <div ref={wrapper} className="w-full h-full shadow-md border border-gray-400" id="map" />
