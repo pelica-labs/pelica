@@ -33,21 +33,17 @@ export const Map: React.FC = () => {
       return;
     }
 
+    const state = getState();
     const accessToken = getEnv("NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN", process.env.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN);
-
-    const {
-      map: { coordinates, zoom, bearing, pitch },
-      editor: { style },
-    } = app;
 
     map.current = new mapboxgl.Map({
       accessToken,
       container: wrapper.current,
-      style: styleToUrl(style),
-      center: coordinates as [number, number],
-      zoom,
-      bearing,
-      pitch,
+      style: styleToUrl(state.editor.style),
+      center: state.map.coordinates as [number, number],
+      zoom: state.map.zoom,
+      bearing: state.map.bearing,
+      pitch: state.map.pitch,
       doubleClickZoom: false,
       fadeDuration: 0,
       logoPosition: "bottom-right",
@@ -56,19 +52,17 @@ export const Map: React.FC = () => {
 
     map.current.on("load", async ({ target: map }) => {
       map.getCanvas().classList.add("loaded");
+      map.getCanvas().style.outline = "none";
 
       map.resize();
 
       applySources(map);
       applyLayers(map);
-
-      // await app.sync.restoreState();
-
       applyInteractions(map, app);
       applyImageMissingHandler(map);
-
-      map.getCanvas().style.outline = "none";
     });
+
+    return () => map.current?.remove();
   }, []);
 
   /**
