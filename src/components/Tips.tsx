@@ -3,15 +3,15 @@ import { Trans } from "react-i18next";
 
 import { InformationIcon } from "~/components/Icon";
 import { useApp, useStore } from "~/core/app";
-import { Line } from "~/core/geometries";
-import { getSelectedGeometry } from "~/core/selectors";
+import { Route } from "~/core/routes";
+import { getSelectedEntity } from "~/core/selectors";
 
 export const Tips: React.FC = () => {
   const app = useApp();
   const showRouteModeTip = useStore((store) => {
-    const selectedGeometry = getSelectedGeometry(store) as Line;
+    const selectedEntity = getSelectedEntity(store) as Route;
 
-    return store.editor.mode === "draw" && selectedGeometry?.points.length > 1;
+    return store.editor.mode === "draw" && selectedEntity?.points.length > 1;
   });
 
   if (showRouteModeTip) {

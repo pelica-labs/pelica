@@ -1,6 +1,9 @@
-import { Coordinates, ItineraryLine, Line, nextGeometryId } from "~/core/geometries";
+import { Position } from "@turf/turf";
+
+import { nextEntityId } from "~/core/entities";
 import { App } from "~/core/helpers";
-import { getSelectedGeometry } from "~/core/selectors";
+import { ItineraryRoute, Route } from "~/core/routes";
+import { getSelectedEntity } from "~/core/selectors";
 import { MapSource } from "~/map/sources";
 
 export type Place = {
@@ -44,11 +47,11 @@ export const itineraries = ({ mutate, get }: App) => ({
 
   startNewItininerary: () => {
     mutate((state) => {
-      const id = nextGeometryId();
+      const id = nextEntityId();
 
       state.selection.ids = [id];
-      state.geometries.items.push({
-        type: "Line",
+      state.entities.items.push({
+        type: "Route",
         id,
         source: MapSource.Routes,
         transientPoints: [],
@@ -65,26 +68,26 @@ export const itineraries = ({ mutate, get }: App) => ({
   },
 
   addStep: (place: Place) => {
-    const selectedRoute = getSelectedGeometry(get()) as Line;
+    const selectedRoute = getSelectedEntity(get()) as Route;
 
     get().history.push({
       name: "addRouteStep",
-      geometryId: selectedRoute.id,
+      entityId: selectedRoute.id,
       place,
     });
   },
 
-  addManualStep: (coordinates: Coordinates) => {
-    const selectedRoute = getSelectedGeometry(get()) as Line;
+  addManualStep: (coordinates: Position) => {
+    const selectedRoute = getSelectedEntity(get()) as Route;
 
     get().history.push({
       name: "addRouteStep",
-      geometryId: selectedRoute.id,
+      entityId: selectedRoute.id,
       place: {
-        id: `${coordinates.latitude};${coordinates.longitude}`,
+        id: `${coordinates[1]};${coordinates[0]}`,
         type: "Coordinates",
-        center: [coordinates.longitude, coordinates.latitude],
-        name: `${coordinates.latitude.toFixed(7)}, ${coordinates.longitude.toFixed(7)}`,
+        center: coordinates,
+        name: `${coordinates[1].toFixed(7)}, ${coordinates[0].toFixed(7)}`,
       },
     });
   },
@@ -95,51 +98,51 @@ export const itineraries = ({ mutate, get }: App) => ({
       return;
     }
 
-    const selectedRoute = getSelectedGeometry(get()) as Line;
+    const selectedRoute = getSelectedEntity(get()) as Route;
 
     get().history.push({
       name: "updateRouteStep",
-      geometryId: selectedRoute.id,
+      entityId: selectedRoute.id,
       index,
       place,
     });
   },
 
   moveStep: (from: number, to: number) => {
-    const selectedRoute = getSelectedGeometry(get()) as Line;
+    const selectedRoute = getSelectedEntity(get()) as Route;
 
     get().history.push({
       name: "moveRouteStep",
-      geometryId: selectedRoute.id,
+      entityId: selectedRoute.id,
       from,
       to,
     });
   },
 
   deleteStep: (index: number) => {
-    const selectedRoute = getSelectedGeometry(get()) as Line;
+    const selectedRoute = getSelectedEntity(get()) as Route;
 
     get().history.push({
       name: "deleteRouteStep",
-      geometryId: selectedRoute.id,
+      entityId: selectedRoute.id,
       index,
     });
   },
 
   updateProfile: (profile: ItineraryProfile) => {
-    const selectedRoute = getSelectedGeometry(get()) as Line;
+    const selectedRoute = getSelectedEntity(get()) as Route;
 
     get().history.push({
       name: "updateRouteProfile",
-      geometryId: selectedRoute.id,
+      entityId: selectedRoute.id,
       profile,
     });
   },
 
-  resolveCurrentItinerary: (points: Coordinates[]) => {
+  resolveCurrentItinerary: (points: Position[]) => {
     // @todo: this might be bugged since called aysnchrounously, if the selection changes between calls.
     mutate((state) => {
-      const route = getSelectedGeometry(state) as ItineraryLine;
+      const route = getSelectedEntity(state) as ItineraryRoute;
       if (!route) {
         return;
       }

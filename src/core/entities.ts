@@ -1,0 +1,94 @@
+import { App } from "~/core/helpers";
+import { Pin } from "~/core/pins";
+import { Route } from "~/core/routes";
+import { outlineColor } from "~/lib/color";
+import { RawFeature } from "~/map/features";
+import { MapSource } from "~/map/sources";
+
+export type Entities = {
+  items: Entity[];
+};
+
+export type Entity = Route | Pin;
+
+const initialState: Entities = {
+  items: [],
+};
+
+export const entities = ({ mutate }: App) => ({
+  ...initialState,
+
+  // @see imageMissing
+  ping: () => {
+    mutate((state) => {
+      state.entities.items.push({
+        type: "Pin",
+        id: -1,
+        source: MapSource.Pins,
+        coordinates: [0, 0],
+        style: { color: "black", width: 1, icon: "fire" },
+      });
+    });
+
+    mutate((state) => {
+      state.entities.items.splice(state.entities.items.length - 1, 1);
+    });
+  },
+});
+
+let nextId = 0;
+
+export const nextEntityId = (): number => {
+  nextId += 1;
+
+  return nextId;
+};
+
+export const entityToFeature = (entity: Entity): RawFeature | null => {
+  if (entity.type === "Pin") {
+    return {
+      type: "Feature",
+      id: entity.id,
+      source: entity.source,
+      geometry: {
+        type: "Point",
+        coordinates: entity.coordinates,
+      },
+      properties: {
+        ...entity.style,
+        ...entity.transientStyle,
+      },
+    };
+  }
+
+  if (entity.type === "Route") {
+    const points = [...entity.points, ...entity.transientPoints];
+
+    if (points.length === 0) {
+      return null;
+    }
+
+    const style = {
+      ...entity.style,
+      ...entity.transientStyle,
+    };
+
+    return {
+      type: "Feature",
+      id: entity.id,
+      source: entity.source,
+      geometry: {
+        type: "LineString",
+        coordinates: points,
+      },
+      properties: {
+        ...style,
+        outlineColor: outlineColor(style.color, style.outline),
+        outlineWidth: style.outline === "none" ? -1 : style.outline === "glow" ? 7 : 1,
+        outlineBlur: style.outline === "glow" ? 5 : 0,
+      },
+    };
+  }
+
+  return entity;
+};

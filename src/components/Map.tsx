@@ -1,17 +1,18 @@
-import { bbox, lineString, transformScale } from "@turf/turf";
 import classNames from "classnames";
-import { debounce } from "lodash";
+import { debounce, uniq } from "lodash";
 import mapboxgl, { LngLatBoundsLike } from "mapbox-gl";
 import Head from "next/head";
 import React, { useEffect, useRef } from "react";
 
 import { DocumentTitle } from "~/components/DocumentTitle";
 import { getState, useApp, useStore, useStoreSubscription } from "~/core/app";
-import { applyGeometries } from "~/core/geometries";
+import { getPinOverlay, getRouteOverlay, getRouteStopOverlay, getSelectionAreaOverlay } from "~/core/overlays";
 import { STOP_DRAWING_CIRCLE_ID } from "~/core/routes";
+import { getEntityFeatures, getSelectedEntities, getSelectedEntity } from "~/core/selectors";
 import { computeMapDimensions } from "~/lib/aspectRatio";
 import { getEnv } from "~/lib/config";
 import { styleToUrl } from "~/lib/style";
+import { applyFeatures, RawFeature } from "~/map/features";
 import { applyImageMissingHandler } from "~/map/imageMissing";
 import { applyInteractions } from "~/map/interactions";
 import { applyLayers } from "~/map/layers";
@@ -43,7 +44,7 @@ export const Map: React.FC = () => {
       accessToken,
       container: wrapper.current,
       style: styleToUrl(style),
-      center: [coordinates.longitude, coordinates.latitude],
+      center: coordinates as [number, number],
       zoom,
       bearing,
       pitch,
@@ -87,10 +88,7 @@ export const Map: React.FC = () => {
     (store) => store.map.coordinates,
     (coordinates) => {
       map.current?.flyTo({
-        center: {
-          lng: coordinates.longitude,
-          lat: coordinates.latitude,
-        },
+        center: coordinates as [number, number],
       });
     }
   );
@@ -175,113 +173,123 @@ export const Map: React.FC = () => {
   );
 
   /**
-   * Sync style then reapply layers and geometries
+   * Sync style then reapply layers and entity features
    */
   useStoreSubscription(
     (store) => store.editor.style,
     (style) => {
-      if (!style || !map.current) {
+      if (!map.current) {
         return;
       }
 
-      const geometries = useApp().geometries;
+      map.current.setStyle(styleToUrl(style));
 
-      map.current?.setStyle(styleToUrl(style));
+      map.current.once("styledata", () => {
+        if (!map.current) {
+          return;
+        }
 
-      map.current?.once("styledata", () => {
-        if (!map.current) return;
         applySources(map.current);
         applyLayers(map.current);
-        applyGeometries(map.current, geometries.items);
+
+        applyFeatures(map.current, getEntityFeatures(getState()), [MapSource.Routes, MapSource.Pins]);
       });
     }
   );
 
   /**
-   * Sync geometries to map
+   * Sync entities to map
    */
   useStoreSubscription(
-    (store) => ({
-      editorMode: store.editor.mode,
-      geometries: store.geometries.items,
-      drawing: store.routes.isDrawing,
-      selectionArea: store.selection.area,
-      selectedIds: store.selection.ids,
-    }),
-    ({ editorMode, geometries, drawing, selectionArea, selectedIds }) => {
+    (store) => store.entities.items,
+    (entities) => {
       if (!map.current) {
         return;
       }
 
-      const selectedGeometries = geometries.filter((geometry) => selectedIds.includes(geometry.id));
+      const sources = uniq(entities.map((entity) => entity.source));
 
-      const allGeometries = [...geometries];
+      applyFeatures(map.current, getEntityFeatures(getState()), sources);
+    }
+  );
 
-      const selectedGeometry = selectedGeometries[0];
-      if (
-        editorMode === "draw" &&
-        selectedGeometry?.type === "Line" &&
-        !drawing &&
-        selectedGeometry.points.length > 0
-      ) {
-        allGeometries.push({
-          id: STOP_DRAWING_CIRCLE_ID,
-          type: "Circle",
-          source: MapSource.Routes,
-          coordinates: selectedGeometry.points[selectedGeometry.points.length - 1],
-          style: {
-            color: selectedGeometry.style.color,
-            width: selectedGeometry.style.width,
-          },
-        });
+  /**
+   * Sync route stop to map
+   */
+  useStoreSubscription(
+    (store) => ({
+      entities: store.entities.items,
+      selectedIds: store.selection.ids,
+      editorMode: store.editor.mode,
+      isDrawing: store.routes.isDrawing,
+    }),
+    ({ editorMode, isDrawing }) => {
+      if (!map.current) {
+        return;
       }
 
-      if (selectionArea) {
-        allGeometries.push({
-          id: -1,
-          type: "Rectangle",
-          source: MapSource.SelectionArea,
-          box: selectionArea,
-        });
+      const selectedEntity = getSelectedEntity(getState());
+
+      const features: RawFeature[] = [];
+      if (editorMode === "draw" && !isDrawing && selectedEntity?.type === "Route" && selectedEntity.points.length) {
+        features.push(getRouteStopOverlay(selectedEntity));
       }
 
+      applyFeatures(map.current, features, [MapSource.RouteStop]);
+    }
+  );
+
+  /**
+   * Sync selection overlays
+   */
+  useStoreSubscription(
+    (store) => ({
+      entities: store.entities.items,
+      editorMode: store.editor.mode,
+      selectedIds: store.selection.ids,
+    }),
+    ({ editorMode }) => {
+      if (!map.current) {
+        return;
+      }
+
+      const selectedEntities = editorMode === "select" ? getSelectedEntities(getState()) : [];
+
+      const features: RawFeature[] = [];
       if (editorMode === "select") {
-        selectedGeometries.forEach((geometry) => {
-          if (geometry.type === "Line") {
-            const box = bbox(
-              transformScale(
-                lineString(
-                  geometry.points.map((point) => {
-                    return [point.longitude, point.latitude];
-                  })
-                ),
-                1.05 + 0.01 * geometry.style.width
-              )
-            );
-
-            allGeometries.push({
-              id: -1,
-              type: "Rectangle",
-              source: MapSource.Overlays,
-              box: {
-                northWest: { longitude: box[0], latitude: box[1] },
-                southEast: { longitude: box[2], latitude: box[3] },
-              },
-            });
+        selectedEntities.forEach((entity) => {
+          if (entity.type === "Pin") {
+            features.push(getPinOverlay(entity));
           }
 
-          if (geometry.type === "Point") {
-            allGeometries.push({
-              id: -1,
-              type: "Circle",
-              source: MapSource.Overlays,
-              coordinates: geometry.coordinates,
-            });
+          if (entity.type === "Route") {
+            features.push(getRouteOverlay(entity));
           }
         });
       }
 
-      applyGeometries(map.current, allGeometries);
+      applyFeatures(map.current, features, [MapSource.Overlays]);
+    }
+  );
+
+  /**
+   * Sync selection area
+   */
+  useStoreSubscription(
+    (store) => ({
+      selectionArea: store.selection.area,
+    }),
+    ({ selectionArea }) => {
+      if (!map.current) {
+        return;
+      }
+
+      const features: RawFeature[] = [];
+      if (selectionArea) {
+        features.push(getSelectionAreaOverlay(selectionArea));
+      }
+
+      applyFeatures(map.current, features, [MapSource.SelectionArea]);
     }
   );
 
@@ -291,15 +299,15 @@ export const Map: React.FC = () => {
   useStoreSubscription(
     (store) => ({
       editorMode: store.editor.mode,
-      draggedGeometryId: store.dragAndDrop.draggedGeometryId,
-      hoveredGeometryId: store.dragAndDrop.hoveredGeometryId,
+      draggedEntityId: store.dragAndDrop.draggedEntityId,
+      hoveredEntityId: store.dragAndDrop.hoveredEntityId,
     }),
-    ({ editorMode, draggedGeometryId, hoveredGeometryId }) => {
+    ({ editorMode, draggedEntityId, hoveredEntityId }) => {
       if (!map.current) {
         return null;
       }
 
-      const hoveredGeometry = getState().geometries.items.find((item) => item.id === hoveredGeometryId);
+      const hoveredEntity = getState().entities.items.find((item) => item.id === hoveredEntityId);
 
       const containerClasses = map.current.getCanvasContainer().classList;
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -307,15 +315,15 @@ export const Map: React.FC = () => {
       containerClasses.remove(...containerClasses.values());
       containerClasses.add("mapboxgl-canvas-container");
 
-      if (draggedGeometryId) {
+      if (draggedEntityId) {
         containerClasses.add("grabbing");
-      } else if ((editorMode === "draw" || editorMode === "pin") && hoveredGeometryId !== STOP_DRAWING_CIRCLE_ID) {
+      } else if ((editorMode === "draw" || editorMode === "pin") && hoveredEntityId !== STOP_DRAWING_CIRCLE_ID) {
         containerClasses.add("crosshair");
-      } else if (hoveredGeometry?.type === "Point") {
+      } else if (hoveredEntity?.type === "Pin") {
         containerClasses.add("grab");
-      } else if (hoveredGeometry?.type === "Line") {
+      } else if (hoveredEntity?.type === "Route") {
         containerClasses.add("pointer");
-      } else if (hoveredGeometryId === STOP_DRAWING_CIRCLE_ID) {
+      } else if (hoveredEntityId === STOP_DRAWING_CIRCLE_ID) {
         containerClasses.add("pointer");
       }
     }

@@ -4,9 +4,9 @@ import shallow from "zustand/shallow";
 
 import { dragAndDrop } from "~/core/dragAndDrop";
 import { editor } from "~/core/editor";
+import { entities } from "~/core/entities";
 import { exports } from "~/core/export";
 import { geolocation } from "~/core/geolocation";
-import { geometries } from "~/core/geometries";
 import { App, immer } from "~/core/helpers";
 import { history } from "~/core/history";
 import { imports } from "~/core/import";
@@ -30,7 +30,7 @@ export type State = {
   itineraries: ReturnType<typeof itineraries>;
   pins: ReturnType<typeof pins>;
   history: ReturnType<typeof history>;
-  geometries: ReturnType<typeof geometries>;
+  entities: ReturnType<typeof entities>;
   selection: ReturnType<typeof selection>;
   dragAndDrop: ReturnType<typeof dragAndDrop>;
   export: ReturnType<typeof exports>;
@@ -50,7 +50,7 @@ const state = (app: App) => {
     pins: pins(app),
     itineraries: itineraries(app),
     history: history(app),
-    geometries: geometries(app),
+    entities: entities(app),
     selection: selection(app),
     dragAndDrop: dragAndDrop(app),
     export: exports(),

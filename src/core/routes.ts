@@ -1,13 +1,37 @@
-import { Feature, MultiLineString, multiLineString, simplify } from "@turf/turf";
+import { distance, Feature, MultiLineString, multiLineString, Position, simplify } from "@turf/turf";
 
-import { Coordinates, Line, nextGeometryId } from "~/core/geometries";
+import { nextEntityId } from "~/core/entities";
 import { App } from "~/core/helpers";
-import { getSelectedGeometry, getSelectedRoutes } from "~/core/selectors";
+import { ItineraryProfile, Place } from "~/core/itineraries";
+import { getSelectedEntity, getSelectedRoutes } from "~/core/selectors";
 import { smartMatch, SmartMatching, SmartMatchingProfile } from "~/lib/smartMatching";
 import { MapSource } from "~/map/sources";
 import { theme } from "~/styles/tailwind";
 
 export type OutlineType = "dark" | "light" | "black" | "glow" | "none";
+
+export type Route = {
+  id: number;
+  source: MapSource;
+  type: "Route";
+  transientPoints: Position[];
+  rawPoints: Position[];
+  points: Position[];
+  smartMatching: SmartMatching;
+  style: RouteStyle;
+  transientStyle?: RouteStyle;
+  itinerary?: {
+    steps: Place[];
+    profile: ItineraryProfile;
+  };
+};
+
+export type ItineraryRoute = Route & {
+  itinerary: {
+    steps: Place[];
+    profile: ItineraryProfile;
+  };
+};
 
 export type RouteStyle = {
   width: number;
@@ -38,6 +62,21 @@ const initialState: Routes = {
 
 export const STOP_DRAWING_CIRCLE_ID = 999999999; // 🙉
 
+export const computeDistance = (route: Route): number => {
+  const points = [...route.points, ...route.transientPoints];
+
+  if (points.length < 2) {
+    return 0;
+  }
+
+  let total = 0;
+  for (let i = 1; i < points.length; i += 1) {
+    total += distance(points[i - 1], points[i]);
+  }
+
+  return total;
+};
+
 export const routes = ({ mutate, get }: App) => ({
   ...initialState,
 
@@ -45,9 +84,9 @@ export const routes = ({ mutate, get }: App) => ({
     mutate((state) => {
       Object.assign(state.routes.style, style);
 
-      const selectedGeometry = getSelectedGeometry(state);
-      if (selectedGeometry?.type === "Line") {
-        Object.assign(selectedGeometry.style, style);
+      const selectedEntity = getSelectedEntity(state);
+      if (selectedEntity?.type === "Route") {
+        Object.assign(selectedEntity.style, style);
       }
     });
   },
@@ -62,11 +101,11 @@ export const routes = ({ mutate, get }: App) => ({
 
   startNewRoute: () => {
     mutate((state) => {
-      const id = nextGeometryId();
+      const id = nextEntityId();
 
       state.selection.ids = [id];
-      state.geometries.items.push({
-        type: "Line",
+      state.entities.items.push({
+        type: "Route",
         id,
         source: MapSource.Routes,
         transientPoints: [],
@@ -78,34 +117,30 @@ export const routes = ({ mutate, get }: App) => ({
     });
   },
 
-  startRoute: (coordinates: Coordinates) => {
+  startRoute: (coordinates: Position) => {
     mutate((state) => {
       state.routes.isDrawing = true;
 
-      const selectedRoute = getSelectedGeometry(state) as Line;
+      const selectedRoute = getSelectedEntity(state) as Route;
 
       selectedRoute.transientPoints.push(coordinates);
     });
   },
 
-  addRouteStep: (coordinates: Coordinates) => {
+  addRouteStep: (coordinates: Position) => {
     mutate((state) => {
       if (!state.routes.isDrawing) {
         return;
       }
 
-      const selectedRoute = getSelectedGeometry(state) as Line;
+      const selectedRoute = getSelectedEntity(state) as Route;
 
       selectedRoute.transientPoints = [...selectedRoute.transientPoints, coordinates];
 
       if (selectedRoute.transientPoints.length <= 2) {
         return;
       }
-      const feature = multiLineString([
-        selectedRoute.transientPoints.map((point) => {
-          return [point.longitude, point.latitude];
-        }),
-      ]);
+      const feature = multiLineString([selectedRoute.transientPoints]);
       const tolerance = 2 ** (-state.map.zoom - 1) * 0.8;
       const simplified = simplify(feature, { tolerance }) as Feature<MultiLineString>;
 
@@ -113,14 +148,12 @@ export const routes = ({ mutate, get }: App) => ({
         return;
       }
 
-      selectedRoute.transientPoints = simplified.geometry.coordinates[0].map((point) => {
-        return { latitude: point[1], longitude: point[0] };
-      });
+      selectedRoute.transientPoints = simplified.geometry.coordinates[0];
     });
   },
 
   stopSegment: async () => {
-    const selectedRoute = getSelectedGeometry(get()) as Line;
+    const selectedRoute = getSelectedEntity(get()) as Route;
 
     mutate((state) => {
       state.routes.isDrawing = false;
@@ -132,7 +165,7 @@ export const routes = ({ mutate, get }: App) => ({
 
     get().history.push({
       name: "draw",
-      geometryId: selectedRoute.id,
+      routeId: selectedRoute.id,
       points,
       rawPoints: selectedRoute.transientPoints,
     });
@@ -176,7 +209,7 @@ export const routes = ({ mutate, get }: App) => ({
   },
 
   updateSelectedLineSmartMatching: async (smartMatching: SmartMatching): Promise<void> => {
-    const selectedRoute = getSelectedGeometry(get()) as Line;
+    const selectedRoute = getSelectedEntity(get()) as Route;
 
     const points = smartMatching.enabled
       ? await smartMatch(selectedRoute.rawPoints, smartMatching.profile as SmartMatchingProfile)

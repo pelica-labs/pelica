@@ -1,8 +1,9 @@
-import { Coordinates } from "~/core/geometries";
+import { Position } from "@turf/turf";
+
 import { App } from "~/core/helpers";
 
 export type Geolocation = {
-  currentLocation: Coordinates | null;
+  currentLocation: Position | null;
 };
 
 const initialState: Geolocation = {
@@ -12,7 +13,7 @@ const initialState: Geolocation = {
 export const geolocation = ({ mutate }: App) => ({
   ...initialState,
 
-  updateCurrentLocation: (coordinates: Coordinates) => {
+  updateCurrentLocation: (coordinates: Position) => {
     mutate(({ geolocation }) => {
       geolocation.currentLocation = coordinates;
     });

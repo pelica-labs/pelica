@@ -1,23 +1,25 @@
-import { Coordinates, Point } from "~/core/geometries";
+import { Position } from "@turf/turf";
+
 import { App } from "~/core/helpers";
+import { Pin } from "~/core/pins";
 
 export type DragAndDrop = {
-  draggedGeometryId: number | null;
+  draggedEntityId: number | null;
   dragMoved: boolean;
   // @todo: this probably should be stored as a mercator projection
-  dragOffset: Coordinates | null;
+  dragOffset: Position | null;
 
-  hoveredGeometryId: number | null;
-  hoveredGeometrySource: string | null;
+  hoveredEntityId: number | null;
+  hoveredEntitySource: string | null;
 };
 
 const initialState: DragAndDrop = {
-  draggedGeometryId: null,
+  draggedEntityId: null,
   dragMoved: false,
   dragOffset: null,
 
-  hoveredGeometryId: null,
-  hoveredGeometrySource: null,
+  hoveredEntityId: null,
+  hoveredEntitySource: null,
 };
 
 export const dragAndDrop = ({ mutate, get }: App) => ({
@@ -25,54 +27,52 @@ export const dragAndDrop = ({ mutate, get }: App) => ({
 
   startHover: (id: number, source: string) => {
     mutate(({ dragAndDrop: drag }) => {
-      drag.hoveredGeometryId = id;
-      drag.hoveredGeometrySource = source;
+      drag.hoveredEntityId = id;
+      drag.hoveredEntitySource = source;
     });
   },
 
   endHover: () => {
     mutate(({ dragAndDrop: drag }) => {
-      drag.hoveredGeometryId = null;
-      drag.hoveredGeometrySource = null;
+      drag.hoveredEntityId = null;
+      drag.hoveredEntitySource = null;
     });
   },
 
-  startDrag: (geometryId: number, coordinates: Coordinates) => {
+  startDrag: (entityId: number, coordinates: Position) => {
     mutate((state) => {
-      const draggedGeometry = state.geometries.items.find((geometry) => geometry.id === geometryId) as Point;
+      const draggedEntity = state.entities.items.find((entity) => entity.id === entityId) as Pin;
 
-      state.dragAndDrop.draggedGeometryId = draggedGeometry.id;
+      state.dragAndDrop.draggedEntityId = draggedEntity.id;
       state.dragAndDrop.dragMoved = false;
-      state.dragAndDrop.dragOffset = {
-        latitude: coordinates.latitude - draggedGeometry.coordinates.latitude,
-        longitude: coordinates.longitude - draggedGeometry.coordinates.longitude,
-      };
+      state.dragAndDrop.dragOffset = [
+        coordinates[0] - draggedEntity.coordinates[0],
+        coordinates[1] - draggedEntity.coordinates[1],
+      ];
     });
   },
 
-  dragSelectedPin: (coordinates: Coordinates) => {
+  dragSelectedPin: (coordinates: Position) => {
     mutate((state) => {
       if (!state.dragAndDrop.dragOffset) {
         return;
       }
 
-      const draggedGeometry = state.geometries.items.find(
-        (geometry) => geometry.id === state.dragAndDrop.draggedGeometryId
-      ) as Point;
+      const draggedEntity = state.entities.items.find(
+        (entity) => entity.id === state.dragAndDrop.draggedEntityId
+      ) as Pin;
 
       state.dragAndDrop.dragMoved = true;
 
-      draggedGeometry.coordinates = {
-        latitude: coordinates.latitude - state.dragAndDrop.dragOffset.latitude,
-        longitude: coordinates.longitude - state.dragAndDrop.dragOffset.longitude,
-      };
+      draggedEntity.coordinates = [
+        coordinates[0] - state.dragAndDrop.dragOffset[0],
+        coordinates[1] - state.dragAndDrop.dragOffset[1],
+      ];
     });
   },
 
-  endDragSelectedPin: (coordinates: Coordinates) => {
-    const draggedGeometry = get().geometries.items.find(
-      (geometry) => geometry.id === get().dragAndDrop.draggedGeometryId
-    ) as Point;
+  endDragSelectedPin: (coordinates: Position) => {
+    const draggedEntity = get().entities.items.find((entity) => entity.id === get().dragAndDrop.draggedEntityId) as Pin;
 
     const dragOffset = get().dragAndDrop.dragOffset;
     if (!dragOffset) {
@@ -82,16 +82,13 @@ export const dragAndDrop = ({ mutate, get }: App) => ({
     if (get().dragAndDrop.dragMoved) {
       get().history.push({
         name: "movePin",
-        pinId: draggedGeometry.id,
-        coordinates: {
-          latitude: coordinates.latitude - dragOffset.latitude,
-          longitude: coordinates.longitude - dragOffset.longitude,
-        },
+        pinId: draggedEntity.id,
+        coordinates: [coordinates[0] - dragOffset[0], coordinates[1] - dragOffset[1]],
       });
     }
 
     mutate(({ dragAndDrop }) => {
-      dragAndDrop.draggedGeometryId = null;
+      dragAndDrop.draggedEntityId = null;
       dragAndDrop.dragMoved = false;
       dragAndDrop.dragOffset = null;
     });

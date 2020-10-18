@@ -19,15 +19,7 @@ export const DocumentTitle: React.FC = () => {
         return false;
       }
 
-      return booleanWithin(
-        bboxPolygon([
-          mapBounds[0].longitude,
-          mapBounds[0].latitude,
-          mapBounds[1].longitude,
-          mapBounds[1].latitude,
-        ] as BBox),
-        bboxPolygon(feature.bbox as BBox)
-      );
+      return booleanWithin(bboxPolygon(mapBounds), bboxPolygon(feature.bbox as BBox));
     });
 
   const title = [t("pelica"), feature?.place_name].filter((text) => !!text).join(" · ");

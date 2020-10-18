@@ -1,8 +1,8 @@
 import { MapboxProfile } from "@mapbox/mapbox-sdk/lib/classes/mapi-request";
 import { Tracepoint } from "@mapbox/mapbox-sdk/services/map-matching";
+import { Position } from "@turf/turf";
 import { chunk } from "lodash";
 
-import { Coordinates } from "~/core/geometries";
 import { mapboxMapMatching } from "~/lib/mapbox";
 
 export type SmartMatching = {
@@ -12,7 +12,7 @@ export type SmartMatching = {
 
 export type SmartMatchingProfile = MapboxProfile;
 
-export const smartMatch = async (points: Coordinates[], profile: SmartMatchingProfile): Promise<Coordinates[]> => {
+export const smartMatch = async (points: Position[], profile: SmartMatchingProfile): Promise<Position[]> => {
   const chunks = await Promise.all(
     chunk(points, 100).map(async (points) => {
       if (points.length < 2) {
@@ -26,7 +26,7 @@ export const smartMatch = async (points: Coordinates[], profile: SmartMatchingPr
           profile,
           points: points.map((point) => {
             return {
-              coordinates: [point.longitude, point.latitude],
+              coordinates: point as [number, number],
               radius: 50,
             };
           }),
@@ -40,12 +40,11 @@ export const smartMatch = async (points: Coordinates[], profile: SmartMatchingPr
       }
 
       return (res.body.tracepoints as Tracepoint[])
-        .filter((tracepoint) => tracepoint !== null)
+        .filter((tracepoint) => {
+          return tracepoint !== null;
+        })
         .map((tracepoint) => {
-          return {
-            longitude: tracepoint.location[0],
-            latitude: tracepoint.location[1],
-          };
+          return tracepoint.location;
         });
     })
   );

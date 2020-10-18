@@ -1,19 +1,19 @@
 import { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geocoding";
+import { BBox, Position } from "@turf/turf";
 import { throttle } from "lodash";
 
-import { Coordinates } from "~/core/geometries";
 import { App } from "~/core/helpers";
 import { Place } from "~/core/itineraries";
 import { mapboxGeocoding } from "~/lib/mapbox";
 
 export type Map = {
-  coordinates: Coordinates;
+  coordinates: Position;
 
   zoom: number;
   bearing: number;
   pitch: number;
 
-  bounds: [Coordinates, Coordinates] | null;
+  bounds: BBox | null;
 
   place: Place | null;
 
@@ -21,10 +21,7 @@ export type Map = {
 };
 
 const initialState: Map = {
-  coordinates: {
-    latitude: 48.856614,
-    longitude: 2.3522219,
-  },
+  coordinates: [2.3522219, 48.856614],
 
   bounds: null,
 
@@ -40,13 +37,7 @@ const initialState: Map = {
 export const map = ({ mutate }: App) => ({
   ...initialState,
 
-  move: (
-    coordinates: Coordinates,
-    zoom: number,
-    bearing: number,
-    pitch: number,
-    bounds?: [Coordinates, Coordinates]
-  ) => {
+  move: (coordinates: Position, zoom: number, bearing: number, pitch: number, bounds?: BBox) => {
     mutate(({ map }) => {
       map.coordinates = coordinates;
       map.zoom = zoom;
@@ -59,10 +50,10 @@ export const map = ({ mutate }: App) => ({
     });
   },
 
-  updateFeatures: throttle(async (coordinates: Coordinates) => {
+  updateFeatures: throttle(async (coordinates: Position) => {
     const res = await mapboxGeocoding
       .reverseGeocode({
-        query: [coordinates.longitude, coordinates.latitude],
+        query: coordinates as [number, number],
         mode: "mapbox.places",
       })
       .send();

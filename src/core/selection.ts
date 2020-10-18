@@ -1,12 +1,13 @@
-import { booleanContains, booleanCrosses, Polygon } from "@turf/turf";
+import { BBox, bboxPolygon, booleanContains, booleanCrosses, Position } from "@turf/turf";
 import { uniq } from "lodash";
 
-import { BoundingBox, Coordinates, geometryToFeature } from "~/core/geometries";
+import { entityToFeature } from "~/core/entities";
 import { App } from "~/core/helpers";
-import { getSelectedGeometries } from "~/core/selectors";
+import { getSelectedEntities } from "~/core/selectors";
+import { RawFeature } from "~/map/features";
 
 export type Selection = {
-  area: BoundingBox | null;
+  area: BBox | null;
 
   ids: number[];
   preservedIds: number[];
@@ -28,46 +29,34 @@ export const selection = ({ mutate, get }: App) => ({
     });
   },
 
-  startArea: (coordinates: Coordinates) => {
+  startArea: (coordinates: Position) => {
     mutate((state) => {
-      state.selection.area = {
-        northWest: coordinates,
-        southEast: coordinates,
-      };
+      state.selection.area = [coordinates[0], coordinates[1], coordinates[0], coordinates[1]];
     });
   },
 
-  updateArea: (coordinates: Coordinates) => {
+  updateArea: (coordinates: Position) => {
     mutate((state) => {
       if (!state.selection.area) {
         throw new Error("Updating inexistent selection area");
       }
 
-      state.selection.area.southEast = coordinates;
+      // Update south-east corner
+      state.selection.area[2] = coordinates[0];
+      state.selection.area[3] = coordinates[1];
 
-      const geometry: Polygon = {
-        type: "Polygon",
-        coordinates: [
-          [
-            [state.selection.area.northWest.longitude, state.selection.area.northWest.latitude],
-            [state.selection.area.northWest.longitude, state.selection.area.southEast.latitude],
-            [state.selection.area.southEast.longitude, state.selection.area.southEast.latitude],
-            [state.selection.area.southEast.longitude, state.selection.area.northWest.latitude],
-            [state.selection.area.northWest.longitude, state.selection.area.northWest.latitude],
-          ],
-        ],
-      };
+      const polygon = bboxPolygon(state.selection.area);
 
-      const selectedFeatureIds = state.geometries.items
+      const selectedFeatureIds = state.entities.items
         .map((item) => {
-          return geometryToFeature(item);
+          return entityToFeature(item);
         })
-        .filter((feature): feature is GeoJSON.Feature<GeoJSON.Geometry> => {
+        .filter((feature): feature is RawFeature => {
           return !!feature;
         })
         .filter((feature) => {
-          const crosses = feature.geometry.type !== "Point" && booleanCrosses(geometry, feature);
-          const contains = booleanContains(geometry, feature);
+          const crosses = feature.geometry?.type !== "Point" && booleanCrosses(polygon, feature);
+          const contains = booleanContains(polygon, feature);
 
           return crosses || contains;
         })
@@ -87,26 +76,26 @@ export const selection = ({ mutate, get }: App) => ({
     });
   },
 
-  selectGeometry: (geometryId: number) => {
+  selectEntity: (entityId: number) => {
     get().selection.clear();
 
     mutate((state) => {
-      state.selection.ids = [geometryId];
+      state.selection.ids = [entityId];
     });
 
-    const selectedGeometries = getSelectedGeometries(get());
-    if (selectedGeometries.length === 1 && selectedGeometries[0].type === "Line" && selectedGeometries[0].itinerary) {
+    const selectedEntities = getSelectedEntities(get());
+    if (selectedEntities.length === 1 && selectedEntities[0].type === "Route" && selectedEntities[0].itinerary) {
       get().itineraries.open();
     }
   },
 
-  toggleGeometrySelection: (geometryId: number) => {
+  toggleEntitySelection: (entityId: number) => {
     mutate((state) => {
-      const geometryIndex = state.selection.ids.indexOf(geometryId);
-      if (geometryIndex >= 0) {
-        state.selection.ids.splice(geometryIndex, 1);
+      const entityIndex = state.selection.ids.indexOf(entityId);
+      if (entityIndex >= 0) {
+        state.selection.ids.splice(entityIndex, 1);
       } else {
-        state.selection.ids.push(geometryId);
+        state.selection.ids.push(entityId);
       }
     });
   },
@@ -120,13 +109,13 @@ export const selection = ({ mutate, get }: App) => ({
     get().itineraries.close();
   },
 
-  deleteSelectedGeometries: () => {
-    const selectedGeometries = getSelectedGeometries(get());
+  deleteSelectedEntities: () => {
+    const selectedEntities = getSelectedEntities(get());
 
     get().history.push({
-      name: "deleteGeometry",
-      geometryIds: selectedGeometries.map((geometry) => {
-        return geometry.id;
+      name: "deleteEntity",
+      entityIds: selectedEntities.map((entity) => {
+        return entity.id;
       }),
     });
 

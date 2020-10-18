@@ -1,10 +1,11 @@
+import { Position } from "@turf/turf";
 import { partition } from "lodash";
 
 import { State } from "~/core/app";
-import { Coordinates, Geometry, ItineraryLine, Line, Point } from "~/core/geometries";
+import { Entity } from "~/core/entities";
 import { ItineraryProfile, Place } from "~/core/itineraries";
-import { PinStyle } from "~/core/pins";
-import { RouteStyle } from "~/core/routes";
+import { Pin, PinStyle } from "~/core/pins";
+import { ItineraryRoute, Route, RouteStyle } from "~/core/routes";
 import { SmartMatching } from "~/lib/smartMatching";
 import { Style } from "~/lib/style";
 
@@ -27,40 +28,40 @@ export type Action =
   | UpdatePinAction
   | UpdateRouteAction
   | UpdateLineSmartMatchingAction
-  | DeleteGeometryAction;
+  | DeleteEntityAction;
 
 // ---
 
 type DrawAction = {
   name: "draw";
-  geometryId: number;
-  rawPoints: Coordinates[];
-  points: Coordinates[];
+  routeId: number;
+  rawPoints: Position[];
+  points: Position[];
 
   previousLength?: number;
 };
 
 const DrawHandler: Handler<DrawAction> = {
   apply: (state, action) => {
-    const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as Line;
+    const entity = state.entities.items.find((item) => item.id === action.routeId) as Route;
 
-    action.previousLength = geometry.points.length;
+    action.previousLength = entity.points.length;
 
-    geometry.rawPoints.push(...action.rawPoints);
-    geometry.points.push(...action.points);
-    geometry.transientPoints = [];
+    entity.rawPoints.push(...action.rawPoints);
+    entity.points.push(...action.points);
+    entity.transientPoints = [];
 
-    state.selection.ids = [geometry.id];
+    state.selection.ids = [entity.id];
   },
 
   undo: (state, action) => {
-    const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as Line;
+    const entity = state.entities.items.find((item) => item.id === action.routeId) as Route;
 
-    geometry.points = geometry.points.slice(0, action.previousLength);
-    geometry.rawPoints = geometry.rawPoints.slice(0, action.previousLength);
+    entity.points = entity.points.slice(0, action.previousLength);
+    entity.rawPoints = entity.rawPoints.slice(0, action.previousLength);
 
     if (action.previousLength) {
-      state.selection.ids = [geometry.id];
+      state.selection.ids = [entity.id];
     }
   },
 };
@@ -69,16 +70,16 @@ const DrawHandler: Handler<DrawAction> = {
 
 type PinAction = {
   name: "pin";
-  point: Point;
+  point: Pin;
 };
 
 const PinHandler: Handler<PinAction> = {
   apply: (state, action) => {
-    state.geometries.items.push(action.point);
+    state.entities.items.push(action.point);
   },
 
   undo: (state, action) => {
-    state.geometries.items.splice(state.geometries.items.findIndex((geometry) => geometry.id === action.point.id));
+    state.entities.items.splice(state.entities.items.findIndex((entity) => entity.id === action.point.id));
   },
 };
 
@@ -86,16 +87,16 @@ const PinHandler: Handler<PinAction> = {
 
 type ImportGpxAction = {
   name: "importGpx";
-  line: Line;
+  route: Route;
 };
 
 const ImportGpxHandler: Handler<ImportGpxAction> = {
-  apply: ({ geometries }, action) => {
-    geometries.items.push({ ...action.line });
+  apply: (state, action) => {
+    state.entities.items.push(action.route);
   },
 
-  undo: ({ geometries }, action) => {
-    geometries.items.splice(geometries.items.findIndex((geometry) => geometry.id === action.line.id));
+  undo: (state, action) => {
+    state.entities.items.splice(state.entities.items.findIndex((entity) => entity.id === action.route.id));
   },
 };
 
@@ -104,21 +105,21 @@ const ImportGpxHandler: Handler<ImportGpxAction> = {
 type MovePinAction = {
   name: "movePin";
   pinId: number;
-  coordinates: Coordinates;
+  coordinates: Position;
 
-  previousCoordinates?: Coordinates;
+  previousCoordinates?: Position;
 };
 
 const MovePinHandler: Handler<MovePinAction> = {
-  apply: ({ geometries }, action) => {
-    const point = geometries.items.find((geometry) => geometry.id === action.pinId) as Point;
+  apply: (state, action) => {
+    const point = state.entities.items.find((entity) => entity.id === action.pinId) as Pin;
 
     action.previousCoordinates = point.coordinates;
     point.coordinates = action.coordinates;
   },
 
-  undo: ({ geometries }, action) => {
-    const point = geometries.items.find((geometry) => geometry.id === action.pinId) as Point;
+  undo: (state, action) => {
+    const point = state.entities.items.find((entity) => entity.id === action.pinId) as Pin;
 
     point.coordinates = action.previousCoordinates;
   },
@@ -146,25 +147,25 @@ const UpdateStyleHandler: Handler<UpdateStyleAction> = {
 
 // ---
 
-type DeleteGeometryAction = {
-  name: "deleteGeometry";
-  geometryIds: number[];
+type DeleteEntityAction = {
+  name: "deleteEntity";
+  entityIds: number[];
 
-  deletedGeometries?: Geometry[];
+  deletedEntity?: Entity[];
 };
 
-const DeleteGeometryHandler: Handler<DeleteGeometryAction> = {
+const DeleteEntityHandler: Handler<DeleteEntityAction> = {
   apply: (state, action) => {
-    const [deleted, remaining] = partition(state.geometries.items, (item) => {
-      return action.geometryIds.includes(item.id);
+    const [deleted, remaining] = partition(state.entities.items, (item) => {
+      return action.entityIds.includes(item.id);
     });
 
-    action.deletedGeometries = deleted;
-    state.geometries.items = remaining;
+    action.deletedEntity = deleted;
+    state.entities.items = remaining;
   },
 
   undo: (state, action) => {
-    state.geometries.items.push(...action.deletedGeometries);
+    state.entities.items.push(...action.deletedEntity);
   },
 };
 
@@ -181,7 +182,7 @@ type UpdatePinAction = {
 
 const UpdatePinHandler: Handler<UpdatePinAction> = {
   apply: (state, action) => {
-    const pins = state.geometries.items.filter((item): item is Point => action.pinIds.includes(item.id));
+    const pins = state.entities.items.filter((item): item is Pin => action.pinIds.includes(item.id));
 
     action.previousStyles = {};
     pins.forEach((pin) => {
@@ -195,7 +196,7 @@ const UpdatePinHandler: Handler<UpdatePinAction> = {
   },
 
   undo: (state, action) => {
-    const pins = state.geometries.items.filter((item): item is Point => action.pinIds.includes(item.id));
+    const pins = state.entities.items.filter((item): item is Pin => action.pinIds.includes(item.id));
 
     pins.forEach((pin) => {
       pin.style = action.previousStyles[pin.id];
@@ -215,7 +216,7 @@ type UpdateRouteAction = {
 
 const UpdateRouteHandler: Handler<UpdateRouteAction> = {
   apply: (state, action) => {
-    const routes = state.geometries.items.filter((item): item is Line => action.routeIds.includes(item.id));
+    const routes = state.entities.items.filter((item): item is Route => action.routeIds.includes(item.id));
 
     action.previousStyles = {};
     routes.forEach((route) => {
@@ -229,7 +230,7 @@ const UpdateRouteHandler: Handler<UpdateRouteAction> = {
   },
 
   undo: (state, action) => {
-    const routes = state.geometries.items.filter((item): item is Line => action.routeIds.includes(item.id));
+    const routes = state.entities.items.filter((item): item is Route => action.routeIds.includes(item.id));
 
     routes.forEach((route) => {
       route.style = action.previousStyles[route.id];
@@ -242,18 +243,18 @@ const UpdateRouteHandler: Handler<UpdateRouteAction> = {
 type UpdateLineSmartMatchingAction = {
   name: "updateLineSmartMatching";
   lineId: number;
-  points: Coordinates[];
+  points: Position[];
   smartMatching: SmartMatching;
 
   previousState?: {
-    points: Coordinates[];
+    points: Position[];
     smartMatching: SmartMatching;
   };
 };
 
 const UpdateLineSmartMatchingHandler: Handler<UpdateLineSmartMatchingAction> = {
-  apply: ({ geometries }, action) => {
-    const line = geometries.items.find((geometry) => geometry.id === action.lineId) as Line;
+  apply: (state, action) => {
+    const line = state.entities.items.find((entity) => entity.id === action.lineId) as Route;
 
     action.previousState = {
       points: action.points,
@@ -264,8 +265,8 @@ const UpdateLineSmartMatchingHandler: Handler<UpdateLineSmartMatchingAction> = {
     line.points = action.points;
   },
 
-  undo: ({ geometries }, action) => {
-    const line = geometries.items.find((geometry) => geometry.id === action.lineId) as Line;
+  undo: (state, action) => {
+    const line = state.entities.items.find((entity) => entity.id === action.lineId) as Route;
 
     line.smartMatching = action.previousState.smartMatching;
     line.points = action.previousState.points;
@@ -276,21 +277,21 @@ const UpdateLineSmartMatchingHandler: Handler<UpdateLineSmartMatchingAction> = {
 
 type AddRouteStepAction = {
   name: "addRouteStep";
-  geometryId: number;
+  entityId: number;
   place: Place;
 };
 
 const AddRouteStepActionHandler: Handler<AddRouteStepAction> = {
   apply: (state, action) => {
-    const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as ItineraryLine;
+    const entity = state.entities.items.find((item) => item.id === action.entityId) as ItineraryRoute;
 
-    geometry.itinerary.steps.push(action.place);
+    entity.itinerary.steps.push(action.place);
   },
 
   undo: (state, action) => {
-    const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as ItineraryLine;
+    const entity = state.entities.items.find((item) => item.id === action.entityId) as ItineraryRoute;
 
-    geometry.itinerary.steps.splice(geometry.itinerary.steps.length - 1, 1);
+    entity.itinerary.steps.splice(entity.itinerary.steps.length - 1, 1);
   },
 };
 
@@ -298,7 +299,7 @@ const AddRouteStepActionHandler: Handler<AddRouteStepAction> = {
 
 type UpdateRouteStepAction = {
   name: "updateRouteStep";
-  geometryId: number;
+  entityId: number;
   index: number;
   place: Place;
 
@@ -307,16 +308,16 @@ type UpdateRouteStepAction = {
 
 const UpdateRouteStepActionHandler: Handler<UpdateRouteStepAction> = {
   apply: (state, action) => {
-    const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as ItineraryLine;
+    const entity = state.entities.items.find((item) => item.id === action.entityId) as ItineraryRoute;
 
-    action.previousPlace = geometry.itinerary.steps[action.index];
-    geometry.itinerary.steps[action.index] = action.place;
+    action.previousPlace = entity.itinerary.steps[action.index];
+    entity.itinerary.steps[action.index] = action.place;
   },
 
   undo: (state, action) => {
-    const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as ItineraryLine;
+    const entity = state.entities.items.find((item) => item.id === action.entityId) as ItineraryRoute;
 
-    geometry.itinerary.steps[action.index] = action.previousPlace;
+    entity.itinerary.steps[action.index] = action.previousPlace;
   },
 };
 
@@ -324,24 +325,24 @@ const UpdateRouteStepActionHandler: Handler<UpdateRouteStepAction> = {
 
 type MoveRouteStepAction = {
   name: "moveRouteStep";
-  geometryId: number;
+  entityId: number;
   from: number;
   to: number;
 };
 
 const MoveRouteStepActionHandler: Handler<MoveRouteStepAction> = {
   apply: (state, action) => {
-    const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as ItineraryLine;
+    const entity = state.entities.items.find((item) => item.id === action.entityId) as ItineraryRoute;
 
-    const [place] = geometry.itinerary.steps.splice(action.from, 1);
-    geometry.itinerary.steps.splice(action.to, 0, place);
+    const [place] = entity.itinerary.steps.splice(action.from, 1);
+    entity.itinerary.steps.splice(action.to, 0, place);
   },
 
   undo: (state, action) => {
-    const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as ItineraryLine;
+    const entity = state.entities.items.find((item) => item.id === action.entityId) as ItineraryRoute;
 
-    const [place] = geometry.itinerary.steps.splice(action.to, 1);
-    geometry.itinerary.steps.splice(action.from, 0, place);
+    const [place] = entity.itinerary.steps.splice(action.to, 1);
+    entity.itinerary.steps.splice(action.from, 0, place);
   },
 };
 
@@ -349,7 +350,7 @@ const MoveRouteStepActionHandler: Handler<MoveRouteStepAction> = {
 
 type DeleteRouteStepAction = {
   name: "deleteRouteStep";
-  geometryId: number;
+  entityId: number;
   index: number;
 
   place?: Place;
@@ -357,16 +358,16 @@ type DeleteRouteStepAction = {
 
 const DeleteRouteStepActionHandler: Handler<DeleteRouteStepAction> = {
   apply: (state, action) => {
-    const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as ItineraryLine;
+    const entity = state.entities.items.find((item) => item.id === action.entityId) as ItineraryRoute;
 
-    action.place = geometry.itinerary.steps[action.index];
-    geometry.itinerary.steps.splice(action.index, 1);
+    action.place = entity.itinerary.steps[action.index];
+    entity.itinerary.steps.splice(action.index, 1);
   },
 
   undo: (state, action) => {
-    const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as ItineraryLine;
+    const entity = state.entities.items.find((item) => item.id === action.entityId) as ItineraryRoute;
 
-    geometry.itinerary.steps.splice(action.index, 0, action.place);
+    entity.itinerary.steps.splice(action.index, 0, action.place);
   },
 };
 
@@ -374,7 +375,7 @@ const DeleteRouteStepActionHandler: Handler<DeleteRouteStepAction> = {
 
 type UpdateRouteProfileAction = {
   name: "updateRouteProfile";
-  geometryId: number;
+  entityId: number;
   profile: ItineraryProfile;
 
   previousProfile?: ItineraryProfile;
@@ -382,16 +383,16 @@ type UpdateRouteProfileAction = {
 
 const UpdateRouteProfileActionHandler: Handler<UpdateRouteProfileAction> = {
   apply: (state, action) => {
-    const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as ItineraryLine;
+    const entity = state.entities.items.find((item) => item.id === action.entityId) as ItineraryRoute;
 
-    action.previousProfile = geometry.itinerary.profile;
-    geometry.itinerary.profile = action.profile;
+    action.previousProfile = entity.itinerary.profile;
+    entity.itinerary.profile = action.profile;
   },
 
   undo: (state, action) => {
-    const geometry = state.geometries.items.find((item) => item.id === action.geometryId) as ItineraryLine;
+    const entity = state.entities.items.find((item) => item.id === action.entityId) as ItineraryRoute;
 
-    geometry.itinerary.profile = action.previousProfile;
+    entity.itinerary.profile = action.previousProfile;
   },
 };
 
@@ -410,6 +411,6 @@ export const handlers = {
   updatePin: UpdatePinHandler,
   updateRoute: UpdateRouteHandler,
   updateLineSmartMatching: UpdateLineSmartMatchingHandler,
-  deleteGeometry: DeleteGeometryHandler,
+  deleteEntity: DeleteEntityHandler,
   updateStyle: UpdateStyleHandler,
 };

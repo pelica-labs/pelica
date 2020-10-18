@@ -15,8 +15,9 @@ import { StyleSelector } from "~/components/StyleSelector";
 import { Toolbar } from "~/components/Toolbar";
 import { WidthSlider } from "~/components/WidthSlider";
 import { useApp, useStore } from "~/core/app";
-import { computeDistance, Line, Point } from "~/core/geometries";
-import { getSelectedGeometries, getSelectedGeometry } from "~/core/selectors";
+import { Pin } from "~/core/pins";
+import { computeDistance, Route } from "~/core/routes";
+import { getSelectedEntities, getSelectedEntity } from "~/core/selectors";
 import { useBrowserFeatures } from "~/hooks/useBrowserFeatures";
 import { useDimensions } from "~/hooks/useDimensions";
 import { useHotkey } from "~/hooks/useHotkey";
@@ -118,24 +119,24 @@ const AspectRatioSidebar: React.FC = () => {
 
 const SelectSidebar: React.FC = () => {
   const app = useApp();
-  const selectedGeometries = useStore((store) => getSelectedGeometries(store));
+  const selectedEntities = useStore((store) => getSelectedEntities(store));
 
-  if (selectedGeometries.length === 0) {
+  if (selectedEntities.length === 0) {
     return null;
   }
 
-  const selectedGeometry = selectedGeometries[0] as Line | Point;
-  const allRoutes = selectedGeometries.every((geometry) => geometry.type === "Line");
-  const allNonItineraryRoutes = selectedGeometries.every((geometry) => geometry.type === "Line" && !geometry.itinerary);
-  const allPins = selectedGeometries.every((geometry) => geometry.type === "Point");
+  const selectedEntity = selectedEntities[0] as Route | Pin;
+  const allRoutes = selectedEntities.every((entity) => entity.type === "Route");
+  const allNonItineraryRoutes = selectedEntities.every((entity) => entity.type === "Route" && !entity.itinerary);
+  const allPins = selectedEntities.every((entity) => entity.type === "Pin");
   const allSame = allRoutes || allPins;
 
   let name = "Mixed";
   if (allRoutes) {
-    name = selectedGeometries.length > 1 ? "Routes" : "Route";
+    name = selectedEntities.length > 1 ? "Routes" : "Route";
   }
   if (allPins) {
-    name = selectedGeometries.length > 1 ? "Pins" : "pin";
+    name = selectedEntities.length > 1 ? "Pins" : "pin";
   }
 
   return (
@@ -143,12 +144,12 @@ const SelectSidebar: React.FC = () => {
       <div className="flex items-center justify-between px-3 py-2 border-b border-t bg-white">
         <span className="text-xs uppercase font-light tracking-wide leading-none">
           <span>{name}</span>
-          <span className="ml-1 text-gray-600">({selectedGeometries.length})</span>
+          <span className="ml-1 text-gray-600">({selectedEntities.length})</span>
         </span>
         <Button
           className="bg-gray-300 text-gray-800"
           onClick={() => {
-            app.selection.deleteSelectedGeometries();
+            app.selection.deleteSelectedEntities();
           }}
         >
           <TrashIcon className="w-2 h-2 md:w-3 md:h-3" />
@@ -161,12 +162,12 @@ const SelectSidebar: React.FC = () => {
             <SidebarHeading>Color</SidebarHeading>
             <div
               className="ml-2 w-3 h-3 rounded-full border border-gray-200"
-              style={{ backgroundColor: selectedGeometry.transientStyle?.color ?? selectedGeometry.style.color }}
+              style={{ backgroundColor: selectedEntity.transientStyle?.color ?? selectedEntity.style.color }}
             />
           </div>
           <div className="mt-4">
             <ColorPicker
-              value={selectedGeometry.style.color}
+              value={selectedEntity.style.color}
               onChange={(color) => {
                 if (allRoutes) {
                   app.routes.transientUpdateSelectedLine({ color });
@@ -194,19 +195,19 @@ const SelectSidebar: React.FC = () => {
               <div
                 className="rounded-full"
                 style={{
-                  width: selectedGeometry.transientStyle?.width ?? selectedGeometry.style.width,
-                  height: selectedGeometry.transientStyle?.width ?? selectedGeometry.style.width,
-                  backgroundColor: selectedGeometry.transientStyle?.color ?? selectedGeometry.style.color,
+                  width: selectedEntity.transientStyle?.width ?? selectedEntity.style.width,
+                  height: selectedEntity.transientStyle?.width ?? selectedEntity.style.width,
+                  backgroundColor: selectedEntity.transientStyle?.color ?? selectedEntity.style.color,
                 }}
               />
             </div>
           </div>
           <div className="mt-4 px-1">
             <WidthSlider
-              color={selectedGeometry.style.color}
+              color={selectedEntity.style.color}
               max={12}
               min={1}
-              value={selectedGeometry.style.width}
+              value={selectedEntity.style.width}
               onChange={(width) => {
                 if (allRoutes) {
                   app.routes.transientUpdateSelectedLine({ width });
@@ -226,14 +227,14 @@ const SelectSidebar: React.FC = () => {
         </div>
       )}
 
-      {allRoutes && selectedGeometry.type === "Line" && (
+      {allRoutes && selectedEntity.type === "Route" && (
         <div className="mt-2 px-3 pb-3 mb-2 border-b">
           <div className="flex items-center">
             <SidebarHeading>Outline</SidebarHeading>
           </div>
           <div className="mt-4">
             <OutlineSelector
-              value={selectedGeometry.style.outline}
+              value={selectedEntity.style.outline}
               onChange={(outline) => {
                 app.routes.updateSelectedLine({ outline });
               }}
@@ -242,13 +243,13 @@ const SelectSidebar: React.FC = () => {
         </div>
       )}
 
-      {allPins && selectedGeometry.type === "Point" && (
+      {allPins && selectedEntity.type === "Pin" && (
         <div className="px-3 pb-2 border-b">
           <SidebarHeading>Icon</SidebarHeading>
 
           <div className="mt-2">
             <IconSelector
-              value={selectedGeometry.style.icon}
+              value={selectedEntity.style.icon}
               onChange={(icon) => {
                 app.pins.updateSelectedPin({ icon });
               }}
@@ -257,12 +258,12 @@ const SelectSidebar: React.FC = () => {
         </div>
       )}
 
-      {allNonItineraryRoutes && selectedGeometry.type === "Line" && (
+      {allNonItineraryRoutes && selectedEntity.type === "Route" && (
         <div className="px-3 pb-2 mb-2 border-b">
           <SidebarHeading>Routes</SidebarHeading>
           <div className="mt-2">
             <SmartMatchingSelector
-              value={selectedGeometry.smartMatching}
+              value={selectedEntity.smartMatching}
               onChange={(smartMatching) => {
                 app.routes.updateSelectedLineSmartMatching(smartMatching);
               }}
@@ -271,14 +272,14 @@ const SelectSidebar: React.FC = () => {
         </div>
       )}
 
-      {selectedGeometry.type === "Line" && (
+      {selectedEntity.type === "Route" && (
         <div className="mt-auto px-3 py-2 border-t">
           <SidebarHeading>Inspect</SidebarHeading>
 
           <div className="mt-2">
             <div className="flex items-center text-xs">
               <span className="mr-4">Distance</span>
-              <Distance value={computeDistance(selectedGeometry)} />
+              <Distance value={computeDistance(selectedEntity)} />
             </div>
           </div>
         </div>
@@ -359,7 +360,7 @@ const DrawSidebar: React.FC = () => {
   const width = useStore((store) => store.routes.style.width);
   const outline = useStore((store) => store.routes.style.outline);
   const smartMatching = useStore((store) => store.routes.smartMatching);
-  const route = useStore((store) => getSelectedGeometry(store) as Line);
+  const route = useStore((store) => getSelectedEntity(store) as Route);
 
   return (
     <>
@@ -473,7 +474,7 @@ const ItinerarySidebar: React.FC = () => {
   const color = useStore((store) => store.routes.style.color);
   const width = useStore((store) => store.routes.style.width);
   const outline = useStore((store) => store.routes.style.outline);
-  const route = useStore((store) => getSelectedGeometry(store) as Line);
+  const route = useStore((store) => getSelectedEntity(store) as Route);
 
   return (
     <>

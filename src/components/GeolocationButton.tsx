@@ -1,16 +1,16 @@
+import { Position } from "@turf/turf";
 import React, { useEffect, useState } from "react";
 import PuffLoader from "react-spinners/PuffLoader";
 
 import { Button } from "~/components/Button";
 import { TargetIcon } from "~/components/Icon";
 import { useApp } from "~/core/app";
-import { Coordinates } from "~/core/geometries";
 import { theme } from "~/styles/tailwind";
 
 type GeolocationStatus = "pending" | "loading" | "granted";
 
 type Props = {
-  onChange: (value: Coordinates) => void;
+  onChange: (value: Position) => void;
 };
 
 export const GeolocationButton: React.FC<Props> = ({ onChange }) => {
@@ -46,13 +46,13 @@ export const GeolocationButton: React.FC<Props> = ({ onChange }) => {
   };
 
   const getPosition = () => {
-    return new Promise<Coordinates>((resolve) => {
+    return new Promise<Position>((resolve) => {
       window.navigator.geolocation.getCurrentPosition(
         (position) => {
           setGeolocationStatus("granted");
-          app.geolocation.updateCurrentLocation(position.coords);
+          app.geolocation.updateCurrentLocation([position.coords.longitude, position.coords.latitude]);
 
-          return resolve(position.coords);
+          return resolve([position.coords.longitude, position.coords.latitude]);
         },
         () => {
           updateGeolocationAvailability();

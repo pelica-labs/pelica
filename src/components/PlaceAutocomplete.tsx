@@ -1,10 +1,10 @@
 import { GeocodeResponse } from "@mapbox/mapbox-sdk/services/geocoding";
+import { Position } from "@turf/turf";
 import classNames from "classnames";
 import * as KeyCode from "keycode-js";
 import React, { useEffect, useRef, useState } from "react";
 
 import { CloseIcon, Icon, SearchIcon, TrashIcon } from "~/components/Icon";
-import { Coordinates } from "~/core/geometries";
 import { Place } from "~/core/itineraries";
 import { useAsyncStorage } from "~/hooks/useAsyncStorage";
 import { mapboxGeocoding } from "~/lib/mapbox";
@@ -13,7 +13,7 @@ type Props = {
   value: Place | null;
   onChange: (value: Place | null) => void;
 
-  bias?: Coordinates;
+  bias?: Position;
   collapsesWhenEmpty?: boolean;
   clearable?: boolean;
   dense?: boolean;
@@ -81,7 +81,7 @@ export const PlaceAutocomplete: React.FC<Props> = ({
       .forwardGeocode({
         query: search,
         mode: "mapbox.places",
-        ...(bias && { proximity: [bias.longitude, bias.latitude] }),
+        ...(bias && { proximity: bias }),
       })
       .send()
       .then((res) => {

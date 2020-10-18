@@ -1,4 +1,4 @@
-import { nextGeometryId } from "~/core/geometries";
+import { nextEntityId } from "~/core/entities";
 import { App } from "~/core/helpers";
 import { parseGpx } from "~/lib/gpx";
 import { MapSource } from "~/map/sources";
@@ -19,9 +19,9 @@ export const imports = ({ get }: App) => ({
 
       history.push({
         name: "importGpx",
-        line: {
-          type: "Line",
-          id: nextGeometryId(),
+        route: {
+          type: "Route",
+          id: nextEntityId(),
           source: MapSource.Routes,
           smartMatching: { enabled: false, profile: null },
           transientPoints: [],

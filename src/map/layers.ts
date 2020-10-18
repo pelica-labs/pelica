@@ -40,7 +40,7 @@ export const applyLayers = (map: mapboxgl.Map): void => {
     type: "circle",
     source: MapSource.Overlays,
     interactive: false,
-    filter: ["==", ["get", "target"], "Point"],
+    filter: ["==", ["get", "target"], "Pin"],
     paint: {
       "circle-radius": 10,
       "circle-opacity": 0.1,
@@ -107,8 +107,7 @@ export const applyLayers = (map: mapboxgl.Map): void => {
     id: "routesStop",
     before: "waterway-label",
     type: "circle",
-    source: MapSource.Routes,
-    filter: ["==", ["get", "target"], "Point"],
+    source: MapSource.RouteStop,
     paint: {
       "circle-radius": 10,
       "circle-opacity": ["case", ["boolean", ["feature-state", "hover"], true], 0.5, 0.1],

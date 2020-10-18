@@ -1,6 +1,6 @@
 import { DirectionsResponse } from "@mapbox/mapbox-sdk/services/directions";
 import polyline from "@mapbox/polyline";
-import { greatCircle, point } from "@turf/turf";
+import { greatCircle, point, Position } from "@turf/turf";
 import classNames from "classnames";
 import React, { useEffect, useRef, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
@@ -19,7 +19,6 @@ import {
 } from "~/components/Icon";
 import { IconButton } from "~/components/IconButton";
 import { PlaceAutocomplete } from "~/components/PlaceAutocomplete";
-import { Coordinates } from "~/core/geometries";
 import { ItineraryProfile, Place } from "~/core/itineraries";
 import { mapboxDirections } from "~/lib/mapbox";
 import { theme } from "~/styles/tailwind";
@@ -48,12 +47,12 @@ type Props = {
   onProfileUpdated: (profile: ItineraryProfile) => void;
 
   onLoadingRoute: () => void;
-  onRouteFound: (value: Coordinates[]) => void;
+  onRouteFound: (value: Position[]) => void;
 
   canClose: boolean;
   onClose: () => void;
 
-  bias?: Coordinates;
+  bias?: Position;
 };
 
 export const ItineraryInput: React.FC<Props> = ({
@@ -79,16 +78,11 @@ export const ItineraryInput: React.FC<Props> = ({
 
   const computeItinerary = async () => {
     if (profile === "direct") {
-      return value.flatMap((place, i): Coordinates[] => {
+      return value.flatMap((place, i): Position[] => {
         if (value[i + 1]) {
           // great-circle is the shortest path between two points, which projects in mercator to a curve
           const lineString = greatCircle(point(place.center), point(value[i + 1].center));
-          return (
-            lineString.geometry?.coordinates.map((coord) => ({
-              latitude: coord[1],
-              longitude: coord[0],
-            })) || []
-          );
+          return lineString.geometry?.coordinates || [];
         } else {
           return [];
         }
@@ -115,11 +109,12 @@ export const ItineraryInput: React.FC<Props> = ({
       return [];
     }
 
-    return polyline
-      .decode((directions.routes[0].geometry as unknown) as string) // it's a polyline mistyped as LineString
-      .map((coords) => {
-        return { latitude: coords[0], longitude: coords[1] };
-      });
+    console.log(directions);
+
+    // It's a polyline mistyped as LineString
+    return polyline.decode((directions.routes[0].geometry as unknown) as string).map((coords) => {
+      return [coords[1], coords[0]];
+    });
   };
 
   useEffect(() => {

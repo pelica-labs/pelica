@@ -1,10 +1,28 @@
+import { Position } from "@turf/turf";
 import { MercatorCoordinate } from "mapbox-gl";
 
-import { Coordinates, nextGeometryId, Point, Position } from "~/core/geometries";
+import { nextEntityId } from "~/core/entities";
 import { App } from "~/core/helpers";
-import { getSelectedGeometry, getSelectedPins } from "~/core/selectors";
+import { getSelectedEntity, getSelectedPins } from "~/core/selectors";
 import { MapSource } from "~/map/sources";
 import { theme } from "~/styles/tailwind";
+
+export type Pin = {
+  id: number;
+  source: MapSource;
+  type: "Pin";
+  coordinates: Position;
+  style: {
+    color: string;
+    width: number;
+    icon: string;
+    target?: "Pin";
+  };
+  transientStyle?: {
+    color: string;
+    width: number;
+  };
+};
 
 export type PinStyle = {
   icon: string;
@@ -31,28 +49,28 @@ export const pins = ({ mutate, get }: App) => ({
     mutate((state) => {
       Object.assign(state.pins.style, style);
 
-      const selectedGeometry = getSelectedGeometry(state);
-      if (selectedGeometry?.type === "Point") {
-        Object.assign(selectedGeometry.style, style);
+      const selectedEntity = getSelectedEntity(state);
+      if (selectedEntity?.type === "Pin") {
+        Object.assign(selectedEntity.style, style);
       }
     });
   },
 
-  place: (latitude: number, longitude: number) => {
-    const pinId = nextGeometryId();
+  place: (coordinates: Position) => {
+    const pinId = nextEntityId();
 
     get().history.push({
       name: "pin",
       point: {
-        type: "Point",
+        type: "Pin",
         id: pinId,
         source: MapSource.Pins,
-        coordinates: { latitude, longitude },
+        coordinates,
         style: get().pins.style,
       },
     });
 
-    get().selection.selectGeometry(pinId);
+    get().selection.selectEntity(pinId);
   },
 
   transientUpdateSelectedPin: (style: Partial<PinStyle>) => {
@@ -82,16 +100,16 @@ export const pins = ({ mutate, get }: App) => ({
     });
   },
 
-  editSelectedPinCoordinates: (coordinates: Coordinates) => {
+  editSelectedPinCoordinates: (coordinates: Position) => {
     mutate((state) => {
-      const selectedPin = getSelectedGeometry(state) as Point;
+      const selectedPin = getSelectedEntity(state) as Pin;
 
       selectedPin.coordinates = coordinates;
     });
   },
 
-  endEditSelectedPinCoordinates: (coordinates: Coordinates) => {
-    const selectedPin = getSelectedGeometry(get()) as Point;
+  endEditSelectedPinCoordinates: (coordinates: Position) => {
+    const selectedPin = getSelectedEntity(get()) as Pin;
 
     get().history.push({
       name: "movePin",
@@ -101,21 +119,17 @@ export const pins = ({ mutate, get }: App) => ({
   },
 
   nudgeSelectedPin: (direction: Position) => {
-    const selectedPin = getSelectedGeometry(get()) as Point;
+    const selectedPin = getSelectedEntity(get()) as Pin;
 
-    const pointCoordinates = MercatorCoordinate.fromLngLat(
-      { lng: selectedPin.coordinates.longitude, lat: selectedPin.coordinates.latitude },
-      0
-    );
+    const pointCoordinates = MercatorCoordinate.fromLngLat(selectedPin.coordinates as [number, number], 0);
     const base = 2 ** (-get().map.zoom - 1);
-    pointCoordinates.x += base * direction.x;
-    pointCoordinates.y += base * direction.y;
-    const { lat, lng } = pointCoordinates.toLngLat();
+    pointCoordinates.x += base * direction[0];
+    pointCoordinates.y += base * direction[1];
 
     get().history.push({
       name: "movePin",
       pinId: selectedPin.id,
-      coordinates: { latitude: lat, longitude: lng },
+      coordinates: pointCoordinates.toLngLat().toArray(),
     });
   },
 });
