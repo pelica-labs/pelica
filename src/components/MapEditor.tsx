@@ -48,15 +48,9 @@ export const MapEditor: React.FC<Props> = ({ initialStyles }) => {
         <Map />
 
         {editorMode !== "export" && (
-          <>
-            <div className="absolute top-0 right-0 mt-1 mr-1">
-              <ResetOrientationButton />
-            </div>
-
-            <div className="absolute bottom-0 mb-2 flex justify-center w-full z-10 pointer-events-none">
-              <Tips />
-            </div>
-          </>
+          <div className="absolute bottom-0 mb-2 flex justify-center w-full z-10 pointer-events-none">
+            <Tips />
+          </div>
         )}
       </div>
 
@@ -115,6 +109,8 @@ export const MapEditor: React.FC<Props> = ({ initialStyles }) => {
                   app.map.move(coordinates, 16, 0, 0);
                 }}
               />
+
+              <ResetOrientationButton />
             </>
           )}
         </div>

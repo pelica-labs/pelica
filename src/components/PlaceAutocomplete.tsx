@@ -219,7 +219,7 @@ export const PlaceAutocomplete: React.FC<Props> = ({
         "group relative bg-white border text-gray-800 shadow flex flex-col transition-all duration-100 ease-in-out cursor-pointer": true,
         ...(collapsesWhenEmpty && {
           "w-56 rounded-lg": isFocused || search,
-          "w-12 rounded-full": !(isFocused || search),
+          "w-12 rounded-full hover:bg-orange-200 hover:border-orange-300": !(isFocused || search),
         }),
         ...(!collapsesWhenEmpty && {
           "w-56 rounded": true,
@@ -228,7 +228,7 @@ export const PlaceAutocomplete: React.FC<Props> = ({
       onClick={() => onFocus()}
     >
       {!!LeftIcon && !isFocused && !search.length && (
-        <LeftIcon className="absolute left-0 ml-3 mt-3 text-gray-700 w-6 h-6 group-hover:text-orange-600" />
+        <LeftIcon className="absolute left-0 ml-3 mt-3 text-gray-700 w-6 h-6 group-hover:text-orange-600 transition-all duration-100 ease-in-out" />
       )}
 
       <input

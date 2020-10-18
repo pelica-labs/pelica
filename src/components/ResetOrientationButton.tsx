@@ -17,13 +17,13 @@ export const ResetOrientationButton: React.FC = () => {
 
   return (
     <Button
-      color="none"
+      className="group w-12 h-12 relative bg-white border border-gray-200 text-gray-800 shadow flex flex-col justify-center transition-all duration-100 ease-in-out cursor-pointer rounded-full hover:border-orange-300"
       shadow={false}
       onClick={() => {
         app.map.resetOrientation();
       }}
     >
-      <CompassIcon className="w-5 h-5 text-gray-900" />
+      <CompassIcon className="w-6 h-6 text-gray-700 group-hover:text-orange-600 transition-all duration-100 ease-in-out" />
     </Button>
   );
 };

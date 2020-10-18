@@ -79,8 +79,7 @@ export const GeolocationButton: React.FC<Props> = ({ onChange }) => {
 
   return (
     <Button
-      className="group w-12 h-12 relative bg-white border text-gray-800 shadow flex flex-col justify-center transition-all duration-100 ease-in-out cursor-pointer rounded-full"
-      color="none"
+      className="group w-12 h-12 relative bg-white border border-gray-200 text-gray-800 shadow flex flex-col justify-center transition-all duration-100 ease-in-out cursor-pointer rounded-full hover:border-orange-300"
       onClick={() => {
         onClick();
       }}
@@ -88,7 +87,9 @@ export const GeolocationButton: React.FC<Props> = ({ onChange }) => {
       {geolocationStatus === "loading" && <PuffLoader color={theme.colors.orange[500]} size={24} />}
 
       {/* I can't manage to find the proper icon for this */}
-      {geolocationStatus !== "loading" && <TargetIcon className="w-6 h-6 text-gray-700 group-hover:text-orange-600" />}
+      {geolocationStatus !== "loading" && (
+        <TargetIcon className="w-6 h-6 text-gray-700 group-hover:text-orange-600 transition-all duration-100 ease-in-out" />
+      )}
     </Button>
   );
 };
