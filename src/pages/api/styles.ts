@@ -12,7 +12,13 @@ const mapboxStyles = MapboxStyles({ accessToken });
 export const fetchStyles = async (): Promise<Style[]> => {
   const styles = await mapboxStyles.listStyles({}).send();
 
-  return intersectionBy(availableStyles, styles.body as MapboxStyle[], (style) => style.id);
+  return intersectionBy(availableStyles, styles.body as MapboxStyle[], (style) => style.id).map((style) => {
+    return {
+      id: style.id,
+      owner: style.owner,
+      name: style.name,
+    };
+  });
 };
 
 const Styles: NextApiHandler = async (req, res) => {
