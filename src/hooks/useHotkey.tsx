@@ -46,11 +46,11 @@ export const HotkeyView: React.FC<Hotkey> = (hotkey) => {
   return (
     // @todo: hotkey symbols are MacOS only for now
     <span className="text-2xs uppercase text-gray-500 font-light tracking-wide leading-none flex space-x-px">
-      {hotkey.ctrl && <span className="border border-gray-800 rounded p-1 w-5 flex justify-center">⌃</span>}
-      {hotkey.shift && <span className="border border-gray-800 rounded p-1 w-5 flex justify-center">⇧</span>}
-      {hotkey.alt && <span className="border border-gray-800 rounded p-1 w-5 flex justify-center">⌥</span>}
-      {hotkey.meta && <span className="border border-gray-800 rounded p-1 w-5 flex justify-center">⌘</span>}
-      <span className="border border-gray-800 rounded p-1 w-5 flex justify-center capitalize">{hotkey.key}</span>
+      {hotkey.ctrl && <span className="border border-gray-500 rounded p-1 w-5 flex justify-center">⌃</span>}
+      {hotkey.shift && <span className="border border-gray-500 rounded p-1 w-5 flex justify-center">⇧</span>}
+      {hotkey.alt && <span className="border border-gray-500 rounded p-1 w-5 flex justify-center">⌥</span>}
+      {hotkey.meta && <span className="border border-gray-500 rounded p-1 w-5 flex justify-center">⌘</span>}
+      <span className="border border-gray-400 rounded p-1 w-5 flex justify-center capitalize">{hotkey.key}</span>
     </span>
   );
 };
