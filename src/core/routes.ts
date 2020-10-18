@@ -42,11 +42,10 @@ export const routes = ({ mutate, get }: App) => ({
   ...initialState,
 
   setStyle: (style: Partial<RouteStyle>) => {
-    const selectedGeometry = getSelectedGeometry(get());
-
     mutate((state) => {
       Object.assign(state.routes.style, style);
 
+      const selectedGeometry = getSelectedGeometry(state);
       if (selectedGeometry?.type === "Line") {
         Object.assign(selectedGeometry.style, style);
       }

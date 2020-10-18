@@ -28,11 +28,10 @@ export const pins = ({ mutate, get }: App) => ({
   ...initialState,
 
   setStyle: (style: Partial<PinStyle>) => {
-    const selectedGeometry = getSelectedGeometry(get());
-
     mutate((state) => {
       Object.assign(state.pins.style, style);
 
+      const selectedGeometry = getSelectedGeometry(state);
       if (selectedGeometry?.type === "Point") {
         Object.assign(selectedGeometry.style, style);
       }
