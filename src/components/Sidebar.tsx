@@ -226,7 +226,7 @@ const SelectSidebar: React.FC = () => {
         </div>
       )}
 
-      {allRoutes && (
+      {allRoutes && selectedGeometry.type === "Line" && (
         <div className="mt-2 px-3 pb-3 mb-2 border-b">
           <div className="flex items-center">
             <SidebarHeading>Outline</SidebarHeading>
@@ -242,7 +242,7 @@ const SelectSidebar: React.FC = () => {
         </div>
       )}
 
-      {allPins && (
+      {allPins && selectedGeometry.type === "Point" && (
         <div className="px-3 pb-2 border-b">
           <SidebarHeading>Icon</SidebarHeading>
 
@@ -257,7 +257,7 @@ const SelectSidebar: React.FC = () => {
         </div>
       )}
 
-      {allNonItineraryRoutes && (
+      {allNonItineraryRoutes && selectedGeometry.type === "Line" && (
         <div className="px-3 pb-2 mb-2 border-b">
           <SidebarHeading>Routes</SidebarHeading>
           <div className="mt-2">
