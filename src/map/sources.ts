@@ -7,6 +7,7 @@ export enum MapSource {
   RouteNextPoint = "routeNextPoint",
   Overlays = "overlays",
   SelectionArea = "selectionArea",
+  Watermark = "watermark",
 }
 
 const EmptyGeoJsonSource: AnySourceData = {
@@ -24,6 +25,7 @@ export const applySources = (map: mapboxgl.Map): void => {
   addSource(map, MapSource.Pins);
   addSource(map, MapSource.Overlays);
   addSource(map, MapSource.SelectionArea);
+  addSource(map, MapSource.Watermark);
 };
 
 const addSource = (map: mapboxgl.Map, id: MapSource) => {

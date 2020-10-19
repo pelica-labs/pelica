@@ -5,6 +5,19 @@ import { Route, STOP_DRAWING_CIRCLE_ID } from "~/core/routes";
 import { RawFeature } from "~/map/features";
 import { MapSource } from "~/map/sources";
 
+export const getWatermarkOverlay = (position: Position): RawFeature => {
+  return {
+    type: "Feature",
+    id: -1,
+    source: MapSource.Watermark,
+    geometry: {
+      type: "Point",
+      coordinates: position,
+    },
+    properties: {},
+  };
+};
+
 export const getNextPointOverlay = (route: Route, nextPoint: Position): RawFeature => {
   const lastPoint = route.points[route.points.length - 1];
 

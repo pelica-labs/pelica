@@ -15,6 +15,7 @@ import {
   getRouteOverlay,
   getRouteStopOverlay,
   getSelectionAreaOverlay,
+  getWatermarkOverlay,
 } from "~/core/overlays";
 import { STOP_DRAWING_CIRCLE_ID } from "~/core/routes";
 import { getEntityFeatures, getSelectedEntities, getSelectedEntity } from "~/core/selectors";
@@ -63,6 +64,14 @@ export const Map: React.FC = () => {
       map.getCanvas().classList.add("loaded");
       map.getCanvas().style.outline = "none";
       map.getCanvas().focus();
+
+      map.loadImage("/images/watermark.png", (error: Error | null, image: ImageData) => {
+        if (error) {
+          throw error;
+        }
+
+        map.addImage("watermark", image);
+      });
 
       map.resize();
 
@@ -342,6 +351,26 @@ export const Map: React.FC = () => {
   );
 
   /**
+   * Sync watermark
+   */
+  useStoreSubscription(
+    (store) => store.editor.mode,
+    (editorMode) => {
+      if (!map.current) {
+        return;
+      }
+
+      const features: RawFeature[] = [];
+
+      if (editorMode === "export") {
+        features.push(getWatermarkOverlay(map.current.getBounds().getSouthWest().toArray()));
+      }
+
+      applyFeatures(map.current, features, [MapSource.Watermark]);
+    }
+  );
+
+  /**
    * Sync cursor
    */
   useStoreSubscription(
@@ -383,10 +412,14 @@ export const Map: React.FC = () => {
   useStoreSubscription(
     (store) => store.editor.mode,
     (mode) => {
+      if (!map.current) {
+        return;
+      }
+
       if (mode === "draw" || mode === "select") {
-        map.current?.dragPan.disable();
+        map.current.dragPan.disable();
       } else {
-        map.current?.dragPan.enable();
+        map.current.dragPan.enable();
       }
     }
   );

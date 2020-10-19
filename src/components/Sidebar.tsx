@@ -126,7 +126,7 @@ const SelectSidebar: React.FC = () => {
       <div className="flex items-center justify-between px-3 py-2 border-b border-t bg-white">
         <span className="text-xs uppercase font-light tracking-wide leading-none">
           <span>{name}</span>
-          <span className="ml-1 text-gray-600">({selectedEntities.length})</span>
+          {selectedEntities.length > 1 && <span className="ml-1 text-gray-600">({selectedEntities.length})</span>}
         </span>
         <Button
           className="bg-gray-300 text-gray-800"
@@ -618,7 +618,19 @@ const ExportSidebar: React.FC = () => {
         )}
       </div>
 
-      <img className="mt-auto mx-auto mb-12 w-32 h-32" src="/images/logo.png" />
+      <div className="flex justify-between items-center m-1 mt-auto border rounded p-1">
+        <span className="text-2xs leading-tight">
+          Prints use map data from Mapbox and Open Street Map and their data sources. To learn more, visit{" "}
+          <a className="underline" href="https://www.mapbox.com/about/maps">
+            https://www.mapbox.com/about/maps/
+          </a>{" "}
+          and{" "}
+          <a className="underline" href="http://www.openstreetmap.org/copyright">
+            http://www.openstreetmap.org/copyright
+          </a>
+          .
+        </span>
+      </div>
     </>
   );
 };

@@ -3,6 +3,19 @@ import { theme } from "~/styles/tailwind";
 
 export const applyLayers = (map: mapboxgl.Map): void => {
   addLayer(map, {
+    id: "watermark",
+    type: "symbol",
+    source: MapSource.Watermark,
+    interactive: false,
+    layout: {
+      "icon-image": "watermark",
+      "icon-anchor": "bottom-left",
+      "icon-offset": [2, -2],
+      "icon-size": 0.5,
+    },
+  });
+
+  addLayer(map, {
     id: "selectionAreaFill",
     type: "fill",
     source: MapSource.SelectionArea,
