@@ -75,7 +75,7 @@ export const StyleSelector: React.FC<Props> = ({ value, onChange, initialStyles 
             }}
           >
             <span className="text-xs uppercase text-gray-800  inline-flex whitespace-no-wrap">{style.name}</span>
-            <StylePreview src={previews[style.id]} />
+            <StylePreview hash={style.hash || null} src={previews[style.id]} />
           </button>
         );
       })}

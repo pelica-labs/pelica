@@ -17,6 +17,7 @@ export const fetchStyles = async (): Promise<Style[]> => {
       id: style.id,
       owner: style.owner,
       name: style.name,
+      hash: style.hash || null,
     };
   });
 };

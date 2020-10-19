@@ -2,6 +2,7 @@ export type Style = {
   id: string;
   owner: string;
   name: string;
+  hash?: string | null;
 };
 
 /**
@@ -9,9 +10,9 @@ export type Style = {
  * They will be checked for existence against Mapbox API to ensure they're actually usable.
  */
 export const availableStyles: Style[] = [
-  { id: "ckfy50y250eq019qwbenxy5b0", owner: "bstnfrmry", name: "Default" },
-  { id: "ckfh6lvnu2wg619mh4kga4vc0", owner: "bstnfrmry", name: "Basic" },
-  { id: "ckfgw9p0i2kzi19p8pt32p7c5", owner: "bstnfrmry", name: "Outdoors" },
+  { id: "ckfy50y250eq019qwbenxy5b0", owner: "bstnfrmry", name: "Default", hash: "L0Q+[]~n_}Xo~qo}Ipog_}IX6AEi" },
+  { id: "ckfh6lvnu2wg619mh4kga4vc0", owner: "bstnfrmry", name: "Basic", hash: "L03]AnozIAozogj[j@a}Mxof%Nt7" },
+  { id: "ckfgw9p0i2kzi19p8pt32p7c5", owner: "bstnfrmry", name: "Outdoors", hash: "L1P?{qxp0vR$?vkXNHWA0cxK^TNG" },
   { id: "ckfgvw2oq2m6b19mrlz2bei4l", owner: "bstnfrmry", name: "Satellite Streets" },
   { id: "ckee9ewyn0p3b19ntk1blm5wc", owner: "bstnfrmry", name: "Navigation" },
   { id: "ckgcic5yl0sfu1ap3d89uu5jm", owner: "bstnfrmry", name: "Decimal" },
