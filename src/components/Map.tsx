@@ -19,7 +19,7 @@ import {
 } from "~/core/overlays";
 import { STOP_DRAWING_CIRCLE_ID } from "~/core/routes";
 import { getEntityFeatures, getSelectedEntities, getSelectedEntity } from "~/core/selectors";
-import { computeMapDimensions } from "~/lib/aspectRatio";
+import { computeMapDimensions, computeResizingRatio } from "~/lib/aspectRatio";
 import { getEnv } from "~/lib/config";
 import { styleToUrl } from "~/lib/style";
 import { applyFeatures, parseFeatures, RawFeature } from "~/map/features";
@@ -45,6 +45,8 @@ export const Map: React.FC = () => {
 
     const state = getState();
     const accessToken = getEnv("NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN", process.env.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN);
+
+    app.screen.initialise();
 
     map.current = new mapboxgl.Map({
       accessToken,
@@ -155,25 +157,41 @@ export const Map: React.FC = () => {
    * Handle aspect ratio & resize
    */
   useStoreSubscription(
-    (store) => ({ aspectRatio: store.editor.aspectRatio, screen: store.screen }),
-    ({ aspectRatio }) => {
+    (store) => ({ exporting: store.exports.exporting, aspectRatio: store.editor.aspectRatio, screen: store.screen }),
+    ({ exporting, aspectRatio, screen }) => {
       const canvas = map.current?.getCanvas();
       if (!canvas || !wrapper.current || !container.current) {
         return;
       }
 
-      Object.assign(
-        wrapper.current.style,
-        computeMapDimensions(aspectRatio, {
-          width: container.current.clientWidth,
-          height: container.current.clientHeight,
-        })
-      );
+      const dimensions = {
+        width: container.current.clientWidth,
+        height: container.current.clientHeight,
+      };
 
-      canvas.style.width = "100%";
-      canvas.style.height = "100%";
-      // queues this up for after all rerender occurs.
-      setTimeout(() => map.current?.resize(), 0);
+      Object.assign(wrapper.current.style, computeMapDimensions(aspectRatio, dimensions));
+
+      if (exporting) {
+        const ratio = computeResizingRatio(aspectRatio, dimensions);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        window.devicePixelRatio = Math.max(screen.pixelRatio, ratio);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        window.devicePixelRatio = screen.pixelRatio;
+      }
+
+      // Queues this up for after all rerender occurs.
+      setTimeout(() => {
+        map.current?.resize();
+
+        if (exporting) {
+          setTimeout(() => {
+            app.exports.generateImage();
+          }, 500);
+        }
+      });
     }
   );
 
@@ -420,6 +438,11 @@ export const Map: React.FC = () => {
         map.current.dragPan.disable();
       } else {
         map.current.dragPan.enable();
+      }
+
+      if (mode === "export") {
+        map.current.dragPan.disable();
+        map.current.scrollZoom.disable();
       }
     }
   );

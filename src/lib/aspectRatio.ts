@@ -53,7 +53,23 @@ export const aspectRatios: { [key: string]: AspectRatioConfiguration } = {
   },
 };
 
-export function computeMapDimensions(aspectRatio: AspectRatio, screen: ScreenDimensions): CSSProperties {
+export const computeResizingRatio = (aspectRatio: AspectRatio, screen: ScreenDimensions): number => {
+  const { ratio } = aspectRatios[aspectRatio];
+
+  if (!ratio) {
+    return 1;
+  }
+
+  const width = (ratio[0] / ratio[1]) * screen.height;
+  const height = screen.height;
+
+  const widthRatio = width / screen.width;
+  const heightRatio = height / screen.height;
+
+  return Math.max(widthRatio, heightRatio);
+};
+
+export const computeMapDimensions = (aspectRatio: AspectRatio, screen: ScreenDimensions): CSSProperties => {
   const { ratio } = aspectRatios[aspectRatio];
 
   if (!ratio) {
@@ -68,17 +84,14 @@ export function computeMapDimensions(aspectRatio: AspectRatio, screen: ScreenDim
   let width = (ratio[0] / ratio[1]) * screen.height;
   let height = screen.height;
 
-  const widthRatio = width / screen.width;
-  const heightRatio = height / screen.height;
-  const highestRatio = Math.max(widthRatio, heightRatio);
-
-  if (highestRatio > 1) {
-    width /= highestRatio;
-    height /= highestRatio;
+  const resizingRatio = computeResizingRatio(aspectRatio, screen);
+  if (resizingRatio > 1) {
+    width /= resizingRatio;
+    height /= resizingRatio;
   }
 
   return {
     maxWidth: `${width}px`,
     maxHeight: `${height}px`,
   };
-}
+};

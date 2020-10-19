@@ -35,8 +35,8 @@ export type State = {
   entities: ReturnType<typeof entities>;
   selection: ReturnType<typeof selection>;
   dragAndDrop: ReturnType<typeof dragAndDrop>;
-  export: ReturnType<typeof exports>;
-  import: ReturnType<typeof imports>;
+  exports: ReturnType<typeof exports>;
+  imports: ReturnType<typeof imports>;
   sync: ReturnType<typeof sync>;
   units: ReturnType<typeof units>;
 };
@@ -56,8 +56,8 @@ const state = (app: App) => {
     entities: entities(app),
     selection: selection(app),
     dragAndDrop: dragAndDrop(app),
-    export: exports(),
-    import: imports(app),
+    exports: exports(app),
+    imports: imports(app),
     sync: sync(app),
     units: units(app),
   };

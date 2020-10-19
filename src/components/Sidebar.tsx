@@ -20,6 +20,7 @@ import { computeDistance, Route } from "~/core/routes";
 import { getSelectedEntities, getSelectedEntity } from "~/core/selectors";
 import { useBrowserFeatures } from "~/hooks/useBrowserFeatures";
 import { useDimensions } from "~/hooks/useDimensions";
+import { aspectRatios } from "~/lib/aspectRatio";
 import { dataUrlToBlob } from "~/lib/fileConversion";
 import { Style } from "~/lib/style";
 import { theme } from "~/styles/tailwind";
@@ -428,7 +429,7 @@ const DrawSidebar: React.FC = () => {
             type="file"
             onChange={(event) => {
               if (event.target.files?.length) {
-                app.import.importGpx(event.target.files[0]);
+                app.imports.importGpx(event.target.files[0]);
               }
             }}
           />
@@ -532,17 +533,21 @@ const ItinerarySidebar: React.FC = () => {
 
 const ExportSidebar: React.FC = () => {
   const app = useApp();
-  const [image, setImage] = useState<string | null>(null);
+  const imageData = useStore((store) => store.exports.imageData);
+  const aspectRatio = useStore((store) => aspectRatios[store.editor.aspectRatio]);
+
+  const [imageBlob, setImageBlob] = useState<Blob | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+
   const { shareFeature } = useBrowserFeatures();
 
   const onDownload = () => {
-    if (!image) {
+    if (!imageData) {
       return;
     }
 
     const a = document.createElement("a");
-    a.href = image;
+    a.href = imageData;
     a.download = "pelica";
     a.click();
   };
@@ -559,13 +564,26 @@ const ExportSidebar: React.FC = () => {
   };
 
   useEffect(() => {
+    app.exports.prepareCanvas();
+  }, []);
+
+  useEffect(() => {
+    if (!imageData) {
+      return;
+    }
+
+    setImageBlob(dataUrlToBlob(imageData));
+  }, [imageData]);
+
+  useEffect(() => {
+    if (!imageBlob) {
+      return;
+    }
+
     const timeout = setTimeout(() => {
-      const image = app.export.generateImage();
-
-      setImage(image);
-
       const data = new FormData();
-      data.append("image", dataUrlToBlob(image));
+
+      data.append("image", imageBlob);
 
       fetch("/api/upload-map", {
         method: "POST",
@@ -585,37 +603,81 @@ const ExportSidebar: React.FC = () => {
     }, 200);
 
     return () => clearTimeout(timeout);
-  }, []);
+  }, [imageBlob]);
 
   return (
     <>
-      <div className="mt-4 px-3 flex flex-col space-y-4">
-        <Button
-          className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-100 text-xs uppercase py-2 justify-center"
-          disabled={!image}
-          onClick={() => {
-            onDownload();
-          }}
-        >
-          Download
-        </Button>
-
-        {shareFeature && (
+      <div className="mt-4 flex flex-col space-y-4">
+        <div className="px-3 flex flex-col">
           <Button
             className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-100 text-xs uppercase py-2 justify-center"
-            disabled={!imageUrl}
+            disabled={!imageData}
             onClick={() => {
-              onShare();
+              onDownload();
             }}
           >
-            Share
-            {!imageUrl && (
+            Download
+            {!imageData && (
               <div className="ml-4">
                 <BounceLoader color={theme.colors.orange[500]} size={10} />
               </div>
             )}
           </Button>
-        )}
+
+          {shareFeature && (
+            <Button
+              className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-100 text-xs uppercase py-2 justify-center"
+              disabled={!imageUrl}
+              onClick={() => {
+                onShare();
+              }}
+            >
+              Share
+              {!imageUrl && (
+                <div className="ml-4">
+                  <BounceLoader color={theme.colors.orange[500]} size={10} />
+                </div>
+              )}
+            </Button>
+          )}
+        </div>
+
+        <div className="flex flex-col space-y-3 border-t border-b mt-2 px-3 pt-3 pb-2">
+          <SidebarHeading>Output format</SidebarHeading>
+          <div className="flex-col space-y-1">
+            <div className="text-xs flex justify-between">
+              <span className="flex-1">Format</span>
+              <span>JPEG</span>
+            </div>
+            <div className="text-xs flex justify-between">
+              <span className="flex-1">Quality</span>
+              <span>90%</span>
+            </div>
+            {aspectRatio.ratio && (
+              <>
+                <div className="text-xs flex justify-between">
+                  <span className="flex-1">Resolution</span>
+                  <span>{aspectRatio.ratio[0]}</span>
+                  <span className="mx-1 text-gray-500">×</span>
+                  <span>{aspectRatio.ratio[1]}</span>
+                </div>
+                <div className="text-xs flex justify-between">
+                  <span className="flex-1">Pixels</span>
+
+                  <span>{aspectRatio.ratio[0] * aspectRatio.ratio[1]}</span>
+                </div>
+              </>
+            )}
+            {imageBlob && (
+              <div className="text-xs flex justify-between">
+                <span className="flex-1">Size</span>
+
+                <span>~{(imageBlob.size / 1024).toFixed()}</span>
+                <span className="ml-1 text-gray-500">KB</span>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       <div className="flex justify-between items-center m-1 mt-auto border rounded p-1">
