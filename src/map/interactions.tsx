@@ -365,8 +365,10 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   map.on("mouseleave", "routesStop", onFeatureHoverEnd);
   map.on("mousedown", "routesStop", onRouteStopClick);
   map.on("touchstart", "routesStop", onRouteStopClick);
+  map.on("click", "pins", onFeatureClick);
   map.on("click", "pinsInteractions", onFeatureClick);
   map.on("click", "routesInteractions", onFeatureClick);
+  map.on("touchend", "pins", onFeatureClick);
   map.on("touchend", "pinsInteractions", onFeatureClick);
   map.on("touchend", "routesInteractions", onFeatureClick);
   map.on("contextmenu", "pinsInteractions", onFeatureRightClick);
