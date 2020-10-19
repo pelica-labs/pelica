@@ -1,3 +1,4 @@
+import { featureCollection } from "@turf/turf";
 import classNames from "classnames";
 import { debounce } from "lodash";
 import mapboxgl, { LngLatBoundsLike } from "mapbox-gl";
@@ -398,7 +399,7 @@ export const Map: React.FC = () => {
       return false;
     }
 
-    const json = JSON.stringify(features.length > 1 ? features : features[0], null, 2);
+    const json = JSON.stringify(featureCollection(features), null, 2);
 
     await navigator.clipboard.writeText(json);
   };
