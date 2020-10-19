@@ -102,7 +102,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
         event.preventDefault();
         event.originalEvent.stopPropagation();
       } else {
-        // otherwise start a route
+        // otherwise start a route segment
         app.routes.startRoute(event.lngLat.toArray());
       }
       return;

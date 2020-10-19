@@ -170,7 +170,10 @@ export const routes = ({ mutate, get }: App) => ({
     });
 
     const points = selectedRoute.smartMatching.enabled
-      ? await smartMatch(selectedRoute.transientPoints, selectedRoute.smartMatching.profile as SmartMatchingProfile)
+      ? await smartMatch(
+          [...selectedRoute.points.slice(-1), ...selectedRoute.transientPoints],
+          selectedRoute.smartMatching.profile as SmartMatchingProfile
+        )
       : selectedRoute.transientPoints;
 
     get().history.push({

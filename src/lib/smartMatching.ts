@@ -2,7 +2,7 @@ import { MapboxProfile } from "@mapbox/mapbox-sdk/lib/classes/mapi-request";
 import { Tracepoint } from "@mapbox/mapbox-sdk/services/map-matching";
 import polyline from "@mapbox/polyline";
 import { Position } from "@turf/turf";
-// import CheapRuler from "cheap-ruler";
+import CheapRuler from "cheap-ruler";
 import { chunk } from "lodash";
 
 import { mapboxDirections, mapboxMapMatching } from "~/lib/mapbox";
@@ -86,8 +86,53 @@ export const directionsMatch = async (points: Position[], profile: SmartMatching
 };
 
 export const smartMatch = async (points: Position[], profile: SmartMatchingProfile): Promise<Position[]> => {
-  // @todo depending on distance between points, use mapMatch or directions match.
-  // if (points.length === 0) return [];
-  // const ruler = new CheapRuler(points[0][1], "meters");
-  return mapMatch(points, profile);
+  if (points.length < 2) return points;
+
+  const chunks = await Promise.all(
+    chunkByDistance(points).map(({ points, method }: { points: Position[]; method: "mapMatch" | "directions" }) => {
+      if (method === "mapMatch") {
+        return mapMatch(points, profile);
+      } else {
+        // method === 'directions'
+        return directionsMatch(points, profile);
+      }
+    })
+  );
+
+  return chunks.flat();
+};
+
+/**
+ * Returns an array of points chunked by distance between points.
+ * Points within 100m of each other will be chunked in the same group.
+ */
+const chunkByDistance = (points: Position[]): Array<{ points: Position[]; method: "mapMatch" | "directions" }> => {
+  if (points.length < 2) return [{ points, method: "directions" }];
+
+  const ruler = new CheapRuler(points[0][1], "meters");
+  const minDistance = 100; // meters
+
+  const comparison = (a: Position, b: Position) =>
+    ruler.distance(a as [number, number], b as [number, number]) < minDistance;
+
+  const chunks: Array<{ points: Position[]; method: "mapMatch" | "directions" }> = [];
+  let currentChunk: Position[] = [];
+  let lastDistanceRespected = comparison(points[0], points[1]);
+
+  for (let i = 0; i < points.length - 1; i++) {
+    const isDistanceRespected = comparison(points[i], points[i + 1]);
+    if (isDistanceRespected === lastDistanceRespected) {
+      currentChunk.push(points[i]);
+    } else {
+      chunks.push({ points: [...currentChunk, points[i]], method: isDistanceRespected ? "mapMatch" : "directions" });
+      currentChunk = [points[i]];
+      lastDistanceRespected = isDistanceRespected;
+    }
+  }
+
+  // add last bit
+  currentChunk.push(points[points.length - 1]);
+  chunks.push({ points: currentChunk, method: lastDistanceRespected ? "mapMatch" : "directions" });
+
+  return chunks;
 };
