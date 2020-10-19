@@ -4147,6 +4147,11 @@ character-reference-invalid@^1.0.0:
   resolved "https://registry.yarnpkg.com/character-reference-invalid/-/character-reference-invalid-1.1.4.tgz#083329cda0eae272ab3dbbf37e9a382c13af1560"
   integrity sha512-mKKUkUbhPpQlCOfIuZkvSEgktjPFIsZKRRbC6KWVEMvlzblj3i3asQv5ODsrwt0N3pHAEvjP8KTQPHkp0+6jOg==
 
+cheap-ruler@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/cheap-ruler/-/cheap-ruler-3.0.1.tgz#3df3bd6fe664d8cab9e9e826bba24d7271e7645a"
+  integrity sha512-bmBKGkNKcwCpltGzfMXZMrFE06SG8dgSv96W39Mk+um7zbNTQNumKl5LBwFC0gbffy8Jnf0+SDHsOqpDYJxYow==
+
 check-more-types@^2.24.0:
   version "2.24.0"
   resolved "https://registry.yarnpkg.com/check-more-types/-/check-more-types-2.24.0.tgz#1420ffb10fd444dcfc79b43891bbfffd32a84600"

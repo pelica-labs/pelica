@@ -16,6 +16,7 @@
     "@turf/turf": "^5.1.6",
     "@types/mapbox__polyline": "^1.0.1",
     "aws-sdk": "^2.771.0",
+    "cheap-ruler": "^3.0.1",
     "classnames": "^2.2.6",
     "date-fns": "^2.16.1",
     "formidable": "^1.2.2",
