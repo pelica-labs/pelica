@@ -90,7 +90,7 @@ export const smartMatch = async (points: Position[], profile: SmartMatchingProfi
 
   const chunks = await Promise.all(
     chunkByDistance(points).map(({ points, method }: { points: Position[]; method: "mapMatch" | "directions" }) => {
-      if (method === "mapMatch") {
+      if (true /*method === "mapMatch" */) {
         return mapMatch(points, profile);
       } else {
         // method === 'directions'
@@ -110,7 +110,7 @@ const chunkByDistance = (points: Position[]): Array<{ points: Position[]; method
   if (points.length < 2) return [{ points, method: "directions" }];
 
   const ruler = new CheapRuler(points[0][1], "meters");
-  const minDistance = 100; // meters
+  const minDistance = 500; // meters
 
   const comparison = (a: Position, b: Position) =>
     ruler.distance(a as [number, number], b as [number, number]) < minDistance;

@@ -1,4 +1,5 @@
 import { Position } from "@turf/turf";
+import CheapRuler from "cheap-ruler";
 import * as KeyCode from "keycode-js";
 import { throttle } from "lodash";
 import { MapLayerMouseEvent, MapMouseEvent, MapTouchEvent, MapWheelEvent } from "mapbox-gl";
@@ -43,7 +44,9 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     const state = getState();
 
     if (state.routes.isDrawing) {
-      app.routes.addRouteStep(event.lngLat.toArray());
+      // find the closest line feature and project to it if we're in match mode
+      const point = state.routes.smartMatching.enabled ? snap(map, event) : event.lngLat.toArray();
+      app.routes.addRouteStep(point);
     } else if (state.editor.mode === "draw") {
       app.routes.updateNextPoint(event.lngLat.toArray());
     }
@@ -297,4 +300,54 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   window.addEventListener("blur", onWindowBlur);
 
   canvas.addEventListener("keydown", onCanvasKeyUp);
+};
+
+const hierarchy: { [key: string]: number } = {
+  trunk: 1000,
+  motorway: 2000,
+  primary: 3000,
+  secondary: 4000,
+  tertiary: 5000,
+};
+
+function snap(map: mapboxgl.Map, event: MapMouseEvent | MapTouchEvent) {
+  const ruler = new CheapRuler(event.lngLat.lat);
+
+  const point = event.lngLat.toArray() as [number, number];
+
+  const features = map.queryRenderedFeatures([
+    [event.point.x - 15, event.point.y - 15],
+    [event.point.x + 15, event.point.y + 15],
+  ]);
+
+  const roads = features
+    .filter((f) => f.layer["source-layer"] === "road")
+    .sort((a, b) => {
+      return (hierarchy[a.properties?.type] || 12000) === (hierarchy[b.properties?.type] || 12000)
+        ? ruler.distance(point, ruler.pointOnLine(getCoords(a), point).point) -
+            ruler.distance(point, ruler.pointOnLine(getCoords(b), point).point)
+        : (hierarchy[a.properties?.type] || 12000) - (hierarchy[b.properties?.type] || 12000);
+    });
+
+  if (roads.length) {
+    try {
+      const road = roads[0];
+      const coords = getCoords(road);
+
+      const proj = ruler.pointOnLine(coords as [number, number][], event.lngLat.toArray() as [number, number]);
+      return proj.point;
+    } catch (error) {
+      return event.lngLat.toArray();
+    }
+  }
+
+  return event.lngLat.toArray();
+}
+
+const getCoords = (feature: GeoJSON.Feature): [number, number][] => {
+  return (feature.geometry.type === "MultiLineString"
+    ? feature.geometry.coordinates.flat()
+    : feature.geometry.type === "LineString"
+    ? feature.geometry.coordinates
+    : []) as [number, number][];
 };
