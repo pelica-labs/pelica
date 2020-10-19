@@ -22,7 +22,6 @@ export const Clipboard: React.FC<Props> = ({ watch, onCopy, onCut, onPaste }) =>
 
   useHotkey({ key: "v", meta: true }, () => {
     if (document.activeElement !== watch) {
-      console.log("No");
       return;
     }
 
@@ -36,7 +35,9 @@ export const Clipboard: React.FC<Props> = ({ watch, onCopy, onCut, onPaste }) =>
       if (watch) {
         watch.focus();
       }
-    }, 50);
+    }, 350);
+
+    return false;
   });
 
   return <textarea ref={textarea} className="fixed" style={{ top: -1000, left: -1000 }} />;

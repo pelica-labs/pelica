@@ -61,6 +61,7 @@ export const Map: React.FC = () => {
     map.current.on("load", async ({ target: map }) => {
       map.getCanvas().classList.add("loaded");
       map.getCanvas().style.outline = "none";
+      map.getCanvas().focus();
 
       map.resize();
 
@@ -418,7 +419,7 @@ export const Map: React.FC = () => {
 
       <DocumentTitle />
 
-      <Clipboard watch={map.current?.getCanvas()} onCopy={onCopy} onCut={onCut} onPaste={onPaste} />
+      {map.current && <Clipboard watch={map.current.getCanvas()} onCopy={onCopy} onCut={onCut} onPaste={onPaste} />}
 
       <div
         className={classNames("flex justify-center items-center w-full h-full bg-gray-200", {
