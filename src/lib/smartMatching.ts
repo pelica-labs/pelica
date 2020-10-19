@@ -21,33 +21,38 @@ export const mapMatch = async (points: Position[], profile: SmartMatchingProfile
         return points;
       }
 
-      const res = await mapboxMapMatching
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        .getMatch({
-          profile,
-          points: points.map((point) => {
-            return {
-              coordinates: point as [number, number],
-              radius: 50,
-            };
-          }),
-        })
-        .send();
+      try {
+        const res = await mapboxMapMatching
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          .getMatch({
+            profile,
+            points: points.map((point) => {
+              return {
+                coordinates: point as [number, number],
+                radius: 50,
+              };
+            }),
+          })
+          .send();
 
-      if (!res.body.tracepoints) {
-        console.info("Map matching did return any tracepoints", res.body);
+        if (!res.body.tracepoints) {
+          console.info("Map matching did return any tracepoints", res.body);
 
+          return points;
+        }
+
+        return (res.body.tracepoints as Tracepoint[])
+          .filter((tracepoint) => {
+            return tracepoint !== null;
+          })
+          .map((tracepoint) => {
+            return tracepoint.location;
+          });
+      } catch (error) {
+        console.info("There was an error mapmatching the request.", error);
         return points;
       }
-
-      return (res.body.tracepoints as Tracepoint[])
-        .filter((tracepoint) => {
-          return tracepoint !== null;
-        })
-        .map((tracepoint) => {
-          return tracepoint.location;
-        });
     })
   );
 
