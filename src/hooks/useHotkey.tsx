@@ -35,7 +35,7 @@ export const useHotkey = (hotkey: Hotkey, callback: Callback): (() => ReturnType
     window.addEventListener("keydown", onKey, false);
 
     return () => {
-      window.addEventListener("keydown", onKey, false);
+      window.removeEventListener("keydown", onKey, false);
     };
   }, []);
 
