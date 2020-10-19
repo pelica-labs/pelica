@@ -1,6 +1,9 @@
 import tinycolor from "tinycolor2";
 
 import { OutlineType } from "~/core/routes";
+import { theme } from "~/styles/tailwind";
+
+export type Color = keyof typeof theme.colors;
 
 export const outlineColor = (color: string, outline: OutlineType): string | null => {
   if (outline === "dark") {

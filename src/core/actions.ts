@@ -1,4 +1,4 @@
-import { Position } from "@turf/turf";
+import { Feature, Geometry, Position } from "@turf/turf";
 import { partition } from "lodash";
 
 import { State } from "~/core/app";
@@ -8,6 +8,7 @@ import { Pin, PinStyle } from "~/core/pins";
 import { ItineraryRoute, Route, RouteStyle } from "~/core/routes";
 import { SmartMatching } from "~/lib/smartMatching";
 import { Style } from "~/lib/style";
+import { RawFeature } from "~/map/features";
 
 export type Handler<T extends Action> = {
   apply: (state: State, action: T) => void;
@@ -28,7 +29,8 @@ export type Action =
   | UpdatePinAction
   | UpdateRouteAction
   | UpdateLineSmartMatchingAction
-  | DeleteEntityAction;
+  | DeleteEntityAction
+  | InsertEntitiesAction;
 
 // ---
 
@@ -398,6 +400,23 @@ const UpdateRouteProfileActionHandler: Handler<UpdateRouteProfileAction> = {
 
 // ---
 
+type InsertEntitiesAction = {
+  name: "insertEntities";
+  entities: Entity[];
+};
+
+const InsertEntitiesHandler: Handler<InsertEntitiesAction> = {
+  apply: (state, action) => {
+    state.entities.items.push(...action.entities);
+  },
+
+  undo: (state, action) => {
+    state.entities.items = state.entities.items.filter((entity) => {
+      return !action.entities.find((entityToDelete) => entityToDelete.id === entity.id);
+    });
+  },
+};
+
 export const handlers = {
   draw: DrawHandler,
   addRouteStep: AddRouteStepActionHandler,
@@ -413,4 +432,5 @@ export const handlers = {
   updateLineSmartMatching: UpdateLineSmartMatchingHandler,
   deleteEntity: DeleteEntityHandler,
   updateStyle: UpdateStyleHandler,
+  insertEntities: InsertEntitiesHandler,
 };

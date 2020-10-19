@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import create, { StateSelector } from "zustand";
 import shallow from "zustand/shallow";
 
+import { alerts } from "~/core/alerts";
 import { dragAndDrop } from "~/core/dragAndDrop";
 import { editor } from "~/core/editor";
 import { entities } from "~/core/entities";
@@ -21,6 +22,7 @@ import { sync } from "~/core/sync";
 import { units } from "~/core/units";
 
 export type State = {
+  alerts: ReturnType<typeof alerts>;
   screen: ReturnType<typeof screen>;
   keyboard: ReturnType<typeof keyboard>;
   geolocation: ReturnType<typeof geolocation>;
@@ -41,6 +43,7 @@ export type State = {
 
 const state = (app: App) => {
   return {
+    alerts: alerts(app),
     screen: screen(app),
     keyboard: keyboard(app),
     geolocation: geolocation(app),

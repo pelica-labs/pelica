@@ -100,6 +100,12 @@ export const selection = ({ mutate, get }: App) => ({
     });
   },
 
+  selectAll: () => {
+    mutate((state) => {
+      state.selection.ids = state.entities.items.map((entity) => entity.id);
+    });
+  },
+
   clear: () => {
     mutate((state) => {
       state.selection.ids = [];

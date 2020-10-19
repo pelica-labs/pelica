@@ -109,8 +109,6 @@ export const ItineraryInput: React.FC<Props> = ({
       return [];
     }
 
-    console.log(directions);
-
     // It's a polyline mistyped as LineString
     return polyline.decode((directions.routes[0].geometry as unknown) as string).map((coords) => {
       return [coords[1], coords[0]];

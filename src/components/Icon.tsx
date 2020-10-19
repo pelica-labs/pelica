@@ -355,3 +355,24 @@ export const HelicopterIcon = icon(
   />,
   26
 );
+
+export const CopyIcon = icon(
+  <path d="M5 5v17h4v-2H7V7h13v2h2V5H5zm5 5v17h17V10H10zm2 2h13v13H12V12z" fill="currentColor" />,
+  32
+);
+
+export const ErrorIcon = icon(
+  <path
+    d="M16 4C9.383 4 4 9.383 4 16s5.383 12 12 12s12-5.383 12-12S22.617 4 16 4zm0 2c5.535 0 10 4.465 10 10s-4.465 10-10 10S6 21.535 6 16S10.465 6 16 6zm-1 4v8h2v-8zm0 10v2h2v-2z"
+    fill="currentColor"
+  />,
+  32
+);
+
+export const DoubleCheckIcon = icon(
+  <path
+    d="M23.281 7.281L11.5 19.063L8.719 16.28L7.28 17.72l2.782 2.781L8 22.563L1.719 16.28L.28 17.72l7 7l.719.687l.719-.687l2.781-2.782l2.781 2.782l.719.687l.719-.687l15.906-16l-1.438-1.438L15 22.563L12.937 20.5L24.72 8.719z"
+    fill="currentColor"
+  />,
+  32
+);

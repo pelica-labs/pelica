@@ -3,20 +3,24 @@ import classNames from "classnames";
 import Link from "next/link";
 import React from "react";
 
-import { MenuIcon, RedoIcon, TrashIcon, UndoIcon } from "~/components/Icon";
+import { DoubleCheckIcon, MenuIcon, RedoIcon, TrashIcon, UndoIcon } from "~/components/Icon";
 import { useApp, useStore } from "~/core/app";
 import { useHotkey } from "~/hooks/useHotkey";
 
 export const MenuButton: React.FC = () => {
   const app = useApp();
+  const canSelectAll = useStore((store) => store.entities.items.length > 0);
   const canUndo = useStore((store) => store.history.actions.length > 0);
   const canRedo = useStore((store) => store.history.redoStack.length > 0);
 
-  const UndoHotkey = useHotkey({ key: "z", meta: true, shift: false }, () => {
+  const UndoHotkey = useHotkey({ key: "z", meta: true }, () => {
     app.history.undo();
   });
   const RedoHotkey = useHotkey({ key: "z", meta: true, shift: true }, () => {
     app.history.redo();
+  });
+  const SelectAllHotkey = useHotkey({ key: "a", meta: true }, () => {
+    app.selection.selectAll();
   });
 
   return (
@@ -83,6 +87,28 @@ export const MenuButton: React.FC = () => {
                             <RedoIcon className="w-3 h-3 text-gray-600" />
                           </span>
                           <RedoHotkey />
+                        </a>
+                      )}
+                    </Menu.Item>
+
+                    <Menu.Item disabled={!canSelectAll}>
+                      {({ active, disabled }) => (
+                        <a
+                          className={classNames({
+                            "flex items-center justify-between px-2 py-1": true,
+                            "bg-orange-200": active,
+                            "hover:bg-orange-200 cursor-pointer": !disabled,
+                            "text-gray-400": disabled,
+                          })}
+                          onClick={() => {
+                            app.selection.selectAll();
+                          }}
+                        >
+                          <span className="flex items-center space-x-2">
+                            <span className="text-sm">Select all</span>
+                            <DoubleCheckIcon className="w-3 h-3 text-gray-600" />
+                          </span>
+                          <SelectAllHotkey />
                         </a>
                       )}
                     </Menu.Item>

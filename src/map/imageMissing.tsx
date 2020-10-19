@@ -51,7 +51,7 @@ export const applyImageMissingHandler = (map: mapboxgl.Map): void => {
 
     // 💩 Manually retriggers a re-render. This is far from ideal and looks glitchy.
     setTimeout(() => {
-      getState().entities.ping();
+      getState().entities.forceRerender();
     });
   };
 

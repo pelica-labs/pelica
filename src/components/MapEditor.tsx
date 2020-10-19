@@ -1,12 +1,12 @@
 import React, { useRef } from "react";
 
+import { Alerts } from "~/components/Alerts";
 import { GeolocationButton } from "~/components/GeolocationButton";
 import { ItineraryInput } from "~/components/ItineraryInput";
 import { Map } from "~/components/Map";
 import { PlaceAutocomplete } from "~/components/PlaceAutocomplete";
 import { ResetOrientationButton } from "~/components/ResetOrientationButton";
 import { Sidebar } from "~/components/Sidebar";
-import { Tips } from "~/components/Tips";
 import { useApp, useStore, useStoreSubscription } from "~/core/app";
 import { getSelectedItinerary } from "~/core/selectors";
 import { useKeyboard } from "~/hooks/useKeyboard";
@@ -49,7 +49,7 @@ export const MapEditor: React.FC<Props> = ({ initialStyles }) => {
 
         {editorMode !== "export" && (
           <div className="absolute bottom-0 mb-2 flex justify-center w-full z-10 pointer-events-none">
-            <Tips />
+            <Alerts />
           </div>
         )}
       </div>

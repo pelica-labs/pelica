@@ -1,3 +1,5 @@
+import { bbox, bboxPolygon, Feature, Geometry, MultiPolygon, Polygon, union } from "@turf/turf";
+
 import { App } from "~/core/helpers";
 import { Pin } from "~/core/pins";
 import { Route } from "~/core/routes";
@@ -15,11 +17,54 @@ const initialState: Entities = {
   items: [],
 };
 
-export const entities = ({ mutate }: App) => ({
+export const entities = ({ mutate, get }: App) => ({
   ...initialState,
 
+  insertFeatures: (features: Feature<Geometry>[]) => {
+    const entities = features
+      .map((feature) => {
+        if (feature.geometry?.type === "Point") {
+          return {
+            id: nextEntityId(),
+            type: "Pin",
+            source: MapSource.Pins,
+            coordinates: feature.geometry.coordinates,
+            style: get().pins.style,
+          } as Pin;
+        }
+
+        if (feature.geometry?.type === "LineString") {
+          return {
+            id: nextEntityId(),
+            type: "Route",
+            source: MapSource.Routes,
+            transientPoints: [],
+            rawPoints: feature.geometry.coordinates,
+            points: feature.geometry.coordinates,
+            style: get().routes.style,
+            smartMatching: {
+              enabled: false,
+              profile: null,
+            },
+          } as Route;
+        }
+
+        return null;
+      })
+      .filter((entity): entity is Entity => {
+        return !!entity;
+      });
+
+    get().history.push({
+      name: "insertEntities",
+      entities,
+    });
+
+    // @todo: fit bounds?
+  },
+
   // @see imageMissing
-  ping: () => {
+  forceRerender: () => {
     mutate((state) => {
       state.entities.items.push({
         type: "Pin",

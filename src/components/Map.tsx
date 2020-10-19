@@ -196,14 +196,12 @@ export const Map: React.FC = () => {
    */
   useStoreSubscription(
     (store) => store.entities.items,
-    (entities) => {
+    () => {
       if (!map.current) {
         return;
       }
 
-      const sources = uniq(entities.map((entity) => entity.source));
-
-      applyFeatures(map.current, getEntityFeatures(getState()), sources);
+      applyFeatures(map.current, getEntityFeatures(getState()), [MapSource.Routes, MapSource.Pins]);
     }
   );
 
