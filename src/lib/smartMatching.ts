@@ -2,7 +2,7 @@ import { MapboxProfile } from "@mapbox/mapbox-sdk/lib/classes/mapi-request";
 import { Tracepoint } from "@mapbox/mapbox-sdk/services/map-matching";
 import polyline from "@mapbox/polyline";
 import { Position } from "@turf/turf";
-import CheapRuler from "cheap-ruler";
+// import CheapRuler from "cheap-ruler";
 import { chunk } from "lodash";
 
 import { mapboxDirections, mapboxMapMatching } from "~/lib/mapbox";

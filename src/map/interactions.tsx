@@ -10,16 +10,7 @@ const isMultitouchEvent = (event?: MapMouseEvent | MapTouchEvent) => {
   return event && "touches" in event.originalEvent && event.originalEvent?.touches?.length > 1;
 };
 
-let justClickedLayer = false;
 let justTouched = false;
-
-const clickLayer = () => {
-  justClickedLayer = true;
-
-  setTimeout(() => {
-    justClickedLayer = false;
-  }, 200);
-};
 
 const touch = (event?: MapMouseEvent | MapTouchEvent) => {
   if (isMultitouchEvent(event)) {
@@ -99,15 +90,21 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
       return;
     }
 
-    if (justClickedLayer) {
-      return;
-    }
-
     // handle draw mode
     if (state.editor.mode === "draw") {
       event.preventDefault();
 
-      app.routes.startRoute(event.lngLat.toArray());
+      // end route if we're clicking on the routesStop target
+      const routesStops = map.queryRenderedFeatures(event.point, { layers: ["routesStop"] });
+      if (routesStops.length) {
+        app.routes.stopRoute();
+
+        event.preventDefault();
+        event.originalEvent.stopPropagation();
+      } else {
+        // otherwise start a route
+        app.routes.startRoute(event.lngLat.toArray());
+      }
       return;
     }
 
@@ -167,26 +164,32 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   const onClick = (event: MapMouseEvent) => {
     const state = getState();
 
+    // place a pin
     if (state.editor.mode === "pin") {
       app.pins.place(event.lngLat.toArray());
+      return;
     }
 
-    if (state.editor.mode === "draw") {
-      // handle route stop click
-      console.log(map.queryRenderedFeatures(event.point));
-      const routesStops = map.queryRenderedFeatures(event.point, { layers: ["routesStop"] });
-      if (routesStops.length) {
-        clickLayer();
-        app.routes.stopRoute();
+    // select the given pin or route
+    if (state.editor.mode === "select") {
+      const features = map.queryRenderedFeatures(event.point, {
+        layers: ["pins", "pinsInteractions", "routesInteractions"],
+      });
 
-        event.preventDefault();
-        event.originalEvent.stopPropagation();
-      } else {
-        app.routes.addRouteStep(event.lngLat.toArray());
+      if (features?.length) {
+        const featureId = features[0].id as number;
+
+        if (state.keyboard.shiftKey) {
+          app.selection.toggleEntitySelection(featureId);
+        } else {
+          app.selection.selectEntity(featureId);
+        }
+        return;
       }
     }
 
-    if ((state.editor.mode === "select" || state.editor.mode === "itinerary") && !justClickedLayer) {
+    // add a step to the itinerary mode
+    if (state.editor.mode === "select" || state.editor.mode === "itinerary") {
       const itinerary = getSelectedItinerary(state);
 
       if (!!itinerary) {
@@ -194,24 +197,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
       } else {
         app.selection.clear();
       }
-    }
-
-    if (state.editor.mode === "select") {
-      const features = map.queryRenderedFeatures(event.point, {
-        layers: ["pins", "pinsInteractions", "routesInteractions"],
-      });
-
-      if (!features?.length) {
-        return;
-      }
-
-      const featureId = features[0].id as number;
-
-      if (state.keyboard.shiftKey) {
-        app.selection.toggleEntitySelection(featureId);
-      } else {
-        app.selection.selectEntity(featureId);
-      }
+      return;
     }
   };
 
