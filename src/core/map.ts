@@ -37,16 +37,12 @@ const initialState: Map = {
 export const map = ({ mutate }: App) => ({
   ...initialState,
 
-  move: (coordinates: Position, zoom: number, bearing: number, pitch: number, bounds?: BBox) => {
+  move: (coordinates: Position, zoom: number, bearing: number, pitch: number) => {
     mutate(({ map }) => {
       map.coordinates = coordinates;
       map.zoom = zoom;
       map.bearing = bearing;
       map.pitch = pitch;
-
-      if (bounds) {
-        map.bounds = bounds;
-      }
     });
   },
 

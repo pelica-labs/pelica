@@ -6,7 +6,7 @@ import React, { useEffect, useRef } from "react";
 
 import { Clipboard } from "~/components/Clipboard";
 import { DocumentTitle } from "~/components/DocumentTitle";
-import { ErrorIcon } from "~/components/Icon";
+import { ErrorIcon, WarningIcon } from "~/components/Icon";
 import { getState, useApp, useStore, useStoreSubscription } from "~/core/app";
 import {
   getNextPointOverlay,
@@ -123,6 +123,21 @@ export const Map: React.FC = () => {
     (store) => store.map.pitch,
     (pitch) => {
       map.current?.setPitch(pitch);
+    }
+  );
+
+  /**
+   * Sync bounds
+   */
+  useStoreSubscription(
+    (store) => store.map.bounds,
+    (bounds) => {
+      if (bounds) {
+        map.current?.fitBounds(bounds.flat() as [number, number, number, number], {
+          linear: true,
+          padding: 30,
+        });
+      }
     }
   );
 
@@ -400,7 +415,14 @@ export const Map: React.FC = () => {
 
       // @todo: validate JSON
 
-      app.entities.insertFeatures(features);
+      const insertedCount = app.entities.insertFeatures(features);
+
+      if (insertedCount !== features.length) {
+        app.alerts.trigger({
+          message: `${features.length - insertedCount} features could not be displayed.`,
+          icon: WarningIcon,
+        });
+      }
     } catch (error) {
       app.alerts.trigger({
         message: `Unable to import GeoJson from clipboard:\n${error.message}`,

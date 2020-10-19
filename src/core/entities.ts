@@ -1,4 +1,4 @@
-import { Feature, Geometry } from "@turf/turf";
+import { bbox, Feature, featureCollection, Geometry } from "@turf/turf";
 
 import { App } from "~/core/helpers";
 import { Pin } from "~/core/pins";
@@ -21,7 +21,11 @@ export const entities = ({ mutate, get }: App) => ({
   ...initialState,
 
   insertFeatures: (features: Feature<Geometry>[]) => {
-    const entities = features
+    const acceptedFeatures = features.filter((feature) => {
+      return feature.geometry?.type && ["Point", "LineString"].includes(feature.geometry.type);
+    });
+
+    const entities = acceptedFeatures
       .map((feature) => {
         if (feature.geometry?.type === "Point") {
           return {
@@ -60,7 +64,11 @@ export const entities = ({ mutate, get }: App) => ({
       entities,
     });
 
-    // @todo: fit bounds?
+    mutate((state) => {
+      state.map.bounds = bbox(featureCollection(acceptedFeatures));
+    });
+
+    return acceptedFeatures.length;
   },
 
   // @see imageMissing

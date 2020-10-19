@@ -136,6 +136,8 @@ export const routes = ({ mutate, get }: App) => ({
   },
 
   addRouteStep: (coordinates: Position) => {
+    get().routes.updateNextPoint(coordinates);
+
     mutate((state) => {
       if (!state.routes.isDrawing) {
         return;
