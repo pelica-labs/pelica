@@ -3,11 +3,8 @@ import * as KeyCode from "keycode-js";
 import { throttle } from "lodash";
 import { MapLayerMouseEvent, MapLayerTouchEvent, MapMouseEvent, MapTouchEvent, MapWheelEvent } from "mapbox-gl";
 
-import { ErrorIcon } from "~/components/Icon";
 import { getState, State } from "~/core/app";
-import { getEntityFeatures, getSelectedEntities, getSelectedEntity, getSelectedItinerary } from "~/core/selectors";
-import { registerHotkey } from "~/hooks/useHotkey";
-import { parseFeatures } from "~/map/features";
+import { getSelectedEntities, getSelectedEntity, getSelectedItinerary } from "~/core/selectors";
 
 const isMultitouchEvent = (event?: MapMouseEvent | MapTouchEvent) => {
   return event && "touches" in event.originalEvent && event.originalEvent?.touches?.length > 1;
@@ -314,43 +311,6 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     event.originalEvent.stopPropagation();
   };
 
-  const onCopy = async () => {
-    const state = getState();
-    const features = getEntityFeatures(state);
-
-    if (!features.length) {
-      return false;
-    }
-
-    const json = JSON.stringify(features.length > 1 ? features : features[0], null, 2);
-
-    await navigator.clipboard.writeText(json);
-  };
-
-  const onCut = async () => {
-    await onCopy();
-
-    app.selection.deleteSelectedEntities();
-  };
-
-  const onPaste = async () => {
-    try {
-      const json = await navigator.clipboard.readText();
-      const features = parseFeatures(json);
-
-      // @todo: validate JSON
-
-      app.entities.insertFeatures(features);
-    } catch (error) {
-      app.alerts.trigger({
-        message: `Unable to import GeoJson from clipboard:\n${error.message}`,
-        color: "red",
-        icon: ErrorIcon,
-        timeout: 3000,
-      });
-    }
-  };
-
   map.scrollZoom.setZoomRate(0.03);
 
   updateMap();
@@ -391,8 +351,4 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   window.addEventListener("blur", onWindowBlur);
 
   canvas.addEventListener("keydown", onCanvasKeyUp);
-
-  registerHotkey({ key: "c", meta: true }, onCopy);
-  registerHotkey({ key: "x", meta: true }, onCut);
-  registerHotkey({ key: "v", meta: true }, onPaste);
 };

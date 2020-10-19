@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 
 type Hotkey = {
   key: string;
@@ -10,10 +10,8 @@ type Hotkey = {
 
 type Callback = (event: KeyboardEvent) => void | false | Promise<void | false>;
 
-type Cleanup = () => void;
-
-export const registerHotkey = (hotkey: Hotkey, callback: Callback): Cleanup => {
-  const onKey = (event: KeyboardEvent) => {
+export const useHotkey = (hotkey: Hotkey, callback: Callback): (() => ReturnType<typeof HotkeyView>) => {
+  const onKey = useCallback((event: KeyboardEvent) => {
     const match =
       event.key === hotkey.key &&
       event.ctrlKey === (hotkey.ctrl ?? false) &&
@@ -31,18 +29,14 @@ export const registerHotkey = (hotkey: Hotkey, callback: Callback): Cleanup => {
       event.preventDefault();
       event.stopPropagation();
     }
-  };
+  }, []);
 
-  window.addEventListener("keydown", onKey, false);
-
-  return () => {
-    window.addEventListener("keydown", onKey, false);
-  };
-};
-
-export const useHotkey = (hotkey: Hotkey, callback: Callback): (() => ReturnType<typeof HotkeyView>) => {
   useEffect(() => {
-    return registerHotkey(hotkey, callback);
+    window.addEventListener("keydown", onKey, false);
+
+    return () => {
+      window.addEventListener("keydown", onKey, false);
+    };
   }, []);
 
   return () => HotkeyView(hotkey);

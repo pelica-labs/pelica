@@ -4,7 +4,9 @@ import mapboxgl, { LngLatBoundsLike } from "mapbox-gl";
 import Head from "next/head";
 import React, { useEffect, useRef } from "react";
 
+import { Clipboard } from "~/components/Clipboard";
 import { DocumentTitle } from "~/components/DocumentTitle";
+import { ErrorIcon } from "~/components/Icon";
 import { getState, useApp, useStore, useStoreSubscription } from "~/core/app";
 import {
   getNextPointOverlay,
@@ -18,7 +20,7 @@ import { getEntityFeatures, getSelectedEntities, getSelectedEntity } from "~/cor
 import { computeMapDimensions } from "~/lib/aspectRatio";
 import { getEnv } from "~/lib/config";
 import { styleToUrl } from "~/lib/style";
-import { applyFeatures, RawFeature } from "~/map/features";
+import { applyFeatures, parseFeatures, RawFeature } from "~/map/features";
 import { applyImageMissingHandler } from "~/map/imageMissing";
 import { applyInteractions } from "~/map/interactions";
 import { applyLayers } from "~/map/layers";
@@ -372,12 +374,52 @@ export const Map: React.FC = () => {
     }
   );
 
+  const onCopy = async () => {
+    const state = getState();
+    const features = getEntityFeatures(state);
+
+    if (!features.length) {
+      return false;
+    }
+
+    const json = JSON.stringify(features.length > 1 ? features : features[0], null, 2);
+
+    await navigator.clipboard.writeText(json);
+  };
+
+  const onCut = async () => {
+    await onCopy();
+
+    app.selection.deleteSelectedEntities();
+  };
+
+  const onPaste = (text: string) => {
+    try {
+      const features = parseFeatures(text);
+
+      // @todo: validate JSON
+
+      app.entities.insertFeatures(features);
+    } catch (error) {
+      app.alerts.trigger({
+        message: `Unable to import GeoJson from clipboard:\n${error.message}`,
+        color: "red",
+        icon: ErrorIcon,
+        timeout: 3000,
+      });
+    }
+  };
+
   return (
     <>
       <Head>
         <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
       </Head>
+
       <DocumentTitle />
+
+      <Clipboard watch={map.current?.getCanvas()} onCopy={onCopy} onCut={onCut} onPaste={onPaste} />
+
       <div
         className={classNames("flex justify-center items-center w-full h-full bg-gray-200", {
           "lg:px-20 lg:py-6": aspectRatio !== "fill",
