@@ -76,11 +76,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   };
 
   const onMouseMove = throttle((event: MapMouseEvent | MapTouchEvent) => {
-    const {
-      routes: { isDrawing },
-      dragAndDrop: { draggedEntityId },
-      selection: { area },
-    } = getState();
+    const state = getState();
 
     touch();
     if (justTouched && isMultitouchEvent(event)) {
@@ -88,15 +84,17 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
       return;
     }
 
-    if (isDrawing) {
+    if (state.routes.isDrawing) {
       app.routes.addRouteStep(event.lngLat.toArray());
+    } else if (state.editor.mode === "draw") {
+      app.routes.updateNextPoint(event.lngLat.toArray());
     }
 
-    if (draggedEntityId) {
+    if (state.dragAndDrop.draggedEntityId) {
       app.dragAndDrop.dragSelectedPin(event.lngLat.toArray());
     }
 
-    if (area) {
+    if (state.selection.area) {
       app.selection.updateArea(event.lngLat.toArray());
     }
   }, 1000 / 30);

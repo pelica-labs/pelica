@@ -6,7 +6,13 @@ import React, { useEffect, useRef } from "react";
 
 import { DocumentTitle } from "~/components/DocumentTitle";
 import { getState, useApp, useStore, useStoreSubscription } from "~/core/app";
-import { getPinOverlay, getRouteOverlay, getRouteStopOverlay, getSelectionAreaOverlay } from "~/core/overlays";
+import {
+  getNextPointOverlay,
+  getPinOverlay,
+  getRouteOverlay,
+  getRouteStopOverlay,
+  getSelectionAreaOverlay,
+} from "~/core/overlays";
 import { STOP_DRAWING_CIRCLE_ID } from "~/core/routes";
 import { getEntityFeatures, getSelectedEntities, getSelectedEntity } from "~/core/selectors";
 import { computeMapDimensions } from "~/lib/aspectRatio";
@@ -206,7 +212,7 @@ export const Map: React.FC = () => {
   );
 
   /**
-   * Sync route stop to map
+   * Sync next point to map
    */
   useStoreSubscription(
     (store) => ({
@@ -228,6 +234,37 @@ export const Map: React.FC = () => {
       }
 
       applyFeatures(map.current, features, [MapSource.RouteStop]);
+    }
+  );
+
+  /**
+   * Sync route stop to map
+   */
+  useStoreSubscription(
+    (store) => ({
+      entities: store.entities.items,
+      selectedIds: store.selection.ids,
+      editorMode: store.editor.mode,
+      isDrawing: store.routes.isDrawing,
+      nextPoint: store.routes.nextPoint,
+    }),
+    ({ editorMode, isDrawing, nextPoint }) => {
+      if (!map.current) {
+        return;
+      }
+
+      const selectedEntity = getSelectedEntity(getState());
+
+      const features: RawFeature[] = [];
+      if (editorMode === "draw" && !isDrawing && selectedEntity?.type === "Route" && selectedEntity.points.length) {
+        features.push(getRouteStopOverlay(selectedEntity));
+
+        if (nextPoint) {
+          features.push(getNextPointOverlay(selectedEntity, nextPoint));
+        }
+      }
+
+      applyFeatures(map.current, features, [MapSource.RouteNextPoint]);
     }
   );
 

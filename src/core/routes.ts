@@ -41,6 +41,7 @@ export type RouteStyle = {
 
 export type Routes = {
   isDrawing: boolean;
+  nextPoint: Position | null;
 
   style: RouteStyle;
   smartMatching: SmartMatching;
@@ -48,6 +49,7 @@ export type Routes = {
 
 const initialState: Routes = {
   isDrawing: false,
+  nextPoint: null,
 
   style: {
     width: 3,
@@ -124,6 +126,12 @@ export const routes = ({ mutate, get }: App) => ({
       const selectedRoute = getSelectedEntity(state) as Route;
 
       selectedRoute.transientPoints.push(coordinates);
+    });
+  },
+
+  updateNextPoint: (coordinates: Position) => {
+    mutate((state) => {
+      state.routes.nextPoint = coordinates;
     });
   },
 

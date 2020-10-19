@@ -1,9 +1,27 @@
-import { BBox, bbox, bboxPolygon, lineString, transformScale } from "@turf/turf";
+import { BBox, bbox, bboxPolygon, lineString, Position, transformScale } from "@turf/turf";
 
 import { Pin } from "~/core/pins";
 import { Route, STOP_DRAWING_CIRCLE_ID } from "~/core/routes";
 import { RawFeature } from "~/map/features";
 import { MapSource } from "~/map/sources";
+
+export const getNextPointOverlay = (route: Route, nextPoint: Position): RawFeature => {
+  const lastPoint = route.points[route.points.length - 1];
+
+  return {
+    type: "Feature",
+    id: -1,
+    source: MapSource.RouteNextPoint,
+    geometry: {
+      type: "LineString",
+      coordinates: [lastPoint, nextPoint],
+    },
+    properties: {
+      color: route.style.color,
+      width: route.style.width,
+    },
+  };
+};
 
 export const getRouteStopOverlay = (route: Route): RawFeature => {
   const lastPoint = route.points[route.points.length - 1];

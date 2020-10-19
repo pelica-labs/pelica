@@ -134,6 +134,18 @@ export const applyLayers = (map: mapboxgl.Map): void => {
   });
 
   addLayer(map, {
+    id: "routeNextPoint",
+    type: "line",
+    source: MapSource.RouteNextPoint,
+    paint: {
+      "line-color": ["get", "color"],
+      "line-width": 2,
+      "line-dasharray": [2, 2],
+      "line-opacity": 0.5,
+    },
+  });
+
+  addLayer(map, {
     id: "pins",
     type: "symbol",
     source: MapSource.Pins,
