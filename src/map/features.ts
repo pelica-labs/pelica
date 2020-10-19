@@ -38,5 +38,5 @@ export const parseFeatures = (raw: string): Feature<Geometry>[] => {
     return json.features;
   }
 
-  return json;
+  return [json];
 };

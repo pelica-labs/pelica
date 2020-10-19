@@ -35,7 +35,7 @@ export const Clipboard: React.FC<Props> = ({ watch, onCopy, onCut, onPaste }) =>
       if (watch) {
         watch.focus();
       }
-    }, 350);
+    }, 50);
 
     return false;
   });
