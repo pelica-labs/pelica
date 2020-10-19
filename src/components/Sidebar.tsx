@@ -20,7 +20,6 @@ import { computeDistance, Route } from "~/core/routes";
 import { getSelectedEntities, getSelectedEntity } from "~/core/selectors";
 import { useBrowserFeatures } from "~/hooks/useBrowserFeatures";
 import { useDimensions } from "~/hooks/useDimensions";
-import { useHotkey } from "~/hooks/useHotkey";
 import { dataUrlToBlob } from "~/lib/fileConversion";
 import { Style } from "~/lib/style";
 import { theme } from "~/styles/tailwind";

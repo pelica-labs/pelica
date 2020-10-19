@@ -1,9 +1,9 @@
 import { Position } from "@turf/turf";
 import * as KeyCode from "keycode-js";
-import { isArray, throttle } from "lodash";
+import { throttle } from "lodash";
 import { MapLayerMouseEvent, MapLayerTouchEvent, MapMouseEvent, MapTouchEvent, MapWheelEvent } from "mapbox-gl";
 
-import { CopyIcon, ErrorIcon } from "~/components/Icon";
+import { ErrorIcon } from "~/components/Icon";
 import { getState, State } from "~/core/app";
 import { getEntityFeatures, getSelectedEntities, getSelectedEntity, getSelectedItinerary } from "~/core/selectors";
 import { registerHotkey } from "~/hooks/useHotkey";

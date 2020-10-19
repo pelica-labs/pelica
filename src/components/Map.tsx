@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { debounce, uniq } from "lodash";
+import { debounce } from "lodash";
 import mapboxgl, { LngLatBoundsLike } from "mapbox-gl";
 import Head from "next/head";
 import React, { useEffect, useRef } from "react";

@@ -1,4 +1,4 @@
-import { Feature, Geometry, Position } from "@turf/turf";
+import { Position } from "@turf/turf";
 import { partition } from "lodash";
 
 import { State } from "~/core/app";
@@ -8,7 +8,6 @@ import { Pin, PinStyle } from "~/core/pins";
 import { ItineraryRoute, Route, RouteStyle } from "~/core/routes";
 import { SmartMatching } from "~/lib/smartMatching";
 import { Style } from "~/lib/style";
-import { RawFeature } from "~/map/features";
 
 export type Handler<T extends Action> = {
   apply: (state: State, action: T) => void;
