@@ -1,4 +1,4 @@
-import { distance, Feature, MultiLineString, multiLineString, Position, simplify } from "@turf/turf";
+import { distance, Feature, LineString, lineString, Position, simplify } from "@turf/turf";
 
 import { nextEntityId } from "~/core/entities";
 import { App } from "~/core/helpers";
@@ -148,15 +148,15 @@ export const routes = ({ mutate, get }: App) => ({
       if (selectedRoute.transientPoints.length <= 2) {
         return;
       }
-      const feature = multiLineString([selectedRoute.transientPoints]);
+      const feature = lineString(selectedRoute.transientPoints);
       const tolerance = 2 ** (-state.map.zoom - 1) * 0.8;
-      const simplified = simplify(feature, { tolerance }) as Feature<MultiLineString>;
+      const simplified = simplify(feature, { tolerance }) as Feature<LineString>;
 
       if (!simplified.geometry) {
         return;
       }
 
-      selectedRoute.transientPoints = simplified.geometry.coordinates[0];
+      selectedRoute.transientPoints = simplified.geometry.coordinates;
     });
   },
 
