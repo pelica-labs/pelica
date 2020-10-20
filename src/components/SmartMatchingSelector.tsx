@@ -5,6 +5,7 @@ import Popover from "react-popover";
 
 import { BicycleIcon, CarIcon, Icon, InformationIcon, WalkingIcon } from "~/components/Icon";
 import { IconButton } from "~/components/IconButton";
+import { useStore } from "~/core/app";
 import { SmartMatching, SmartMatchingProfile } from "~/lib/smartMatching";
 import { theme } from "~/styles/tailwind";
 
@@ -27,6 +28,7 @@ const Profiles: ProfileConfiguration[] = [
 
 export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange }) => {
   const [showTooltip, setShowTooltip] = useState(false);
+  const screenDimensions = useStore((store) => store.screen.dimensions);
 
   return (
     <div className="text-xs">
@@ -75,7 +77,7 @@ export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange }) => {
           className="z-50"
           enterExitTransitionDurationMs={200}
           isOpen={showTooltip}
-          place="left"
+          place={screenDimensions.md ? "left" : "above"}
           style={{ fill: theme.colors.orange[500] }}
           tipSize={4}
           onOuterAction={() => setShowTooltip(false)}
@@ -90,7 +92,7 @@ export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange }) => {
       </div>
 
       {value.enabled && (
-        <div className="mt-2 inline-flex items-center gap-2 rounded border">
+        <div className="mt-1 md:mt-2 inline-flex items-center gap-2 rounded border">
           {Profiles.map((profileConfiguration) => {
             return (
               <div key={profileConfiguration.profile}>
@@ -104,7 +106,7 @@ export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange }) => {
                     });
                   }}
                 >
-                  <profileConfiguration.icon className="w-6 h-6" />
+                  <profileConfiguration.icon className="w-4 h-4 md:w-6 md:h-6" />
                 </IconButton>
               </div>
             );

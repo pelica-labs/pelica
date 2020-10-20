@@ -46,7 +46,8 @@ export const Map: React.FC = () => {
     const state = getState();
     const accessToken = getEnv("NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN", process.env.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN);
 
-    app.screen.initialise();
+    app.screen.initialize();
+    app.keyboard.initialize();
 
     map.current = new mapboxgl.Map({
       accessToken,
@@ -58,7 +59,8 @@ export const Map: React.FC = () => {
       pitch: state.map.pitch,
       doubleClickZoom: false,
       fadeDuration: 0,
-      logoPosition: "bottom-right",
+      logoPosition: "bottom-left",
+      // attributionControl: false,
       preserveDrawingBuffer: true,
     });
 
@@ -502,7 +504,7 @@ export const Map: React.FC = () => {
 
       <div
         className={classNames("flex justify-center items-center w-full h-full bg-gray-200", {
-          "lg:px-20 lg:py-6": aspectRatio !== "fill",
+          "md:px-20 md:py-6": aspectRatio !== "fill",
         })}
         onClick={(event) => {
           if (event.target === event.currentTarget) {
@@ -511,7 +513,7 @@ export const Map: React.FC = () => {
         }}
       >
         <div ref={container} className="w-full h-full flex justify-center items-center">
-          <div ref={wrapper} className="w-full h-full shadow-md border border-gray-400" id="map" />
+          <div ref={wrapper} className="w-full h-full md:shadow-md border border-gray-400" id="map" />
         </div>
       </div>
     </>

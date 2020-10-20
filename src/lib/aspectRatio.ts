@@ -1,9 +1,13 @@
 import { CSSProperties } from "react";
 
 import { ExpandIcon, FacebookIcon, FileIcon, Icon, InstagramIcon, SquareIcon, YouTubeIcon } from "~/components/Icon";
-import { ScreenDimensions } from "~/core/screen";
 
 export type AspectRatio = keyof typeof aspectRatios;
+
+type Dimensions = {
+  width: number;
+  height: number;
+};
 
 type AspectRatioConfiguration = {
   ratio?: [number, number];
@@ -53,7 +57,7 @@ export const aspectRatios: { [key: string]: AspectRatioConfiguration } = {
   },
 };
 
-export const computeResizingRatio = (aspectRatio: AspectRatio, screen: ScreenDimensions): number => {
+export const computeResizingRatio = (aspectRatio: AspectRatio, screen: Dimensions): number => {
   const { ratio } = aspectRatios[aspectRatio];
 
   if (!ratio) {
@@ -69,7 +73,7 @@ export const computeResizingRatio = (aspectRatio: AspectRatio, screen: ScreenDim
   return Math.max(widthRatio, heightRatio);
 };
 
-export const computeMapDimensions = (aspectRatio: AspectRatio, screen: ScreenDimensions): CSSProperties => {
+export const computeMapDimensions = (aspectRatio: AspectRatio, screen: Dimensions): CSSProperties => {
   const { ratio } = aspectRatios[aspectRatio];
 
   if (!ratio) {

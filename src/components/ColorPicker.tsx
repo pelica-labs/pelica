@@ -3,6 +3,7 @@ import { ChromePicker, TwitterPicker } from "react-color";
 
 import { Button } from "~/components/Button";
 import { PlusIcon } from "~/components/Icon";
+import { useStore } from "~/core/app";
 import { useClickOutside } from "~/hooks/useClickOutside";
 import { theme } from "~/styles/tailwind";
 
@@ -28,6 +29,9 @@ type Props = {
 export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete }) => {
   const [color, setColor] = useState(value);
   const [showExtendedPicker, setShowExtendedPicker] = useState(false);
+  const screenDimensions = useStore((store) => store.screen.dimensions);
+
+  const size = screenDimensions.md ? 14 : 20;
 
   const extendedPickerRef = useClickOutside<HTMLDivElement>(() => {
     if (showExtendedPicker) {
@@ -44,14 +48,14 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete
   }, [showExtendedPicker]);
 
   return (
-    <div className="relative flex items-start">
+    <div className="relative flex items-start w-40 md:w-auto">
       <TwitterPicker
         color={color}
         colors={defaultColors}
         styles={{
           default: {
             card: { boxShadow: "none" },
-            swatch: { width: 14, height: 14 },
+            swatch: { width: size, height: size },
             hash: { display: "none" },
             input: { display: "none" },
             body: { padding: 0, display: "flex", alignItems: "center", flexWrap: "wrap", marginLeft: 6 },
@@ -78,7 +82,7 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete
       </Button>
 
       {showExtendedPicker && (
-        <div ref={extendedPickerRef} className="absolute z-10 mt-6 right-0 mr-3">
+        <div ref={extendedPickerRef} className="fixed md:absolute mb-2 md:mb-0 z-10 mt-6 bottom-0 md:right-0 mr-3">
           <ChromePicker
             disableAlpha
             color={color}

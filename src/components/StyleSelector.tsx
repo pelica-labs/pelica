@@ -58,11 +58,11 @@ export const StyleSelector: React.FC<Props> = ({ value, onChange, initialStyles 
   }
 
   return (
-    <div className="flex flex-col items-start space-y-1 p-1">
+    <div className="flex space-x-1 md:p-1 md:flex-col md:items-start md:space-y-1 justify-between overflow-x-auto h-full">
       {data.styles.map((style) => {
         const isSelectedStyle = value.id === style.id;
         const containerClasses = classnames({
-          "flex flex-col items-start p-2 rounded font-medium cursor-pointer hover:bg-orange-200 w-full h-40 focus:outline-none focus:shadow-outline": true,
+          "flex flex-col items-start p-2 rounded font-medium cursor-pointer hover:bg-orange-200 h-full md:w-full md:h-40 focus:outline-none focus:shadow-outline": true,
           "bg-orange-300": isSelectedStyle,
         });
 
@@ -74,7 +74,9 @@ export const StyleSelector: React.FC<Props> = ({ value, onChange, initialStyles 
               onChange(style);
             }}
           >
-            <span className="text-xs uppercase text-gray-800  inline-flex whitespace-no-wrap">{style.name}</span>
+            <span className="text-xs uppercase text-gray-800 truncate inline-flex whitespace-no-wrap w-24 md:w-full">
+              {style.name}
+            </span>
             <StylePreview hash={style.hash || null} src={previews[style.id]} />
           </button>
         );

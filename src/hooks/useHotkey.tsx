@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect } from "react";
 
+import { useStore } from "~/core/app";
+
 type Hotkey = {
   key: string;
   ctrl?: boolean;
@@ -43,6 +45,12 @@ export const useHotkey = (hotkey: Hotkey, callback: Callback): (() => ReturnType
 };
 
 export const HotkeyView: React.FC<Hotkey> = (hotkey) => {
+  const keyboardAvailable = useStore((store) => store.keyboard.available);
+
+  if (!keyboardAvailable) {
+    return null;
+  }
+
   return (
     // @todo: hotkey symbols are MacOS only for now
     <span className="text-2xs uppercase text-gray-500 font-light tracking-wide leading-none flex space-x-px">

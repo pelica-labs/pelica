@@ -23,7 +23,7 @@ type Props = {
 
 export const OutlineSelector: React.FC<Props> = ({ value, onChange }) => {
   return (
-    <div className="flex items-center">
+    <div className="flex md:flex-wrap items-center">
       {outlines.map((configuration) => {
         return (
           <Button

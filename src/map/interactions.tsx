@@ -6,24 +6,6 @@ import { MapLayerMouseEvent, MapMouseEvent, MapTouchEvent, MapWheelEvent } from 
 import { getState, State } from "~/core/app";
 import { getSelectedEntities, getSelectedEntity, getSelectedItinerary } from "~/core/selectors";
 
-const isMultitouchEvent = (event?: MapMouseEvent | MapTouchEvent) => {
-  return event && "touches" in event.originalEvent && event.originalEvent?.touches?.length > 1;
-};
-
-let justTouched = false;
-
-const touch = (event?: MapMouseEvent | MapTouchEvent) => {
-  if (isMultitouchEvent(event)) {
-    return;
-  }
-
-  justTouched = true;
-
-  setTimeout(() => {
-    justTouched = false;
-  }, 50);
-};
-
 export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   const canvas = map.getCanvas();
 
@@ -60,12 +42,6 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   const onMouseMove = throttle((event: MapMouseEvent | MapTouchEvent) => {
     const state = getState();
 
-    touch();
-    if (justTouched && isMultitouchEvent(event)) {
-      app.routes.stopRoute();
-      return;
-    }
-
     if (state.routes.isDrawing) {
       app.routes.addRouteStep(event.lngLat.toArray());
     } else if (state.editor.mode === "draw") {
@@ -83,12 +59,6 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
 
   const onMouseDown = (event: MapMouseEvent | MapTouchEvent) => {
     const state = getState();
-
-    touch();
-    if (justTouched && isMultitouchEvent(event)) {
-      app.routes.stopRoute();
-      return;
-    }
 
     // handle draw mode
     if (state.editor.mode === "draw") {
@@ -136,27 +106,17 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   };
 
   const onMouseUp = (event?: MapMouseEvent | MapTouchEvent) => {
-    touch();
-    if (justTouched && isMultitouchEvent(event)) {
-      app.routes.stopRoute();
-      return;
-    }
+    const state = getState();
 
-    const {
-      editor,
-      dragAndDrop: { draggedEntityId },
-      selection: { area },
-    } = getState();
-
-    if (editor.mode === "draw") {
+    if (state.editor.mode === "draw") {
       app.routes.stopSegment();
     }
 
-    if (area) {
+    if (state.selection.area) {
       app.selection.endArea();
     }
 
-    if (draggedEntityId && event) {
+    if (state.dragAndDrop.draggedEntityId && event) {
       app.dragAndDrop.endDragSelectedPin(event.lngLat.toArray());
     }
   };
@@ -273,12 +233,11 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
       state.dragAndDrop.hoveredEntityId !== event.features[0].id &&
       state.dragAndDrop.hoveredEntitySource
     ) {
-      map.setFeatureState(
-        { id: state.dragAndDrop.hoveredEntityId, source: state.dragAndDrop.hoveredEntitySource },
-        {
-          hover: false,
-        }
-      );
+      const feature = { id: state.dragAndDrop.hoveredEntityId, source: state.dragAndDrop.hoveredEntitySource };
+
+      map.setFeatureState(feature, {
+        hover: false,
+      });
     }
 
     app.dragAndDrop.startHover(event.features[0].id as number, event.features[0].source);
@@ -291,23 +250,21 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   const onFeatureHoverEnd = (event: MapLayerMouseEvent) => {
     const state = getState();
 
-    const features = map.queryRenderedFeatures(event.point);
-
     if (!state.dragAndDrop.hoveredEntityId || !state.dragAndDrop.hoveredEntitySource) {
       return;
     }
+
+    const features = map.queryRenderedFeatures(event.point);
 
     const stillHovering = features.find((feature) => feature.state.hover);
     if (!stillHovering) {
       app.dragAndDrop.endHover();
     }
 
-    map.setFeatureState(
-      { id: state.dragAndDrop.hoveredEntityId, source: state.dragAndDrop.hoveredEntitySource },
-      {
-        hover: false,
-      }
-    );
+    const feature = { id: state.dragAndDrop.hoveredEntityId, source: state.dragAndDrop.hoveredEntitySource };
+    map.setFeatureState(feature, {
+      hover: false,
+    });
   };
 
   map.scrollZoom.setZoomRate(0.03);

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Popover, { PopoverPlace } from "react-popover";
 
+import { useStore } from "~/core/app";
 import { theme } from "~/styles/tailwind";
 
 export type TooltipProps = {
@@ -12,6 +13,7 @@ export type TooltipState = "hidden" | "shown" | "showing";
 
 export const Tooltip: React.FC<TooltipProps> = ({ text, placement, children }) => {
   const [tooltipState, setTooltipState] = useState<TooltipState>("hidden");
+  const touch = useStore((store) => store.screen.touch);
 
   useEffect(() => {
     if (tooltipState !== "showing") {
@@ -24,6 +26,10 @@ export const Tooltip: React.FC<TooltipProps> = ({ text, placement, children }) =
 
     return () => clearTimeout(timeout);
   }, [tooltipState]);
+
+  if (touch) {
+    return <>{children}</>;
+  }
 
   return (
     <Popover
