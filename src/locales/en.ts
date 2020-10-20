@@ -5,6 +5,7 @@ export const en = {
     mode: {
       style: "Style",
       select: "Select",
+      move: "Move",
       draw: "Draw route",
       pin: "Pin",
       itinerary: "Itinerary",

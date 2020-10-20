@@ -2,6 +2,7 @@ import React from "react";
 
 import {
   ExportIcon,
+  HandIcon,
   ImageSizeIcon,
   MousePointerIcon,
   PencilIcon,
@@ -22,13 +23,16 @@ export const Toolbar: React.FC = () => {
   const SelectHotkey = useHotkey({ key: "1", meta: true }, () => {
     app.editor.setEditorMode("select");
   });
-  const DrawHotkey = useHotkey({ key: "2", meta: true }, () => {
+  const MoveHotkey = useHotkey({ key: "2", meta: true }, () => {
+    app.editor.setEditorMode("move");
+  });
+  const DrawHotkey = useHotkey({ key: "3", meta: true }, () => {
     app.editor.setEditorMode("draw");
   });
-  const ItineraryHotkey = useHotkey({ key: "3", meta: true }, () => {
+  const ItineraryHotkey = useHotkey({ key: "4", meta: true }, () => {
     app.editor.setEditorMode("itinerary");
   });
-  const PinHotkey = useHotkey({ key: "4", meta: true }, () => {
+  const PinHotkey = useHotkey({ key: "5", meta: true }, () => {
     app.editor.setEditorMode("pin");
   });
 
@@ -71,6 +75,25 @@ export const Toolbar: React.FC = () => {
           }}
         >
           <MousePointerIcon className="w-6 h-6" />
+        </IconButton>
+
+        <IconButton
+          active={editorMode === "move"}
+          id="toolbar-move"
+          tooltip={{
+            placement: tooltipPlacement,
+            text: (
+              <div className="flex items-center">
+                <span className="mr-4 leading-none">Move</span>
+                <MoveHotkey />
+              </div>
+            ),
+          }}
+          onClick={() => {
+            app.editor.setEditorMode("move");
+          }}
+        >
+          <HandIcon className="w-6 h-6" />
         </IconButton>
 
         <IconButton
