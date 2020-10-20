@@ -36,7 +36,7 @@ export type Pins = {
 
 const initialState: Pins = {
   style: {
-    icon: "fire",
+    icon: "star",
     width: 6,
     color: theme.colors.yellow[500],
   },

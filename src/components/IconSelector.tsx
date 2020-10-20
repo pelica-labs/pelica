@@ -40,10 +40,10 @@ export const IconSelector: React.FC<Props> = ({ value, onChange }) => {
       </div>
 
       {showMenu && (
-        <div className="absolute left-0 top-0 mt-6 bg-white text-gray-800 rounded border flex flex-wrap pr-1 pb-1 shadow">
+        <div className="absolute left-0 top-0 mt-6 bg-white text-gray-800 rounded border flex flex-wrap pl-1 pb-1 shadow">
           {Object.entries(allIcons).map(([iconName, Icon]) => {
             return (
-              <div key={iconName} className="w-1/5 pl-1 pt-1">
+              <div key={iconName} className="w-1/5 px-1 pt-1">
                 <IconButton
                   active={value === iconName}
                   onClick={() => {

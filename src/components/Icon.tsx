@@ -1,20 +1,32 @@
 import React, { SVGAttributes } from "react";
 
+// These are the icons that can be included in pins
 export const icons = (): { [key: string]: Icon } => ({
-  fire: FireIcon,
+  star: StarIcon,
+  heart: HeartIcon,
+  eat: EatIcon,
+  drink: DrinkIcon,
+  tent: TentIcon,
+  start: StartIcon,
+  finish: FinishIcon,
+  mountain: MountainIcon,
+  water: WaterIcon,
+  shopping: ShoppingIcon,
+  bike: BicycleIcon,
+  car: CarIcon,
+  plane: PlaneIcon,
+  walk: WalkingIcon,
+  boat: BoatIcon,
+  train: TrainIcon,
+  sleep: SleepIcon,
+  photo: PhotoIcon,
   target: TargetIcon,
-  kabaddi: KabaddiIcon,
-  close: CloseIcon,
-  search: SearchIcon,
-  pencil: PencilIcon,
-  hand: HandIcon,
-  paint: PaintIcon,
-  share: ShareIcon,
-  ruler: RulerCompassIcon,
-  pin: PinIcon,
-  compass: CompassIcon,
-  plus: PlusIcon,
-  palette: PaletteIcon,
+  house: HouseIcon,
+  work: WorkIcon,
+  sport: SportIcon,
+  human: HumanIcon,
+  tree: TreeIcon,
+  museum: MuseumIcon,
 });
 
 type Props = SVGAttributes<SVGElement> & {
@@ -383,4 +395,165 @@ export const WarningIcon = icon(
     fill="currentColor"
   />,
   32
+);
+
+export const TentIcon = icon(
+  <path
+    clipRule="evenodd"
+    d="M29.1644 27.1816C24.1 24.855 19.5794 13.6894 17.3725 8.26384L19.6319 4.01275C19.7082 3.87307 19.7313 3.71075 19.6968 3.55555C19.6624 3.40035 19.5728 3.26267 19.4444 3.16775C19.1856 2.99279 18.8519 3.08771 18.6944 3.37993L16.8175 6.91072C16.3956 5.90192 16.1144 5.28957 16 5.28957C15.8875 5.28957 15.6119 5.88331 15.2013 6.86605L13.3056 3.2999C13.1481 3.00768 12.8106 2.91276 12.5556 3.08771C12.4272 3.18264 12.3376 3.32032 12.3032 3.47551C12.2687 3.63071 12.2918 3.79303 12.3681 3.93272L14.6462 8.21731C12.4506 13.6131 7.93562 24.7917 2.875 27.1629V23.4535H1V29H9.74875C14.6275 25.4301 16 13.9723 16 13.9723C16 13.9723 17.7681 25.4301 22.2512 29L31 28.9944V23.4535H29.1644V27.1816Z"
+    fill="currentColor"
+    fillRule="evenodd"
+  />,
+  32
+);
+
+export const StartIcon = icon(
+  <path d="M4 2v11.82l9-5.94L4 2zm1.5 2.82l4.81 3.06L5.5 11V4.82z" fill="currentColor" />,
+  16
+);
+
+export const FinishIcon = icon(
+  <path
+    d="M5 4v24h2v-8h20V4H5zm2 2h3v3h3V6h3v3h3V6h3v3h3v3h-3v3h3v3h-3v-3h-3v3h-3v-3h-3v3h-3v-3H7v-3h3V9H7V6zm3 6v3h3v-3h-3zm3 0h3V9h-3v3zm3 0v3h3v-3h-3zm3 0h3V9h-3v3z"
+    fill="currentColor"
+  />,
+  32
+);
+
+export const SleepIcon = icon(
+  <path
+    d="M23 12h-6v-2l3.39-4H17V4h6v2l-3.38 4H23v2m-8 4H9v-2l3.39-4H9V8h6v2l-3.38 4H15v2m-8 4H1v-2l3.39-4H1v-2h6v2l-3.38 4H7v2z"
+    fill="currentColor"
+  />,
+  24
+);
+
+export const EatIcon = icon(
+  <path
+    d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"
+    fill="currentColor"
+  />,
+  24
+);
+
+export const DrinkIcon = icon(
+  <path d="M7.5 7l-2-2h13l-2 2M11 13v6H6v2h12v-2h-5v-6l8-8V3H3v2l8 8z" fill="currentColor" />,
+  24
+);
+
+export const WaterIcon = icon(
+  <path d="M12 20a6 6 0 0 1-6-6c0-4 6-10.75 6-10.75S18 10 18 14a6 6 0 0 1-6 6z" fill="currentColor" />,
+  24
+);
+
+export const MountainIcon = icon(
+  <path
+    d="M7.5 2c-.3 0-.4.2-.6.4l-5.8 9.5c-.1.1-.1.3-.1.4c0 .5.4.7.7.7h11.6c.4 0 .7-.2.7-.7c0-.2 0-.2-.1-.4L8.2 2.4C8 2.2 7.8 2 7.5 2zm0 1.5L10.8 9H10L8.5 7.5L7.5 9l-1-1.5L5 9h-.9l3.4-5.5z"
+    fill="currentColor"
+  />,
+  15
+);
+
+export const PhotoIcon = icon(
+  <path
+    d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5s5 2.24 5 5s-2.24 5-5 5z"
+    fill="currentColor"
+  />,
+  24
+);
+
+export const StarIcon = icon(
+  <path
+    d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2L9.19 8.62L2 9.24l5.45 4.73L5.82 21L12 17.27z"
+    fill="currentColor"
+  />,
+  24
+);
+
+export const HeartIcon = icon(
+  <path
+    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.27 2 8.5C2 5.41 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.08C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.41 22 8.5c0 3.77-3.4 6.86-8.55 11.53L12 21.35z"
+    fill="currentColor"
+  />,
+  24
+);
+
+export const ShoppingIcon = icon(
+  <path
+    d="M5 22h14a2 2 0 0 0 2-2V9a1 1 0 0 0-1-1h-3v-.777c0-2.609-1.903-4.945-4.5-5.198A5.005 5.005 0 0 0 7 7v1H4a1 1 0 0 0-1 1v11a2 2 0 0 0 2 2zm12-12v2h-2v-2h2zM9 7c0-1.654 1.346-3 3-3s3 1.346 3 3v1H9V7zm-2 3h2v2H7v-2z"
+    fill="currentColor"
+  />,
+  24
+);
+
+export const PlaneIcon = icon(
+  <path
+    d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2A1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1l3.5 1v-1.5L13 19v-5.5l8 2.5z"
+    fill="currentColor"
+  />,
+  24
+);
+
+export const BoatIcon = icon(
+  <path
+    d="M20 21c-1.39 0-2.78-.47-4-1.32c-2.44 1.71-5.56 1.71-8 0C6.78 20.53 5.39 21 4 21H2v2h2c1.38 0 2.74-.35 4-.99a8.752 8.752 0 0 0 8 0c1.26.65 2.62.99 4 .99h2v-2h-2zM3.95 19H4c1.6 0 3.02-.88 4-2c.98 1.12 2.4 2 4 2s3.02-.88 4-2c.98 1.12 2.4 2 4 2h.05l1.89-6.68c.08-.26.06-.54-.06-.78s-.34-.42-.6-.5L20 10.62V6c0-1.1-.9-2-2-2h-3V1H9v3H6c-1.1 0-2 .9-2 2v4.62l-1.29.42a1.007 1.007 0 0 0-.66 1.28L3.95 19zM6 6h12v3.97L12 8L6 9.97V6z"
+    fill="currentColor"
+  />,
+  24
+);
+
+export const HouseIcon = icon(
+  <g fill="currentColor">
+    <path d="M6.5 10.995V14.5a.5.5 0 0 1-.5.5H2a.5.5 0 0 1-.5-.5v-7a.5.5 0 0 1 .146-.354l6-6a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 .146.354v7a.5.5 0 0 1-.5.5h-4a.5.5 0 0 1-.5-.5V11c0-.25-.25-.5-.5-.5H7c-.25 0-.5.25-.5.495z" />
+    <path d="M13 2.5V6l-2-2V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5z" fillRule="evenodd" />
+  </g>,
+  16
+);
+
+export const WorkIcon = icon(
+  <path
+    d="M10 2h4a2 2 0 0 1 2 2v2h4a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8c0-1.11.89-2 2-2h4V4c0-1.11.89-2 2-2m4 4V4h-4v2h4z"
+    fill="currentColor"
+  />,
+  24
+);
+
+export const SportIcon = icon(
+  <path
+    d="M19.52 2.49C17.18.15 12.9.62 9.97 3.55c-1.6 1.6-2.52 3.87-2.54 5.46c-.02 1.58.26 3.89-1.35 5.5l-4.24 4.24l1.42 1.42l4.24-4.24c1.61-1.61 3.92-1.33 5.5-1.35s3.86-.94 5.46-2.54c2.92-2.93 3.4-7.21 1.06-9.55zm-9.2 9.19c-1.53-1.53-1.05-4.61 1.06-6.72s5.18-2.59 6.72-1.06c1.53 1.53 1.05 4.61-1.06 6.72s-5.18 2.59-6.72 1.06zM18 17c.53 0 1.04.21 1.41.59c.78.78.78 2.05 0 2.83c-.37.37-.88.58-1.41.58s-1.04-.21-1.41-.59c-.78-.78-.78-2.05 0-2.83c.37-.37.88-.58 1.41-.58m0-2a3.998 3.998 0 0 0-2.83 6.83c.78.78 1.81 1.17 2.83 1.17a3.998 3.998 0 0 0 2.83-6.83A3.998 3.998 0 0 0 18 15z"
+    fill="currentColor"
+  />,
+  24
+);
+
+export const TrainIcon = icon(
+  <path
+    d="M12 2c-4 0-8 .5-8 4v9.5A3.5 3.5 0 0 0 7.5 19L6 20.5v.5h2.23l2-2H14l2 2h2v-.5L16.5 19a3.5 3.5 0 0 0 3.5-3.5V6c0-3.5-3.58-4-8-4M7.5 17A1.5 1.5 0 0 1 6 15.5A1.5 1.5 0 0 1 7.5 14A1.5 1.5 0 0 1 9 15.5A1.5 1.5 0 0 1 7.5 17m3.5-7H6V6h5v4m2 0V6h5v4h-5m3.5 7a1.5 1.5 0 0 1-1.5-1.5a1.5 1.5 0 0 1 1.5-1.5a1.5 1.5 0 0 1 1.5 1.5a1.5 1.5 0 0 1-1.5 1.5z"
+    fill="currentColor"
+  />,
+  24
+);
+
+export const HumanIcon = icon(
+  <path
+    d="M5 1c0 2.7 1.56 5.16 4 6.32V22h2v-7h2v7h2V7.31C17.44 6.16 19 3.7 19 1h-2a5 5 0 0 1-5 5a5 5 0 0 1-5-5m5 0c-1.11 0-2 .89-2 2c0 1.11.89 2 2 2c1.11 0 2-.89 2-2c0-1.11-.89-2-2-2z"
+    fill="currentColor"
+  />,
+  24
+);
+
+export const TreeIcon = icon(
+  <path
+    d="M11 21v-4.26c-.47.17-.97.26-1.5.26C7 17 5 15 5 12.5c0-1.27.5-2.41 1.36-3.23C6.13 8.73 6 8.13 6 7.5C6 5 8 3 10.5 3c1.56 0 2.94.8 3.75 2h.25a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5c-.5 0-1-.07-1.5-.21V21h-2z"
+    fill="currentColor"
+  />,
+  24
+);
+
+export const MuseumIcon = icon(
+  <path
+    d="M9.27 19h3.916l.602 18H8.749l.521-18zM6 38h38v2h3v3h2v2H1v-2h2v-3h3v-2zm40-24.188L25.002 5L4 13.812V15h42v-1.188zM8 16h34v2H8v-2zm28.736 3h3.914l.607 18h-5.046l.525-18zm-9.152 0h3.914l.6 18h-5.041l.527-18zm-9.154 0h3.915l.596 18h-5.039l.528-18z"
+    fill="currentColor"
+  />,
+  50
 );
