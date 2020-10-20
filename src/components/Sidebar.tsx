@@ -38,8 +38,12 @@ export const Sidebar: React.FC<Props> = ({ initialStyles }) => {
   const toolbarRef = useRef<HTMLDivElement>(null);
   const toolbarDimensions = useDimensions(toolbarRef);
 
+  useEffect(() => {
+    sidebarRef.current?.scrollTo({ left: 0 });
+  }, [editorMode]);
+
   return (
-    <div ref={sidebarRef} className="flex-grow relative flex items-end">
+    <div className="flex-grow relative flex items-end">
       {sidebarDimensions && (
         <div
           ref={toolbarRef}
@@ -54,6 +58,7 @@ export const Sidebar: React.FC<Props> = ({ initialStyles }) => {
       )}
 
       <div
+        ref={sidebarRef}
         className="flex pt-3 md:pt-0 pb-2 md:pb-0 divide-x md:flex-col md:space-x-0 md:divide-y h-24 bg-white text-gray-800 md:w-48 xl:w-64 md:h-full overflow-y-auto overflow-x-auto md:shadow-md"
         style={{
           marginBottom: screenDimensions.md ? "initial" : (toolbarDimensions?.height ?? 0) + 10,
