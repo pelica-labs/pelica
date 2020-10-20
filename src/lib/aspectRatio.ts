@@ -22,7 +22,7 @@ export const aspectRatios: { [key: string]: AspectRatioConfiguration } = {
   },
   square: {
     name: "Square",
-    ratio: [1, 1],
+    ratio: [2000, 2000],
     icon: SquareIcon,
   },
   facebookPost: {

@@ -156,20 +156,6 @@ export const Toolbar: React.FC = () => {
 
       <div className="flex md:flex-col md:space-y-1 md:mt-6">
         <IconButton
-          active={editorMode === "aspectRatio"}
-          id="toolbar-aspect-ratio"
-          tooltip={{
-            placement: tooltipPlacement,
-            text: "Aspect ratio",
-          }}
-          onClick={() => {
-            app.editor.setEditorMode("aspectRatio");
-          }}
-        >
-          <ImageSizeIcon className="w-6 h-6" />
-        </IconButton>
-
-        <IconButton
           active={editorMode === "export"}
           id="toolbar-export"
           tooltip={{
@@ -182,12 +168,10 @@ export const Toolbar: React.FC = () => {
         >
           <ExportIcon className="w-6 h-6" />
         </IconButton>
+      </div>
 
-        {!screenDimensions.md && (
-          <div className="flex items-center justify-center mr-2">
-            <MenuButton />
-          </div>
-        )}
+      <div className="flex md:flex-col md:space-y-1 md:mt-6">
+        <MenuButton />
       </div>
     </>
   );

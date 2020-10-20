@@ -25,7 +25,7 @@ export const Button: React.FC<Props> = ({
     }),
     "rounded": rounded,
     "shadow": shadow,
-    [`hover:bg-${color}-200`]: !active && !attributes.disabled,
+    [`hover:bg-${color}-100`]: !active && !attributes.disabled,
     [`bg-${color}-300`]: !outlined && active,
     [`border border-${color}-500`]: outlined && active,
     "border border-transparent": outlined && !active,
