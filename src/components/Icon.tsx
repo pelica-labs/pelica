@@ -29,6 +29,12 @@ export const icons = (): { [key: string]: Icon } => ({
   museum: MuseumIcon,
 });
 
+export const miniPinIcons = (): { [key: string]: Icon } => ({
+  star: StarIcon,
+  simple: SimplePin,
+  pelipin: PeliPin,
+});
+
 type Props = SVGAttributes<SVGElement> & {
   className?: string;
   color?: string;
@@ -561,4 +567,20 @@ export const MuseumIcon = icon(
 export const SelectorCarretIcon = icon(
   <path d="M7 7l3-3 3 3m0 6l-3 3-3-3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />,
   20
+);
+
+export const SimplePin = icon(
+  <path
+    d="M11 19.945A9.001 9.001 0 0 1 12 2a9 9 0 0 1 1 17.945V24h-2v-4.055zM12 18a7 7 0 1 0 0-14a7 7 0 0 0 0 14z"
+    fill="currentColor"
+  />,
+  24
+);
+
+export const PeliPin = icon(
+  <g fill="currentColor">
+    <path d="M5 8.4928C5 4.35464 8.35786 1 12.5 1C16.6421 1 20 4.35464 20 8.4928C20 12.631 16.6421 15.9856 12.5 15.9856C8.35786 15.9856 5 12.631 5 8.4928Z" />
+    <path d="M10.9912 21.1628C11.4423 21.8787 11.9498 22.4959 12.5001 23C13.0503 22.4959 13.5578 21.8787 14.009 21.1628C14.6855 20.0894 15.2222 18.815 15.5883 17.4124C15.9545 16.0098 16.1429 14.5066 16.1429 12.9885H8.85722C8.85722 14.5066 9.04567 16.0098 9.41181 17.4124C9.77795 18.815 10.3146 20.0894 10.9912 21.1628Z" />
+  </g>,
+  24
 );

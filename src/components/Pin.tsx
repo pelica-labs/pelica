@@ -2,6 +2,7 @@ import React from "react";
 
 export const pins = (): { [key: string]: React.FC<Props> } => ({
   pelipin: Pelipin,
+  otherPin: OtherPin,
 });
 
 type Props = {
@@ -37,6 +38,17 @@ export const Pelipin: React.FC<Props> = ({ color }) => {
           <feBlend in="SourceGraphic" in2="effect1_dropShadow" mode="normal" result="shape" />
         </filter>
       </defs>
+    </svg>
+  );
+};
+
+export const OtherPin: React.FC<Props> = ({ color }) => {
+  return (
+    <svg focusable="false" height="1em" viewBox="0 0 24 24" width="1em">
+      <path
+        d="M11 19.945A9.001 9.001 0 0 1 12 2a9 9 0 0 1 1 17.945V24h-2v-4.055zM12 18a7 7 0 1 0 0-14a7 7 0 0 0 0 14z"
+        fill={color}
+      ></path>
     </svg>
   );
 };

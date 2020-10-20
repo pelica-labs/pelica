@@ -10,6 +10,7 @@ import { Distance } from "~/components/Distance";
 import { TrashIcon } from "~/components/Icon";
 import { IconSelector } from "~/components/IconSelector";
 import { OutlineSelector } from "~/components/OutlineSelector";
+import { PinSelector } from "~/components/PinSelector";
 import { StyleSidebar } from "~/components/Sidebar/StyleSidebar";
 import { SmartMatchingSelector } from "~/components/SmartMatchingSelector";
 import { Toolbar } from "~/components/Toolbar";
@@ -329,6 +330,19 @@ const PinSidebar: React.FC = () => {
 
         <div className="mt-5 md:mt-2">
           <IconSelector
+            value={icon}
+            onChange={(icon) => {
+              app.pins.setStyle({ icon });
+            }}
+          />
+        </div>
+      </SidebarSection>
+
+      <SidebarSection>
+        <SidebarHeading>Pin Type</SidebarHeading>
+
+        <div className="mt-2">
+          <PinSelector
             value={icon}
             onChange={(icon) => {
               app.pins.setStyle({ icon });
