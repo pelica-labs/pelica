@@ -435,15 +435,16 @@ export const Map: React.FC = () => {
         return;
       }
 
-      if (mode === "draw" || mode === "select") {
+      if (mode === "draw" || mode === "select" || mode === "export") {
         map.current.dragPan.disable();
       } else {
         map.current.dragPan.enable();
       }
 
       if (mode === "export") {
-        map.current.dragPan.disable();
         map.current.scrollZoom.disable();
+      } else {
+        map.current.scrollZoom.enable();
       }
     }
   );
