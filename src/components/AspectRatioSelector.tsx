@@ -10,19 +10,19 @@ type Props = {
 
 export const AspectRatioSelector: React.FC<Props> = ({ value, onChange }) => {
   return (
-    <div className="flex space-x-1 md:flex-col h-full">
+    <div className="flex space-x-1 md:space-x-0 md:space-y-1 md:flex-col md:mt-1 h-full">
       {Object.entries(aspectRatios).map(([ratio, configuration]) => {
         return (
           <Button
             key={ratio}
             active={value === ratio}
-            className="border md:rounded-none"
+            className="border"
             shadow={false}
             onClick={() => {
               onChange(ratio);
             }}
           >
-            <div className="flex items-center justify-between w-32 md:w-full">
+            <div className="flex items-center justify-between w-32 md:w-full h-full md:h-10">
               <configuration.icon className="w-6 h-6" />
 
               <div className="flex flex-col items-end">
