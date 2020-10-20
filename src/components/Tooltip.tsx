@@ -15,10 +15,6 @@ export const Tooltip: React.FC<TooltipProps> = ({ text, placement, children }) =
   const [tooltipState, setTooltipState] = useState<TooltipState>("hidden");
   const touch = useStore((store) => store.screen.touch);
 
-  if (touch) {
-    return <>{children}</>;
-  }
-
   useEffect(() => {
     if (tooltipState !== "showing") {
       return;
@@ -30,6 +26,10 @@ export const Tooltip: React.FC<TooltipProps> = ({ text, placement, children }) =
 
     return () => clearTimeout(timeout);
   }, [tooltipState]);
+
+  if (touch) {
+    return <>{children}</>;
+  }
 
   return (
     <Popover
