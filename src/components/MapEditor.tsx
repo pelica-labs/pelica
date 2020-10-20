@@ -43,7 +43,7 @@ export const MapEditor: React.FC<Props> = ({ initialStyles }) => {
   );
 
   return (
-    <div className="flex h-full justify-between">
+    <div className="flex flex-col lg:flex-row h-full justify-between">
       <div className="relative w-full h-full">
         <Map />
 

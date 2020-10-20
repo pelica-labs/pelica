@@ -25,7 +25,7 @@ export const MenuButton: React.FC = () => {
 
   return (
     <div className="flex items-center justify-center">
-      <div className="relative inline-block text-left">
+      <div className="lg:relative inline-block text-left">
         <Menu>
           {({ open }) => (
             <>
@@ -37,14 +37,14 @@ export const MenuButton: React.FC = () => {
                     "hover:text-orange-600": !open,
                   })}
                 >
-                  <MenuIcon className="w-4 h-4" />
+                  <MenuIcon className="w-6 h-6 lg:w-4 lg:h-4" />
                 </Menu.Button>
               </span>
 
               {open && (
                 <Menu.Items
                   static
-                  className="absolute z-10 right-0 w-56 mt-1 origin-top-right bg-white border rounded shadow outline-none py-1"
+                  className="fixed bottom-0 mb-12 lg:mb-0 lg:bottom-auto lg:absolute z-50 left-0 lg:left-auto right-0 lg:w-56 mt-1 origin-top-right bg-white border lg:rounded lg:shadow outline-none py-1"
                 >
                   <div className="flex flex-col">
                     <Menu.Item disabled={!canUndo}>

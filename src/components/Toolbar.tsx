@@ -10,12 +10,14 @@ import {
   StyleIcon,
 } from "~/components/Icon";
 import { IconButton } from "~/components/IconButton";
+import { MenuButton } from "~/components/MenuButton";
 import { useApp, useStore } from "~/core/app";
 import { useHotkey } from "~/hooks/useHotkey";
 
 export const Toolbar: React.FC = () => {
   const app = useApp();
   const editorMode = useStore((store) => store.editor.mode);
+  const screenDimensions = useStore((store) => store.screen.dimensions);
 
   const SelectHotkey = useHotkey({ key: "1", meta: true }, () => {
     app.editor.setEditorMode("select");
@@ -30,15 +32,17 @@ export const Toolbar: React.FC = () => {
     app.editor.setEditorMode("pin");
   });
 
+  const tooltipPlacement = screenDimensions.lg ? "left" : "above";
+
   return (
     <>
-      <div className="flex flex-col space-y-1">
+      <div className="flex lg:flex-col lg:space-y-1">
         <IconButton
           active={editorMode === "style"}
           className="bg-white text-gray-800 py-2 flex-1 justify-center"
           id="toolbar-style"
           tooltip={{
-            placement: "left",
+            placement: tooltipPlacement,
             text: "Styles",
           }}
           onClick={() => {
@@ -49,12 +53,12 @@ export const Toolbar: React.FC = () => {
         </IconButton>
       </div>
 
-      <div className="flex flex-col space-y-1 mt-6">
+      <div className="flex lg:flex-col lg:space-y-1 lg:mt-6">
         <IconButton
           active={editorMode === "select"}
           id="toolbar-select"
           tooltip={{
-            placement: "left",
+            placement: tooltipPlacement,
             text: (
               <div className="flex items-center">
                 <span className="mr-4 leading-none">Select</span>
@@ -73,7 +77,7 @@ export const Toolbar: React.FC = () => {
           active={editorMode === "draw"}
           id="toolbar-draw"
           tooltip={{
-            placement: "left",
+            placement: tooltipPlacement,
             text: (
               <div className="flex items-center">
                 <span className="mr-4 leading-none">Draw</span>
@@ -92,7 +96,7 @@ export const Toolbar: React.FC = () => {
           active={editorMode === "itinerary"}
           id="toolbar-itinerary"
           tooltip={{
-            placement: "left",
+            placement: tooltipPlacement,
             text: (
               <div className="flex items-center">
                 <span className="mr-4 leading-none">Itinerary</span>
@@ -111,7 +115,7 @@ export const Toolbar: React.FC = () => {
           active={editorMode === "pin"}
           id="toolbar-pin"
           tooltip={{
-            placement: "left",
+            placement: tooltipPlacement,
             text: (
               <div className="flex items-center">
                 <span className="mr-4 leading-none">Pin</span>
@@ -127,12 +131,12 @@ export const Toolbar: React.FC = () => {
         </IconButton>
       </div>
 
-      <div className="flex flex-col space-y-1 mt-6">
+      <div className="flex lg:flex-col lg:space-y-1 lg:mt-6">
         <IconButton
           active={editorMode === "aspectRatio"}
           id="toolbar-aspect-ratio"
           tooltip={{
-            placement: "left",
+            placement: tooltipPlacement,
             text: "Aspect ratio",
           }}
           onClick={() => {
@@ -146,7 +150,7 @@ export const Toolbar: React.FC = () => {
           active={editorMode === "export"}
           id="toolbar-export"
           tooltip={{
-            placement: "left",
+            placement: tooltipPlacement,
             text: "Export",
           }}
           onClick={() => {
@@ -155,6 +159,12 @@ export const Toolbar: React.FC = () => {
         >
           <ExportIcon className="w-6 h-6" />
         </IconButton>
+
+        {!screenDimensions.lg && (
+          <div className="flex items-center justify-center mr-2">
+            <MenuButton />
+          </div>
+        )}
       </div>
     </>
   );
