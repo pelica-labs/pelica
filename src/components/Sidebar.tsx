@@ -667,8 +667,8 @@ const ExportSidebar: React.FC = () => {
 
   return (
     <>
-      <div className="flex md:flex-col md:space-y-4 divide-x">
-        <div className="px-3 flex flex-col space-y-1 w-40 md:w-auto">
+      <div className="flex md:flex-col md:divide-y md:divide-x-0 divide-x md:h-full">
+        <div className="px-3 md:py-4 flex flex-col space-y-1 md:space-y-2 w-40 md:w-auto">
           <Button
             className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-100 text-xs uppercase py-2 justify-center"
             disabled={!imageData}
@@ -702,7 +702,7 @@ const ExportSidebar: React.FC = () => {
           )}
         </div>
 
-        <div className="flex flex-col space-y-3 px-3 overflow-y-auto overflow-x-visible w-64 md:w-auto">
+        <div className="flex flex-col space-y-3 px-3 md:py-4 overflow-y-auto overflow-x-visible w-64 md:w-auto">
           <div className="flex items-center">
             <SidebarHeading>Output format</SidebarHeading>
           </div>
@@ -741,8 +741,12 @@ const ExportSidebar: React.FC = () => {
           </div>
         </div>
 
-        <div className="px-3 w-64">
-          <div className="flex justify-between items-center m-1 mt-auto border rounded p-1">
+        <div className="md:mt-auto px-3 md:pt-3 md:pb-2 w-64 md:w-auto">
+          <div className="flex items-center">
+            <SidebarHeading>Copyright</SidebarHeading>
+          </div>
+
+          <div className="flex justify-between items-center mt-2 overflow-x-hidden">
             <span className="text-2xs leading-tight">
               Prints use map data from Mapbox and Open Street Map and their data sources. To learn more, visit{" "}
               <a className="underline" href="https://www.mapbox.com/about/maps">
