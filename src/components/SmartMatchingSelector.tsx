@@ -77,7 +77,7 @@ export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange }) => {
           className="z-50"
           enterExitTransitionDurationMs={200}
           isOpen={showTooltip}
-          place={screenDimensions.lg ? "left" : "above"}
+          place={screenDimensions.md ? "left" : "above"}
           style={{ fill: theme.colors.orange[500] }}
           tipSize={4}
           onOuterAction={() => setShowTooltip(false)}
@@ -92,7 +92,7 @@ export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange }) => {
       </div>
 
       {value.enabled && (
-        <div className="mt-1 lg:mt-2 inline-flex items-center gap-2 rounded border">
+        <div className="mt-1 md:mt-2 inline-flex items-center gap-2 rounded border">
           {Profiles.map((profileConfiguration) => {
             return (
               <div key={profileConfiguration.profile}>
@@ -106,7 +106,7 @@ export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange }) => {
                     });
                   }}
                 >
-                  <profileConfiguration.icon className="w-4 h-4 lg:w-6 lg:h-6" />
+                  <profileConfiguration.icon className="w-4 h-4 md:w-6 md:h-6" />
                 </IconButton>
               </div>
             );

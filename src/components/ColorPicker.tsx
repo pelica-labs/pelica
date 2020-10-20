@@ -31,7 +31,7 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete
   const [showExtendedPicker, setShowExtendedPicker] = useState(false);
   const screenDimensions = useStore((store) => store.screen.dimensions);
 
-  const size = screenDimensions.lg ? 14 : 20;
+  const size = screenDimensions.md ? 14 : 20;
 
   const extendedPickerRef = useClickOutside<HTMLDivElement>(() => {
     if (showExtendedPicker) {
@@ -48,7 +48,7 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete
   }, [showExtendedPicker]);
 
   return (
-    <div className="relative flex items-start w-40 lg:w-auto">
+    <div className="relative flex items-start w-40 md:w-auto">
       <TwitterPicker
         color={color}
         colors={defaultColors}
@@ -82,7 +82,7 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete
       </Button>
 
       {showExtendedPicker && (
-        <div ref={extendedPickerRef} className="fixed lg:absolute mb-2 lg:mb-0 z-10 mt-6 bottom-0 lg:right-0 mr-3">
+        <div ref={extendedPickerRef} className="fixed md:absolute mb-2 md:mb-0 z-10 mt-6 bottom-0 md:right-0 mr-3">
           <ChromePicker
             disableAlpha
             color={color}

@@ -40,7 +40,7 @@ export const IconSelector: React.FC<Props> = ({ value, onChange }) => {
       </div>
 
       {showMenu && (
-        <div className="fixed bottom-0 lg:bottom-auto lg:absolute left-0 right-0 lg:right-auto lg:top-0 mt-6 bg-white text-gray-800 rounded border flex flex-wrap pl-1 pb-1 shadow z-50">
+        <div className="fixed bottom-0 md:bottom-auto md:absolute left-0 right-0 md:right-auto md:top-0 mt-6 bg-white text-gray-800 md:rounded border flex flex-wrap pl-1 pb-1 shadow z-50">
           {Object.entries(allIcons).map(([iconName, Icon]) => {
             return (
               <div key={iconName} className="w-1/5 px-1 pt-1 flex justify-center">
@@ -51,7 +51,7 @@ export const IconSelector: React.FC<Props> = ({ value, onChange }) => {
                   }}
                 >
                   <div className="flex items-center justify-center w-full">
-                    <Icon className="w-4 h-4" />
+                    <Icon className="w-6 h-6 md:w-5 md:h-5 lg:w-4 lg:h-4" />
                   </div>
                 </IconButton>
               </div>

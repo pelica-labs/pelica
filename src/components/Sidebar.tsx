@@ -43,10 +43,10 @@ export const Sidebar: React.FC<Props> = ({ initialStyles }) => {
       {sidebarDimensions && (
         <div
           ref={toolbarRef}
-          className="fixed z-10 bottom-0 lg:top-0 flex justify-between lg:flex-col bg-white border lg:m-2 p-1 lg:shadow lg:rounded overflow-x-auto"
+          className="fixed z-10 bottom-0 md:top-0 flex justify-between md:flex-col bg-white border md:m-2 p-1 md:shadow md:rounded overflow-x-auto"
           style={{
-            right: screenDimensions.lg ? sidebarDimensions.width : 0,
-            left: screenDimensions.lg ? "initial" : 0,
+            right: screenDimensions.md ? sidebarDimensions.width : 0,
+            left: screenDimensions.md ? "initial" : 0,
           }}
         >
           <Toolbar />
@@ -54,12 +54,12 @@ export const Sidebar: React.FC<Props> = ({ initialStyles }) => {
       )}
 
       <div
-        className="flex pt-3 pb-2 space-y-0 divide-x lg:flex-col lg:space-x-0 lg:divide-y lg:space-y-2 h-24 bg-white text-gray-800 lg:w-48 xl:w-64 lg:h-full overflow-y-auto overflow-x-auto lg:shadow-md"
+        className="flex pt-3 pb-2 space-y-0 divide-x md:flex-col md:space-x-0 md:divide-y md:space-y-2 h-24 bg-white text-gray-800 md:w-48 xl:w-64 md:h-full overflow-y-auto overflow-x-auto md:shadow-md"
         style={{
-          marginBottom: screenDimensions.lg ? "initial" : (toolbarDimensions?.height ?? 0) + 10,
+          marginBottom: screenDimensions.md ? "initial" : (toolbarDimensions?.height ?? 0) + 10,
         }}
       >
-        {screenDimensions.lg && (
+        {screenDimensions.md && (
           <div className="flex justify-between items-center px-3 h-8 py-2 bg-gray-100 border-b">
             <span className="text-xs uppercase text-gray-800 font-light tracking-wide leading-none">
               <Trans i18nKey={`editor.mode.${editorMode}`} />
@@ -143,13 +143,13 @@ const SelectSidebar: React.FC = () => {
 
   return (
     <>
-      <div className="flex flex-col lg:flex-row items-center lg:justify-between px-3 lg:py-2 bg-white">
+      <div className="flex flex-col md:flex-row items-center md:justify-between px-3 md:py-2 bg-white">
         <div className="text-xs uppercase font-light tracking-wide leading-none">
           <span>{name}</span>
           {selectedEntities.length > 1 && <span className="ml-1 text-gray-600">({selectedEntities.length})</span>}
         </div>
         <Button
-          className="bg-gray-300 text-gray-800 mt-4 lg:mt-0"
+          className="bg-gray-300 text-gray-800 mt-4 md:mt-0"
           onClick={() => {
             app.selection.deleteSelectedEntities();
           }}
@@ -205,7 +205,7 @@ const SelectSidebar: React.FC = () => {
             </div>
           </div>
 
-          <div className="mt-5 lg:mt-4 px-1 w-32 lg:w-auto">
+          <div className="mt-5 md:mt-4 px-1 w-32 md:w-auto">
             <WidthSlider
               color={selectedEntity.style.color}
               max={12}
@@ -252,7 +252,7 @@ const SelectSidebar: React.FC = () => {
             <SidebarHeading>Icon</SidebarHeading>
           </div>
 
-          <div className="mt-4 lg:mt-2">
+          <div className="mt-4 md:mt-2">
             <IconSelector
               value={selectedEntity.style.icon}
               onChange={(icon) => {
@@ -271,7 +271,7 @@ const SelectSidebar: React.FC = () => {
 
           <div
             className={classNames({
-              "lg:mt-2 w-40 lg:w-full": true,
+              "md:mt-2 w-40 md:w-full": true,
               "mt-5": !selectedEntity.smartMatching.enabled,
               "mt-2": selectedEntity.smartMatching.enabled,
             })}
@@ -287,12 +287,12 @@ const SelectSidebar: React.FC = () => {
       )}
 
       {selectedEntity.type === "Route" && (
-        <div className="lg:mt-auto px-3">
+        <div className="md:mt-auto px-3">
           <div className="flex items-center">
             <SidebarHeading>Inspect</SidebarHeading>
           </div>
 
-          <div className="mt-5 lg:mt-2">
+          <div className="mt-5 md:mt-2">
             <div className="flex items-center text-xs">
               <span className="mr-4">Distance</span>
               <Distance value={computeDistance(selectedEntity)} />
@@ -338,7 +338,7 @@ const PinSidebar: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-5 lg:mt-4 px-1 w-32 lg:w-auto">
+        <div className="mt-5 md:mt-4 px-1 w-32 md:w-auto">
           <WidthSlider
             color={color}
             max={12}
@@ -359,7 +359,7 @@ const PinSidebar: React.FC = () => {
           <SidebarHeading>Icon</SidebarHeading>
         </div>
 
-        <div className="mt-5 lg:mt-2">
+        <div className="mt-5 md:mt-2">
           <IconSelector
             value={icon}
             onChange={(icon) => {
@@ -408,7 +408,7 @@ const DrawSidebar: React.FC = () => {
             <div className="rounded-full" style={{ width: width, height: width, backgroundColor: color }} />
           </div>
         </div>
-        <div className="mt-5 lg:mt-4 px-1 w-32 lg:w-auto">
+        <div className="mt-5 md:mt-4 px-1 w-32 md:w-auto">
           <WidthSlider
             color={color}
             max={12}
@@ -445,7 +445,7 @@ const DrawSidebar: React.FC = () => {
 
         <div
           className={classNames({
-            "lg:mt-2 w-40 lg:w-full": true,
+            "md:mt-2 w-40 md:w-full": true,
             "mt-5": !smartMatching.enabled,
             "mt-2": smartMatching.enabled,
           })}
@@ -460,7 +460,7 @@ const DrawSidebar: React.FC = () => {
       </div>
 
       <div className="px-3">
-        <div className="flex flex-col items-start space-y-4 lg:flex-row lg:items-center">
+        <div className="flex flex-col items-start space-y-4 md:flex-row md:items-center">
           <SidebarHeading>Import</SidebarHeading>
           <Button
             className="bg-gray-300 text-gray-800 mt-1"
@@ -484,12 +484,12 @@ const DrawSidebar: React.FC = () => {
       </div>
 
       {route && (
-        <div className="lg:mt-auto px-3">
+        <div className="md:mt-auto px-3">
           <div className="flex items-center">
             <SidebarHeading>Inspect</SidebarHeading>
           </div>
 
-          <div className="mt-5 lg:mt-2">
+          <div className="mt-5 md:mt-2">
             <div className="flex items-center text-xs">
               <span className="mr-4">Distance</span>
               <Distance value={computeDistance(route)} />
@@ -537,7 +537,7 @@ const ItinerarySidebar: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-5 lg:mt-4 px-1 w-32 lg:w-auto">
+        <div className="mt-5 md:mt-4 px-1 w-32 md:w-auto">
           <WidthSlider
             color={color}
             max={12}
@@ -569,11 +569,11 @@ const ItinerarySidebar: React.FC = () => {
       </div>
 
       {route && (
-        <div className="lg:mt-auto lg:mb-1 px-3">
+        <div className="md:mt-auto md:mb-1 px-3">
           <div className="flex items-center">
             <SidebarHeading>Inspect</SidebarHeading>
           </div>
-          <div className="mt-5 lg:mt-2">
+          <div className="mt-5 md:mt-2">
             <div className="flex items-center text-xs">
               <span className="mr-4">Distance</span>
               <Distance value={computeDistance(route)} />
@@ -661,8 +661,8 @@ const ExportSidebar: React.FC = () => {
 
   return (
     <>
-      <div className="flex lg:flex-col lg:space-y-4 divide-x">
-        <div className="px-3 flex flex-col space-y-1 w-40 lg:w-auto">
+      <div className="flex md:flex-col md:space-y-4 divide-x">
+        <div className="px-3 flex flex-col space-y-1 w-40 md:w-auto">
           <Button
             className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-100 text-xs uppercase py-2 justify-center"
             disabled={!imageData}
@@ -696,11 +696,11 @@ const ExportSidebar: React.FC = () => {
           )}
         </div>
 
-        <div className="flex flex-col space-y-3 px-3 overflow-y-auto overflow-x-visible w-64 lg:w-auto">
+        <div className="flex flex-col space-y-3 px-3 overflow-y-auto overflow-x-visible w-64 md:w-auto">
           <div className="flex items-center">
             <SidebarHeading>Output format</SidebarHeading>
           </div>
-          <div className="flex-col lg:space-y-1">
+          <div className="flex-col md:space-y-1">
             <div className="text-xs flex justify-between">
               <span className="flex-1 mr-4">Format</span>
               <span>JPEG</span>

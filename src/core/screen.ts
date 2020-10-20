@@ -13,8 +13,8 @@ export type ScreenDimensions = {
   width: number;
   height: number;
   xl: boolean;
-  lg: boolean;
   md: boolean;
+  lg: boolean;
   sm: boolean;
 };
 
