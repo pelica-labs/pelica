@@ -43,11 +43,11 @@ export const Map: React.FC = () => {
       return;
     }
 
-    const state = getState();
-    const accessToken = getEnv("NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN", process.env.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN);
-
     app.screen.initialize();
     app.keyboard.initialize();
+
+    const state = getState();
+    const accessToken = getEnv("NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN", process.env.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN);
 
     map.current = new mapboxgl.Map({
       accessToken,
@@ -59,8 +59,7 @@ export const Map: React.FC = () => {
       pitch: state.map.pitch,
       doubleClickZoom: false,
       fadeDuration: 0,
-      logoPosition: "bottom-left",
-      // attributionControl: false,
+      logoPosition: app.screen.dimensions.md ? "bottom-right" : "bottom-left",
       preserveDrawingBuffer: true,
     });
 
