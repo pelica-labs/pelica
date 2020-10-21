@@ -29,10 +29,11 @@ export const mapMatch = async (points: Position[], profile: SmartMatchingProfile
             profile,
             points: points.map((point) => {
               return {
-                coordinates: point as [number, number],
+                coordinates: point.map((c) => +c.toFixed(6)) as [number, number],
                 radius: 50,
               };
             }),
+            overview: "full",
           })
           .send();
 
@@ -71,9 +72,10 @@ export const directionsMatch = async (points: Position[], profile: SmartMatching
           profile,
           waypoints: points.map((point) => {
             return {
-              coordinates: point,
+              coordinates: point.map((c) => +c.toFixed(6)),
             };
           }),
+          overview: "full",
         })
         .send();
 
@@ -95,7 +97,7 @@ export const smartMatch = async (points: Position[], profile: SmartMatchingProfi
 
   const chunks = await Promise.all(
     chunkByDistance(points).map(({ points, method }: { points: Position[]; method: "mapMatch" | "directions" }) => {
-      if (true /*method === "mapMatch" */) {
+      if (method === "mapMatch") {
         return mapMatch(points, profile);
       } else {
         // method === 'directions'
@@ -112,10 +114,12 @@ export const smartMatch = async (points: Position[], profile: SmartMatchingProfi
  * Points within 100m of each other will be chunked in the same group.
  */
 const chunkByDistance = (points: Position[]): Array<{ points: Position[]; method: "mapMatch" | "directions" }> => {
+  console.log("points", points);
+
   if (points.length < 2) return [{ points, method: "directions" }];
 
   const ruler = new CheapRuler(points[0][1], "meters");
-  const minDistance = 500; // meters
+  const minDistance = 100; // meters
 
   const comparison = (a: Position, b: Position) =>
     ruler.distance(a as [number, number], b as [number, number]) < minDistance;
@@ -138,6 +142,6 @@ const chunkByDistance = (points: Position[]): Array<{ points: Position[]; method
   // add last bit
   currentChunk.push(points[points.length - 1]);
   chunks.push({ points: currentChunk, method: lastDistanceRespected ? "mapMatch" : "directions" });
-
+  console.log("chunks", chunks);
   return chunks;
 };

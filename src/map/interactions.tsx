@@ -3,6 +3,7 @@ import CheapRuler from "cheap-ruler";
 import * as KeyCode from "keycode-js";
 import { throttle } from "lodash";
 import { MapLayerMouseEvent, MapMouseEvent, MapTouchEvent, MapWheelEvent } from "mapbox-gl";
+import mem from "mem";
 
 import { getState, State } from "~/core/app";
 import { getSelectedEntities, getSelectedEntity, getSelectedItinerary } from "~/core/selectors";
@@ -76,7 +77,8 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
         event.originalEvent.stopPropagation();
       } else {
         // otherwise start a route segment
-        app.routes.startRoute(event.lngLat.toArray());
+        const point = state.routes.smartMatching.enabled ? snap(map, event) : event.lngLat.toArray();
+        app.routes.startRoute(point);
       }
       return;
     }
@@ -303,11 +305,11 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
 };
 
 const hierarchy: { [key: string]: number } = {
-  trunk: 1000,
-  motorway: 2000,
-  primary: 3000,
-  secondary: 4000,
-  tertiary: 5000,
+  trunk: 2,
+  motorway: 2,
+  primary: 3,
+  secondary: 4,
+  tertiary: 5,
 };
 
 function snap(map: mapboxgl.Map, event: MapMouseEvent | MapTouchEvent) {
@@ -316,17 +318,18 @@ function snap(map: mapboxgl.Map, event: MapMouseEvent | MapTouchEvent) {
   const point = event.lngLat.toArray() as [number, number];
 
   const features = map.queryRenderedFeatures([
-    [event.point.x - 15, event.point.y - 15],
-    [event.point.x + 15, event.point.y + 15],
+    [event.point.x - 10, event.point.y - 10],
+    [event.point.x + 10, event.point.y + 10],
   ]);
+
+  const getDistance = mem((f) => ruler.distance(point, ruler.pointOnLine(getCoords(f), point).point));
 
   const roads = features
     .filter((f) => f.layer["source-layer"] === "road")
     .sort((a, b) => {
-      return (hierarchy[a.properties?.type] || 12000) === (hierarchy[b.properties?.type] || 12000)
-        ? ruler.distance(point, ruler.pointOnLine(getCoords(a), point).point) -
-            ruler.distance(point, ruler.pointOnLine(getCoords(b), point).point)
-        : (hierarchy[a.properties?.type] || 12000) - (hierarchy[b.properties?.type] || 12000);
+      return hierarchy[a.properties?.type] === hierarchy[b.properties?.type]
+        ? getDistance(a) - getDistance(b)
+        : hierarchy[a.properties?.type] - hierarchy[b.properties?.type];
     });
 
   if (roads.length) {

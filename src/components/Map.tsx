@@ -105,6 +105,7 @@ export const Map: React.FC = () => {
     (coordinates) => {
       map.current?.flyTo({
         center: coordinates as [number, number],
+        duration: 500,
       });
     }
   );
@@ -214,6 +215,7 @@ export const Map: React.FC = () => {
             lat: place.center[1],
           },
           zoom: 14,
+          duration: 500,
         });
       }
     }
