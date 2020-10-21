@@ -5,6 +5,13 @@ type PinConfiguration = {
   dimensions: [number, number];
 };
 
+/**
+ * List of available pins as SVG components
+ *
+ * ⚠ When optimising those SVGs before inserting them in the code,
+ * ⚠ make sure not to omit this part: xmlns="http://www.w3.org/2000/svg"
+ * ⚠ Otherwise the SVG can't be properly drawn in a canvas.
+ */
 export const pins = (): { [key: string]: PinConfiguration } => ({
   pelipin: { component: Pelipin, dimensions: [54, 73] },
   peaky: { component: PeakyPin, dimensions: [24, 24] },
