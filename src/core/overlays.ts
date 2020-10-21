@@ -19,7 +19,9 @@ export const getWatermarkOverlay = (position: Position): RawFeature => {
 };
 
 export const getNextPointOverlay = (route: Route, nextPoint: Position): RawFeature => {
-  const lastPoint = route.points[route.points.length - 1];
+  const lastPoint = route.transientPoints.length
+    ? route.transientPoints[route.transientPoints.length - 1]
+    : route.points[route.points.length - 1];
 
   return {
     type: "Feature",
@@ -37,7 +39,9 @@ export const getNextPointOverlay = (route: Route, nextPoint: Position): RawFeatu
 };
 
 export const getRouteStopOverlay = (route: Route): RawFeature => {
-  const lastPoint = route.points[route.points.length - 1];
+  const lastPoint = route.transientPoints.length
+    ? route.transientPoints[route.transientPoints.length - 1]
+    : route.points[route.points.length - 1];
 
   return {
     type: "Feature",
