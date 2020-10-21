@@ -12,10 +12,7 @@ export type Pin = {
   source: MapSource;
   type: "Pin";
   coordinates: Position;
-  style: {
-    color: string;
-    width: number;
-    icon: string;
+  style: PinStyle & {
     target?: "Pin";
   };
   transientStyle?: {
@@ -26,6 +23,7 @@ export type Pin = {
 
 export type PinStyle = {
   icon: string;
+  pinType: string;
   width: number;
   color: string;
 };
@@ -37,6 +35,7 @@ export type Pins = {
 const initialState: Pins = {
   style: {
     icon: "star",
+    pinType: "pelipin",
     width: 6,
     color: theme.colors.yellow[500],
   },

@@ -17,8 +17,8 @@ const transparentPixel = {
 const idToComponent = (eventId: string) => {
   const [prefix, name, color] = eventId.split("-");
 
-  const Component = prefix === "icon" ? allIcons[name] : allPins[name];
-  const dimensions = prefix === "icon" ? [24, 24] : [54, 73];
+  const Component = prefix === "icon" ? allIcons[name] : allPins[name].component;
+  const dimensions = prefix === "icon" ? [24, 24] : allPins[name].dimensions;
 
   if (!Component) {
     return null;

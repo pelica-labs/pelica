@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import { Button } from "~/components/Button";
-import { miniPinIcons } from "~/components/Icon";
+import { pinIcons } from "~/components/Icon";
 import { IconButton } from "~/components/IconButton";
 import { useClickOutside } from "~/hooks/useClickOutside";
 
@@ -10,7 +10,7 @@ type Props = {
   onChange: (value: string) => void;
 };
 
-const allIcons = miniPinIcons();
+const allIcons = pinIcons();
 
 // Just copy-pasted the code for the IconSelector
 export const PinSelector: React.FC<Props> = ({ value, onChange }) => {
@@ -41,7 +41,7 @@ export const PinSelector: React.FC<Props> = ({ value, onChange }) => {
       </div>
 
       {showMenu && (
-        <div className="absolute left-0 top-0 mt-6 bg-white text-gray-800 rounded border flex flex-wrap pl-1 pb-1 shadow">
+        <div className="absolute left-0 top-0 mt-6 bg-white text-gray-800 rounded border flex flex-wrap pl-1 pb-1 shadow w-full">
           {Object.entries(allIcons).map(([iconName, Icon]) => {
             return (
               <div key={iconName} className="w-1/5 px-1 pt-1">

@@ -278,6 +278,7 @@ const PinSidebar: React.FC = () => {
   const color = useStore((store) => store.pins.style.color);
   const width = useStore((store) => store.pins.style.width);
   const icon = useStore((store) => store.pins.style.icon);
+  const pinType = useStore((store) => store.pins.style.pinType);
 
   return (
     <>
@@ -341,11 +342,11 @@ const PinSidebar: React.FC = () => {
       <SidebarSection>
         <SidebarHeading>Pin Type</SidebarHeading>
 
-        <div className="mt-2">
+        <div className="mt-5 md:mt-2">
           <PinSelector
-            value={icon}
-            onChange={(icon) => {
-              app.pins.setStyle({ icon });
+            value={pinType}
+            onChange={(pinType) => {
+              app.pins.setStyle({ pinType });
             }}
           />
         </div>

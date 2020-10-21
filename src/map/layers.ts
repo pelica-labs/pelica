@@ -163,7 +163,7 @@ export const applyLayers = (map: mapboxgl.Map): void => {
     type: "symbol",
     source: MapSource.Pins,
     layout: {
-      "icon-image": ["concat", "pin", "-", "pelipin", "-", ["get", "color"]],
+      "icon-image": ["concat", "pin", "-", ["get", "pinType"], "-", ["get", "color"]],
       "icon-size": ["*", 0.2, ["get", "width"]],
       "icon-offset": [0, -20],
       "icon-allow-overlap": true,

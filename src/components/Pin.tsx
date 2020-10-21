@@ -1,8 +1,13 @@
 import React from "react";
 
-export const pins = (): { [key: string]: React.FC<Props> } => ({
-  pelipin: Pelipin,
-  otherPin: OtherPin,
+type PinConfiguration = {
+  component: React.FC<Props>;
+  dimensions: [number, number];
+};
+
+export const pins = (): { [key: string]: PinConfiguration } => ({
+  pelipin: { component: Pelipin, dimensions: [54, 73] },
+  peaky: { component: PeakyPin, dimensions: [24, 24] },
 });
 
 type Props = {
@@ -42,9 +47,9 @@ export const Pelipin: React.FC<Props> = ({ color }) => {
   );
 };
 
-export const OtherPin: React.FC<Props> = ({ color }) => {
+export const PeakyPin: React.FC<Props> = ({ color }) => {
   return (
-    <svg focusable="false" height="1em" viewBox="0 0 24 24" width="1em">
+    <svg focusable="false" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
       <path
         d="M11 19.945A9.001 9.001 0 0 1 12 2a9 9 0 0 1 1 17.945V24h-2v-4.055zM12 18a7 7 0 1 0 0-14a7 7 0 0 0 0 14z"
         fill={color}
