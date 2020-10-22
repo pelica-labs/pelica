@@ -2,8 +2,8 @@ import { Position } from "@turf/turf";
 import CheapRuler from "cheap-ruler";
 import * as KeyCode from "keycode-js";
 import { throttle } from "lodash";
+import { memoize } from "lodash";
 import { MapLayerMouseEvent, MapMouseEvent, MapTouchEvent, MapWheelEvent } from "mapbox-gl";
-import mem from "mem";
 
 import { getState, State } from "~/core/app";
 import { getSelectedEntities, getSelectedEntity, getSelectedItinerary } from "~/core/selectors";
@@ -322,7 +322,7 @@ function snap(map: mapboxgl.Map, event: MapMouseEvent | MapTouchEvent) {
     [event.point.x + 10, event.point.y + 10],
   ]);
 
-  const getDistance = mem((f) => ruler.distance(point, ruler.pointOnLine(getCoords(f), point).point));
+  const getDistance = memoize((f) => ruler.distance(point, ruler.pointOnLine(getCoords(f), point).point));
 
   const roads = features
     .filter((f) => f.layer["source-layer"] === "road")
