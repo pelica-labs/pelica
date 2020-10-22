@@ -4,6 +4,7 @@ import Link from "next/link";
 import React from "react";
 
 import { DoubleCheckIcon, MenuIcon, RedoIcon, TrashIcon, UndoIcon } from "~/components/Icon";
+import { IconButton } from "~/components/IconButton";
 import { useApp, useStore } from "~/core/app";
 import { useHotkey } from "~/hooks/useHotkey";
 
@@ -32,19 +33,21 @@ export const MenuButton: React.FC = () => {
               <span className="flex rounded-md shadow-sm">
                 <Menu.Button
                   className={classNames({
-                    "inline-flex justify-center w-full text-sm font-medium leading-5 transition duration-150 ease-in-out text-gray-800 rounded-md focus:outline-none p-1": true,
+                    "inline-flex justify-center w-full text-sm font-medium leading-5 transition duration-150 ease-in-out text-gray-800 rounded-md focus:outline-none": true,
                     "bg-orange-200 rounded": open,
                     "hover:text-orange-600": !open,
                   })}
                 >
-                  <MenuIcon className="w-6 h-6" />
+                  <IconButton>
+                    <MenuIcon className="w-6 h-6" id="toolbar-menu" />
+                  </IconButton>
                 </Menu.Button>
               </span>
 
               {open && (
                 <Menu.Items
                   static
-                  className="fixed bottom-0 mb-12 md:mb-0 md:mr-2 md:bottom-auto z-50 left-0 md:left-auto right-0 md:right-auto md:w-56 mt-1 origin-top-right bg-white border md:rounded md:shadow outline-none py-1"
+                  className="fixed bottom-0 mb-12 md:mb-0 md:mr-48 xl:mr-64 md:bottom-auto z-50 left-0 md:left-auto right-0 md:w-56 mt-1 origin-top-right bg-white border md:rounded md:shadow outline-none py-1"
                 >
                   <div className="flex flex-col">
                     <Menu.Item disabled={!canUndo}>
