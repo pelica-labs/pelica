@@ -1,7 +1,9 @@
 import { Position } from "@turf/turf";
+import CheapRuler from "cheap-ruler";
 import * as KeyCode from "keycode-js";
 import { throttle } from "lodash";
 import { MapLayerMouseEvent, MapMouseEvent, MapTouchEvent, MapWheelEvent } from "mapbox-gl";
+import mem from "mem";
 
 import { getState, State } from "~/core/app";
 import { getSelectedEntities, getSelectedEntity, getSelectedItinerary } from "~/core/selectors";
@@ -43,7 +45,9 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     const state = getState();
 
     if (state.routes.isDrawing) {
-      app.routes.addRouteStep(event.lngLat.toArray());
+      // find the closest line feature and project to it if we're in match mode
+      const point = state.routes.smartMatching.enabled ? snap(map, event) : event.lngLat.toArray();
+      app.routes.addRouteStep(point);
     } else if (state.editor.mode === "draw") {
       app.routes.updateNextPoint(event.lngLat.toArray());
     }
@@ -55,7 +59,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     if (state.selection.area) {
       app.selection.updateArea(event.lngLat.toArray());
     }
-  }, 1000 / 30);
+  }, 1000 / 20);
 
   const onMouseDown = (event: MapMouseEvent | MapTouchEvent) => {
     const state = getState();
@@ -73,7 +77,8 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
         event.originalEvent.stopPropagation();
       } else {
         // otherwise start a route segment
-        app.routes.startRoute(event.lngLat.toArray());
+        const point = state.routes.smartMatching.enabled ? snap(map, event) : event.lngLat.toArray();
+        app.routes.startRoute(point);
       }
       return;
     }
@@ -297,4 +302,55 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
   window.addEventListener("blur", onWindowBlur);
 
   canvas.addEventListener("keydown", onCanvasKeyUp);
+};
+
+const hierarchy: { [key: string]: number } = {
+  trunk: 2,
+  motorway: 2,
+  primary: 3,
+  secondary: 4,
+  tertiary: 5,
+};
+
+function snap(map: mapboxgl.Map, event: MapMouseEvent | MapTouchEvent) {
+  const ruler = new CheapRuler(event.lngLat.lat);
+
+  const point = event.lngLat.toArray() as [number, number];
+
+  const features = map.queryRenderedFeatures([
+    [event.point.x - 10, event.point.y - 10],
+    [event.point.x + 10, event.point.y + 10],
+  ]);
+
+  const getDistance = mem((f) => ruler.distance(point, ruler.pointOnLine(getCoords(f), point).point));
+
+  const roads = features
+    .filter((f) => f.layer["source-layer"] === "road")
+    .sort((a, b) => {
+      return hierarchy[a.properties?.type] === hierarchy[b.properties?.type]
+        ? getDistance(a) - getDistance(b)
+        : hierarchy[a.properties?.type] - hierarchy[b.properties?.type];
+    });
+
+  if (roads.length) {
+    try {
+      const road = roads[0];
+      const coords = getCoords(road);
+
+      const proj = ruler.pointOnLine(coords as [number, number][], event.lngLat.toArray() as [number, number]);
+      return proj.point;
+    } catch (error) {
+      return event.lngLat.toArray();
+    }
+  }
+
+  return event.lngLat.toArray();
+}
+
+const getCoords = (feature: GeoJSON.Feature): [number, number][] => {
+  return (feature.geometry.type === "MultiLineString"
+    ? feature.geometry.coordinates.flat()
+    : feature.geometry.type === "LineString"
+    ? feature.geometry.coordinates
+    : []) as [number, number][];
 };

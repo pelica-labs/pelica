@@ -684,7 +684,7 @@ const ExportSidebar: React.FC = () => {
             )}
           </Button>
 
-          {!shareFeature && (
+          {shareFeature && (
             <Button
               className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-100 text-xs uppercase py-2 justify-center"
               disabled={!imageUrl}
@@ -748,15 +748,16 @@ const ExportSidebar: React.FC = () => {
 
           <div className="flex justify-between items-center mt-2 overflow-x-hidden">
             <span className="text-2xs leading-tight">
-              Prints use map data from Mapbox and Open Street Map and their data sources. To learn more, visit{" "}
-              <a className="underline" href="https://www.mapbox.com/about/maps">
-                https://www.mapbox.com/about/maps/
+              Prints use map data and styles from Mapbox and OpenStreetMap and must be attributed accordingly. To learn
+              more, see{" "}
+              <a className="underline" href="https://docs.mapbox.com/help/how-mapbox-works/attribution/">
+                Mapbox
               </a>{" "}
               and{" "}
               <a className="underline" href="http://www.openstreetmap.org/copyright">
-                http://www.openstreetmap.org/copyright
-              </a>
-              .
+                OSM
+              </a>{" "}
+              attribution requirements.
             </span>
           </div>
         </div>

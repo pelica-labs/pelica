@@ -21,33 +21,39 @@ export const mapMatch = async (points: Position[], profile: SmartMatchingProfile
         return points;
       }
 
-      const res = await mapboxMapMatching
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        .getMatch({
-          profile,
-          points: points.map((point) => {
-            return {
-              coordinates: point as [number, number],
-              radius: 50,
-            };
-          }),
-        })
-        .send();
+      try {
+        const res = await mapboxMapMatching
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          .getMatch({
+            profile,
+            points: points.map((point) => {
+              return {
+                coordinates: point.map((c) => +c.toFixed(6)) as [number, number],
+                radius: 50,
+              };
+            }),
+            overview: "full",
+          })
+          .send();
 
-      if (!res.body.tracepoints) {
-        console.info("Map matching did return any tracepoints", res.body);
+        if (!res.body.tracepoints) {
+          console.info("Map matching did return any tracepoints", res.body);
 
+          return points;
+        }
+
+        return (res.body.tracepoints as Tracepoint[])
+          .filter((tracepoint) => {
+            return tracepoint !== null;
+          })
+          .map((tracepoint) => {
+            return tracepoint.location;
+          });
+      } catch (error) {
+        console.info("There was an error mapmatching the request.", error);
         return points;
       }
-
-      return (res.body.tracepoints as Tracepoint[])
-        .filter((tracepoint) => {
-          return tracepoint !== null;
-        })
-        .map((tracepoint) => {
-          return tracepoint.location;
-        });
     })
   );
 
@@ -66,9 +72,10 @@ export const directionsMatch = async (points: Position[], profile: SmartMatching
           profile,
           waypoints: points.map((point) => {
             return {
-              coordinates: point,
+              coordinates: point.map((c) => +c.toFixed(6)),
             };
           }),
+          overview: "full",
         })
         .send();
 
@@ -107,6 +114,8 @@ export const smartMatch = async (points: Position[], profile: SmartMatchingProfi
  * Points within 100m of each other will be chunked in the same group.
  */
 const chunkByDistance = (points: Position[]): Array<{ points: Position[]; method: "mapMatch" | "directions" }> => {
+  console.log("points", points);
+
   if (points.length < 2) return [{ points, method: "directions" }];
 
   const ruler = new CheapRuler(points[0][1], "meters");
@@ -133,6 +142,6 @@ const chunkByDistance = (points: Position[]): Array<{ points: Position[]; method
   // add last bit
   currentChunk.push(points[points.length - 1]);
   chunks.push({ points: currentChunk, method: lastDistanceRespected ? "mapMatch" : "directions" });
-
+  console.log("chunks", chunks);
   return chunks;
 };
