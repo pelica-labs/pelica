@@ -9,7 +9,7 @@ type Dimensions = {
   height: number;
 };
 
-type AspectRatioConfiguration = {
+export type AspectRatioConfiguration = {
   ratio?: [number, number];
   name: string;
   icon: Icon;
