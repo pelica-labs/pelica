@@ -2,6 +2,7 @@ import { Listbox, Transition } from "@headlessui/react";
 import classNames from "classnames";
 import React from "react";
 
+import { SelectorCarretIcon } from "~/components/Icon";
 import { AspectRatio, aspectRatios } from "~/lib/aspectRatio";
 
 type Props = {
@@ -34,7 +35,7 @@ export const AspectRatioSelector: React.FC<Props> = ({ value, onChange }) => {
                     <span className="text-xs text-gray-600 whitespace-no-wrap">{currentConfigurationRatio}</span>
                   </div>
                   <span className="ml-auto">
-                    <SelectorCarretIcon />
+                    <SelectorCarretIcon className="h-5 w-5 text-gray-400" />
                   </span>
                 </div>
               </Listbox.Button>
@@ -84,9 +85,3 @@ export const AspectRatioSelector: React.FC<Props> = ({ value, onChange }) => {
     </Listbox>
   );
 };
-
-export const SelectorCarretIcon: React.FC = () => (
-  <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 20 20">
-    <path d="M7 7l3-3 3 3m0 6l-3 3-3-3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
-  </svg>
-);
