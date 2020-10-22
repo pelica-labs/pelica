@@ -58,7 +58,7 @@ export const StyleSelector: React.FC<Props> = ({ value, onChange, initialStyles 
   }
 
   return (
-    <div className="flex space-x-1 md:p-1 md:flex-col md:items-start md:space-y-1 justify-between overflow-x-auto h-full">
+    <div className="flex space-x-1 md:space-x-0 md:p-1 md:flex-col md:items-start md:space-y-1 justify-between overflow-x-auto h-full">
       {data.styles.map((style) => {
         const isSelectedStyle = value.id === style.id;
         const containerClasses = classnames({
