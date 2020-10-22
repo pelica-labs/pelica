@@ -557,3 +557,8 @@ export const MuseumIcon = icon(
   />,
   50
 );
+
+export const SelectorCarretIcon = icon(
+  <path d="M7 7l3-3 3 3m0 6l-3 3-3-3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />,
+  20
+);

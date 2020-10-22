@@ -6,7 +6,7 @@ import { ItineraryInput } from "~/components/ItineraryInput";
 import { Map } from "~/components/Map";
 import { PlaceAutocomplete } from "~/components/PlaceAutocomplete";
 import { ResetOrientationButton } from "~/components/ResetOrientationButton";
-import { Sidebar } from "~/components/Sidebar";
+import { Sidebar } from "~/components/Sidebar/Sidebar";
 import { useApp, useStore, useStoreSubscription } from "~/core/app";
 import { getSelectedItinerary } from "~/core/selectors";
 import { useKeyboard } from "~/hooks/useKeyboard";

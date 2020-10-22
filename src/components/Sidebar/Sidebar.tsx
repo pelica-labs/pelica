@@ -9,10 +9,9 @@ import { ColorPicker } from "~/components/ColorPicker";
 import { Distance } from "~/components/Distance";
 import { TrashIcon } from "~/components/Icon";
 import { IconSelector } from "~/components/IconSelector";
-import { MenuButton } from "~/components/MenuButton";
 import { OutlineSelector } from "~/components/OutlineSelector";
+import { StyleSidebar } from "~/components/Sidebar/StyleSidebar";
 import { SmartMatchingSelector } from "~/components/SmartMatchingSelector";
-import { StyleSelector } from "~/components/StyleSelector";
 import { Toolbar } from "~/components/Toolbar";
 import { WidthSlider } from "~/components/WidthSlider";
 import { useApp, useStore } from "~/core/app";
@@ -65,11 +64,10 @@ export const Sidebar: React.FC<Props> = ({ initialStyles }) => {
         }}
       >
         {screenDimensions.md && (
-          <div className="flex justify-between items-center px-3 h-8 py-2 bg-gray-100">
+          <div className="flex justify-between items-center px-3 h-8 py-2 bg-gray-100 border-l">
             <span className="text-xs uppercase text-gray-800 font-light tracking-wide leading-none">
               <Trans i18nKey={`editor.mode.${editorMode}`} />
             </span>
-            <MenuButton />
           </div>
         )}
 
@@ -83,44 +81,8 @@ export const Sidebar: React.FC<Props> = ({ initialStyles }) => {
 
         {editorMode === "itinerary" && <ItinerarySidebar />}
 
-        {editorMode === "aspectRatio" && <AspectRatioSidebar />}
-
         {editorMode === "export" && <ExportSidebar />}
       </div>
-    </div>
-  );
-};
-
-const StyleSidebar: React.FC<Props> = ({ initialStyles }) => {
-  const app = useApp();
-  const style = useStore((store) => store.editor.style);
-  const screenDimensions = useStore((store) => store.screen.dimensions);
-
-  return (
-    <div style={{ marginTop: screenDimensions.md ? 0 : -12 }}>
-      <StyleSelector
-        initialStyles={initialStyles}
-        value={style}
-        onChange={(style) => {
-          app.editor.setStyle(style);
-        }}
-      />
-    </div>
-  );
-};
-
-const AspectRatioSidebar: React.FC = () => {
-  const app = useApp();
-  const aspectRatio = useStore((store) => store.editor.aspectRatio);
-
-  return (
-    <div className="px-1">
-      <AspectRatioSelector
-        value={aspectRatio}
-        onChange={(aspectRatio) => {
-          app.editor.setAspectRatio(aspectRatio);
-        }}
-      />
     </div>
   );
 };
@@ -165,7 +127,7 @@ const SelectSidebar: React.FC = () => {
       </div>
 
       {allSame && (
-        <div className="px-3 md:py-4">
+        <SidebarSection>
           <div className="flex items-center px-1">
             <SidebarHeading>Color</SidebarHeading>
             <div
@@ -192,11 +154,11 @@ const SelectSidebar: React.FC = () => {
               }}
             />
           </div>
-        </div>
+        </SidebarSection>
       )}
 
       {allSame && (
-        <div className="px-3 md:py-4">
+        <SidebarSection>
           <div className="flex items-center">
             <SidebarHeading>Width</SidebarHeading>
             <div className="ml-2 flex justify-center items-center w-3 h-3 rounded-full">
@@ -233,11 +195,11 @@ const SelectSidebar: React.FC = () => {
               }}
             />
           </div>
-        </div>
+        </SidebarSection>
       )}
 
       {allRoutes && selectedEntity.type === "Route" && (
-        <div className="px-3 md:py-4">
+        <SidebarSection>
           <div className="flex items-center">
             <SidebarHeading>Outline</SidebarHeading>
           </div>
@@ -249,11 +211,11 @@ const SelectSidebar: React.FC = () => {
               }}
             />
           </div>
-        </div>
+        </SidebarSection>
       )}
 
       {allPins && selectedEntity.type === "Pin" && (
-        <div className="px-3 md:py-4">
+        <SidebarSection>
           <div className="flex items-center">
             <SidebarHeading>Icon</SidebarHeading>
           </div>
@@ -266,11 +228,11 @@ const SelectSidebar: React.FC = () => {
               }}
             />
           </div>
-        </div>
+        </SidebarSection>
       )}
 
       {allNonItineraryRoutes && selectedEntity.type === "Route" && (
-        <div className="px-3 md:py-4">
+        <SidebarSection>
           <div className="flex items-center">
             <SidebarHeading>Routes</SidebarHeading>
           </div>
@@ -289,11 +251,11 @@ const SelectSidebar: React.FC = () => {
               }}
             />
           </div>
-        </div>
+        </SidebarSection>
       )}
 
       {selectedEntity.type === "Route" && (
-        <div className="md:mt-auto px-3 md:py-4">
+        <SidebarSection className="md:mt-auto">
           <div className="flex items-center">
             <SidebarHeading>Inspect</SidebarHeading>
           </div>
@@ -304,7 +266,7 @@ const SelectSidebar: React.FC = () => {
               <Distance value={computeDistance(selectedEntity)} />
             </div>
           </div>
-        </div>
+        </SidebarSection>
       )}
     </>
   );
@@ -318,7 +280,7 @@ const PinSidebar: React.FC = () => {
 
   return (
     <>
-      <div className="px-3 md:py-4">
+      <SidebarSection>
         <div className="flex items-center px-1">
           <SidebarHeading>Color</SidebarHeading>
           <div className="ml-2 w-3 h-3 rounded-full border border-gray-200" style={{ backgroundColor: color }} />
@@ -334,9 +296,9 @@ const PinSidebar: React.FC = () => {
             }}
           />
         </div>
-      </div>
+      </SidebarSection>
 
-      <div className="px-3 md:py-4">
+      <SidebarSection>
         <div className="flex items-center">
           <SidebarHeading>Width</SidebarHeading>
           <div className="ml-2 flex justify-center items-center w-3 h-3 rounded-full">
@@ -358,9 +320,9 @@ const PinSidebar: React.FC = () => {
             }}
           />
         </div>
-      </div>
+      </SidebarSection>
 
-      <div className="px-3 md:py-4">
+      <SidebarSection>
         <div className="flex items-center">
           <SidebarHeading>Icon</SidebarHeading>
         </div>
@@ -373,7 +335,7 @@ const PinSidebar: React.FC = () => {
             }}
           />
         </div>
-      </div>
+      </SidebarSection>
     </>
   );
 };
@@ -389,7 +351,7 @@ const DrawSidebar: React.FC = () => {
 
   return (
     <>
-      <div className="px-3 md:py-4">
+      <SidebarSection>
         <div className="flex items-center px-1">
           <SidebarHeading>Color</SidebarHeading>
           <div className="ml-2 w-3 h-3 rounded-full border border-gray-200" style={{ backgroundColor: color }} />
@@ -405,9 +367,9 @@ const DrawSidebar: React.FC = () => {
             }}
           />
         </div>
-      </div>
+      </SidebarSection>
 
-      <div className="px-3 md:py-4">
+      <SidebarSection>
         <div className="flex items-center">
           <SidebarHeading>Width</SidebarHeading>
           <div className="ml-2 flex justify-center items-center w-3 h-3 rounded-full">
@@ -428,9 +390,9 @@ const DrawSidebar: React.FC = () => {
             }}
           />
         </div>
-      </div>
+      </SidebarSection>
 
-      <div className="px-3 md:py-4">
+      <SidebarSection>
         <div className="flex items-center">
           <SidebarHeading>Outline</SidebarHeading>
         </div>
@@ -442,9 +404,9 @@ const DrawSidebar: React.FC = () => {
             }}
           />
         </div>
-      </div>
+      </SidebarSection>
 
-      <div className="px-3 md:py-4">
+      <SidebarSection>
         <div className="flex items-center">
           <SidebarHeading>Routes</SidebarHeading>
         </div>
@@ -463,9 +425,9 @@ const DrawSidebar: React.FC = () => {
             }}
           />
         </div>
-      </div>
+      </SidebarSection>
 
-      <div className="px-3 md:py-4">
+      <SidebarSection>
         <div className="flex flex-col items-start space-y-4 md:space-y-0 md:flex-row md:items-center md:justify-between">
           <SidebarHeading>Import</SidebarHeading>
           <Button
@@ -487,10 +449,10 @@ const DrawSidebar: React.FC = () => {
             <span className="text-xs">GPX</span>
           </Button>
         </div>
-      </div>
+      </SidebarSection>
 
       {route && (
-        <div className="md:mt-auto px-3 md:py-4">
+        <SidebarSection className="md:mt-auto">
           <div className="flex items-center">
             <SidebarHeading>Inspect</SidebarHeading>
           </div>
@@ -501,7 +463,7 @@ const DrawSidebar: React.FC = () => {
               <Distance value={computeDistance(route)} />
             </div>
           </div>
-        </div>
+        </SidebarSection>
       )}
     </>
   );
@@ -516,7 +478,7 @@ const ItinerarySidebar: React.FC = () => {
 
   return (
     <>
-      <div className="px-3 md:py-4">
+      <SidebarSection>
         <div className="flex items-center px-1">
           <SidebarHeading>Color</SidebarHeading>
           <div className="ml-2 w-3 h-3 rounded-full border border-gray-200" style={{ backgroundColor: color }} />
@@ -533,9 +495,9 @@ const ItinerarySidebar: React.FC = () => {
             }}
           />
         </div>
-      </div>
+      </SidebarSection>
 
-      <div className="px-3 md:py-4">
+      <SidebarSection>
         <div className="flex items-center">
           <SidebarHeading>Width</SidebarHeading>
           <div className="ml-2 flex justify-center items-center w-3 h-3 rounded-full">
@@ -557,9 +519,9 @@ const ItinerarySidebar: React.FC = () => {
             }}
           />
         </div>
-      </div>
+      </SidebarSection>
 
-      <div className="px-3 md:py-4">
+      <SidebarSection>
         <div className="flex items-center">
           <SidebarHeading>Outline</SidebarHeading>
         </div>
@@ -572,7 +534,7 @@ const ItinerarySidebar: React.FC = () => {
             }}
           />
         </div>
-      </div>
+      </SidebarSection>
 
       {route && (
         <div className="md:mt-auto md:py-4 px-3">
@@ -594,7 +556,8 @@ const ItinerarySidebar: React.FC = () => {
 const ExportSidebar: React.FC = () => {
   const app = useApp();
   const imageData = useStore((store) => store.exports.imageData);
-  const aspectRatio = useStore((store) => aspectRatios[store.editor.aspectRatio]);
+  const aspectRatio = useStore((store) => store.editor.aspectRatio);
+  const { ratio } = aspectRatios[aspectRatio];
 
   const [imageBlob, setImageBlob] = useState<Blob | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -668,7 +631,16 @@ const ExportSidebar: React.FC = () => {
   return (
     <>
       <div className="flex md:flex-col md:divide-y md:divide-x-0 divide-x md:h-full">
-        <div className="px-3 md:py-4 flex flex-col space-y-1 md:space-y-2 w-40 md:w-auto">
+        <SidebarSection className="flex flex-col space-y-1 md:space-y-2 w-48 md:w-auto">
+          <AspectRatioSelector
+            value={aspectRatio}
+            onChange={(aspectRatio) => {
+              app.editor.setAspectRatio(aspectRatio);
+            }}
+          />
+        </SidebarSection>
+
+        <SidebarSection className="flex flex-col space-y-1 md:space-y-2 w-40 md:w-auto">
           <Button
             className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-100 text-xs uppercase py-2 justify-center"
             disabled={!imageData}
@@ -700,9 +672,9 @@ const ExportSidebar: React.FC = () => {
               )}
             </Button>
           )}
-        </div>
+        </SidebarSection>
 
-        <div className="flex flex-col space-y-3 px-3 md:py-4 overflow-y-auto overflow-x-visible w-64 md:w-auto">
+        <SidebarSection className="flex flex-col space-y-3 w-64 md:w-auto">
           <div className="flex items-center">
             <SidebarHeading>Output format</SidebarHeading>
           </div>
@@ -711,35 +683,18 @@ const ExportSidebar: React.FC = () => {
               <span className="flex-1 mr-4">Format</span>
               <span>JPEG</span>
             </div>
-            <div className="text-xs flex justify-between">
-              <span className="flex-1 mr-4">Quality</span>
-              <span>90%</span>
-            </div>
-            {aspectRatio.ratio && (
+            {ratio && (
               <>
                 <div className="text-xs flex justify-between">
                   <span className="flex-1 mr-4">Resolution</span>
-                  <span>{aspectRatio.ratio[0]}</span>
-                  <span className="mx-1 text-gray-500">×</span>
-                  <span>{aspectRatio.ratio[1]}</span>
-                </div>
-                <div className="text-xs flex justify-between">
-                  <span className="flex-1 mr-4">Pixels</span>
-
-                  <span>{aspectRatio.ratio[0] * aspectRatio.ratio[1]}</span>
+                  <span>
+                    {ratio[0].toFixed(0)} x {ratio[1].toFixed(0)} px
+                  </span>
                 </div>
               </>
             )}
-            {imageBlob && (
-              <div className="text-xs flex justify-between">
-                <span className="flex-1 mr-4">Size</span>
-
-                <span>~{(imageBlob.size / 1024).toFixed()}</span>
-                <span className="ml-1 text-gray-500">KB</span>
-              </div>
-            )}
           </div>
-        </div>
+        </SidebarSection>
 
         <div className="md:mt-auto px-3 md:pt-3 md:pb-2 w-64 md:w-auto">
           <div className="flex items-center">
@@ -768,4 +723,8 @@ const ExportSidebar: React.FC = () => {
 
 const SidebarHeading: React.FC = ({ children }) => {
   return <span className="text-xs uppercase text-gray-800 font-light tracking-wide leading-none">{children}</span>;
+};
+
+const SidebarSection: React.FC<React.HTMLProps<HTMLDivElement>> = (props) => {
+  return <div className={classNames("px-3 md:py-4", props.className)}>{props.children}</div>;
 };
