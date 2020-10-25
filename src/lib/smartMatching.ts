@@ -14,7 +14,34 @@ export type SmartMatching = {
 
 export type SmartMatchingProfile = MapboxProfile;
 
-export const mapMatch = async (points: Position[], profile: SmartMatchingProfile): Promise<Position[]> => {
+type SmartMatchingSegment = {
+  points: Position[];
+  method: "mapMatch" | "directions";
+};
+
+export const smartMatch = async (points: Position[], profile: SmartMatchingProfile): Promise<Position[]> => {
+  if (points.length < 2) {
+    return points;
+  }
+
+  const chunks = await Promise.all(
+    chunkByDistance(points).map((segment) => {
+      if (segment.method === "mapMatch") {
+        return mapMatch(segment.points, profile);
+      }
+
+      if (segment.method === "directions") {
+        return directionsMatch(segment.points, profile);
+      }
+
+      return [];
+    })
+  );
+
+  return chunks.flat();
+};
+
+const mapMatch = async (points: Position[], profile: SmartMatchingProfile): Promise<Position[]> => {
   const chunks = await Promise.all(
     chunk(points, 100).map(async (points) => {
       if (points.length < 2) {
@@ -23,8 +50,6 @@ export const mapMatch = async (points: Position[], profile: SmartMatchingProfile
 
       try {
         const res = await mapboxMapMatching
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
           .getMatch({
             profile,
             points: points.map((point) => {
@@ -60,7 +85,7 @@ export const mapMatch = async (points: Position[], profile: SmartMatchingProfile
   return chunks.flat();
 };
 
-export const directionsMatch = async (points: Position[], profile: SmartMatchingProfile): Promise<Position[]> => {
+const directionsMatch = async (points: Position[], profile: SmartMatchingProfile): Promise<Position[]> => {
   const chunks = await Promise.all(
     chunk(points, 25).map(async (points) => {
       if (points.length < 2) {
@@ -92,39 +117,23 @@ export const directionsMatch = async (points: Position[], profile: SmartMatching
   return chunks.flat();
 };
 
-export const smartMatch = async (points: Position[], profile: SmartMatchingProfile): Promise<Position[]> => {
-  if (points.length < 2) return points;
-
-  const chunks = await Promise.all(
-    chunkByDistance(points).map(({ points, method }: { points: Position[]; method: "mapMatch" | "directions" }) => {
-      if (method === "mapMatch") {
-        return mapMatch(points, profile);
-      } else {
-        // method === 'directions'
-        return directionsMatch(points, profile);
-      }
-    })
-  );
-
-  return chunks.flat();
-};
-
 /**
  * Returns an array of points chunked by distance between points.
  * Points within 100m of each other will be chunked in the same group.
  */
-const chunkByDistance = (points: Position[]): Array<{ points: Position[]; method: "mapMatch" | "directions" }> => {
-  console.log("points", points);
-
-  if (points.length < 2) return [{ points, method: "directions" }];
+const chunkByDistance = (points: Position[]): SmartMatchingSegment[] => {
+  if (points.length < 2) {
+    return [{ points, method: "directions" }];
+  }
 
   const ruler = new CheapRuler(points[0][1], "meters");
   const minDistance = 100; // meters
 
-  const comparison = (a: Position, b: Position) =>
-    ruler.distance(a as [number, number], b as [number, number]) < minDistance;
+  const comparison = (a: Position, b: Position) => {
+    return ruler.distance(a as [number, number], b as [number, number]) < minDistance;
+  };
 
-  const chunks: Array<{ points: Position[]; method: "mapMatch" | "directions" }> = [];
+  const chunks: SmartMatchingSegment[] = [];
   let currentChunk: Position[] = [];
   let lastDistanceRespected = comparison(points[0], points[1]);
 
@@ -133,7 +142,10 @@ const chunkByDistance = (points: Position[]): Array<{ points: Position[]; method
     if (isDistanceRespected === lastDistanceRespected) {
       currentChunk.push(points[i]);
     } else {
-      chunks.push({ points: [...currentChunk, points[i]], method: isDistanceRespected ? "mapMatch" : "directions" });
+      chunks.push({
+        points: [...currentChunk, points[i]],
+        method: isDistanceRespected ? "mapMatch" : "directions",
+      });
       currentChunk = [points[i]];
       lastDistanceRespected = isDistanceRespected;
     }
@@ -141,7 +153,10 @@ const chunkByDistance = (points: Position[]): Array<{ points: Position[]; method
 
   // add last bit
   currentChunk.push(points[points.length - 1]);
-  chunks.push({ points: currentChunk, method: lastDistanceRespected ? "mapMatch" : "directions" });
-  console.log("chunks", chunks);
+  chunks.push({
+    points: currentChunk,
+    method: lastDistanceRespected ? "mapMatch" : "directions",
+  });
+
   return chunks;
 };
