@@ -7,7 +7,12 @@ export const Meta: React.FC = () => {
 
   return (
     <Head>
-      <title>{t("pelica")}</title>
+      <title>
+        {t("pelica")} · ${t("tagline")}
+      </title>
+
+      <meta content={t("tagline")} name="Description" />
+
       <link href="/images/logo.png" rel="shortcut icon" type="image/png" />
       <link href="/images/logo.png" rel="apple-touch-icon" />
     </Head>

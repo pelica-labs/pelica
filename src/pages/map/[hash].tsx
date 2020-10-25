@@ -7,6 +7,7 @@ import { getEnv } from "~/lib/config";
 import { generateFilePrefix, s3 } from "~/lib/s3";
 
 type Props = {
+  currentUrl: string;
   file?: {
     url: string;
     metadata: {
@@ -17,6 +18,7 @@ type Props = {
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   const path = generateFilePrefix("maps") + ctx.query.hash + ".jpeg";
+  const currentUrl = ctx.req.headers.host + "/map/" + ctx.query.hash;
 
   const objectParams = {
     Bucket: getEnv("AWS_S3_BUCKET", process.env.AWS_S3_BUCKET),
@@ -31,13 +33,16 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     });
 
   if (!file) {
-    return { props: {} };
+    return {
+      props: { currentUrl },
+    };
   }
 
   const url = s3.getSignedUrl("getObject", objectParams);
 
   return {
     props: {
+      currentUrl,
       file: {
         url,
         metadata: {
@@ -48,7 +53,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   };
 };
 
-const ViewMap: NextPage<Props> = ({ file }) => {
+const ViewMap: NextPage<Props> = ({ currentUrl, file }) => {
   const { t } = useTranslation();
 
   if (!file) {
@@ -62,9 +67,14 @@ const ViewMap: NextPage<Props> = ({ file }) => {
     <div className="bg-gray-200 h-full py-6">
       <Head>
         <meta content={title} property="og:title" />
-        <meta content="Create stunning maps in minutes" property="og:description" />
+        <meta content={t("tagline")} property="og:description" />
         <meta content={file.url} property="og:image" />
-        <meta content={file.url} property="og:url" />
+        <meta content={currentUrl} property="og:url" />
+
+        <meta content={title} name="twitter:title" />
+        <meta content={t("tagline")} name="twitter:description" />
+        <meta content={file.url} name="twitter:image" />
+        <meta content="summary_large_image" name="twitter:card" />
 
         <title>{title}</title>
       </Head>

@@ -1,5 +1,6 @@
 export const en = {
   pelica: "Pelica",
+  tagline: "Create stunning maps in minutes",
 
   editor: {
     mode: {
