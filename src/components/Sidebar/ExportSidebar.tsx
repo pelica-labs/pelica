@@ -32,7 +32,7 @@ export const ExportSidebar: React.FC = () => {
     }
     const a = document.createElement("a");
     a.href = imageData;
-    a.download = [t("pelica"), getMapTitle(getState()), format(Date.now(), "yyyy-MM-dd HH-mm-ss")]
+    a.download = [t("pelica"), getMapTitle(), format(Date.now(), "yyyy-MM-dd HH-mm-ss")]
       .filter((text) => !!text)
       .join(" · ");
     a.click();
@@ -44,7 +44,7 @@ export const ExportSidebar: React.FC = () => {
     }
 
     navigator.share({
-      title: [t("pelica"), getMapTitle(getState())].filter((text) => !!text).join(" · "),
+      title: [t("pelica"), getMapTitle()].filter((text) => !!text).join(" · "),
       url: imageUrl,
     });
   };
@@ -85,7 +85,7 @@ export const ExportSidebar: React.FC = () => {
 
       data.append("image", imageBlob);
 
-      const mapTitle = getMapTitle(getState());
+      const mapTitle = getMapTitle();
       if (mapTitle) {
         data.append("name", mapTitle);
       }

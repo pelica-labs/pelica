@@ -9,7 +9,7 @@ export const DocumentTitle: React.FC = () => {
   const { t } = useTranslation();
   const mapTitle = useStore((store) => getMapTitle(store));
 
-  const title = [t("pelica"), mapTitle].filter((text) => !!text).join(" · ");
+  const title = [mapTitle, t("pelica")].filter((text) => !!text).join(" · ");
 
   return (
     <Head>

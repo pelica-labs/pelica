@@ -229,7 +229,7 @@ export const Map: React.FC = () => {
         applySources(map.current);
         applyLayers(map.current);
 
-        applyFeatures(map.current, getEntityFeatures(getState()), [MapSource.Routes, MapSource.Pins]);
+        applyFeatures(map.current, getEntityFeatures(), [MapSource.Routes, MapSource.Pins]);
       });
     }
   );
@@ -244,7 +244,7 @@ export const Map: React.FC = () => {
         return;
       }
 
-      applyFeatures(map.current, getEntityFeatures(getState()), [MapSource.Routes, MapSource.Pins]);
+      applyFeatures(map.current, getEntityFeatures(), [MapSource.Routes, MapSource.Pins]);
     }
   );
 
@@ -263,7 +263,7 @@ export const Map: React.FC = () => {
         return;
       }
 
-      const selectedEntity = getSelectedEntity(getState());
+      const selectedEntity = getSelectedEntity();
 
       const features: RawFeature[] = [];
       if (editorMode === "draw" && !isDrawing && selectedEntity?.type === "Route" && selectedEntity.points.length) {
@@ -290,7 +290,7 @@ export const Map: React.FC = () => {
         return;
       }
 
-      const selectedEntity = getSelectedEntity(getState());
+      const selectedEntity = getSelectedEntity();
 
       const features: RawFeature[] = [];
       if (editorMode === "draw" && !isDrawing && selectedEntity?.type === "Route" && selectedEntity.points.length) {
@@ -319,7 +319,7 @@ export const Map: React.FC = () => {
         return;
       }
 
-      const selectedEntities = editorMode === "select" ? getSelectedEntities(getState()) : [];
+      const selectedEntities = editorMode === "select" ? getSelectedEntities() : [];
 
       const features: RawFeature[] = [];
       if (editorMode === "select") {
