@@ -1,3 +1,4 @@
+import { MAX_PIN_SIZE } from "~/core/pins";
 import { MapSource } from "~/map/sources";
 import { theme } from "~/styles/tailwind";
 
@@ -163,26 +164,13 @@ export const applyLayers = (map: mapboxgl.Map): void => {
     type: "symbol",
     source: MapSource.Pins,
     layout: {
-      "icon-image": ["concat", "pin", "-", "pelipin", "-", ["get", "color"]],
-      "icon-size": ["*", 0.2, ["get", "width"]],
-      "icon-offset": [0, -20],
+      "icon-image": ["get", "image"],
+      "icon-size": ["*", 1 / MAX_PIN_SIZE, ["get", "width"]],
+      "icon-offset": [0, -72],
       "icon-allow-overlap": true,
       "text-allow-overlap": true,
     },
     paint: {},
-  });
-
-  addLayer(map, {
-    id: "pinIcons",
-    type: "symbol",
-    source: MapSource.Pins,
-    layout: {
-      "icon-image": ["concat", "icon", "-", ["concat", ["get", "icon"], "-", ["get", "color"]]],
-      "icon-size": ["*", 0.25, ["get", "width"]],
-      "icon-offset": [0, -20],
-      "icon-allow-overlap": true,
-      "text-allow-overlap": true,
-    },
   });
 
   addLayer(map, {

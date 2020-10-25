@@ -99,6 +99,11 @@ export const nextEntityId = (): number => {
 
 export const entityToFeature = (entity: Entity): RawFeature | null => {
   if (entity.type === "Pin") {
+    const style = {
+      ...entity.style,
+      ...entity.transientStyle,
+    };
+
     return {
       type: "Feature",
       id: entity.id,
@@ -108,8 +113,12 @@ export const entityToFeature = (entity: Entity): RawFeature | null => {
         coordinates: entity.coordinates,
       },
       properties: {
-        ...entity.style,
-        ...entity.transientStyle,
+        ...style,
+        image: JSON.stringify({
+          pin: "pelipin",
+          icon: style.icon,
+          color: style.color,
+        }),
       },
     };
   }

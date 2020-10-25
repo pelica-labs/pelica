@@ -7,6 +7,8 @@ import { getSelectedEntity, getSelectedPins } from "~/core/selectors";
 import { MapSource } from "~/map/sources";
 import { theme } from "~/styles/tailwind";
 
+export const MAX_PIN_SIZE = 12;
+
 export type Pin = {
   id: number;
   source: MapSource;

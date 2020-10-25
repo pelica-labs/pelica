@@ -14,19 +14,41 @@ const transparentPixel = {
   data: new Uint8Array([0, 0, 0, 0]),
 };
 
-const idToComponent = (eventId: string) => {
-  const [prefix, name, color] = eventId.split("-");
+type ImageComponents = {
+  pin: ReactElement;
+  icon: ReactElement;
+};
 
-  const Component = prefix === "icon" ? allIcons[name] : allPins[name];
-  const dimensions = prefix === "icon" ? [24, 24] : [54, 73];
+type PinProps = {
+  pin: string;
+  icon: string;
+  color: string;
+};
 
-  if (!Component) {
+const idToComponents = (eventId: string): ImageComponents | null => {
+  let json: PinProps | null = null;
+  try {
+    json = JSON.parse(eventId);
+  } catch (error) {
+    console.warn("Could not parse image missing to ImageComponents", eventId, error);
+  } finally {
+    if (!json) {
+      return null;
+    }
+  }
+
+  const { pin, icon, color } = json;
+
+  const Pin = allPins[pin];
+  const Icon = allIcons[icon];
+
+  if (!Pin || !Icon) {
     return null;
   }
 
   return {
-    element: <Component color={color} />,
-    dimensions: dimensions as [number, number],
+    pin: <Pin color={color} />,
+    icon: <Icon color={color} />,
   };
 };
 
@@ -36,15 +58,15 @@ type MapImageMissingEvent = {
 
 export const applyImageMissingHandler = (map: mapboxgl.Map): void => {
   const onImageMissing = async (event: MapImageMissingEvent) => {
-    const component = idToComponent(event.id);
+    const components = idToComponents(event.id);
 
     map.addImage(event.id, transparentPixel);
 
-    if (!component) {
+    if (!components) {
       return;
     }
 
-    const image = await generateImage(component.element, component.dimensions);
+    const image = await generateImage(components);
 
     map.removeImage(event.id);
     map.addImage(event.id, image, { pixelRatio: 2 });
@@ -58,27 +80,62 @@ export const applyImageMissingHandler = (map: mapboxgl.Map): void => {
   map.on("styleimagemissing", onImageMissing);
 };
 
-export const generateImage = (element: ReactElement, [width, height]: [number, number]): Promise<ImageData> => {
-  return new Promise((resolve) => {
-    const svg = ReactDOMServer.renderToString(element);
+export const generateImage = (components: ImageComponents): Promise<ImageData> => {
+  const pinWidth = 54;
+  const pinHeight = 72;
+  const iconWidth = 32;
+  const iconHeight = 32;
+  const scale = 4;
 
-    const image = new Image(width, height);
+  return new Promise(async (resolve) => {
+    const canvas = document.createElement("canvas");
+    canvas.width = pinWidth * scale;
+    canvas.height = pinHeight * scale;
+
+    const context = canvas.getContext("2d");
+    if (!context) {
+      throw new Error("failed to create canvas 2d context");
+    }
+
+    await drawImage(context, {
+      svg: components.pin,
+      width: pinWidth * scale,
+      height: pinHeight * scale,
+      offsetX: 0,
+      offsetY: 0,
+    });
+
+    await drawImage(context, {
+      svg: components.icon,
+      width: iconWidth * scale,
+      height: iconHeight * scale,
+      offsetX: ((pinWidth - iconWidth) / 2) * scale,
+      offsetY: ((pinWidth - iconHeight) / 2) * scale,
+    });
+
+    resolve(context.getImageData(0, 0, pinWidth * scale, pinHeight * scale));
+  });
+};
+
+type DrawImageOptions = {
+  svg: ReactElement;
+  width: number;
+  height: number;
+  offsetX: number;
+  offsetY: number;
+};
+
+const drawImage = (context: CanvasRenderingContext2D, options: DrawImageOptions) => {
+  return new Promise((resolve) => {
+    const rawSvg = ReactDOMServer.renderToString(options.svg);
+
+    const image = new Image(options.width, options.height);
 
     image.onload = () => {
-      const canvas = document.createElement("canvas");
-      canvas.width = width;
-      canvas.height = height;
-
-      const context = canvas.getContext("2d");
-      if (!context) {
-        throw new Error("failed to create canvas 2d context");
-      }
-
-      context.drawImage(image, 0, 0, width, height);
-
-      resolve(context.getImageData(0, 0, width, height));
+      context.drawImage(image, options.offsetX, options.offsetY, options.width, options.height);
+      resolve();
     };
 
-    image.src = `data:image/svg+xml;base64,` + btoa(svg);
+    image.src = `data:image/svg+xml;base64,` + btoa(rawSvg);
   });
 };

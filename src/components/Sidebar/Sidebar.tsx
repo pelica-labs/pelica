@@ -14,7 +14,7 @@ import { SmartMatchingSelector } from "~/components/SmartMatchingSelector";
 import { Toolbar } from "~/components/Toolbar";
 import { WidthSlider } from "~/components/WidthSlider";
 import { useApp, useStore } from "~/core/app";
-import { Pin } from "~/core/pins";
+import { MAX_PIN_SIZE, Pin } from "~/core/pins";
 import { computeDistance, Route } from "~/core/routes";
 import { getSelectedEntities, getSelectedEntity } from "~/core/selectors";
 import { useDimensions } from "~/hooks/useDimensions";
@@ -304,7 +304,7 @@ const PinSidebar: React.FC = () => {
         <div className="mt-5 md:mt-4 px-1 w-32 md:w-auto">
           <WidthSlider
             color={color}
-            max={12}
+            max={MAX_PIN_SIZE}
             min={1}
             value={width}
             onChange={(width) => {
