@@ -64,7 +64,7 @@ const ViewMap: NextPage<Props> = ({ currentUrl, file }) => {
   const title = [t("pelica"), file.metadata.name].filter((text) => !!text).join(" · ");
 
   return (
-    <div className="bg-gray-200 h-full py-6">
+    <div className="bg-gray-900 h-screen p-4">
       <Head>
         <meta content={title} property="og:title" />
         <meta content={t("tagline")} property="og:description" />
@@ -79,7 +79,7 @@ const ViewMap: NextPage<Props> = ({ currentUrl, file }) => {
         <title>{title}</title>
       </Head>
 
-      <img className="h-full m-auto border-gray-400 shadow-md border" src={file.url} />
+      <img className="object-contain m-auto w-full h-full" src={file.url} />
     </div>
   );
 };
