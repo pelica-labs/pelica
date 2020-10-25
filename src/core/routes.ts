@@ -54,7 +54,7 @@ const initialState: Routes = {
   style: {
     width: 3,
     color: theme.colors.red[500],
-    outline: "dark",
+    outline: "glow",
   },
   smartMatching: {
     enabled: false,
