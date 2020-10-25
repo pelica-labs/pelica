@@ -32,7 +32,6 @@ export const MenuButton: React.FC = () => {
             <>
               <span className="flex rounded-md shadow-sm">
                 <Menu.Button
-                  as="div"
                   className={classNames({
                     "inline-flex justify-center w-full text-sm font-medium leading-5 transition duration-150 ease-in-out text-gray-800 rounded-md focus:outline-none": true,
                     "bg-orange-200 rounded": open,
