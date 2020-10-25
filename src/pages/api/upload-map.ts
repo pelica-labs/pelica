@@ -1,5 +1,4 @@
 import AWS from "aws-sdk";
-import { format } from "date-fns";
 import { File, IncomingForm } from "formidable";
 import fs from "fs";
 import HttpStatus from "http-status-codes";
@@ -7,6 +6,7 @@ import { NextApiHandler, NextApiRequest } from "next";
 import uniqid from "uniqid";
 
 import { getEnv } from "~/lib/config";
+import { generateFilePrefix } from "~/lib/s3";
 
 const s3 = new AWS.S3({
   accessKeyId: getEnv("AWS_KEY", process.env.AWS_KEY),
@@ -15,14 +15,15 @@ const s3 = new AWS.S3({
 });
 
 const generateUniqueFilePath = () => {
-  const prefix = process.env.NODE_ENV + (process.env.USER ? `-${process.env.USER}` : "");
-  const date = format(new Date(), "yyyyMMddHHmmss");
-  const id = uniqid().toUpperCase();
-
-  return `${prefix}/maps/${date}-${id}.jpeg`;
+  return uniqid().toUpperCase();
 };
 
-const parseUpload = (req: NextApiRequest): Promise<File> => {
+type UploadedMap = {
+  image: File;
+  name?: string;
+};
+
+const parseUpload = (req: NextApiRequest): Promise<UploadedMap> => {
   return new Promise((resolve, reject) => {
     const form = new IncomingForm();
 
@@ -31,7 +32,10 @@ const parseUpload = (req: NextApiRequest): Promise<File> => {
         return reject(error);
       }
 
-      resolve(files.image);
+      resolve({
+        image: files.image,
+        name: fields.name as string | undefined,
+      });
     });
   });
 };
@@ -43,18 +47,24 @@ const UploadMap: NextApiHandler = async (req, res) => {
     });
   }
 
-  const image = await parseUpload(req);
+  const { name, image } = await parseUpload(req);
+  const filePath = generateUniqueFilePath();
+  const proxyPath = `${req.headers.host}/map/${filePath}`;
+  const s3Path = generateFilePrefix("maps") + filePath + ".jpeg";
 
-  const upload = await s3
+  await s3
     .upload({
       Bucket: getEnv("AWS_S3_BUCKET", process.env.AWS_S3_BUCKET),
-      Key: generateUniqueFilePath(),
+      Key: s3Path,
       Body: fs.createReadStream(image.path),
+      Metadata: {
+        ...(name && { name }),
+      },
     })
     .promise();
 
   return res.status(HttpStatus.CREATED).json({
-    url: upload.Location,
+    url: proxyPath,
   });
 };
 

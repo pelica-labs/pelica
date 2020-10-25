@@ -141,21 +141,6 @@ export const Map: React.FC = () => {
   );
 
   /**
-   * Sync bounds
-   */
-  useStoreSubscription(
-    (store) => store.map.bounds,
-    (bounds) => {
-      if (bounds) {
-        map.current?.fitBounds(bounds.flat() as [number, number, number, number], {
-          linear: true,
-          padding: 30,
-        });
-      }
-    }
-  );
-
-  /**
    * Handle aspect ratio & resize
    */
   useStoreSubscription(

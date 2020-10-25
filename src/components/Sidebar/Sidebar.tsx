@@ -1,15 +1,14 @@
 import classNames from "classnames";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { Trans } from "react-i18next";
-import BounceLoader from "react-spinners/BounceLoader";
 
-import { AspectRatioSelector } from "~/components/AspectRatioSelector";
 import { Button } from "~/components/Button";
 import { ColorPicker } from "~/components/ColorPicker";
 import { Distance } from "~/components/Distance";
 import { TrashIcon } from "~/components/Icon";
 import { IconSelector } from "~/components/IconSelector";
 import { OutlineSelector } from "~/components/OutlineSelector";
+import { ExportSidebar } from "~/components/Sidebar/ExportSidebar";
 import { StyleSidebar } from "~/components/Sidebar/StyleSidebar";
 import { SmartMatchingSelector } from "~/components/SmartMatchingSelector";
 import { Toolbar } from "~/components/Toolbar";
@@ -18,12 +17,8 @@ import { useApp, useStore } from "~/core/app";
 import { Pin } from "~/core/pins";
 import { computeDistance, Route } from "~/core/routes";
 import { getSelectedEntities, getSelectedEntity } from "~/core/selectors";
-import { useBrowserFeatures } from "~/hooks/useBrowserFeatures";
 import { useDimensions } from "~/hooks/useDimensions";
-import { aspectRatios } from "~/lib/aspectRatio";
-import { dataUrlToBlob } from "~/lib/fileConversion";
 import { Style } from "~/lib/style";
-import { theme } from "~/styles/tailwind";
 
 type Props = {
   initialStyles: Style[];
@@ -553,178 +548,10 @@ const ItinerarySidebar: React.FC = () => {
   );
 };
 
-const ExportSidebar: React.FC = () => {
-  const app = useApp();
-  const imageData = useStore((store) => store.exports.imageData);
-  const aspectRatio = useStore((store) => store.editor.aspectRatio);
-  const { ratio } = aspectRatios[aspectRatio];
-
-  const [imageBlob, setImageBlob] = useState<Blob | null>(null);
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-
-  const { shareFeature } = useBrowserFeatures();
-
-  const onDownload = () => {
-    if (!imageData) {
-      return;
-    }
-
-    const a = document.createElement("a");
-    a.href = imageData;
-    a.download = "pelica";
-    a.click();
-  };
-
-  const onShare = () => {
-    if (!imageUrl) {
-      return;
-    }
-
-    navigator.share({
-      title: "Pelica Map",
-      url: imageUrl,
-    });
-  };
-
-  useEffect(() => {
-    app.exports.prepareCanvas();
-  }, []);
-
-  useEffect(() => {
-    if (!imageData) {
-      return;
-    }
-
-    setImageBlob(dataUrlToBlob(imageData));
-  }, [imageData]);
-
-  useEffect(() => {
-    if (!imageBlob) {
-      return;
-    }
-
-    const timeout = setTimeout(() => {
-      const data = new FormData();
-
-      data.append("image", imageBlob);
-
-      fetch("/api/upload-map", {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-        },
-        body: data,
-      })
-        .then((res) => res.json())
-        .then((json) => {
-          setImageUrl(json.url);
-        })
-        .catch((error) => {
-          // @todo: handle error
-          console.error(error);
-        });
-    }, 200);
-
-    return () => clearTimeout(timeout);
-  }, [imageBlob]);
-
-  return (
-    <>
-      <div className="flex md:flex-col md:divide-y md:divide-x-0 divide-x md:h-full">
-        <SidebarSection className="flex flex-col space-y-1 md:space-y-2 w-48 md:w-auto">
-          <AspectRatioSelector
-            value={aspectRatio}
-            onChange={(aspectRatio) => {
-              app.editor.setAspectRatio(aspectRatio);
-            }}
-          />
-        </SidebarSection>
-
-        <SidebarSection className="flex flex-col space-y-1 md:space-y-2 w-40 md:w-auto">
-          <Button
-            className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-100 text-xs uppercase py-2 justify-center"
-            disabled={!imageData}
-            onClick={() => {
-              onDownload();
-            }}
-          >
-            Download
-            {!imageData && (
-              <div className="ml-4">
-                <BounceLoader color={theme.colors.orange[500]} size={10} />
-              </div>
-            )}
-          </Button>
-
-          {shareFeature && (
-            <Button
-              className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-100 text-xs uppercase py-2 justify-center"
-              disabled={!imageUrl}
-              onClick={() => {
-                onShare();
-              }}
-            >
-              Share
-              {!imageUrl && (
-                <div className="ml-4">
-                  <BounceLoader color={theme.colors.orange[500]} size={10} />
-                </div>
-              )}
-            </Button>
-          )}
-        </SidebarSection>
-
-        <SidebarSection className="flex flex-col space-y-3 w-64 md:w-auto">
-          <div className="flex items-center">
-            <SidebarHeading>Output format</SidebarHeading>
-          </div>
-          <div className="flex-col md:space-y-1">
-            <div className="text-xs flex justify-between">
-              <span className="flex-1 mr-4">Format</span>
-              <span>JPEG</span>
-            </div>
-            {ratio && (
-              <>
-                <div className="text-xs flex justify-between">
-                  <span className="flex-1 mr-4">Resolution</span>
-                  <span>
-                    {ratio[0].toFixed(0)} x {ratio[1].toFixed(0)} px
-                  </span>
-                </div>
-              </>
-            )}
-          </div>
-        </SidebarSection>
-
-        <div className="md:mt-auto px-3 md:pt-3 md:pb-2 w-64 md:w-auto">
-          <div className="flex items-center">
-            <SidebarHeading>Copyright</SidebarHeading>
-          </div>
-
-          <div className="flex justify-between items-center mt-2 overflow-x-hidden">
-            <span className="text-2xs leading-tight">
-              Prints use map data and styles from Mapbox and OpenStreetMap and must be attributed accordingly. To learn
-              more, see{" "}
-              <a className="underline" href="https://docs.mapbox.com/help/how-mapbox-works/attribution/">
-                Mapbox
-              </a>{" "}
-              and{" "}
-              <a className="underline" href="http://www.openstreetmap.org/copyright">
-                OSM
-              </a>{" "}
-              attribution requirements.
-            </span>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-};
-
-const SidebarHeading: React.FC = ({ children }) => {
+export const SidebarHeading: React.FC = ({ children }) => {
   return <span className="text-xs uppercase text-gray-800 font-light tracking-wide leading-none">{children}</span>;
 };
 
-const SidebarSection: React.FC<React.HTMLProps<HTMLDivElement>> = (props) => {
+export const SidebarSection: React.FC<React.HTMLProps<HTMLDivElement>> = (props) => {
   return <div className={classNames("px-3 md:py-4", props.className)}>{props.children}</div>;
 };

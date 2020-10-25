@@ -46,6 +46,12 @@ export const map = ({ mutate }: App) => ({
     });
   },
 
+  setBounds(bounds: BBox) {
+    mutate((state) => {
+      state.map.bounds = bounds;
+    });
+  },
+
   updateFeatures: throttle(async (coordinates: Position) => {
     const res = await mapboxGeocoding
       .reverseGeocode({

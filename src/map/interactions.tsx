@@ -37,7 +37,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
 
   const updateMap = () => {
     app.map.move(map.getCenter().toArray(), map.getZoom(), map.getBearing(), map.getPitch());
-
+    app.map.setBounds(map.getBounds().toArray().flat() as [number, number, number, number]);
     app.map.updateFeatures(map.getCenter().toArray());
   };
 

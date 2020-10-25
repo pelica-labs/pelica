@@ -47,11 +47,9 @@ export const MapEditor: React.FC<Props> = ({ initialStyles }) => {
       <div className="relative w-full h-full">
         <Map />
 
-        {editorMode !== "export" && (
-          <div className="absolute bottom-0 mb-2 flex justify-center w-full z-10 pointer-events-none">
-            <Alerts />
-          </div>
-        )}
+        <div className="absolute bottom-0 mb-2 flex justify-center w-full z-10 pointer-events-none">
+          <Alerts />
+        </div>
       </div>
 
       <Sidebar initialStyles={initialStyles} />
