@@ -59,7 +59,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: Actions): void => {
     if (state.selection.area) {
       app.selection.updateArea(event.lngLat.toArray());
     }
-  }, 1000 / 20);
+  }, 1000 / 30);
 
   const onMouseDown = (event: MapMouseEvent | MapTouchEvent) => {
     const state = getState();
