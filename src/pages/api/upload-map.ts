@@ -57,6 +57,7 @@ const UploadMap: NextApiHandler = async (req, res) => {
       Bucket: getEnv("AWS_S3_BUCKET", process.env.AWS_S3_BUCKET),
       Key: s3Path,
       Body: fs.createReadStream(image.path),
+      ContentType: "image/jpeg",
       Metadata: {
         ...(name && { name }),
       },
