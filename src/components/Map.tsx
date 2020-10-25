@@ -43,8 +43,7 @@ export const Map: React.FC = () => {
       return;
     }
 
-    app.screen.initialize();
-    app.keyboard.initialize();
+    app.platform.initialize();
 
     const state = getState();
     const accessToken = getEnv("NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN", process.env.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN);
@@ -59,7 +58,7 @@ export const Map: React.FC = () => {
       pitch: state.map.pitch,
       doubleClickZoom: false,
       fadeDuration: 0,
-      logoPosition: app.screen.dimensions.md ? "bottom-right" : "bottom-left",
+      logoPosition: app.platform.screen.dimensions.md ? "bottom-right" : "bottom-left",
       preserveDrawingBuffer: true,
     });
 
@@ -144,7 +143,11 @@ export const Map: React.FC = () => {
    * Handle aspect ratio & resize
    */
   useStoreSubscription(
-    (store) => ({ exporting: store.exports.exporting, aspectRatio: store.editor.aspectRatio, screen: store.screen }),
+    (store) => ({
+      exporting: store.exports.exporting,
+      aspectRatio: store.editor.aspectRatio,
+      screen: store.platform.screen,
+    }),
     ({ exporting, aspectRatio, screen }) => {
       const canvas = map.current?.getCanvas();
       if (!canvas || !wrapper.current || !container.current) {

@@ -101,7 +101,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
     if (state.editor.mode === "select" && !state.dragAndDrop.draggedEntityId) {
       event.preventDefault();
 
-      if (state.keyboard.shiftKey) {
+      if (state.platform.keyboard.shiftKey) {
         app.selection.preserveSelection();
       }
 
@@ -144,7 +144,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
       if (features?.length) {
         const featureId = features[0].id as number;
 
-        if (state.keyboard.shiftKey) {
+        if (state.platform.keyboard.shiftKey) {
           app.selection.toggleEntitySelection(featureId);
         } else {
           app.selection.selectEntity(featureId);

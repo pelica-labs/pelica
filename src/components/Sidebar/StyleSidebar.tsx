@@ -11,7 +11,7 @@ type Props = {
 export const StyleSidebar: React.FC<Props> = ({ initialStyles }) => {
   const app = useApp();
   const style = useStore((store) => store.editor.style);
-  const screenDimensions = useStore((store) => store.screen.dimensions);
+  const screenDimensions = useStore((store) => store.platform.screen.dimensions);
 
   return (
     <div style={{ marginTop: screenDimensions.md ? 0 : -12 }}>

@@ -2,8 +2,11 @@ import React, { useCallback, useEffect } from "react";
 
 import { useStore } from "~/core/app";
 
-type Hotkey = {
+type Hotkey = HotkeyModifiers & {
   key: string;
+};
+
+type HotkeyModifiers = {
   ctrl?: boolean;
   shift?: boolean;
   alt?: boolean;
@@ -13,25 +16,32 @@ type Hotkey = {
 type Callback = (event: KeyboardEvent) => void | false | Promise<void | false>;
 
 export const useHotkey = (hotkey: Hotkey, callback: Callback): (() => ReturnType<typeof HotkeyView>) => {
-  const onKey = useCallback((event: KeyboardEvent) => {
-    const match =
-      event.key === hotkey.key &&
-      event.ctrlKey === (hotkey.ctrl ?? false) &&
-      event.shiftKey === (hotkey.shift ?? false) &&
-      event.altKey === (hotkey.alt ?? false) &&
-      event.metaKey === (hotkey.meta ?? false);
+  const appleLike = useStore((store) => store.platform.os.appleLike);
 
-    if (!match) {
-      return;
-    }
+  const onKey = useCallback(
+    (event: KeyboardEvent) => {
+      const { ctrl, shift, alt, meta } = normalizeHotkey(appleLike, hotkey);
 
-    const res = callback(event);
+      const match =
+        event.key === hotkey.key &&
+        event.ctrlKey === (ctrl ?? false) &&
+        event.shiftKey === (shift ?? false) &&
+        event.altKey === (alt ?? false) &&
+        event.metaKey === (meta ?? false);
 
-    if (res !== false) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-  }, []);
+      if (!match) {
+        return;
+      }
+
+      const res = callback(event);
+
+      if (res !== false) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    },
+    [appleLike]
+  );
 
   useEffect(() => {
     window.addEventListener("keydown", onKey, false);
@@ -39,26 +49,47 @@ export const useHotkey = (hotkey: Hotkey, callback: Callback): (() => ReturnType
     return () => {
       window.removeEventListener("keydown", onKey, false);
     };
-  }, []);
+  }, [appleLike]);
 
   return () => HotkeyView(hotkey);
 };
 
 export const HotkeyView: React.FC<Hotkey> = (hotkey) => {
-  const keyboardAvailable = useStore((store) => store.keyboard.available);
+  const keyboardAvailable = useStore((store) => store.platform.keyboard.available);
+  const appleLike = useStore((store) => store.platform.os.appleLike);
 
   if (!keyboardAvailable) {
     return null;
   }
 
+  const { ctrl, shift, alt, meta } = normalizeHotkey(appleLike, hotkey);
+
+  const ctrlSymbol = appleLike ? "⌃" : "Ctrl";
+  const shiftSymbol = appleLike ? "⇧" : "Shift";
+  const altSymbol = appleLike ? "⌥" : "Alt";
+  const metaSymbol = appleLike ? "⌘" : "Win";
+
   return (
     // @todo: hotkey symbols are MacOS only for now
-    <span className="text-2xs uppercase text-gray-500 font-light tracking-wide leading-none flex space-x-px">
-      {hotkey.ctrl && <span className="border border-gray-500 rounded p-1 w-5 flex justify-center">⌃</span>}
-      {hotkey.shift && <span className="border border-gray-500 rounded p-1 w-5 flex justify-center">⇧</span>}
-      {hotkey.alt && <span className="border border-gray-500 rounded p-1 w-5 flex justify-center">⌥</span>}
-      {hotkey.meta && <span className="border border-gray-500 rounded p-1 w-5 flex justify-center">⌘</span>}
-      <span className="border border-gray-500 rounded p-1 w-5 flex justify-center capitalize">{hotkey.key}</span>
+    <span className="text-2xs  text-gray-500 font-light tracking-wide leading-none flex space-x-2px">
+      {meta && <span className="border border-gray-400 rounded p-1 flex justify-center">{metaSymbol}</span>}
+      {ctrl && <span className="border border-gray-400 rounded p-1 flex justify-center">{ctrlSymbol}</span>}
+      {shift && <span className="border border-gray-400 rounded p-1 flex justify-center">{shiftSymbol}</span>}
+      {alt && <span className="border border-gray-400 rounded p-1 flex justify-center">{altSymbol}</span>}
+      <span className="border border-gray-400 rounded p-1 flex justify-center capitalize">{hotkey.key}</span>
     </span>
   );
+};
+
+const normalizeHotkey = (appleLike: boolean, hotkey: HotkeyModifiers): HotkeyModifiers => {
+  if (appleLike) {
+    return hotkey;
+  }
+
+  return {
+    ctrl: hotkey.meta,
+    alt: hotkey.alt,
+    shift: hotkey.shift,
+    meta: false,
+  };
 };

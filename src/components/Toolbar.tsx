@@ -9,7 +9,7 @@ import { useHotkey } from "~/hooks/useHotkey";
 export const Toolbar: React.FC = () => {
   const app = useApp();
   const editorMode = useStore((store) => store.editor.mode);
-  const screenDimensions = useStore((store) => store.screen.dimensions);
+  const screenDimensions = useStore((store) => store.platform.screen.dimensions);
 
   const SelectHotkey = useHotkey({ key: "1", meta: true }, () => {
     app.editor.setEditorMode("select");

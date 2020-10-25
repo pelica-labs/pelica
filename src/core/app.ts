@@ -12,19 +12,17 @@ import { App, immer } from "~/core/helpers";
 import { history } from "~/core/history";
 import { imports } from "~/core/import";
 import { itineraries } from "~/core/itineraries";
-import { keyboard } from "~/core/keyboard";
 import { map } from "~/core/map";
 import { pins } from "~/core/pins";
+import { platform } from "~/core/platform";
 import { routes } from "~/core/routes";
-import { screen } from "~/core/screen";
 import { selection } from "~/core/selection";
 import { sync } from "~/core/sync";
 import { units } from "~/core/units";
 
 export type State = {
   alerts: ReturnType<typeof alerts>;
-  screen: ReturnType<typeof screen>;
-  keyboard: ReturnType<typeof keyboard>;
+  platform: ReturnType<typeof platform>;
   geolocation: ReturnType<typeof geolocation>;
   map: ReturnType<typeof map>;
   editor: ReturnType<typeof editor>;
@@ -44,8 +42,7 @@ export type State = {
 const state = (app: App) => {
   return {
     alerts: alerts(app),
-    screen: screen(app),
-    keyboard: keyboard(app),
+    platform: platform(app),
     geolocation: geolocation(app),
     map: map(app),
     editor: editor(app),

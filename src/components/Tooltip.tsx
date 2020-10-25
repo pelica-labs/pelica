@@ -13,7 +13,7 @@ export type TooltipState = "hidden" | "shown" | "showing";
 
 export const Tooltip: React.FC<TooltipProps> = ({ text, placement, children }) => {
   const [tooltipState, setTooltipState] = useState<TooltipState>("hidden");
-  const touch = useStore((store) => store.screen.touch);
+  const touch = useStore((store) => store.platform.screen.touch);
 
   useEffect(() => {
     if (tooltipState !== "showing") {

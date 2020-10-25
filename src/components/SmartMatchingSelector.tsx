@@ -28,7 +28,7 @@ const Profiles: ProfileConfiguration[] = [
 
 export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange }) => {
   const [showTooltip, setShowTooltip] = useState(false);
-  const screenDimensions = useStore((store) => store.screen.dimensions);
+  const screenDimensions = useStore((store) => store.platform.screen.dimensions);
 
   return (
     <div className="text-xs">

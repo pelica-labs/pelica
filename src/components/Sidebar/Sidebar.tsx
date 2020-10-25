@@ -26,7 +26,7 @@ type Props = {
 
 export const Sidebar: React.FC<Props> = ({ initialStyles }) => {
   const editorMode = useStore((store) => store.editor.mode);
-  const screenDimensions = useStore((store) => store.screen.dimensions);
+  const screenDimensions = useStore((store) => store.platform.screen.dimensions);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const sidebarDimensions = useDimensions(sidebarRef);
   const toolbarRef = useRef<HTMLDivElement>(null);

@@ -8,7 +8,7 @@ export const useScreenDimensions = (): void => {
 
   useEffect(() => {
     const onResize = throttle(() => {
-      app.screen.updateScreen(window.innerWidth, window.innerHeight);
+      app.platform.updateScreen(window.innerWidth, window.innerHeight);
     }, 200);
 
     window.addEventListener("load", onResize, false);

@@ -29,7 +29,7 @@ type Props = {
 export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete }) => {
   const [color, setColor] = useState(value);
   const [showExtendedPicker, setShowExtendedPicker] = useState(false);
-  const screenDimensions = useStore((store) => store.screen.dimensions);
+  const screenDimensions = useStore((store) => store.platform.screen.dimensions);
 
   const size = screenDimensions.md ? 14 : 20;
 

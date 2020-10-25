@@ -7,7 +7,7 @@ export const useKeyboard = (): void => {
 
   useEffect(() => {
     const onEvent = (event: KeyboardEvent | MouseEvent | WheelEvent | TouchEvent) => {
-      app.keyboard.updateKeyboard({
+      app.platform.updateKeyboard({
         ctrlKey: event.ctrlKey,
         shiftKey: event.shiftKey,
         altKey: event.altKey,
