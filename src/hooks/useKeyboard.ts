@@ -1,10 +1,8 @@
 import { useEffect } from "react";
 
-import { useApp } from "~/core/app";
+import { app } from "~/core/app";
 
 export const useKeyboard = (): void => {
-  const app = useApp();
-
   useEffect(() => {
     const onEvent = (event: KeyboardEvent | MouseEvent | WheelEvent | TouchEvent) => {
       app.platform.updateKeyboard({

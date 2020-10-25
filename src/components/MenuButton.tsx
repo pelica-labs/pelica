@@ -5,11 +5,10 @@ import React from "react";
 
 import { DoubleCheckIcon, MenuIcon, RedoIcon, TrashIcon, UndoIcon } from "~/components/Icon";
 import { IconButton } from "~/components/IconButton";
-import { useApp, useStore } from "~/core/app";
+import { app, useStore } from "~/core/app";
 import { useHotkey } from "~/hooks/useHotkey";
 
 export const MenuButton: React.FC = () => {
-  const app = useApp();
   const canSelectAll = useStore((store) => store.entities.items.length > 0);
   const canUndo = useStore((store) => store.history.actions.length > 0);
   const canRedo = useStore((store) => store.history.redoStack.length > 0);

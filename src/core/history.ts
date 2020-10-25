@@ -6,13 +6,13 @@ export type History = {
   redoStack: Action[];
 };
 
-const initialState: History = {
+export const historyInitialState: History = {
   actions: [],
   redoStack: [],
 };
 
 export const history = ({ mutate }: App) => ({
-  ...initialState,
+  ...historyInitialState,
 
   push: (action: Action) => {
     mutate((state) => {

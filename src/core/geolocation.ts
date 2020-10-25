@@ -6,12 +6,12 @@ export type Geolocation = {
   currentLocation: Position | null;
 };
 
-const initialState: Geolocation = {
+export const geolocationInitialState: Geolocation = {
   currentLocation: null,
 };
 
 export const geolocation = ({ mutate }: App) => ({
-  ...initialState,
+  ...geolocationInitialState,
 
   updateCurrentLocation: (coordinates: Position) => {
     mutate(({ geolocation }) => {

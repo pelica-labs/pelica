@@ -3,11 +3,10 @@ import React from "react";
 import { ExportIcon, HandIcon, MousePointerIcon, PencilIcon, PinIcon, RouteIcon, StyleIcon } from "~/components/Icon";
 import { IconButton } from "~/components/IconButton";
 import { MenuButton } from "~/components/MenuButton";
-import { useApp, useStore } from "~/core/app";
+import { app, useStore } from "~/core/app";
 import { useHotkey } from "~/hooks/useHotkey";
 
 export const Toolbar: React.FC = () => {
-  const app = useApp();
   const editorMode = useStore((store) => store.editor.mode);
   const screenDimensions = useStore((store) => store.platform.screen.dimensions);
 

@@ -5,13 +5,13 @@ type Exports = {
   imageData: string | null;
 };
 
-const initialState: Exports = {
+export const exportsInitialState: Exports = {
   exporting: false,
   imageData: null,
 };
 
 export const exports = ({ mutate }: App) => ({
-  ...initialState,
+  ...exportsInitialState,
 
   prepareCanvas: () => {
     mutate((state) => {

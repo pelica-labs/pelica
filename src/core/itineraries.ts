@@ -20,12 +20,12 @@ type Itineraries = {
   isLoadingRoute: boolean;
 };
 
-const initialState: Itineraries = {
+export const itinerariesInitialState: Itineraries = {
   isLoadingRoute: false,
 };
 
 export const itineraries = ({ mutate, get }: App) => ({
-  ...initialState,
+  ...itinerariesInitialState,
 
   open: () => {
     mutate((state) => {

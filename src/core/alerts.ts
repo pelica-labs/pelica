@@ -21,14 +21,14 @@ type Alerts = {
   messages: Alert[];
 };
 
-const initialState: Alerts = {
+export const alertsInitialState: Alerts = {
   messages: [],
 };
 
 export const alerts = ({ mutate, get }: App) => ({
-  ...initialState,
+  ...alertsInitialState,
 
-  trigger(alertInput: AlertInput) {
+  trigger: (alertInput: AlertInput) => {
     const alert: Alert = {
       timeout: 5000,
       color: "orange",

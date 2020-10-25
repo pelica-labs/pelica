@@ -7,7 +7,7 @@ import { AspectRatioSelector } from "~/components/AspectRatioSelector";
 import { Button } from "~/components/Button";
 import { CopyIcon } from "~/components/Icon";
 import { SidebarHeading, SidebarSection } from "~/components/sidebar/Sidebar";
-import { useApp, useStore } from "~/core/app";
+import { app, useStore } from "~/core/app";
 import { getMapTitle } from "~/core/selectors";
 import { useBrowserFeatures } from "~/hooks/useBrowserFeatures";
 import { aspectRatios } from "~/lib/aspectRatio";
@@ -15,7 +15,6 @@ import { dataUrlToBlob } from "~/lib/fileConversion";
 import { theme } from "~/styles/tailwind";
 
 export const ExportSidebar: React.FC = () => {
-  const app = useApp();
   const { t } = useTranslation();
   const imageData = useStore((store) => store.exports.imageData);
   const aspectRatio = useStore((store) => store.editor.aspectRatio);

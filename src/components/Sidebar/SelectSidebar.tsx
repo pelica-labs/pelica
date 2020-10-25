@@ -10,13 +10,12 @@ import { OutlineSelector } from "~/components/OutlineSelector";
 import { SidebarHeading, SidebarSection } from "~/components/sidebar/Sidebar";
 import { SmartMatchingSelector } from "~/components/SmartMatchingSelector";
 import { WidthSlider } from "~/components/WidthSlider";
-import { useApp, useStore } from "~/core/app";
+import { app, useStore } from "~/core/app";
 import { Pin } from "~/core/pins";
 import { computeDistance, Route } from "~/core/routes";
 import { getSelectedEntities } from "~/core/selectors";
 
 export const SelectSidebar: React.FC = () => {
-  const app = useApp();
   const selectedEntities = useStore((store) => getSelectedEntities(store));
 
   if (selectedEntities.length === 0) {

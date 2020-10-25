@@ -7,7 +7,7 @@ import { Map } from "~/components/Map";
 import { PlaceAutocomplete } from "~/components/PlaceAutocomplete";
 import { ResetOrientationButton } from "~/components/ResetOrientationButton";
 import { Sidebar } from "~/components/sidebar/Sidebar";
-import { useApp, useStore, useStoreSubscription } from "~/core/app";
+import { app, useStore, useStoreSubscription } from "~/core/app";
 import { getSelectedItinerary } from "~/core/selectors";
 import { useKeyboard } from "~/hooks/useKeyboard";
 import { useScreenDimensions } from "~/hooks/useScreenDimensions";
@@ -18,7 +18,6 @@ type Props = {
 };
 
 export const MapEditor: React.FC<Props> = ({ initialStyles }) => {
-  const app = useApp();
   const itineraryContainer = useRef<HTMLDivElement>(null);
   const place = useStore((store) => store.map.place);
   const editorMode = useStore((store) => store.editor.mode);

@@ -8,12 +8,11 @@ import { OutlineSelector } from "~/components/OutlineSelector";
 import { SidebarHeading, SidebarSection } from "~/components/sidebar/Sidebar";
 import { SmartMatchingSelector } from "~/components/SmartMatchingSelector";
 import { WidthSlider } from "~/components/WidthSlider";
-import { useApp, useStore } from "~/core/app";
+import { app, useStore } from "~/core/app";
 import { computeDistance, Route } from "~/core/routes";
 import { getSelectedEntity } from "~/core/selectors";
 
 export const DrawSidebar: React.FC = () => {
-  const app = useApp();
   const fileInput = useRef<HTMLInputElement>(null);
   const color = useStore((store) => store.routes.style.color);
   const width = useStore((store) => store.routes.style.width);

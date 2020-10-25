@@ -4,12 +4,11 @@ import React from "react";
 import { Trans } from "react-i18next";
 
 import { InformationIcon } from "~/components/Icon";
-import { useApp, useStore } from "~/core/app";
+import { app, useStore } from "~/core/app";
 import { Route } from "~/core/routes";
 import { getSelectedEntity } from "~/core/selectors";
 
 export const Alerts: React.FC = () => {
-  const app = useApp();
   const alerts = useStore((store) => store.alerts.messages);
   const showRouteModeTip = useStore((store) => {
     const selectedEntity = getSelectedEntity(store) as Route;

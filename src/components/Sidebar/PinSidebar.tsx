@@ -4,11 +4,10 @@ import { ColorPicker } from "~/components/ColorPicker";
 import { IconSelector } from "~/components/IconSelector";
 import { SidebarHeading, SidebarSection } from "~/components/sidebar/Sidebar";
 import { WidthSlider } from "~/components/WidthSlider";
-import { useApp, useStore } from "~/core/app";
+import { app, useStore } from "~/core/app";
 import { MAX_PIN_SIZE } from "~/core/pins";
 
 export const PinSidebar: React.FC = () => {
-  const app = useApp();
   const color = useStore((store) => store.pins.style.color);
   const width = useStore((store) => store.pins.style.width);
   const icon = useStore((store) => store.pins.style.icon);

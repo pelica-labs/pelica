@@ -20,7 +20,7 @@ export type Map = {
   features: GeocodeFeature[];
 };
 
-const initialState: Map = {
+export const mapInitialState: Map = {
   coordinates: [2.3522219, 48.856614],
 
   bounds: null,
@@ -35,7 +35,7 @@ const initialState: Map = {
 };
 
 export const map = ({ mutate }: App) => ({
-  ...initialState,
+  ...mapInitialState,
 
   move: (coordinates: Position, zoom: number, bearing: number, pitch: number) => {
     mutate(({ map }) => {

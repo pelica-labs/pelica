@@ -2,10 +2,9 @@ import React from "react";
 
 import { Button } from "~/components/Button";
 import { CompassIcon } from "~/components/Icon";
-import { useApp, useStore } from "~/core/app";
+import { app, useStore } from "~/core/app";
 
 export const ResetOrientationButton: React.FC = () => {
-  const app = useApp();
   const bearing = useStore((store) => store.map.bearing);
   const pitch = useStore((store) => store.map.pitch);
 

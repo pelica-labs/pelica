@@ -47,7 +47,7 @@ export type Routes = {
   smartMatching: SmartMatching;
 };
 
-const initialState: Routes = {
+export const routesInitialState: Routes = {
   isDrawing: false,
   nextPoint: null,
 
@@ -80,7 +80,7 @@ export const computeDistance = (route: Route): number => {
 };
 
 export const routes = ({ mutate, get }: App) => ({
-  ...initialState,
+  ...routesInitialState,
 
   setStyle: (style: Partial<RouteStyle>) => {
     mutate((state) => {

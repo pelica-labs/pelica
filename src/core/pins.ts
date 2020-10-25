@@ -36,7 +36,7 @@ export type Pins = {
   style: PinStyle;
 };
 
-const initialState: Pins = {
+export const pinsInitialState: Pins = {
   style: {
     icon: "star",
     width: 6,
@@ -45,7 +45,7 @@ const initialState: Pins = {
 };
 
 export const pins = ({ mutate, get }: App) => ({
-  ...initialState,
+  ...pinsInitialState,
 
   setStyle: (style: Partial<PinStyle>) => {
     mutate((state) => {

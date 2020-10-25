@@ -10,7 +10,7 @@ export type Editor = {
 
 export type EditorMode = "style" | "select" | "move" | "draw" | "itinerary" | "pin" | "aspectRatio" | "export";
 
-const initiaState: Editor = {
+export const editorInitialState: Editor = {
   mode: "style",
 
   style: defaultStyle as Style,
@@ -18,7 +18,7 @@ const initiaState: Editor = {
 };
 
 export const editor = ({ mutate, get }: App) => ({
-  ...initiaState,
+  ...editorInitialState,
 
   setStyle: (style: Style) => {
     const { history } = get();

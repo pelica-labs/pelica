@@ -37,7 +37,7 @@ export type ScreenDimensions = {
   sm: boolean;
 };
 
-const initialState: Platform = {
+export const platformInitialState: Platform = {
   screen: {
     dimensions: {
       width: 1200,
@@ -68,7 +68,7 @@ const initialState: Platform = {
 };
 
 export const platform = ({ mutate, get }: App) => ({
-  ...initialState,
+  ...platformInitialState,
 
   initialize: () => {
     get().platform.updateScreen(window.innerWidth, window.innerHeight);

@@ -5,13 +5,13 @@ export type Units = {
   distance: "metric" | "imperial";
 };
 
-const initialState: Units = {
+export const unitsInitialState: Units = {
   // @todo: not completely accurate
   distance: isServer ? "metric" : window.navigator.language === "en-US" ? "imperial" : "metric",
 };
 
 export const units = ({ mutate }: App) => ({
-  ...initialState,
+  ...unitsInitialState,
 
   toggleDistanceUnit: () => {
     mutate(({ units }) => {

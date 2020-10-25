@@ -13,7 +13,7 @@ export type DragAndDrop = {
   hoveredEntitySource: string | null;
 };
 
-const initialState: DragAndDrop = {
+export const dragAndDropInitialState: DragAndDrop = {
   draggedEntityId: null,
   dragMoved: false,
   dragOffset: null,
@@ -23,7 +23,7 @@ const initialState: DragAndDrop = {
 };
 
 export const dragAndDrop = ({ mutate, get }: App) => ({
-  ...initialState,
+  ...dragAndDropInitialState,
 
   startHover: (id: number, source: string) => {
     mutate(({ dragAndDrop: drag }) => {

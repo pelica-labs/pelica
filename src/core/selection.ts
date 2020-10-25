@@ -13,7 +13,7 @@ export type Selection = {
   preservedIds: number[];
 };
 
-const initialState: Selection = {
+export const selectionInitialState: Selection = {
   area: null,
 
   ids: [],
@@ -21,7 +21,7 @@ const initialState: Selection = {
 };
 
 export const selection = ({ mutate, get }: App) => ({
-  ...initialState,
+  ...selectionInitialState,
 
   preserveSelection: () => {
     mutate((state) => {

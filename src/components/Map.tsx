@@ -8,7 +8,7 @@ import React, { useEffect, useRef } from "react";
 import { Clipboard } from "~/components/Clipboard";
 import { DocumentTitle } from "~/components/DocumentTitle";
 import { ErrorIcon, WarningIcon } from "~/components/Icon";
-import { getState, useApp, useStore, useStoreSubscription } from "~/core/app";
+import { app, getState, useStore, useStoreSubscription } from "~/core/app";
 import {
   getNextPointOverlay,
   getPinOverlay,
@@ -29,7 +29,6 @@ import { applyLayers } from "~/map/layers";
 import { applySources, MapSource } from "~/map/sources";
 
 export const Map: React.FC = () => {
-  const app = useApp();
   const map = useRef<mapboxgl.Map>();
   const container = useRef<HTMLDivElement>(null);
   const wrapper = useRef<HTMLDivElement>(null);
@@ -58,7 +57,7 @@ export const Map: React.FC = () => {
       pitch: state.map.pitch,
       doubleClickZoom: false,
       fadeDuration: 0,
-      logoPosition: app.platform.screen.dimensions.md ? "bottom-right" : "bottom-left",
+      logoPosition: state.platform.screen.dimensions.md ? "bottom-right" : "bottom-left",
       preserveDrawingBuffer: true,
     });
 

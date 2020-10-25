@@ -4,7 +4,7 @@ import PuffLoader from "react-spinners/PuffLoader";
 
 import { Button } from "~/components/Button";
 import { TargetIcon } from "~/components/Icon";
-import { useApp } from "~/core/app";
+import { app } from "~/core/app";
 import { theme } from "~/styles/tailwind";
 
 type GeolocationStatus = "pending" | "loading" | "granted";
@@ -14,7 +14,6 @@ type Props = {
 };
 
 export const GeolocationButton: React.FC<Props> = ({ onChange }) => {
-  const app = useApp();
   const [geolocationIsAvailable, setGeolocationAvailable] = useState(false);
   const [geolocationStatus, setGeolocationStatus] = useState<GeolocationStatus>("pending");
 

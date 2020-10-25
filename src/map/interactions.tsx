@@ -5,10 +5,10 @@ import { throttle } from "lodash";
 import { memoize } from "lodash";
 import { MapLayerMouseEvent, MapMouseEvent, MapTouchEvent, MapWheelEvent } from "mapbox-gl";
 
-import { getState, State } from "~/core/app";
+import { Actions, getState } from "~/core/app";
 import { getSelectedEntities, getSelectedEntity, getSelectedItinerary } from "~/core/selectors";
 
-export const applyInteractions = (map: mapboxgl.Map, app: State): void => {
+export const applyInteractions = (map: mapboxgl.Map, app: Actions): void => {
   const canvas = map.getCanvas();
 
   const onWheel = (event: MapWheelEvent) => {

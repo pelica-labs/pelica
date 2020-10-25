@@ -1,13 +1,12 @@
 import React from "react";
 
-import { useApp, useStore } from "~/core/app";
+import { app, useStore } from "~/core/app";
 
 type Props = {
   value: number;
 };
 
 export const Distance: React.FC<Props> = ({ value }) => {
-  const app = useApp();
   const unit = useStore((store) => store.units.distance);
 
   const convertedValue = unit === "imperial" ? value / 1.60934 : value;

@@ -13,12 +13,12 @@ export type Entities = {
 
 export type Entity = Route | Pin;
 
-const initialState: Entities = {
+export const entitiesInitialState: Entities = {
   items: [],
 };
 
 export const entities = ({ mutate, get }: App) => ({
-  ...initialState,
+  ...entitiesInitialState,
 
   insertFeatures: (features: Feature<Geometry>[]) => {
     const acceptedFeatures = features.filter((feature) => {

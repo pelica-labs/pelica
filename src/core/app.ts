@@ -2,23 +2,23 @@ import { useEffect } from "react";
 import create, { StateSelector } from "zustand";
 import shallow from "zustand/shallow";
 
-import { alerts } from "~/core/alerts";
-import { dragAndDrop } from "~/core/dragAndDrop";
-import { editor } from "~/core/editor";
-import { entities } from "~/core/entities";
-import { exports } from "~/core/export";
-import { geolocation } from "~/core/geolocation";
+import { alerts, alertsInitialState } from "~/core/alerts";
+import { dragAndDrop, dragAndDropInitialState } from "~/core/dragAndDrop";
+import { editor, editorInitialState } from "~/core/editor";
+import { entities, entitiesInitialState } from "~/core/entities";
+import { exports, exportsInitialState } from "~/core/export";
+import { geolocation, geolocationInitialState } from "~/core/geolocation";
 import { App, immer } from "~/core/helpers";
-import { history } from "~/core/history";
+import { history, historyInitialState } from "~/core/history";
 import { imports } from "~/core/import";
-import { itineraries } from "~/core/itineraries";
-import { map } from "~/core/map";
-import { pins } from "~/core/pins";
-import { platform } from "~/core/platform";
-import { routes } from "~/core/routes";
-import { selection } from "~/core/selection";
+import { itineraries, itinerariesInitialState } from "~/core/itineraries";
+import { map, mapInitialState } from "~/core/map";
+import { pins, pinsInitialState } from "~/core/pins";
+import { platform, platformInitialState } from "~/core/platform";
+import { routes, routesInitialState } from "~/core/routes";
+import { selection, selectionInitialState } from "~/core/selection";
 import { sync } from "~/core/sync";
-import { units } from "~/core/units";
+import { units, unitsInitialState } from "~/core/units";
 
 export type State = {
   alerts: ReturnType<typeof alerts>;
@@ -37,6 +37,25 @@ export type State = {
   imports: ReturnType<typeof imports>;
   sync: ReturnType<typeof sync>;
   units: ReturnType<typeof units>;
+};
+
+export type Actions = {
+  alerts: Omit<State["alerts"], keyof typeof alertsInitialState>;
+  platform: Omit<State["platform"], keyof typeof platformInitialState>;
+  geolocation: Omit<State["geolocation"], keyof typeof geolocationInitialState>;
+  map: Omit<State["map"], keyof typeof mapInitialState>;
+  editor: Omit<State["editor"], keyof typeof editorInitialState>;
+  routes: Omit<State["routes"], keyof typeof routesInitialState>;
+  itineraries: Omit<State["itineraries"], keyof typeof itinerariesInitialState>;
+  pins: Omit<State["pins"], keyof typeof pinsInitialState>;
+  history: Omit<State["history"], keyof typeof historyInitialState>;
+  entities: Omit<State["entities"], keyof typeof entitiesInitialState>;
+  selection: Omit<State["selection"], keyof typeof selectionInitialState>;
+  dragAndDrop: Omit<State["dragAndDrop"], keyof typeof dragAndDropInitialState>;
+  exports: Omit<State["exports"], keyof typeof exportsInitialState>;
+  imports: State["imports"];
+  sync: State["sync"];
+  units: Omit<State["units"], keyof typeof unitsInitialState>;
 };
 
 const state = (app: App) => {
@@ -94,4 +113,4 @@ export const subscribe = <T extends State, StateSlice>(
 
 export const getState = (): State => useStore.getState();
 
-export const useApp = (): State => useStore.getState();
+export const app: Readonly<Actions> = getState();
