@@ -1,4 +1,6 @@
+import { format } from "date-fns";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import BounceLoader from "react-spinners/BounceLoader";
 
 import { AspectRatioSelector } from "~/components/AspectRatioSelector";
@@ -14,6 +16,7 @@ import { theme } from "~/styles/tailwind";
 
 export const ExportSidebar: React.FC = () => {
   const app = useApp();
+  const { t } = useTranslation();
   const imageData = useStore((store) => store.exports.imageData);
   const aspectRatio = useStore((store) => store.editor.aspectRatio);
   const { ratio } = aspectRatios[aspectRatio];
@@ -27,10 +30,11 @@ export const ExportSidebar: React.FC = () => {
     if (!imageData) {
       return;
     }
-
     const a = document.createElement("a");
     a.href = imageData;
-    a.download = ["Pelica", getMapTitle(getState())].filter((text) => !!text).join(" · ");
+    a.download = [t("pelica"), getMapTitle(getState()), format(Date.now(), "yyyy-MM-dd HH-mm-ss")]
+      .filter((text) => !!text)
+      .join(" · ");
     a.click();
   };
 
@@ -40,7 +44,7 @@ export const ExportSidebar: React.FC = () => {
     }
 
     navigator.share({
-      title: ["Pelica", getMapTitle(getState())].filter((text) => !!text).join(" · "),
+      title: [t("pelica"), getMapTitle(getState())].filter((text) => !!text).join(" · "),
       url: imageUrl,
     });
   };
