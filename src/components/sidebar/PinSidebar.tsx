@@ -98,7 +98,7 @@ export const PinSidebar: React.FC = () => {
           <SidebarHeading>Label</SidebarHeading>
         </SidebarHeader>
 
-        <div className="mt-3 w-full">
+        <div className="mt-3 w-56 md:w-full">
           <PinLabelField
             value={label}
             onChange={(label) => {

@@ -189,7 +189,7 @@ export const SelectSidebar: React.FC = () => {
             <SidebarHeading>Label</SidebarHeading>
           </SidebarHeader>
 
-          <div className="mt-3 w-full">
+          <div className="mt-3 w-56 md:w-full">
             <PinLabelField
               value={selectedEntity.style.label}
               onChange={(label) => {
