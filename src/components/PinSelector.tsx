@@ -9,11 +9,12 @@ import { useClickOutside } from "~/hooks/useClickOutside";
 type Props = {
   value: string;
   onChange: (value: string) => void;
+  onChangeComplete: (value: string) => void;
 };
 
 const allIcons = pinIcons();
 
-export const PinSelector: React.FC<Props> = ({ value, onChange }) => {
+export const PinSelector: React.FC<Props> = ({ value, onChange, onChangeComplete }) => {
   const [showMenu, setShowMenu] = useState(false);
   const buttonContainer = useClickOutside<HTMLDivElement>(() => {
     // @todo: find a way to cleanup
@@ -49,6 +50,9 @@ export const PinSelector: React.FC<Props> = ({ value, onChange }) => {
                 <IconButton
                   active={value === iconName}
                   onClick={() => {
+                    onChangeComplete(iconName);
+                  }}
+                  onMouseEnter={() => {
                     onChange(iconName);
                   }}
                 >

@@ -71,15 +71,21 @@ export const PinSidebar: React.FC = () => {
               onChange={(icon) => {
                 app.pins.setStyle({ icon });
               }}
+              onChangeComplete={(icon) => {
+                app.pins.setStyle({ icon });
+              }}
             />
             <PinSelector
               value={pinType}
               onChange={(pinType) => {
                 app.pins.setStyle({ pinType });
               }}
+              onChangeComplete={(pinType) => {
+                app.pins.setStyle({ pinType });
+              }}
             />
           </div>
-          <div className="mr-1">
+          <div className="mr-1 ml-4">
             <PinPreview color={color} icon={icon} pinType={pinType} />
           </div>
         </div>

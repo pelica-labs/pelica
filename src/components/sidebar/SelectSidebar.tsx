@@ -155,21 +155,27 @@ export const SelectSidebar: React.FC = () => {
               <IconSelector
                 value={selectedEntity.style.icon}
                 onChange={(icon) => {
+                  app.pins.transientUpdateSelectedPin({ icon });
+                }}
+                onChangeComplete={(icon) => {
                   app.pins.updateSelectedPin({ icon });
                 }}
               />
               <PinSelector
                 value={selectedEntity.style.pinType}
                 onChange={(pinType) => {
+                  app.pins.transientUpdateSelectedPin({ pinType });
+                }}
+                onChangeComplete={(pinType) => {
                   app.pins.updateSelectedPin({ pinType });
                 }}
               />
             </div>
-            <div className="mr-1">
+            <div className="mr-1 ml-4">
               <PinPreview
-                color={selectedEntity.style.color}
-                icon={selectedEntity.style.icon}
-                pinType={selectedEntity.style.pinType}
+                color={selectedEntity.transientStyle?.color ?? selectedEntity.style.color}
+                icon={selectedEntity.transientStyle?.icon ?? selectedEntity.style.icon}
+                pinType={selectedEntity.transientStyle?.pinType ?? selectedEntity.style.pinType}
               />
             </div>
           </div>

@@ -17,10 +17,7 @@ export type Pin = {
   style: PinStyle & {
     target?: "Pin";
   };
-  transientStyle?: {
-    color: string;
-    width: number;
-  };
+  transientStyle?: PinStyle;
 };
 
 export type PinStyle = {
