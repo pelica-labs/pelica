@@ -1,11 +1,27 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { useRouter } from "next/dist/client/router";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
+import useLocalStorage from "~/hooks/useLocalStorage";
+
 export const Landing: React.FC = () => {
-  const images = ["/images/og-image.jpg", "/images/index/carousel1.jpg", "/images/index/carousel2.jpg"];
   const [currentImage, setCurrentImage] = useState<number>(0);
 
+  // redirect the user to the app if they have visited the landing already
+  const router = useRouter();
+  const [hasVisitedLanding, setHasVisitedLanding] = useLocalStorage<boolean>("hasVisitedLanding", false);
+  useEffect(() => {
+    if (hasVisitedLanding && router.pathname === "/") {
+      router.replace("/app");
+    }
+  }, [hasVisitedLanding]);
+
+  // set the landing as visited when accessing it from the landing
+  const onClick = () => setHasVisitedLanding(true);
+
+  // rotate the images
+  const images = ["/images/og-image.jpg", "/images/index/carousel1.jpg", "/images/index/carousel2.jpg"];
   useEffect(() => {
     if (typeof window !== undefined) {
       const timeout = window.setTimeout(() => {
@@ -23,7 +39,10 @@ export const Landing: React.FC = () => {
           scratch map
         </a>
         <Link passHref href="/app">
-          <button className="mx-4 bg-gray-700 hover:bg-gray-600 transition-colors duration-150 ease-in-out text-gray-100 px-6 py-1 rounded-full font-light focus:outline-none focus:shadow-outline">
+          <button
+            className="mx-4 bg-gray-700 hover:bg-gray-600 transition-colors duration-150 ease-in-out text-gray-100 px-6 py-1 rounded-full font-light focus:outline-none focus:shadow-outline"
+            onClick={onClick}
+          >
             go to the app
           </button>
         </Link>
@@ -54,7 +73,10 @@ export const Landing: React.FC = () => {
             style={{ background: `linear-gradient(rgba(0,0,0,0), rgba(28, 25, 23, 0.5))` }}
           >
             <Link passHref href="/app">
-              <button className="h-12 mb-6 mt-12 bg-orange-600 hover:bg-orange-500 shadow transition duration-300 ease-in-out text-gray-100 px-6 py-1 rounded-full uppercase tracking-wider font-bold hover:scale-105 hover:shadow transform hover:-translate-y-1 focus:outline-none focus:shadow-outline">
+              <button
+                className="h-12 mb-6 mt-12 bg-orange-600 hover:bg-orange-500 shadow transition duration-300 ease-in-out text-gray-100 px-6 py-1 rounded-full uppercase tracking-wider font-bold hover:scale-105 hover:shadow transform hover:-translate-y-1 focus:outline-none focus:shadow-outline"
+                onClick={onClick}
+              >
                 Start mapping
               </button>
             </Link>
