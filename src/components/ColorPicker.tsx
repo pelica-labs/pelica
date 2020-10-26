@@ -71,7 +71,7 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete
           colors={defaultColors}
           styles={{
             default: {
-              card: { boxShadow: "none", height: "100%" },
+              card: { boxShadow: "none", height: "100%", marginBottom: 2 },
               swatch: { width: size, height: size },
               hash: { display: "none" },
               input: { display: "none" },
@@ -95,7 +95,7 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete
           }}
         />
         {orderedRecentColors.length > 0 && (
-          <div className="pt-1 border-t border-gray-100">
+          <div className="pt-2 border-t border-gray-100">
             <TwitterPicker
               color={color}
               colors={orderedRecentColors}
