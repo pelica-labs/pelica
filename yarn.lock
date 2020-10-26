@@ -1210,11 +1210,6 @@
   resolved "https://registry.yarnpkg.com/@iconify/json/-/json-1.1.245.tgz#5ca8f0a729caedc75a3172d850c49063178867f3"
   integrity sha512-xLNHLb7o3s/y2eyizY3ruz9HtR3szs71x0GrbIa/AWPQO8LTETMeoEnZp7A06JeN4hUkKTZVcyweT1NoHXXg/A==
 
-"@iconify/react-with-api@^1.0.0-rc.1":
-  version "1.0.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@iconify/react-with-api/-/react-with-api-1.0.0-rc.1.tgz#4c3473bc24944d3a488467489614fb9d4a6ec60b"
-  integrity sha512-KrYZPrv4YpfPXVOyQsmxt2RUarb5hMz30XQA+X90eOTTPBuCT9Vl06/QwU1ULvjhvCCRmwpD/1FL6S60HTcCDQ==
-
 "@icons/material@^0.2.4":
   version "0.2.4"
   resolved "https://registry.yarnpkg.com/@icons/material/-/material-0.2.4.tgz#e90c9f71768b3736e76d7dd6783fc6c2afa88bc8"

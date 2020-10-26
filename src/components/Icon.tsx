@@ -40,14 +40,14 @@ export const pinIcons = (): { [key: string]: Icon } => ({
   squared: SquaredPinIcon,
 });
 
-type Props = SVGAttributes<SVGElement> & {
+export type IconProps = SVGAttributes<SVGElement> & {
   className?: string;
   color?: string;
   width?: number;
   height?: number;
 };
 
-export type Icon = React.FC<Props>;
+export type Icon = React.FC<IconProps>;
 
 const icon = (path: JSX.Element, size = 24): Icon => {
   return function Icon({ ...props }) {
@@ -55,6 +55,19 @@ const icon = (path: JSX.Element, size = 24): Icon => {
       <svg {...props} viewBox={`0 0 ${size}, ${size}`} xmlns="http://www.w3.org/2000/svg">
         {path}
       </svg>
+    );
+  };
+};
+
+export const iconFromDangerousSvgString = (svgString: string, width: number, height: number): Icon => {
+  return function Icon({ ...props }) {
+    return (
+      <svg
+        {...props}
+        dangerouslySetInnerHTML={{ __html: svgString }}
+        viewBox={`0 0 ${width} ${height}`}
+        xmlns="http://www.w3.org/2000/svg"
+      />
     );
   };
 };

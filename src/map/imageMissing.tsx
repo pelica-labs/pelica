@@ -1,11 +1,11 @@
 import React, { ReactElement } from "react";
 import ReactDOMServer from "react-dom/server";
 
-import { icons } from "~/components/Icon";
 import { pins } from "~/components/Pin";
 import { getState } from "~/core/app";
+import { PinIcon } from "~/core/pins";
+import { findIcon } from "~/hooks/useIcon";
 
-const allIcons = icons();
 const allPins = pins();
 
 const transparentPixel = {
@@ -23,11 +23,11 @@ type ImageComponents = {
 
 type PinProps = {
   pin: string;
-  icon: string;
+  icon: PinIcon;
   color: string;
 };
 
-const idToComponents = (eventId: string): ImageComponents | null => {
+const idToComponents = async (eventId: string): Promise<ImageComponents | null> => {
   let json: PinProps | null = null;
   try {
     json = JSON.parse(eventId);
@@ -42,7 +42,7 @@ const idToComponents = (eventId: string): ImageComponents | null => {
   const { pin, icon, color } = json;
 
   const { component: Pin, dimensions, offset } = allPins[pin];
-  const Icon = allIcons[icon];
+  const Icon = await findIcon(icon.collection, icon.name);
 
   if (!Pin || !Icon) {
     return null;
@@ -62,9 +62,9 @@ type MapImageMissingEvent = {
 
 export const applyImageMissingHandler = (map: mapboxgl.Map): void => {
   const onImageMissing = async (event: MapImageMissingEvent) => {
-    const components = idToComponents(event.id);
-
     map.addImage(event.id, transparentPixel);
+
+    const components = await idToComponents(event.id);
 
     if (!components) {
       return;

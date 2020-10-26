@@ -1,20 +1,20 @@
 import React from "react";
 
-import { icons } from "~/components/Icon";
 import { pins } from "~/components/Pin";
+import { PinIcon } from "~/core/pins";
+import { useIcon } from "~/hooks/useIcon";
 
 type Props = {
   pinType: string;
-  icon: string;
+  icon: PinIcon;
   color: string;
 };
 
 const allPins = pins();
-const allIcons = icons();
 
 export const PinPreview: React.FC<Props> = ({ pinType, icon, color }) => {
   const { component: Pin, dimensions, offset } = allPins[pinType];
-  const Icon = allIcons[icon];
+  const Icon = useIcon(icon.collection, icon.name);
   const scale = 0.6;
   const iconSize = 32;
 
