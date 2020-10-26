@@ -1,5 +1,5 @@
 import Fuse from "fuse.js";
-import { capitalize, snakeCase } from "lodash";
+import { capitalize, isEqual, snakeCase } from "lodash";
 import React, { useState } from "react";
 
 import { Button } from "~/components/Button";
@@ -7,7 +7,7 @@ import { iconFromDangerousSvgString, icons } from "~/components/Icon";
 import { IconButton } from "~/components/IconButton";
 import { PinIcon } from "~/core/pins";
 import { useClickOutside } from "~/hooks/useClickOutside";
-import { collections, useIcon } from "~/hooks/useIcon";
+import { useIcon, useIconCollections } from "~/hooks/useIcon";
 
 type Props = {
   value: PinIcon;
@@ -23,6 +23,8 @@ export const IconSelector: React.FC<Props> = ({ value, onChange, onChangeComplet
   const container = useClickOutside<HTMLDivElement>(() => {
     setShowMenu(false);
   });
+
+  const collections = useIconCollections();
 
   const fuse = new Fuse(
     Object.keys(collections).flatMap((collection) =>
@@ -66,8 +68,9 @@ export const IconSelector: React.FC<Props> = ({ value, onChange, onChangeComplet
                 <SearchItem
                   key={`${icon.collection}-${icon.name}`}
                   Icon={Icon}
-                  active={icon.collection === value.collection && icon.name === value.name}
+                  active={isEqual(icon, value)}
                   icon={icon}
+                  setShowMenu={setShowMenu}
                   onChange={onChange}
                   onChangeComplete={onChangeComplete}
                 />
@@ -94,8 +97,9 @@ export const IconSelector: React.FC<Props> = ({ value, onChange, onChangeComplet
                     <SearchItem
                       key={`${collection}-${icon.name}`}
                       Icon={Icon}
-                      active={icon.collection === value.collection && icon.name === value.name}
+                      active={isEqual(icon, value)}
                       icon={icon}
+                      setShowMenu={setShowMenu}
                       onChange={onChange}
                       onChangeComplete={onChangeComplete}
                     />
@@ -113,17 +117,19 @@ interface SearchItemProps {
   active: boolean;
   onChange: (icon: PinIcon) => void;
   onChangeComplete: (icon: PinIcon) => void;
+  setShowMenu: (b: boolean) => void;
   Icon: React.FC<{ className?: string }>;
   icon: PinIcon;
 }
 
-const SearchItem = ({ active, onChange, onChangeComplete, Icon, icon }: SearchItemProps) => {
+const SearchItem = ({ active, onChange, onChangeComplete, setShowMenu, Icon, icon }: SearchItemProps) => {
   return (
     <div className="w-1/5 px-1 pt-1 flex justify-center">
       <IconButton
         active={active}
         onClick={() => {
           onChangeComplete(icon);
+          setShowMenu(false);
         }}
         onMouseEnter={() => {
           onChange(icon);

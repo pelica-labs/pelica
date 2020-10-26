@@ -1,5 +1,6 @@
 import makiCollection from "@iconify/json/json/maki.json";
 import mapCollection from "@iconify/json/json/map.json";
+import { pickBy } from "lodash";
 
 import { iconFromDangerousSvgString, IconProps, icons } from "../components/Icon";
 
@@ -12,7 +13,7 @@ export interface IconCollection {
 const defaultIcons = icons();
 
 export const collections: { [key: string]: IconCollection } = {
-  maki: makiCollection,
+  maki: { ...makiCollection, icons: pickBy(makiCollection.icons, (value, key) => key.endsWith("15")) },
   map: mapCollection,
   default: { icons: defaultIcons, width: 24, height: 24 },
 };
@@ -36,4 +37,8 @@ export const findIcon = (collection: string, name: string): React.FC<IconProps> 
 
 export const useIcon = (collection: string, name: string): React.FC<IconProps> => {
   return findIcon(collection, name);
+};
+
+export const useIconCollections = (): { [key: string]: IconCollection } => {
+  return collections;
 };
