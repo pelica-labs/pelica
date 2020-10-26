@@ -122,12 +122,12 @@ const directionsMatch = async (points: Position[], profile: SmartMatchingProfile
  * Points within 100m of each other will be chunked in the same group.
  */
 const chunkByDistance = (points: Position[]): SmartMatchingSegment[] => {
-  if (points.length < 2) {
+  if (points.length < 3) {
     return [{ points, method: "directions" }];
   }
 
   const ruler = new CheapRuler(points[0][1], "meters");
-  const minDistance = 100; // meters
+  const minDistance = 400; // meters
 
   const comparison = (a: Position, b: Position) => {
     return ruler.distance(a as [number, number], b as [number, number]) < minDistance;

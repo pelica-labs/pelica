@@ -162,6 +162,7 @@ module.exports = {
       ],
       serif: ["Georgia", "Cambria", '"Times New Roman"', "Times", "serif"],
       mono: ["Menlo", "Monaco", "Consolas", '"Liberation Mono"', '"Courier New"', "monospace"],
+      raleway: ["Raleway", "sans serif"],
     },
     fontSize: {
       "2xs": ".6rem",
