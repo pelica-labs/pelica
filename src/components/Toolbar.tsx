@@ -10,11 +10,11 @@ export const Toolbar: React.FC = () => {
   const editorMode = useStore((store) => store.editor.mode);
   const screenDimensions = useStore((store) => store.platform.screen.dimensions);
 
-  const SelectHotkey = useHotkey({ key: "1", meta: true }, () => {
-    app.editor.setEditorMode("select");
-  });
-  const MoveHotkey = useHotkey({ key: "2", meta: true }, () => {
+  const MoveHotkey = useHotkey({ key: "1", meta: true }, () => {
     app.editor.setEditorMode("move");
+  });
+  const SelectHotkey = useHotkey({ key: "2", meta: true }, () => {
+    app.editor.setEditorMode("select");
   });
   const DrawHotkey = useHotkey({ key: "3", meta: true }, () => {
     app.editor.setEditorMode("draw");
@@ -34,25 +34,6 @@ export const Toolbar: React.FC = () => {
         <MenuButton />
 
         <IconButton
-          active={editorMode === "select"}
-          id="toolbar-select"
-          tooltip={{
-            placement: tooltipPlacement,
-            text: (
-              <div className="flex items-center">
-                <span className="mr-4 leading-none">Select</span>
-                <SelectHotkey />
-              </div>
-            ),
-          }}
-          onClick={() => {
-            app.editor.setEditorMode("select");
-          }}
-        >
-          <MousePointerIcon className="w-8 h-8 md:w-6 md:h-6" />
-        </IconButton>
-
-        <IconButton
           active={editorMode === "move"}
           id="toolbar-move"
           tooltip={{
@@ -69,6 +50,25 @@ export const Toolbar: React.FC = () => {
           }}
         >
           <HandIcon className="w-8 h-8 md:w-6 md:h-6" />
+        </IconButton>
+
+        <IconButton
+          active={editorMode === "select"}
+          id="toolbar-select"
+          tooltip={{
+            placement: tooltipPlacement,
+            text: (
+              <div className="flex items-center">
+                <span className="mr-4 leading-none">Select</span>
+                <SelectHotkey />
+              </div>
+            ),
+          }}
+          onClick={() => {
+            app.editor.setEditorMode("select");
+          }}
+        >
+          <MousePointerIcon className="w-8 h-8 md:w-6 md:h-6" />
         </IconButton>
       </div>
 

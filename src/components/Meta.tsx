@@ -8,7 +8,7 @@ export const Meta: React.FC = () => {
   return (
     <Head>
       <title>
-        {t("pelica")} · ${t("tagline")}
+        {t("pelica")} · {t("tagline")}
       </title>
 
       <meta content={t("tagline")} name="Description" />

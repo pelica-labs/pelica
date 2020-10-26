@@ -114,7 +114,7 @@ export const Sidebar: React.FC<Props> = ({ initialStyles }) => {
                 event.stopPropagation();
                 setShowToolbar(true);
                 setExpandSidebar(false);
-                app.editor.setEditorMode(null);
+                app.editor.setEditorMode("move");
               }}
             >
               <ChevronLeftIcon className="w-8 h-8" />
