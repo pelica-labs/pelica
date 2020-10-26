@@ -17,6 +17,7 @@ import {
   getSelectionAreaOverlay,
   getWatermarkOverlay,
 } from "~/core/overlays";
+import { upscale } from "~/core/platform";
 import { STOP_DRAWING_CIRCLE_ID } from "~/core/routes";
 import { getEntityFeatures, getSelectedEntities, getSelectedEntity } from "~/core/selectors";
 import { computeMapDimensions, computeResizingRatio } from "~/lib/aspectRatio";
@@ -32,7 +33,9 @@ export const Map: React.FC = () => {
   const map = useRef<mapboxgl.Map>();
   const container = useRef<HTMLDivElement>(null);
   const wrapper = useRef<HTMLDivElement>(null);
-  const aspectRatio = useStore((state) => state.editor.aspectRatio);
+  const aspectRatio = useStore((store) => store.editor.aspectRatio);
+  const editorMode = useStore((store) => store.editor.mode);
+  const exporting = useStore((store) => store.exports.exporting);
 
   /**
    * Initialize map
@@ -161,14 +164,9 @@ export const Map: React.FC = () => {
       Object.assign(wrapper.current.style, computeMapDimensions(aspectRatio, dimensions));
 
       if (exporting) {
-        const ratio = computeResizingRatio(aspectRatio, dimensions);
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        window.devicePixelRatio = Math.max(screen.pixelRatio, ratio);
+        upscale(screen.pixelRatio * computeResizingRatio(aspectRatio, dimensions));
       } else {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        window.devicePixelRatio = screen.pixelRatio;
+        upscale(screen.pixelRatio);
       }
 
       // Queues this up for after all rerender occurs.
@@ -177,6 +175,7 @@ export const Map: React.FC = () => {
 
         if (exporting) {
           setTimeout(() => {
+            console.log("generating image at " + window.devicePixelRatio);
             app.exports.generateImage();
           }, 500);
         }
@@ -362,16 +361,26 @@ export const Map: React.FC = () => {
    * Sync watermark
    */
   useStoreSubscription(
-    (store) => store.editor.mode,
-    (editorMode) => {
+    (store) => ({
+      editorMode: store.editor.mode,
+      exporting: store.exports.exporting,
+    }),
+    ({ editorMode, exporting }) => {
       if (!map.current) {
         return;
       }
 
       const features: RawFeature[] = [];
+      const mapboxControls = document.querySelector(".mapboxgl-control-container")?.classList;
 
-      if (editorMode === "export") {
+      if (exporting) {
         features.push(getWatermarkOverlay(map.current.getBounds().getSouthWest().toArray()));
+      }
+
+      if (editorMode === "export" || exporting) {
+        mapboxControls?.add("hidden");
+      } else {
+        mapboxControls?.remove("hidden");
       }
 
       applyFeatures(map.current, features, [MapSource.Watermark]);
@@ -430,11 +439,7 @@ export const Map: React.FC = () => {
         map.current.dragPan.enable();
       }
 
-      if (mode === "export") {
-        map.current.scrollZoom.disable();
-      } else {
-        map.current.scrollZoom.enable();
-      }
+      map.current.scrollZoom.enable();
     }
   );
 
@@ -501,7 +506,7 @@ export const Map: React.FC = () => {
           }
         }}
       >
-        <div ref={container} className="w-full h-full flex justify-center items-center">
+        <div ref={container} className="relative w-full h-full flex justify-center items-center">
           <div
             ref={wrapper}
             className={classNames({
@@ -509,7 +514,13 @@ export const Map: React.FC = () => {
               "border border-gray-400": aspectRatio !== "fill",
             })}
             id="map"
-          />
+          >
+            {editorMode === "export" && !exporting && (
+              <div className="absolute bottom-0 left-0 flex mb-1 ml-1">
+                <img alt="Watermark" className="w-24" src="/images/watermark.png" />
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </>

@@ -3,7 +3,6 @@ import { File, IncomingForm } from "formidable";
 import fs from "fs";
 import HttpStatus from "http-status-codes";
 import { NextApiHandler, NextApiRequest } from "next";
-import uniqid from "uniqid";
 
 import { getEnv } from "~/lib/config";
 import { generateFilePrefix } from "~/lib/s3";
@@ -14,11 +13,8 @@ const s3 = new AWS.S3({
   region: getEnv("AWS_S3_REGION", process.env.AWS_S3_REGION),
 });
 
-const generateUniqueFilePath = () => {
-  return uniqid().toUpperCase();
-};
-
 type UploadedMap = {
+  id: string;
   image: File;
   name?: string;
 };
@@ -33,6 +29,7 @@ const parseUpload = (req: NextApiRequest): Promise<UploadedMap> => {
       }
 
       resolve({
+        id: fields.id as string,
         image: files.image,
         name: fields.name as string | undefined,
       });
@@ -47,14 +44,27 @@ const UploadMap: NextApiHandler = async (req, res) => {
     });
   }
 
-  const { name, image } = await parseUpload(req);
-  const filePath = generateUniqueFilePath();
-  const proxyPath = `${req.headers.host}/map/${filePath}`;
-  const s3Path = generateFilePrefix("maps") + filePath + ".jpeg";
+  const bucket = getEnv("AWS_S3_BUCKET", process.env.AWS_S3_BUCKET);
+
+  const { id, name, image } = await parseUpload(req);
+  const proxyPath = `${req.headers.host}/map/${id}`;
+  const s3Path = generateFilePrefix("maps") + id + ".jpeg";
+
+  const existingImage = await s3
+    .headObject({ Bucket: bucket, Key: s3Path })
+    .promise()
+    .catch(() => {
+      // Expected to throw
+    });
+  if (existingImage) {
+    return res.status(HttpStatus.BAD_REQUEST).json({
+      error: "File already exists",
+    });
+  }
 
   await s3
     .upload({
-      Bucket: getEnv("AWS_S3_BUCKET", process.env.AWS_S3_BUCKET),
+      Bucket: bucket,
       Key: s3Path,
       Body: fs.createReadStream(image.path),
       ContentType: "image/jpeg",

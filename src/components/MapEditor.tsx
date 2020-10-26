@@ -56,7 +56,7 @@ export const MapEditor: React.FC<Props> = ({ initialStyles }) => {
           <Alerts />
         </div>
 
-        {!screenDimensions.md && (
+        {!screenDimensions.md && editorMode !== "export" && (
           <div className="absolute bottom-0 left-0 flex mb-2 ml-2 bg-white border rounded-full">
             <IconButton
               className="rounded-full"

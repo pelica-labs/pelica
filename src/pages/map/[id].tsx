@@ -2,9 +2,12 @@ import { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import BounceLoader from "react-spinners/BounceLoader";
 
 import { getEnv } from "~/lib/config";
 import { generateFilePrefix, s3 } from "~/lib/s3";
+import { isServer } from "~/lib/ssr";
+import { theme } from "~/styles/tailwind";
 
 type Props = {
   currentUrl: string;
@@ -17,8 +20,8 @@ type Props = {
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
-  const path = generateFilePrefix("maps") + ctx.query.hash + ".jpeg";
-  const currentUrl = ctx.req.headers.host + "/map/" + ctx.query.hash;
+  const path = generateFilePrefix("maps") + ctx.query.id + ".jpeg";
+  const currentUrl = ctx.req.headers.host + "/map/" + ctx.query.id;
 
   const objectParams = {
     Bucket: getEnv("AWS_S3_BUCKET", process.env.AWS_S3_BUCKET),
@@ -57,8 +60,22 @@ const ViewMap: NextPage<Props> = ({ currentUrl, file }) => {
   const { t } = useTranslation();
 
   if (!file) {
-    // @todo: 404 page
-    return <div>Map not found</div>;
+    if (!isServer) {
+      // @todo: poll client side
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
+    }
+
+    return (
+      <div className="w-full h-full flex flex-col justify-center items-center bg-gray-900 ">
+        <span className="text-gray-200 text-xl">Map not found</span>
+        <span className="mt-2 text-gray-400 text-base">It might still be uploading</span>
+        <div className="mt-8">
+          <BounceLoader color={theme.colors.orange[500]} size={50} />
+        </div>
+      </div>
+    );
   }
 
   const title = [t("pelica"), file.metadata.name].filter((text) => !!text).join(" · ");

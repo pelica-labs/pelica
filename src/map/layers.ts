@@ -11,8 +11,8 @@ export const applyLayers = (map: mapboxgl.Map): void => {
     layout: {
       "icon-image": "watermark",
       "icon-anchor": "bottom-left",
-      "icon-offset": [2, -2],
-      "icon-size": 0.5,
+      "icon-offset": [8, -6],
+      "icon-size": 0.25,
     },
   });
 

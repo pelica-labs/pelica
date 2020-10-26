@@ -67,6 +67,12 @@ export const platformInitialState: Platform = {
   },
 };
 
+export const upscale = (pixelRatio: number) => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  window.devicePixelRatio = pixelRatio;
+};
+
 export const platform = ({ mutate, get }: App) => ({
   ...platformInitialState,
 

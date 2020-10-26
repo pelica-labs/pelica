@@ -15,8 +15,17 @@ export const exports = ({ mutate }: App) => ({
 
   prepareCanvas: () => {
     mutate((state) => {
+      state.exports.imageData = null;
       state.exports.exporting = true;
     });
+  },
+
+  download: (imageData: string, fileName: string) => {
+    const a = document.createElement("a");
+    a.href = imageData;
+    a.download = fileName;
+
+    a.click();
   },
 
   generateImage: () => {
