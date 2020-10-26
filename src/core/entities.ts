@@ -79,7 +79,7 @@ export const entities = ({ mutate, get }: App) => ({
         id: -1,
         source: MapSource.Pins,
         coordinates: [0, 0],
-        style: { color: "black", width: 1, icon: "fire" },
+        style: { color: "black", width: 1, pinType: "pelipin", icon: "star" },
       });
     });
 
@@ -115,7 +115,7 @@ export const entityToFeature = (entity: Entity): RawFeature | null => {
       properties: {
         ...style,
         image: JSON.stringify({
-          pin: "pelipin",
+          pin: style.pinType,
           icon: style.icon,
           color: style.color,
         }),

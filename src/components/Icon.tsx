@@ -29,6 +29,17 @@ export const icons = (): { [key: string]: Icon } => ({
   museum: MuseumIcon,
 });
 
+export const pinIcons = (): { [key: string]: Icon } => ({
+  pelipin: PelipinIcon,
+  classical: ClassicalPinIcon,
+  peaky: PeakyPinIcon,
+  round: RoundPinIcon,
+  squaredPelipin: SquaredPelipinIcon,
+  squaredClassical: SquaredClassicalPinIcon,
+  squaredPeaky: SquaredPeakyPinIcon,
+  squared: SquaredPinIcon,
+});
+
 type Props = SVGAttributes<SVGElement> & {
   className?: string;
   color?: string;
@@ -572,3 +583,71 @@ export const ChevronDownIcon = icon(
   <path d="M7.41 8.58L12 13.17l4.59-4.59L18 10l-6 6l-6-6l1.41-1.42z" fill="currentColor"></path>,
   24
 );
+
+export const PeakyPinIcon = icon(
+  <>
+    <circle cx="18" cy="14" fill="currentColor" r="14" />
+    <rect fill="currentColor" height="9" width="2" x="17" y="27" />
+  </>,
+
+  36
+);
+
+export const PelipinIcon = icon(
+  <>
+    <path
+      clipRule="evenodd"
+      d="M21 24.5085C20.9988 26.2494 20.6367 27.9732 19.9343 29.5817C19.2307 31.1928 18.1995 32.6566 16.8995 33.8897C16.0325 34.7121 15.0573 35.421 14 36C12.9427 35.421 11.9675 34.7121 11.1005 33.8897C9.80048 32.6566 8.76925 31.1928 8.06568 29.5817C7.36305 27.9727 7.00096 26.2484 7 24.5069V24.5H21C21 24.5028 21 24.5057 21 24.5085Z"
+      fill="currentColor"
+      fillRule="evenodd"
+    />
+    <ellipse cx="14" cy="13.5" fill="currentColor" rx="13.5" ry="13.5" transform="rotate(-180 14 13.5)" />
+  </>,
+  36
+);
+
+export const ClassicalPinIcon = icon(
+  <path
+    d="M14 0C6.28036 0 0 6.28036 0 14C0 17.75 2.27193 22.5657 6.75264 28.3127C8.80547 30.9389 11.0286 33.4275 13.4076 35.7623C13.5671 35.9148 13.7793 36 14 36C14.2207 36 14.4329 35.9148 14.5924 35.7623C16.9714 33.4275 19.1945 30.9389 21.2474 28.3127C25.7281 22.5657 28 17.75 28 14C28 6.28036 21.7196 0 14 0Z"
+    fill="currentColor"
+  />,
+  36
+);
+
+export const RoundPinIcon = icon(<circle cx="14" cy="14" fill="currentColor" r="14" />, 28);
+
+export const SquaredPelipinIcon = icon(
+  <>
+    <rect fill="currentColor" height="24" rx="2" width="24" />
+    <path
+      clipRule="evenodd"
+      d="M19 24.0114C18.9985 25.8272 18.6364 27.625 17.9343 29.3026C17.2307 30.9838 16.1995 32.5113 14.8995 33.798C14.0325 34.6561 13.0573 35.3958 12 36C10.9427 35.3958 9.96749 34.6561 9.1005 33.798C7.80048 32.5113 6.76925 30.9838 6.06568 29.3026C5.36344 27.6246 5.00135 25.8264 5 24.0102L5 24H19C19 24.0038 19 24.0076 19 24.0114Z"
+      fill="currentColor"
+      fillRule="evenodd"
+    />
+  </>,
+  36
+);
+
+export const SquaredClassicalPinIcon = icon(
+  <>
+    <rect fill="currentColor" height="24" rx="2" width="24" />
+    <path
+      clipRule="evenodd"
+      d="M0.268738 23C1.30559 24.6043 2.61548 26.3598 4.23496 28.3127C6.42164 30.9496 8.81631 33.4275 11.3652 35.7623C11.5361 35.9148 11.7635 36 12 36C12.2365 36 12.4638 35.9148 12.6347 35.7623C15.1837 33.4275 17.5656 30.9389 19.765 28.3127C21.3845 26.3598 22.6944 24.6043 23.7312 23H0.268738Z"
+      fill="currentColor"
+      fillRule="evenodd"
+    />
+  </>,
+  36
+);
+
+export const SquaredPeakyPinIcon = icon(
+  <>
+    <rect fill="currentColor" height="12" width="2" x="11" y="24" />
+    <rect fill="currentColor" height="24" rx="2" width="24" />
+  </>,
+  36
+);
+
+export const SquaredPinIcon = icon(<rect fill="currentColor" height="24" rx="2" width="24" />, 24);

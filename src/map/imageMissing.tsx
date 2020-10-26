@@ -17,6 +17,8 @@ const transparentPixel = {
 type ImageComponents = {
   pin: ReactElement;
   icon: ReactElement;
+  dimensions: [number, number];
+  offset: number;
 };
 
 type PinProps = {
@@ -39,7 +41,7 @@ const idToComponents = (eventId: string): ImageComponents | null => {
 
   const { pin, icon, color } = json;
 
-  const Pin = allPins[pin];
+  const { component: Pin, dimensions, offset } = allPins[pin];
   const Icon = allIcons[icon];
 
   if (!Pin || !Icon) {
@@ -49,6 +51,8 @@ const idToComponents = (eventId: string): ImageComponents | null => {
   return {
     pin: <Pin color={color} />,
     icon: <Icon color={color} />,
+    dimensions,
+    offset,
   };
 };
 
@@ -81,8 +85,8 @@ export const applyImageMissingHandler = (map: mapboxgl.Map): void => {
 };
 
 export const generateImage = (components: ImageComponents): Promise<ImageData> => {
-  const pinWidth = 54;
-  const pinHeight = 72;
+  const pinWidth = components.dimensions[0];
+  const pinHeight = components.dimensions[1];
   const iconWidth = 32;
   const iconHeight = 32;
   const scale = 4;
@@ -110,7 +114,7 @@ export const generateImage = (components: ImageComponents): Promise<ImageData> =
       width: iconWidth * scale,
       height: iconHeight * scale,
       offsetX: ((pinWidth - iconWidth) / 2) * scale,
-      offsetY: ((pinWidth - iconHeight) / 2) * scale,
+      offsetY: components.offset * scale,
     });
 
     resolve(context.getImageData(0, 0, pinWidth * scale, pinHeight * scale));

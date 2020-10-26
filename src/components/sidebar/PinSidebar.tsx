@@ -2,6 +2,7 @@ import React from "react";
 
 import { ColorPicker } from "~/components/ColorPicker";
 import { IconSelector } from "~/components/IconSelector";
+import { PinSelector } from "~/components/PinSelector";
 import { SidebarHeader, SidebarHeading, SidebarSection } from "~/components/sidebar/Sidebar";
 import { WidthSlider } from "~/components/WidthSlider";
 import { app, useStore } from "~/core/app";
@@ -11,6 +12,7 @@ export const PinSidebar: React.FC = () => {
   const color = useStore((store) => store.pins.style.color);
   const width = useStore((store) => store.pins.style.width);
   const icon = useStore((store) => store.pins.style.icon);
+  const pinType = useStore((store) => store.pins.style.pinType);
 
   return (
     <>
@@ -58,14 +60,20 @@ export const PinSidebar: React.FC = () => {
 
       <SidebarSection>
         <SidebarHeader>
-          <SidebarHeading>Icon</SidebarHeading>
+          <SidebarHeading>Icon & pin</SidebarHeading>
         </SidebarHeader>
 
-        <div className="mt-2">
+        <div className="mt-2 flex flex-col w-full">
           <IconSelector
             value={icon}
             onChange={(icon) => {
               app.pins.setStyle({ icon });
+            }}
+          />
+          <PinSelector
+            value={pinType}
+            onChange={(pinType) => {
+              app.pins.setStyle({ pinType });
             }}
           />
         </div>
