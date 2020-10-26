@@ -1,24 +1,32 @@
+import { orderBy, uniq } from "lodash";
 import React, { useEffect, useState } from "react";
 import { ChromePicker, TwitterPicker } from "react-color";
+import tinycolor from "tinycolor2";
 
 import { Button } from "~/components/Button";
-import { PlusIcon } from "~/components/Icon";
+import { PlusIcon, TrashIcon } from "~/components/Icon";
+import { Tooltip } from "~/components/Tooltip";
 import { useStore } from "~/core/app";
+import { useAsyncStorage } from "~/hooks/useAsyncStorage";
 import { useClickOutside } from "~/hooks/useClickOutside";
 import { theme } from "~/styles/tailwind";
 
+const MAX_COLORS = 21;
+
 const defaultColors = [
-  theme.colors.red[500],
+  theme.colors.red[600],
   theme.colors.orange[500],
   theme.colors.yellow[500],
   theme.colors.green[500],
   theme.colors.teal[500],
-  theme.colors.blue[500],
+  theme.colors.blue[300],
+  theme.colors.blue[700],
   theme.colors.indigo[500],
   theme.colors.purple[500],
   theme.colors.pink[500],
   theme.colors.gray[200],
-  theme.colors.gray[500],
+  theme.colors.gray[400],
+  theme.colors.gray[700],
   theme.colors.black,
 ];
 
@@ -32,8 +40,9 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete
   const [color, setColor] = useState(value);
   const [showExtendedPicker, setShowExtendedPicker] = useState(false);
   const screenDimensions = useStore((store) => store.platform.screen.dimensions);
+  const [recentColors, setRecentColors] = useAsyncStorage<string[]>(`recentColors`, []);
 
-  const size = screenDimensions.md ? 18 : 26;
+  const size = screenDimensions.lg ? 20 : 26;
 
   const extendedPickerRef = useClickOutside<HTMLDivElement>(() => {
     if (showExtendedPicker) {
@@ -43,17 +52,24 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete
 
   useEffect(() => {
     if (!showExtendedPicker) {
+      setRecentColors(uniq([color, ...recentColors]));
       return;
     }
 
     setColor(value);
   }, [showExtendedPicker]);
 
+  const orderedRecentColors = orderBy(recentColors.slice(0, MAX_COLORS - defaultColors.length), (color) => {
+    return tinycolor(color).toHsl().h;
+  });
+
+  const colors = uniq([...defaultColors, ...orderedRecentColors]);
+
   return (
-    <div className="relative flex items-start w-40 md:w-auto h-full">
+    <div className="relative flex items-start w-64 md:w-auto h-full">
       <TwitterPicker
         color={color}
-        colors={defaultColors}
+        colors={colors}
         styles={{
           default: {
             card: { boxShadow: "none", height: "100%" },
@@ -78,17 +94,32 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete
         }}
         onChangeComplete={(event) => {
           onChangeComplete(event.hex);
+
+          setRecentColors(uniq([event.hex, ...recentColors]));
         }}
       />
 
-      <Button
-        className="ml-1 py-px px-px"
-        onClick={() => {
-          setShowExtendedPicker(true);
-        }}
-      >
-        <PlusIcon className="w-4 h-4 md:w-3 md:h-3" />
-      </Button>
+      <div className="flex flex-col h-full justify-between pb-2">
+        <Button
+          className="ml-1 py-px px-px"
+          onClick={() => {
+            setShowExtendedPicker(true);
+          }}
+        >
+          <PlusIcon className="w-4 h-4 md:w-3 md:h-3" />
+        </Button>
+
+        <Tooltip placement="left" text="Clear recently used colors">
+          <Button
+            className="ml-1 py-px px-px"
+            onClick={() => {
+              setRecentColors([]);
+            }}
+          >
+            <TrashIcon className="w-4 h-4 md:w-3 md:h-3" />
+          </Button>
+        </Tooltip>
+      </div>
 
       {showExtendedPicker && (
         <div

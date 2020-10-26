@@ -34,14 +34,14 @@ export const Tooltip: React.FC<TooltipProps> = ({ text, placement, children }) =
   return (
     <Popover
       body={
-        <div className="bg-white rounded px-2 py-1 text-xs border border-orange-300 shadow text-gray-800 flex flex-col space-y-2">
+        <div className="bg-white rounded px-2 py-1 text-xs border border-orange-300 shadow text-gray-800 flex flex-col space-y-2 z-50">
           {text}
         </div>
       }
       enterExitTransitionDurationMs={1}
       isOpen={tooltipState === "shown"}
       place={placement}
-      style={{ fill: theme.colors.orange[300], marginLeft: -4 }}
+      style={{ fill: theme.colors.orange[300], marginLeft: -4, zIndex: theme.zIndex[50] }}
       tipSize={4}
       onOuterAction={() => {
         setTooltipState("hidden");

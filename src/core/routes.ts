@@ -53,7 +53,7 @@ export const routesInitialState: Routes = {
 
   style: {
     width: 3,
-    color: theme.colors.red[500],
+    color: theme.colors.red[600],
     outline: "glow",
   },
   smartMatching: {
