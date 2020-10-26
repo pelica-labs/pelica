@@ -42,7 +42,7 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete
   const screenDimensions = useStore((store) => store.platform.screen.dimensions);
   const [recentColors, setRecentColors] = useAsyncStorage<string[]>(`recentColors`, []);
 
-  const size = screenDimensions.lg ? 20 : 26;
+  const size = screenDimensions.lg ? 22 : 26;
 
   const extendedPickerRef = useClickOutside<HTMLDivElement>(() => {
     if (showExtendedPicker) {
@@ -63,41 +63,72 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete
     return tinycolor(color).toHsl().h;
   });
 
-  const colors = uniq([...defaultColors, ...orderedRecentColors]);
-
   return (
     <div className="relative flex items-start w-64 md:w-auto h-full">
-      <TwitterPicker
-        color={color}
-        colors={colors}
-        styles={{
-          default: {
-            card: { boxShadow: "none", height: "100%" },
-            swatch: { width: size, height: size },
-            hash: { display: "none" },
-            input: { display: "none" },
-            body: {
-              padding: 0,
-              display: "flex",
-              alignItems: "center",
-              flexWrap: "wrap",
-              marginLeft: 6,
-              height: "100%",
+      <div className="flex flex-col">
+        <TwitterPicker
+          color={color}
+          colors={defaultColors}
+          styles={{
+            default: {
+              card: { boxShadow: "none", height: "100%" },
+              swatch: { width: size, height: size },
+              hash: { display: "none" },
+              input: { display: "none" },
+              body: {
+                padding: 0,
+                display: "flex",
+                alignItems: "center",
+                flexWrap: "wrap",
+                height: "100%",
+              },
             },
-          },
-        }}
-        triangle={"hide"}
-        width={"256"}
-        onChange={(event) => {
-          setColor(event.hex);
-          onChange(event.hex);
-        }}
-        onChangeComplete={(event) => {
-          onChangeComplete(event.hex);
+          }}
+          triangle={"hide"}
+          width={"256"}
+          onChange={(event) => {
+            setColor(event.hex);
+            onChange(event.hex);
+          }}
+          onChangeComplete={(event) => {
+            onChangeComplete(event.hex);
+          }}
+        />
+        {orderedRecentColors.length > 0 && (
+          <div className="pt-1 border-t border-gray-100">
+            <TwitterPicker
+              color={color}
+              colors={orderedRecentColors}
+              styles={{
+                default: {
+                  card: { boxShadow: "none", height: "100%" },
+                  swatch: { width: size, height: size },
+                  hash: { display: "none" },
+                  input: { display: "none" },
+                  body: {
+                    padding: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    flexWrap: "wrap",
+                    height: "100%",
+                  },
+                },
+              }}
+              triangle={"hide"}
+              width={"256"}
+              onChange={(event) => {
+                setColor(event.hex);
+                onChange(event.hex);
+              }}
+              onChangeComplete={(event) => {
+                onChangeComplete(event.hex);
 
-          setRecentColors(uniq([event.hex, ...recentColors]));
-        }}
-      />
+                setRecentColors(uniq([event.hex, ...recentColors]));
+              }}
+            />
+          </div>
+        )}
+      </div>
 
       <div className="flex flex-col h-full justify-between pb-2">
         <Button
@@ -109,16 +140,18 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete
           <PlusIcon className="w-4 h-4 md:w-3 md:h-3" />
         </Button>
 
-        <Tooltip placement="left" text="Clear recently used colors">
-          <Button
-            className="ml-1 py-px px-px"
-            onClick={() => {
-              setRecentColors([]);
-            }}
-          >
-            <TrashIcon className="w-4 h-4 md:w-3 md:h-3" />
-          </Button>
-        </Tooltip>
+        {recentColors.length > 0 && (
+          <Tooltip placement="left" text="Clear recently used colors">
+            <Button
+              className="ml-1 py-px px-px"
+              onClick={() => {
+                setRecentColors([]);
+              }}
+            >
+              <TrashIcon className="w-4 h-4 md:w-3 md:h-3" />
+            </Button>
+          </Tooltip>
+        )}
       </div>
 
       {showExtendedPicker && (
