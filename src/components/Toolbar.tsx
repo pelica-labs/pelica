@@ -49,7 +49,7 @@ export const Toolbar: React.FC = () => {
             app.editor.setEditorMode("select");
           }}
         >
-          <MousePointerIcon className="w-6 h-6" />
+          <MousePointerIcon className="w-8 h-8 md:w-6 md:h-6" />
         </IconButton>
 
         <IconButton
@@ -68,7 +68,7 @@ export const Toolbar: React.FC = () => {
             app.editor.setEditorMode("move");
           }}
         >
-          <HandIcon className="w-6 h-6" />
+          <HandIcon className="w-8 h-8 md:w-6 md:h-6" />
         </IconButton>
       </div>
 
@@ -89,7 +89,7 @@ export const Toolbar: React.FC = () => {
             app.editor.setEditorMode("draw");
           }}
         >
-          <PencilIcon className="w-6 h-6" />
+          <PencilIcon className="w-8 h-8 md:w-6 md:h-6" />
         </IconButton>
 
         <IconButton
@@ -108,7 +108,7 @@ export const Toolbar: React.FC = () => {
             app.editor.setEditorMode("itinerary");
           }}
         >
-          <RouteIcon className="w-6 h-6" />
+          <RouteIcon className="w-8 h-8 md:w-6 md:h-6" />
         </IconButton>
 
         <IconButton
@@ -127,12 +127,11 @@ export const Toolbar: React.FC = () => {
             app.editor.setEditorMode("pin");
           }}
         >
-          <PinIcon className="w-6 h-6" />
+          <PinIcon className="w-8 h-8 md:w-6 md:h-6" />
         </IconButton>
 
         <IconButton
           active={editorMode === "style"}
-          className="bg-white text-gray-800 py-2 flex-1 justify-center"
           id="toolbar-style"
           tooltip={{
             placement: tooltipPlacement,
@@ -142,7 +141,7 @@ export const Toolbar: React.FC = () => {
             app.editor.setEditorMode("style");
           }}
         >
-          <StyleIcon className="w-6 h-6" />
+          <StyleIcon className="w-8 h-8 md:w-6 md:h-6" />
         </IconButton>
       </div>
 
@@ -158,7 +157,7 @@ export const Toolbar: React.FC = () => {
             app.editor.setEditorMode("export");
           }}
         >
-          <ExportIcon className="w-6 h-6" />
+          <ExportIcon className="w-8 h-8 md:w-6 md:h-6" />
         </IconButton>
       </div>
     </>

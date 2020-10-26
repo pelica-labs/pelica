@@ -39,7 +39,7 @@ export const MenuButton: React.FC = () => {
                   })}
                 >
                   <IconButton>
-                    <MenuIcon className="w-6 h-6" id="toolbar-menu" />
+                    <MenuIcon className="w-8 h-8 md:w-6 md:h-6" id="toolbar-menu" />
                   </IconButton>
                 </Menu.Button>
               </span>
