@@ -6,7 +6,7 @@ import React, { useEffect, useState } from "react";
 import useLocalStorage from "~/hooks/useLocalStorage";
 
 export const Landing: React.FC = () => {
-  const [currentImage, setCurrentImage] = useState<number>(0);
+  const images = ["/images/og-image.jpg", "/images/index/carousel1.jpg", "/images/index/carousel2.jpg"];
 
   // redirect the user to the app if they have visited the landing already
   const router = useRouter();
@@ -21,7 +21,7 @@ export const Landing: React.FC = () => {
   const onClick = () => setHasVisitedLanding(true);
 
   // rotate the images
-  const images = ["/images/og-image.jpg", "/images/index/carousel1.jpg", "/images/index/carousel2.jpg"];
+  const [currentImage, setCurrentImage] = useState<number>(0);
   useEffect(() => {
     if (typeof window !== undefined) {
       const timeout = window.setTimeout(() => {
@@ -30,6 +30,14 @@ export const Landing: React.FC = () => {
       return () => window.clearTimeout(timeout);
     }
   }, [currentImage]);
+
+  // preload images
+  useEffect(() => {
+    images.forEach((url) => {
+      const img = new Image();
+      img.src = url;
+    });
+  }, []);
 
   return (
     <div className="absolute h-full w-full overflow-y-scroll bg-gray-100 z-50 text-lg text-gray-900">
