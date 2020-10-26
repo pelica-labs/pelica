@@ -80,7 +80,7 @@ export const Map: React.FC = () => {
       map.resize();
 
       applySources(map);
-      applyLayers(map);
+      applyLayers(map, state.editor.style);
       applyInteractions(map, app);
       applyImageMissingHandler(map);
     });
@@ -225,7 +225,7 @@ export const Map: React.FC = () => {
         }
 
         applySources(map.current);
-        applyLayers(map.current);
+        applyLayers(map.current, style);
 
         applyFeatures(map.current, getEntityFeatures(), [MapSource.Routes, MapSource.Pins]);
       });

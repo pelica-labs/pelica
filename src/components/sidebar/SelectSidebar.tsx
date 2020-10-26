@@ -7,6 +7,7 @@ import { Distance } from "~/components/Distance";
 import { TrashIcon } from "~/components/Icon";
 import { IconSelector } from "~/components/IconSelector";
 import { OutlineSelector } from "~/components/OutlineSelector";
+import { PinLabelField } from "~/components/PinLabelField";
 import { PinPreview } from "~/components/PinPreview";
 import { PinSelector } from "~/components/PinSelector";
 import { SidebarHeader, SidebarHeading, SidebarSection } from "~/components/sidebar/Sidebar";
@@ -178,6 +179,23 @@ export const SelectSidebar: React.FC = () => {
                 pinType={selectedEntity.transientStyle?.pinType ?? selectedEntity.style.pinType}
               />
             </div>
+          </div>
+        </SidebarSection>
+      )}
+
+      {allPins && selectedEntity.type === "Pin" && (
+        <SidebarSection>
+          <SidebarHeader>
+            <SidebarHeading>Label</SidebarHeading>
+          </SidebarHeader>
+
+          <div className="mt-3 w-full">
+            <PinLabelField
+              value={selectedEntity.style.label}
+              onChange={(label) => {
+                app.pins.updateSelectedPin({ label });
+              }}
+            />
           </div>
         </SidebarSection>
       )}

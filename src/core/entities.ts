@@ -79,7 +79,7 @@ export const entities = ({ mutate, get }: App) => ({
         id: -1,
         source: MapSource.Pins,
         coordinates: [0, 0],
-        style: { color: "black", width: 1, pinType: "pelipin", icon: "star" },
+        style: { color: "black", width: 1, pinType: "pelipin", icon: "star", label: "" },
       });
     });
 

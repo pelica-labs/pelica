@@ -4,6 +4,7 @@ import { getState, State } from "~/core/app";
 import { Entity, entityToFeature } from "~/core/entities";
 import { Pin } from "~/core/pins";
 import { Route } from "~/core/routes";
+import { defaultStyles } from "~/lib/style";
 import { RawFeature } from "~/map/features";
 
 export const getSelectedEntities = (state: State = getState()) => {
@@ -51,6 +52,11 @@ export const getEntityFeatures = (state: State = getState()) => {
     })
     .filter((entity): entity is RawFeature => {
       return !!entity;
+    })
+    .map((feature) => {
+      Object.assign(feature.properties, defaultStyles, state.editor.style.overrides);
+
+      return feature;
     });
 };
 

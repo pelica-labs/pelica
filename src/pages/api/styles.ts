@@ -18,6 +18,7 @@ export const fetchStyles = async (): Promise<Style[]> => {
       owner: style.owner,
       name: style.name,
       hash: style.hash || null,
+      overrides: style.overrides || {},
     };
   });
 };

@@ -1,8 +1,11 @@
 import { MAX_PIN_SIZE } from "~/core/pins";
+import { defaultStyles, Style } from "~/lib/style";
 import { MapSource } from "~/map/sources";
 import { theme } from "~/styles/tailwind";
 
-export const applyLayers = (map: mapboxgl.Map): void => {
+export const applyLayers = (map: mapboxgl.Map, style: Style): void => {
+  const styles = Object.assign({}, defaultStyles, style.overrides);
+
   addLayer(map, {
     id: "watermark",
     type: "symbol",
@@ -168,9 +171,28 @@ export const applyLayers = (map: mapboxgl.Map): void => {
       "icon-size": ["*", 1 / MAX_PIN_SIZE, ["get", "width"]],
       "icon-offset": [0, -72],
       "icon-allow-overlap": true,
+
+      "text-field": ["get", "label"],
+      "text-offset": [
+        "interpolate",
+        ["linear"],
+        ["get", "width"],
+        0,
+        ["literal", [0, -2.5]],
+        MAX_PIN_SIZE,
+        ["literal", [0, -6]],
+      ],
+      "text-font": styles.textFont,
+      "text-size": ["interpolate", ["linear"], ["get", "width"], 0, ["literal", 10], MAX_PIN_SIZE, ["literal", 24]],
+      "text-transform": ["get", "textTransform"],
+      "text-anchor": "bottom",
       "text-allow-overlap": true,
     },
-    paint: {},
+    paint: {
+      "text-color": ["get", "textColor"],
+      "text-halo-color": ["get", "textHaloColor"],
+      "text-halo-width": 1,
+    },
   });
 
   addLayer(map, {

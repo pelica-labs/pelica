@@ -25,6 +25,7 @@ export type PinStyle = {
   pinType: string;
   width: number;
   color: string;
+  label: string;
 };
 
 export type Pins = {
@@ -37,6 +38,7 @@ export const pinsInitialState: Pins = {
     pinType: "pelipin",
     width: 6,
     color: theme.colors.yellow[500],
+    label: "",
   },
 };
 
