@@ -6,7 +6,7 @@ import BounceLoader from "react-spinners/BounceLoader";
 import { AspectRatioSelector } from "~/components/AspectRatioSelector";
 import { Button } from "~/components/Button";
 import { CopyIcon } from "~/components/Icon";
-import { SidebarHeading, SidebarSection } from "~/components/sidebar/Sidebar";
+import { SidebarHeader, SidebarHeading, SidebarSection } from "~/components/sidebar/Sidebar";
 import { app, useStore } from "~/core/app";
 import { getMapTitle } from "~/core/selectors";
 import { useBrowserFeatures } from "~/hooks/useBrowserFeatures";
@@ -18,6 +18,7 @@ export const ExportSidebar: React.FC = () => {
   const { t } = useTranslation();
   const imageData = useStore((store) => store.exports.imageData);
   const aspectRatio = useStore((store) => store.editor.aspectRatio);
+  const screenDimensions = useStore((store) => store.platform.screen.dimensions);
   const { ratio } = aspectRatios[aspectRatio];
 
   const [imageBlob, setImageBlob] = useState<Blob | null>(null);
@@ -121,9 +122,15 @@ export const ExportSidebar: React.FC = () => {
           />
         </SidebarSection>
 
-        <SidebarSection className="flex flex-col space-y-1 md:space-y-3 w-40 md:w-auto">
+        <SidebarSection className="flex flex-col space-y-3 w-40 md:w-auto">
+          {!screenDimensions.md && (
+            <SidebarHeader>
+              <SidebarHeading>Export</SidebarHeading>
+            </SidebarHeader>
+          )}
+
           <Button
-            className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-100 text-xs uppercase py-2 justify-center"
+            className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-100 text-xs uppercase py-2 justify-center w-full"
             disabled={!imageData}
             onClick={() => {
               onDownload();
@@ -139,7 +146,7 @@ export const ExportSidebar: React.FC = () => {
 
           {shareFeature && (
             <Button
-              className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-100 text-xs uppercase py-2 justify-center"
+              className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-100 text-xs uppercase py-2 justify-center w-full"
               disabled={!imageUrl}
               onClick={() => {
                 onShare();
@@ -155,7 +162,7 @@ export const ExportSidebar: React.FC = () => {
           )}
           {!shareFeature && (
             <Button
-              className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-100 text-xs uppercase py-2 justify-center"
+              className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-100 text-xs uppercase py-2 justify-center w-full"
               disabled={!imageUrl}
               onClick={() => {
                 onCopy();
@@ -172,9 +179,9 @@ export const ExportSidebar: React.FC = () => {
         </SidebarSection>
 
         <SidebarSection className="flex flex-col space-y-3 w-64 md:w-auto">
-          <div className="flex items-center">
+          <SidebarHeader>
             <SidebarHeading>Output format</SidebarHeading>
-          </div>
+          </SidebarHeader>
           <div className="flex-col md:space-y-1">
             <div className="text-xs flex justify-between">
               <span className="flex-1 mr-4">Format</span>
@@ -185,7 +192,8 @@ export const ExportSidebar: React.FC = () => {
                 <div className="text-xs flex justify-between">
                   <span className="flex-1 mr-4">Resolution</span>
                   <span>
-                    {ratio[0].toFixed(0)} x {ratio[1].toFixed(0)} px
+                    {ratio[0].toFixed(0)} <span className="text-gray-500">×</span> {ratio[1].toFixed(0)}{" "}
+                    <span className="text-gray-500">px</span>
                   </span>
                 </div>
               </>
@@ -194,9 +202,9 @@ export const ExportSidebar: React.FC = () => {
         </SidebarSection>
 
         <div className="md:mt-auto px-3 md:pt-3 md:pb-2 w-64 md:w-auto">
-          <div className="flex items-center">
+          <SidebarHeader>
             <SidebarHeading>Copyright</SidebarHeading>
-          </div>
+          </SidebarHeader>
 
           <div className="flex justify-between items-center mt-2 overflow-x-hidden">
             <span className="text-2xs leading-tight">

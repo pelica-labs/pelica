@@ -1,11 +1,10 @@
-import classNames from "classnames";
 import React, { useRef } from "react";
 
 import { Button } from "~/components/Button";
 import { ColorPicker } from "~/components/ColorPicker";
 import { Distance } from "~/components/Distance";
 import { OutlineSelector } from "~/components/OutlineSelector";
-import { SidebarHeading, SidebarSection } from "~/components/sidebar/Sidebar";
+import { SidebarHeader, SidebarHeading, SidebarSection } from "~/components/sidebar/Sidebar";
 import { SmartMatchingSelector } from "~/components/SmartMatchingSelector";
 import { WidthSlider } from "~/components/WidthSlider";
 import { app, useStore } from "~/core/app";
@@ -19,14 +18,15 @@ export const DrawSidebar: React.FC = () => {
   const outline = useStore((store) => store.routes.style.outline);
   const smartMatching = useStore((store) => store.routes.smartMatching);
   const route = useStore((store) => getSelectedEntity(store) as Route);
+  const screenDimensions = useStore((store) => store.platform.screen.dimensions);
 
   return (
     <>
       <SidebarSection>
-        <div className="flex items-center px-1">
+        <SidebarHeader className="px-1">
           <SidebarHeading>Color</SidebarHeading>
           <div className="ml-2 w-3 h-3 rounded-full border border-gray-200" style={{ backgroundColor: color }} />
-        </div>
+        </SidebarHeader>
         <div className="mt-4">
           <ColorPicker
             value={color}
@@ -41,13 +41,13 @@ export const DrawSidebar: React.FC = () => {
       </SidebarSection>
 
       <SidebarSection>
-        <div className="flex items-center">
+        <SidebarHeader>
           <SidebarHeading>Width</SidebarHeading>
           <div className="ml-2 flex justify-center items-center w-3 h-3 rounded-full">
             <div className="rounded-full" style={{ width: width, height: width, backgroundColor: color }} />
           </div>
-        </div>
-        <div className="mt-5 md:mt-4 px-1 w-32 md:w-auto">
+        </SidebarHeader>
+        <div className="mt-5 md:mt-4 px-1 md:w-full flex-1 flex justify-center mb-5 md:mb-0">
           <WidthSlider
             color={color}
             max={12}
@@ -64,10 +64,10 @@ export const DrawSidebar: React.FC = () => {
       </SidebarSection>
 
       <SidebarSection>
-        <div className="flex items-center">
+        <SidebarHeader>
           <SidebarHeading>Outline</SidebarHeading>
-        </div>
-        <div className="mt-4" style={{ marginLeft: -4 }}>
+        </SidebarHeader>
+        <div className="mt-4 w-40" style={{ marginLeft: screenDimensions.md ? -4 : 0 }}>
           <OutlineSelector
             value={outline}
             onChange={(outline) => {
@@ -78,17 +78,11 @@ export const DrawSidebar: React.FC = () => {
       </SidebarSection>
 
       <SidebarSection>
-        <div className="flex items-center">
+        <SidebarHeader>
           <SidebarHeading>Routes</SidebarHeading>
-        </div>
+        </SidebarHeader>
 
-        <div
-          className={classNames({
-            "md:mt-4 w-40 md:w-full": true,
-            "mt-5": !smartMatching.enabled,
-            "mt-2": smartMatching.enabled,
-          })}
-        >
+        <div className="mt-5 md:mt-4 w-40 md:w-full">
           <SmartMatchingSelector
             value={smartMatching}
             onChange={(smartMatching) => {
@@ -99,10 +93,10 @@ export const DrawSidebar: React.FC = () => {
       </SidebarSection>
 
       <SidebarSection>
-        <div className="flex flex-col items-start space-y-4 md:space-y-0 md:flex-row md:items-center md:justify-between">
+        <SidebarHeader className="flex flex-col items-start space-y-4 md:space-y-0 md:flex-row md:items-center md:justify-between md:w-full">
           <SidebarHeading>Import</SidebarHeading>
           <Button
-            className="bg-gray-300 text-gray-800 mt-1"
+            className="bg-gray-300 text-gray-800"
             onClick={() => {
               fileInput.current?.click();
             }}
@@ -119,14 +113,14 @@ export const DrawSidebar: React.FC = () => {
             />
             <span className="text-xs">GPX</span>
           </Button>
-        </div>
+        </SidebarHeader>
       </SidebarSection>
 
       {route && (
         <SidebarSection className="md:mt-auto">
-          <div className="flex items-center">
+          <SidebarHeader>
             <SidebarHeading>Inspect</SidebarHeading>
-          </div>
+          </SidebarHeader>
 
           <div className="mt-5 md:mt-4">
             <div className="flex items-center text-xs">

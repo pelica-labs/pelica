@@ -3,7 +3,7 @@ import React from "react";
 import { ColorPicker } from "~/components/ColorPicker";
 import { Distance } from "~/components/Distance";
 import { OutlineSelector } from "~/components/OutlineSelector";
-import { SidebarHeading, SidebarSection } from "~/components/sidebar/Sidebar";
+import { SidebarHeader, SidebarHeading, SidebarSection } from "~/components/sidebar/Sidebar";
 import { WidthSlider } from "~/components/WidthSlider";
 import { app, useStore } from "~/core/app";
 import { computeDistance, Route } from "~/core/routes";
@@ -14,14 +14,15 @@ export const ItinerarySidebar: React.FC = () => {
   const width = useStore((store) => store.routes.style.width);
   const outline = useStore((store) => store.routes.style.outline);
   const route = useStore((store) => getSelectedEntity(store) as Route);
+  const screenDimensions = useStore((store) => store.platform.screen.dimensions);
 
   return (
     <>
       <SidebarSection>
-        <div className="flex items-center px-1">
+        <SidebarHeader>
           <SidebarHeading>Color</SidebarHeading>
           <div className="ml-2 w-3 h-3 rounded-full border border-gray-200" style={{ backgroundColor: color }} />
-        </div>
+        </SidebarHeader>
 
         <div className="mt-4">
           <ColorPicker
@@ -37,14 +38,14 @@ export const ItinerarySidebar: React.FC = () => {
       </SidebarSection>
 
       <SidebarSection>
-        <div className="flex items-center">
+        <SidebarHeader>
           <SidebarHeading>Width</SidebarHeading>
           <div className="ml-2 flex justify-center items-center w-3 h-3 rounded-full">
             <div className="rounded-full" style={{ width: width, height: width, backgroundColor: color }} />
           </div>
-        </div>
+        </SidebarHeader>
 
-        <div className="mt-5 md:mt-4 px-1 w-32 md:w-auto">
+        <div className="mt-5 md:mt-4 px-1 md:w-full flex-1 flex justify-center mb-5 md:mb-0">
           <WidthSlider
             color={color}
             max={12}
@@ -61,11 +62,11 @@ export const ItinerarySidebar: React.FC = () => {
       </SidebarSection>
 
       <SidebarSection>
-        <div className="flex items-center">
+        <SidebarHeader>
           <SidebarHeading>Outline</SidebarHeading>
-        </div>
+        </SidebarHeader>
 
-        <div className="mt-4">
+        <div className="mt-4 w-40" style={{ marginLeft: screenDimensions.md ? -4 : 0 }}>
           <OutlineSelector
             value={outline}
             onChange={(outline) => {
@@ -76,17 +77,17 @@ export const ItinerarySidebar: React.FC = () => {
       </SidebarSection>
 
       {route && (
-        <div className="md:mt-auto md:py-4 px-3">
-          <div className="flex items-center">
+        <SidebarSection className="md:mt-auto">
+          <SidebarHeader>
             <SidebarHeading>Inspect</SidebarHeading>
-          </div>
+          </SidebarHeader>
           <div className="mt-5 md:mt-4">
             <div className="flex items-center text-xs">
               <span className="mr-4">Distance</span>
               <Distance value={computeDistance(route)} />
             </div>
           </div>
-        </div>
+        </SidebarSection>
       )}
     </>
   );

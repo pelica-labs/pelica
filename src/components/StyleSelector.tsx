@@ -74,7 +74,7 @@ export const StyleSelector: React.FC<Props> = ({ value, onChange, initialStyles 
               onChange(style);
             }}
           >
-            <span className="text-xs uppercase text-gray-800 truncate inline-flex whitespace-no-wrap w-24 md:w-full">
+            <span className="text-xs uppercase text-gray-800 truncate inline-flex whitespace-no-wrap w-40 md:w-full mb-2 md:mb-0">
               {style.name}
             </span>
             <StylePreview hash={style.hash || null} src={previews[style.id]} />

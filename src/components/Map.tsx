@@ -57,7 +57,7 @@ export const Map: React.FC = () => {
       pitch: state.map.pitch,
       doubleClickZoom: false,
       fadeDuration: 0,
-      logoPosition: state.platform.screen.dimensions.md ? "bottom-right" : "bottom-left",
+      logoPosition: state.platform.screen.dimensions.md ? "bottom-right" : "top-right",
       preserveDrawingBuffer: true,
     });
 
@@ -502,7 +502,14 @@ export const Map: React.FC = () => {
         }}
       >
         <div ref={container} className="w-full h-full flex justify-center items-center">
-          <div ref={wrapper} className="w-full h-full md:shadow-md border border-gray-400" id="map" />
+          <div
+            ref={wrapper}
+            className={classNames({
+              "w-full h-full md:shadow-md": true,
+              "border border-gray-400": aspectRatio !== "fill",
+            })}
+            id="map"
+          />
         </div>
       </div>
     </>

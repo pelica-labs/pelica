@@ -3,7 +3,7 @@ import { AspectRatio } from "~/lib/aspectRatio";
 import { defaultStyle, Style } from "~/lib/style";
 
 export type Editor = {
-  mode: EditorMode;
+  mode: EditorMode | null;
   style: Style;
   aspectRatio: AspectRatio;
 };
@@ -11,7 +11,7 @@ export type Editor = {
 export type EditorMode = "style" | "select" | "move" | "draw" | "itinerary" | "pin" | "aspectRatio" | "export";
 
 export const editorInitialState: Editor = {
-  mode: "style",
+  mode: null,
 
   style: defaultStyle as Style,
   aspectRatio: "fill",
@@ -35,7 +35,7 @@ export const editor = ({ mutate, get }: App) => ({
     });
   },
 
-  setEditorMode: (mode: EditorMode) => {
+  setEditorMode: (mode: EditorMode | null) => {
     if (mode === get().editor.mode) {
       return;
     }

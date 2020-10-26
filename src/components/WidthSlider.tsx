@@ -1,6 +1,7 @@
 import Slider from "rc-slider";
 import React, { useEffect, useState } from "react";
 
+import { useStore } from "~/core/app";
 import { theme } from "~/styles/tailwind";
 
 type Props = {
@@ -14,6 +15,7 @@ type Props = {
 
 export const WidthSlider: React.FC<Props> = ({ value, onChange, onChangeComplete, min, max, color }) => {
   const [width, setWidth] = useState(value);
+  const screenDimensions = useStore((store) => store.platform.screen.dimensions);
 
   useEffect(() => {
     setWidth(value);
@@ -24,17 +26,23 @@ export const WidthSlider: React.FC<Props> = ({ value, onChange, onChangeComplete
       handleStyle={{
         backgroundColor: color,
         borderColor: theme.colors.gray[200],
-        height: 14,
-        width: 14,
+        height: screenDimensions.md ? 14 : 18,
+        width: screenDimensions.md ? 14 : 18,
       }}
       max={max}
       min={min}
       railStyle={{
-        height: 4,
+        height: screenDimensions.md ? 4 : "100%",
+        width: screenDimensions.md ? "100%" : 8,
         backgroundColor: theme.colors.gray[400],
       }}
-      trackStyle={{ backgroundColor: color, height: 4 }}
+      trackStyle={{
+        backgroundColor: color,
+        height: screenDimensions.md ? 4 : 0,
+        width: screenDimensions.md ? "100%" : 8,
+      }}
       value={width}
+      vertical={!screenDimensions.md}
       onAfterChange={(value) => {
         onChangeComplete(value);
       }}

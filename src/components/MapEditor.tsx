@@ -1,7 +1,10 @@
+import classNames from "classnames";
 import React, { useRef } from "react";
 
 import { Alerts } from "~/components/Alerts";
 import { GeolocationButton } from "~/components/GeolocationButton";
+import { RedoIcon, UndoIcon } from "~/components/Icon";
+import { IconButton } from "~/components/IconButton";
 import { ItineraryInput } from "~/components/ItineraryInput";
 import { Map } from "~/components/Map";
 import { PlaceAutocomplete } from "~/components/PlaceAutocomplete";
@@ -23,6 +26,9 @@ export const MapEditor: React.FC<Props> = ({ initialStyles }) => {
   const editorMode = useStore((store) => store.editor.mode);
   const currentLocation = useStore((store) => store.geolocation.currentLocation);
   const selectedItinerary = useStore((store) => getSelectedItinerary(store));
+  const screenDimensions = useStore((store) => store.platform.screen.dimensions);
+  const canUndo = useStore((store) => store.history.actions.length > 0);
+  const canRedo = useStore((store) => store.history.redoStack.length > 0);
 
   useKeyboard();
   useScreenDimensions();
@@ -42,13 +48,47 @@ export const MapEditor: React.FC<Props> = ({ initialStyles }) => {
   );
 
   return (
-    <div className="flex flex-col md:flex-row h-full justify-between">
-      <div className="relative w-full h-full">
+    <div className="flex flex-col md:flex-row h-full justify-between bg-gray-200">
+      <div className="relative w-full h-full flex-1">
         <Map />
 
         <div className="absolute bottom-0 mb-2 flex justify-center w-full z-10 pointer-events-none">
           <Alerts />
         </div>
+
+        {!screenDimensions.md && (
+          <div className="absolute bottom-0 left-0 flex mb-2 ml-2 bg-white border rounded-full">
+            <IconButton
+              className="rounded-full"
+              disabled={!canUndo}
+              onClick={() => {
+                app.history.undo();
+              }}
+            >
+              <UndoIcon
+                className={classNames({
+                  "w-5 h-5": true,
+                  "text-gray-400": !canUndo,
+                })}
+              />
+            </IconButton>
+
+            <IconButton
+              className="rounded-full"
+              disabled={!canRedo}
+              onClick={() => {
+                app.history.redo();
+              }}
+            >
+              <RedoIcon
+                className={classNames({
+                  "w-5 h-5": true,
+                  "text-gray-400": !canRedo,
+                })}
+              />
+            </IconButton>
+          </div>
+        )}
       </div>
 
       <Sidebar initialStyles={initialStyles} />

@@ -10,10 +10,9 @@ type Props = {
 
 export const StyleSidebar: React.FC<Props> = ({ initialStyles }) => {
   const style = useStore((store) => store.editor.style);
-  const screenDimensions = useStore((store) => store.platform.screen.dimensions);
 
   return (
-    <div style={{ marginTop: screenDimensions.md ? 0 : -12 }}>
+    <div className="mb-2 md:mb-0">
       <StyleSelector
         initialStyles={initialStyles}
         value={style}

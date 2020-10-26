@@ -17,7 +17,9 @@ const defaultColors = [
   theme.colors.indigo[500],
   theme.colors.purple[500],
   theme.colors.pink[500],
+  theme.colors.gray[200],
   theme.colors.gray[500],
+  theme.colors.black,
 ];
 
 type Props = {
@@ -31,7 +33,7 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete
   const [showExtendedPicker, setShowExtendedPicker] = useState(false);
   const screenDimensions = useStore((store) => store.platform.screen.dimensions);
 
-  const size = screenDimensions.md ? 14 : 20;
+  const size = screenDimensions.md ? 18 : 26;
 
   const extendedPickerRef = useClickOutside<HTMLDivElement>(() => {
     if (showExtendedPicker) {
@@ -48,17 +50,24 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete
   }, [showExtendedPicker]);
 
   return (
-    <div className="relative flex items-start w-40 md:w-auto">
+    <div className="relative flex items-start w-40 md:w-auto h-full">
       <TwitterPicker
         color={color}
         colors={defaultColors}
         styles={{
           default: {
-            card: { boxShadow: "none" },
+            card: { boxShadow: "none", height: "100%" },
             swatch: { width: size, height: size },
             hash: { display: "none" },
             input: { display: "none" },
-            body: { padding: 0, display: "flex", alignItems: "center", flexWrap: "wrap", marginLeft: 6 },
+            body: {
+              padding: 0,
+              display: "flex",
+              alignItems: "center",
+              flexWrap: "wrap",
+              marginLeft: 6,
+              height: "100%",
+            },
           },
         }}
         triangle={"hide"}
@@ -78,11 +87,14 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete
           setShowExtendedPicker(true);
         }}
       >
-        <PlusIcon className="w-3 h-3" />
+        <PlusIcon className="w-4 h-4 md:w-3 md:h-3" />
       </Button>
 
       {showExtendedPicker && (
-        <div ref={extendedPickerRef} className="fixed md:absolute mb-2 md:mb-0 z-10 mt-6 bottom-0 md:right-0 mr-3">
+        <div
+          ref={extendedPickerRef}
+          className="fixed md:absolute mb-2 md:mb-0 z-10 mt-6 bottom-0 md:bottom-auto md:right-0 mr-3"
+        >
           <ChromePicker
             disableAlpha
             color={color}

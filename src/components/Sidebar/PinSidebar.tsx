@@ -2,7 +2,7 @@ import React from "react";
 
 import { ColorPicker } from "~/components/ColorPicker";
 import { IconSelector } from "~/components/IconSelector";
-import { SidebarHeading, SidebarSection } from "~/components/sidebar/Sidebar";
+import { SidebarHeader, SidebarHeading, SidebarSection } from "~/components/sidebar/Sidebar";
 import { WidthSlider } from "~/components/WidthSlider";
 import { app, useStore } from "~/core/app";
 import { MAX_PIN_SIZE } from "~/core/pins";
@@ -15,10 +15,10 @@ export const PinSidebar: React.FC = () => {
   return (
     <>
       <SidebarSection>
-        <div className="flex items-center px-1">
+        <SidebarHeader>
           <SidebarHeading>Color</SidebarHeading>
           <div className="ml-2 w-3 h-3 rounded-full border border-gray-200" style={{ backgroundColor: color }} />
-        </div>
+        </SidebarHeader>
         <div className="mt-4">
           <ColorPicker
             value={color}
@@ -33,14 +33,14 @@ export const PinSidebar: React.FC = () => {
       </SidebarSection>
 
       <SidebarSection>
-        <div className="flex items-center">
+        <SidebarHeader>
           <SidebarHeading>Width</SidebarHeading>
           <div className="ml-2 flex justify-center items-center w-3 h-3 rounded-full">
             <div className="rounded-full" style={{ width: width, height: width, backgroundColor: color }} />
           </div>
-        </div>
+        </SidebarHeader>
 
-        <div className="mt-5 md:mt-4 px-1 w-32 md:w-auto">
+        <div className="mt-5 md:mt-4 px-1 md:w-full flex-1 flex justify-center mb-5 md:mb-0">
           <WidthSlider
             color={color}
             max={MAX_PIN_SIZE}
@@ -57,11 +57,11 @@ export const PinSidebar: React.FC = () => {
       </SidebarSection>
 
       <SidebarSection>
-        <div className="flex items-center">
+        <SidebarHeader>
           <SidebarHeading>Icon</SidebarHeading>
-        </div>
+        </SidebarHeader>
 
-        <div className="mt-5 md:mt-2">
+        <div className="mt-2">
           <IconSelector
             value={icon}
             onChange={(icon) => {

@@ -101,13 +101,10 @@ export const StyleIcon = icon(
 
 export const ChevronLeftIcon = icon(
   <path
-    d="M15 19l-7-7 7-7"
-    fill="none"
-    stroke="currentColor"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    strokeWidth={2}
-  />
+    d="M16 3C8.832 3 3 8.832 3 16s5.832 13 13 13s13-5.832 13-13S23.168 3 16 3zm0 2c6.086 0 11 4.914 11 11s-4.914 11-11 11S5 22.086 5 16S9.914 5 16 5zm1.781 4.281l-6 6l-.687.719l.687.719l6 6l1.438-1.438L13.937 16l5.282-5.281z"
+    fill="currentColor"
+  />,
+  32
 );
 
 export const PencilIcon = icon(
@@ -561,4 +558,17 @@ export const MuseumIcon = icon(
 export const SelectorCarretIcon = icon(
   <path d="M7 7l3-3 3 3m0 6l-3 3-3-3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />,
   20
+);
+
+export const ChevronUpIcon = icon(
+  <path
+    d="M16 3C8.832 3 3 8.832 3 16s5.832 13 13 13s13-5.832 13-13S23.168 3 16 3zm0 2c6.086 0 11 4.914 11 11s-4.914 11-11 11S5 22.086 5 16S9.914 5 16 5zm0 6.094l-.719.687l-6 6l1.438 1.438L16 13.937l5.281 5.282l1.438-1.438l-6-6z"
+    fill="currentColor"
+  />,
+  32
+);
+
+export const ChevronDownIcon = icon(
+  <path d="M7.41 8.58L12 13.17l4.59-4.59L18 10l-6 6l-6-6l1.41-1.42z" fill="currentColor"></path>,
+  24
 );

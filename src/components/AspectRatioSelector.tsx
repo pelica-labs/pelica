@@ -3,6 +3,7 @@ import classNames from "classnames";
 import React from "react";
 
 import { SelectorCarretIcon } from "~/components/Icon";
+import { SidebarHeading } from "~/components/sidebar/Sidebar";
 import { AspectRatio, AspectRatioConfiguration, aspectRatios } from "~/lib/aspectRatio";
 
 type Props = {
@@ -27,10 +28,10 @@ export const AspectRatioSelector: React.FC<Props> = ({ value, onChange }) => {
       {({ open }) => (
         <>
           <Listbox.Label className="text-xs uppercase text-gray-800 font-light tracking-wide leading-none flex items-center">
-            Aspect Ratio
+            <SidebarHeading>Aspect Ratio</SidebarHeading>
           </Listbox.Label>
           <div className="relative">
-            <span className="inline-block w-full rounded-md shadow-sm">
+            <span className="inline-block w-full rounded-md shadow-sm mt-1">
               <Listbox.Button className="relative w-full rounded-md border border-gray-300 bg-white py-1 text-left focus:outline-none focus:shadow-outline rounded transition ease-in-out duration-150 sm:text-sm sm:leading-5">
                 <div className="flex items-center gap-3 px-2 w-full h-full md:h-10">
                   <AspectRatioOption configuration={configuration} />
