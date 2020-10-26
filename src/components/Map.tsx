@@ -505,7 +505,7 @@ export const Map: React.FC = () => {
           <div
             ref={wrapper}
             className={classNames({
-              "w-full h-full md:shadow-md": true,
+              "relative w-full h-full md:shadow-md": true,
               "border border-gray-400": aspectRatio !== "fill",
             })}
             id="map"
