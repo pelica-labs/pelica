@@ -2,6 +2,7 @@ import React from "react";
 
 import { ColorPicker } from "~/components/ColorPicker";
 import { IconSelector } from "~/components/IconSelector";
+import { PinPreview } from "~/components/PinPreview";
 import { PinSelector } from "~/components/PinSelector";
 import { SidebarHeader, SidebarHeading, SidebarSection } from "~/components/sidebar/Sidebar";
 import { WidthSlider } from "~/components/WidthSlider";
@@ -63,19 +64,24 @@ export const PinSidebar: React.FC = () => {
           <SidebarHeading>Icon & pin</SidebarHeading>
         </SidebarHeader>
 
-        <div className="mt-2 flex flex-col w-full">
-          <IconSelector
-            value={icon}
-            onChange={(icon) => {
-              app.pins.setStyle({ icon });
-            }}
-          />
-          <PinSelector
-            value={pinType}
-            onChange={(pinType) => {
-              app.pins.setStyle({ pinType });
-            }}
-          />
+        <div className="mt-2 flex items-center space-between w-full">
+          <div className="flex flex-col w-full">
+            <IconSelector
+              value={icon}
+              onChange={(icon) => {
+                app.pins.setStyle({ icon });
+              }}
+            />
+            <PinSelector
+              value={pinType}
+              onChange={(pinType) => {
+                app.pins.setStyle({ pinType });
+              }}
+            />
+          </div>
+          <div className="mr-1">
+            <PinPreview color={color} icon={icon} pinType={pinType} />
+          </div>
         </div>
       </SidebarSection>
     </>

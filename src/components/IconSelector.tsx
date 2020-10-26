@@ -1,4 +1,4 @@
-import { snakeCase } from "lodash";
+import { capitalize, snakeCase } from "lodash";
 import React, { useState } from "react";
 
 import { Button } from "~/components/Button";
@@ -23,7 +23,7 @@ export const IconSelector: React.FC<Props> = ({ value, onChange }) => {
   });
 
   const SelectedIcon = allIcons[value];
-  const label = snakeCase(value).replace("_", " ");
+  const label = capitalize(snakeCase(value).replace("_", " "));
 
   return (
     <div className="relative">

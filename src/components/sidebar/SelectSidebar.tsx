@@ -7,6 +7,7 @@ import { Distance } from "~/components/Distance";
 import { TrashIcon } from "~/components/Icon";
 import { IconSelector } from "~/components/IconSelector";
 import { OutlineSelector } from "~/components/OutlineSelector";
+import { PinPreview } from "~/components/PinPreview";
 import { PinSelector } from "~/components/PinSelector";
 import { SidebarHeader, SidebarHeading, SidebarSection } from "~/components/sidebar/Sidebar";
 import { SmartMatchingSelector } from "~/components/SmartMatchingSelector";
@@ -149,19 +150,28 @@ export const SelectSidebar: React.FC = () => {
             <SidebarHeading>Icon & pin</SidebarHeading>
           </SidebarHeader>
 
-          <div className="mt-2 flex flex-col w-full">
-            <IconSelector
-              value={selectedEntity.style.icon}
-              onChange={(icon) => {
-                app.pins.updateSelectedPin({ icon });
-              }}
-            />
-            <PinSelector
-              value={selectedEntity.style.pinType}
-              onChange={(pinType) => {
-                app.pins.updateSelectedPin({ pinType });
-              }}
-            />
+          <div className="mt-2 flex items-center space-between w-full">
+            <div className="flex flex-col w-full">
+              <IconSelector
+                value={selectedEntity.style.icon}
+                onChange={(icon) => {
+                  app.pins.updateSelectedPin({ icon });
+                }}
+              />
+              <PinSelector
+                value={selectedEntity.style.pinType}
+                onChange={(pinType) => {
+                  app.pins.updateSelectedPin({ pinType });
+                }}
+              />
+            </div>
+            <div className="mr-1">
+              <PinPreview
+                color={selectedEntity.style.color}
+                icon={selectedEntity.style.icon}
+                pinType={selectedEntity.style.pinType}
+              />
+            </div>
           </div>
         </SidebarSection>
       )}
