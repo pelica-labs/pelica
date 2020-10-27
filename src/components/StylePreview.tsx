@@ -1,4 +1,3 @@
-import Image from "next/image";
 import React from "react";
 import { Blurhash } from "react-blurhash";
 import BounceLoader from "react-spinners/BounceLoader";
@@ -23,11 +22,7 @@ export const StylePreview: React.FC<Props> = ({ src, hash, width, height }) => {
 
       <BounceLoader color={theme.colors.orange[500]} size={20} />
 
-      {src && (
-        <div className="absolute">
-          <Image priority height={height} quality={70} src={src} width={width} />
-        </div>
-      )}
+      {src && <img className="absolute" height={height} src={src} width={width} />}
     </div>
   );
 };
