@@ -1,8 +1,9 @@
+import { EmojiConvertor } from "emoji-js";
 import { pickBy } from "lodash";
 import React from "react";
 import { useEffect, useState } from "react";
 
-import { iconFromDangerousSvgString, IconProps, icons } from "../components/Icon";
+import { Icon, iconFromDangerousSvgString, iconFromImgUrl, IconProps, icons } from "../components/Icon";
 
 export interface IconCollection {
   icons: { [key: string]: { body: string; width?: number; height?: number } | React.FC<IconProps> };
@@ -11,6 +12,11 @@ export interface IconCollection {
 }
 
 const defaultIcons = icons();
+
+export const emoji = new EmojiConvertor();
+emoji.replace_mode = "img";
+emoji.img_sets.apple.path = "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.0/img/apple/64/";
+emoji.img_sets.apple.sheet = "https://cdn.jsdelivr.net/npm/emoji-datasource@6.0.0/img/apple/sheets/64.png";
 
 export const getCollections = async (): Promise<{ [key: string]: IconCollection }> => {
   const maki = (await import("@iconify/json/json/maki.json")).default;
@@ -27,6 +33,10 @@ export const findIcon = async (collection: string, name: string): Promise<React.
   try {
     if (collection === "default" && defaultIcons[name]) {
       return defaultIcons[name];
+    } else if (collection === "emoji") {
+      const imgEl = emoji.replace_unified(name);
+      const imgSrc = imgEl.slice(imgEl.indexOf("(") + 1, imgEl.indexOf(")"));
+      return iconFromImgUrl(imgSrc, 32, 32);
     } else {
       const icon = collections[collection].icons[name] as { body: string; width?: number; height?: number };
       return iconFromDangerousSvgString(
@@ -60,4 +70,10 @@ export const useIconCollections = (): { [key: string]: IconCollection } => {
   }, []);
 
   return collections;
+};
+
+export const iconFromEmojiName = (name: string, width: number, height: number): Icon => {
+  const imgEl = emoji.replace_unified(name);
+  const imgSrc = imgEl.slice(imgEl.indexOf("(") + 1, imgEl.indexOf(")"));
+  return iconFromImgUrl(imgSrc, width, height);
 };

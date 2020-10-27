@@ -1,3 +1,5 @@
+import { EmojiConvertor } from "emoji-js";
+import { BaseEmoji, emojiIndex } from "emoji-mart";
 import Fuse from "fuse.js";
 import { capitalize, isEqual, snakeCase } from "lodash";
 import React, { useState } from "react";
@@ -7,7 +9,7 @@ import { iconFromDangerousSvgString, icons } from "~/components/Icon";
 import { IconButton } from "~/components/IconButton";
 import { PinIcon } from "~/core/pins";
 import { useClickOutside } from "~/hooks/useClickOutside";
-import { useIcon, useIconCollections } from "~/hooks/useIcon";
+import { iconFromEmojiName, useIcon, useIconCollections } from "~/hooks/useIcon";
 
 type Props = {
   value: PinIcon;
@@ -16,6 +18,9 @@ type Props = {
 };
 
 const defaultIcons = icons();
+
+const emoji = new EmojiConvertor();
+emoji.text_mode = true;
 
 export const IconSelector: React.FC<Props> = ({ value, onChange, onChangeComplete }) => {
   const [search, setSearch] = useState<string>("");
@@ -35,7 +40,9 @@ export const IconSelector: React.FC<Props> = ({ value, onChange, onChangeComplet
 
   const SelectedIcon = useIcon(value.collection, value.name);
 
-  const label = capitalize(snakeCase(value.name).replace("_", " "));
+  const label = capitalize(
+    snakeCase(emoji.replace_unified(value.name)).replace(/_/g, " ").replace(/-/g, " ").replace(/15/g, "")
+  );
 
   return (
     <div ref={container} className="relative">
@@ -48,7 +55,7 @@ export const IconSelector: React.FC<Props> = ({ value, onChange, onChangeComplet
         >
           <div className="flex items-start">
             <SelectedIcon className="w-4 h-4" />
-            <span className="ml-2 text-gray-600 text-xs">{label}</span>
+            {<span className="ml-2 text-gray-600 text-xs">{label}</span>}
           </div>
         </Button>
       </div>
@@ -80,7 +87,7 @@ export const IconSelector: React.FC<Props> = ({ value, onChange, onChangeComplet
             <>
               {fuse
                 .search(search)
-                .slice(0, 25)
+                .slice(0, 15)
                 .map((result) => {
                   const collection = collections[result.item.collection];
                   const iconProps = collection.icons[result.item.name];
@@ -104,7 +111,24 @@ export const IconSelector: React.FC<Props> = ({ value, onChange, onChangeComplet
                       onChangeComplete={onChangeComplete}
                     />
                   );
-                })}
+                })
+                .concat(
+                  (emojiIndex.search(search) || []).slice(0, 15).map((o) => {
+                    const Icon = iconFromEmojiName((o as BaseEmoji).native, 32, 32);
+                    const icon = { collection: "emoji", name: (o as BaseEmoji).native };
+                    return (
+                      <SearchItem
+                        key={o.name}
+                        Icon={Icon}
+                        active={isEqual(icon, value)}
+                        icon={icon}
+                        setShowMenu={setShowMenu}
+                        onChange={onChange}
+                        onChangeComplete={onChangeComplete}
+                      />
+                    );
+                  })
+                )}
             </>
           )}
         </div>
