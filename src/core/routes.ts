@@ -129,7 +129,7 @@ export const routes = ({ mutate, get }: App) => ({
     });
   },
 
-  updateNextPoint: (coordinates: Position) => {
+  updateNextPoint: (coordinates: Position | null) => {
     mutate((state) => {
       state.routes.nextPoint = coordinates;
     });

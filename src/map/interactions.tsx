@@ -50,6 +50,10 @@ export const applyInteractions = (map: mapboxgl.Map, app: Actions): void => {
       app.routes.addRouteStep(point);
     } else if (state.editor.mode === "draw") {
       app.routes.updateNextPoint(event.lngLat.toArray());
+    } else if (state.editor.mode === "text") {
+      app.texts.updateNextPoint(event.lngLat.toArray());
+    } else if (state.editor.mode === "pin") {
+      app.pins.updateNextPoint(event.lngLat.toArray());
     }
 
     if (state.dragAndDrop.draggedEntityId) {
@@ -108,6 +112,19 @@ export const applyInteractions = (map: mapboxgl.Map, app: Actions): void => {
       app.selection.startArea(event.lngLat.toArray());
       return;
     }
+  };
+
+  const onMouseLeave = () => {
+    setTimeout(() => {
+      const state = getState();
+      if (state.editor.mode === "draw") {
+        app.routes.updateNextPoint(null);
+      } else if (state.editor.mode === "text") {
+        app.texts.updateNextPoint(null);
+      } else if (state.editor.mode === "pin") {
+        app.pins.updateNextPoint(null);
+      }
+    }, 50);
   };
 
   const onMouseUp = (event?: MapMouseEvent | MapTouchEvent) => {
@@ -314,6 +331,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: Actions): void => {
 
   window.addEventListener("blur", onWindowBlur);
 
+  canvas.addEventListener("mouseleave", onMouseLeave);
   canvas.addEventListener("keydown", onCanvasKeyUp);
 };
 

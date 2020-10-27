@@ -22,8 +22,7 @@ export const TextSidebar: React.FC = () => {
       return;
     }
 
-    textArea.value = "";
-    textArea.focus();
+    textArea.value = "Text";
   }, []);
 
   return (

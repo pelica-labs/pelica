@@ -8,6 +8,12 @@ import { Text } from "~/core/texts";
 import { defaultStyles } from "~/lib/style";
 import { RawFeature } from "~/map/features";
 
+export const getEntity = (id: number, state: State = getState()) => {
+  return state.entities.items.find((entity) => {
+    return entity.id === id;
+  });
+};
+
 export const getSelectedEntities = (state: State = getState()) => {
   return state.entities.items.filter((entity) => {
     return state.selection.ids.includes(entity.id);

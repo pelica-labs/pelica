@@ -184,27 +184,21 @@ export const applyLayers = (map: mapboxgl.Map, style: Style): void => {
       "icon-size": ["*", 1 / MAX_PIN_SIZE, ["get", "width"]],
       "icon-offset": [0, -72],
       "icon-allow-overlap": true,
+    },
+  });
 
-      "text-field": ["get", "label"],
-      "text-offset": [
-        "interpolate",
-        ["linear"],
-        ["get", "width"],
-        0,
-        ["literal", [0, -2.5]],
-        MAX_PIN_SIZE,
-        ["literal", [0, -6]],
-      ],
-      "text-font": styles.textFont,
-      "text-size": ["interpolate", ["linear"], ["get", "width"], 0, ["literal", 10], MAX_PIN_SIZE, ["literal", 24]],
-      "text-transform": ["get", "textTransform"],
-      "text-anchor": "bottom",
-      "text-allow-overlap": true,
+  addLayer(map, {
+    id: "pinPreview",
+    type: "symbol",
+    source: MapSource.PinPreview,
+    layout: {
+      "icon-image": ["get", "image"],
+      "icon-size": ["*", 1 / MAX_PIN_SIZE, ["get", "width"]],
+      "icon-offset": [0, -72],
+      "icon-allow-overlap": true,
     },
     paint: {
-      "text-color": ["get", "textColor"],
-      "text-halo-color": ["get", "textHaloColor"],
-      "text-halo-width": 1,
+      "icon-opacity": 0.5,
     },
   });
 
@@ -264,7 +258,7 @@ export const applyLayers = (map: mapboxgl.Map, style: Style): void => {
         MAX_TEXT_SIZE,
         ["literal", MAX_TEXT_SIZE],
       ],
-      "text-transform": ["get", "textTransform"],
+      "text-transform": styles.textTransform,
       "text-anchor": "bottom",
       "text-allow-overlap": true,
     },
@@ -278,6 +272,36 @@ export const applyLayers = (map: mapboxgl.Map, style: Style): void => {
       ],
       "text-halo-blur": ["case", ["boolean", ["feature-state", "hover"], false], 0.5, ["get", "outlineBlur"]],
       "text-halo-width": ["case", ["boolean", ["feature-state", "hover"], false], 0.5, ["get", "outlineWidth"]],
+    },
+  });
+
+  addLayer(map, {
+    id: "textPreview",
+    type: "symbol",
+    source: MapSource.TextPreview,
+    layout: {
+      "text-field": ["get", "label"],
+      "text-font": styles.textFont,
+
+      "text-size": [
+        "interpolate",
+        ["linear"],
+        ["get", "width"],
+        MIN_TEXT_SIZE,
+        ["literal", MIN_TEXT_SIZE],
+        MAX_TEXT_SIZE,
+        ["literal", MAX_TEXT_SIZE],
+      ],
+      "text-transform": styles.textTransform,
+      "text-anchor": "bottom",
+      "text-allow-overlap": true,
+    },
+    paint: {
+      "text-color": ["get", "color"],
+      "text-halo-color": ["get", "outlineColor"],
+      "text-halo-blur": ["get", "outlineBlur"],
+      "text-halo-width": ["get", "outlineWidth"],
+      "text-opacity": 0.5,
     },
   });
 };

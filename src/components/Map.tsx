@@ -9,6 +9,7 @@ import { Clipboard } from "~/components/Clipboard";
 import { DocumentTitle } from "~/components/DocumentTitle";
 import { ErrorIcon, WarningIcon } from "~/components/Icon";
 import { app, getState, useStore, useStoreSubscription } from "~/core/app";
+import { entityToFeature } from "~/core/entities";
 import {
   getNextPointOverlay,
   getPinOverlay,
@@ -176,7 +177,6 @@ export const Map: React.FC = () => {
 
         if (exporting) {
           setTimeout(() => {
-            console.log("generating image at " + window.devicePixelRatio);
             app.exports.generateImage();
           }, 500);
         }
@@ -305,6 +305,68 @@ export const Map: React.FC = () => {
   );
 
   /**
+   * Sync text preview to map
+   */
+  useStoreSubscription(
+    (store) => ({
+      editorMode: store.editor.mode,
+      nextPoint: store.texts.nextPoint,
+      textStyle: store.texts.style,
+    }),
+    ({ editorMode, nextPoint, textStyle }) => {
+      if (!map.current) {
+        return;
+      }
+
+      const features: RawFeature[] = [];
+      if (editorMode === "text" && nextPoint) {
+        const feature = entityToFeature({
+          type: "Text",
+          id: -1,
+          source: MapSource.TextPreview,
+          coordinates: nextPoint,
+          style: textStyle,
+        }) as RawFeature;
+
+        features.push(feature);
+      }
+
+      applyFeatures(map.current, features, [MapSource.TextPreview]);
+    }
+  );
+
+  /**
+   * Sync pin preview to map
+   */
+  useStoreSubscription(
+    (store) => ({
+      editorMode: store.editor.mode,
+      nextPoint: store.pins.nextPoint,
+      pinStyle: store.pins.style,
+    }),
+    ({ editorMode, nextPoint, pinStyle }) => {
+      if (!map.current) {
+        return;
+      }
+
+      const features: RawFeature[] = [];
+      if (editorMode === "pin" && nextPoint) {
+        const feature = entityToFeature({
+          type: "Pin",
+          id: -1,
+          source: MapSource.PinPreview,
+          coordinates: nextPoint,
+          style: pinStyle,
+        }) as RawFeature;
+
+        features.push(feature);
+      }
+
+      applyFeatures(map.current, features, [MapSource.PinPreview]);
+    }
+  );
+
+  /**
    * Sync selection overlays
    */
   useStoreSubscription(
@@ -417,7 +479,10 @@ export const Map: React.FC = () => {
 
       if (draggedEntityId) {
         containerClasses.add("grabbing");
-      } else if ((editorMode === "draw" || editorMode === "pin") && hoveredEntityId !== STOP_DRAWING_CIRCLE_ID) {
+      } else if (
+        (editorMode === "draw" || editorMode === "pin" || editorMode === "text") &&
+        hoveredEntityId !== STOP_DRAWING_CIRCLE_ID
+      ) {
         containerClasses.add("crosshair");
       } else if (hoveredEntity?.type === "Pin" || hoveredEntity?.type === "Text") {
         containerClasses.add("grab");

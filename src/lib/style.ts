@@ -8,7 +8,7 @@ export type Style = {
 
 export type StyleOverrides = {
   textFont: string[];
-  textTransform: string;
+  textTransform: "none" | "uppercase" | "lowercase";
 };
 
 export const defaultStyles: StyleOverrides = {
