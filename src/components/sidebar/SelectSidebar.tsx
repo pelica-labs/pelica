@@ -132,6 +132,7 @@ export const SelectSidebar: React.FC = () => {
                 <div className="ml-2 text-2xs text-gray-600 tracking-wide leading-none">
                   {selectedEntity.transientStyle?.width ?? selectedEntity.style.width}
                   <span className="text-gray-400 ml-px">px</span>
+                  {allTexts && <span className="text-gray-400 ml-px">px</span>}
                 </div>
               </>
             )}
@@ -144,7 +145,6 @@ export const SelectSidebar: React.FC = () => {
               min={minSize}
               value={selectedEntity.style.width}
               onChange={(width) => {
-                console.log("on change");
                 if (allRoutes) {
                   app.routes.transientUpdateSelectedLine({ width });
                 } else if (allPins) {
@@ -154,7 +154,6 @@ export const SelectSidebar: React.FC = () => {
                 }
               }}
               onChangeComplete={(width) => {
-                console.log("on change complete");
                 if (allRoutes) {
                   app.routes.updateSelectedLine({ width });
                 } else if (allPins) {
@@ -222,26 +221,6 @@ export const SelectSidebar: React.FC = () => {
                 pinType={selectedEntity.transientStyle?.pinType ?? selectedEntity.style.pinType}
               />
             </div>
-          </div>
-        </SidebarSection>
-      )}
-
-      {allPins && selectedEntity.type === "Pin" && (
-        <SidebarSection>
-          <SidebarHeader>
-            <SidebarHeading>Label</SidebarHeading>
-          </SidebarHeader>
-
-          <div className="mt-3 w-56 md:w-full">
-            <LabelTextareaField
-              value={selectedEntity.transientStyle?.label ?? selectedEntity.style.label}
-              onChange={(label) => {
-                app.pins.transientUpdateSelectedPin({ label });
-              }}
-              onChangeComplete={(label) => {
-                app.pins.updateSelectedPin({ label });
-              }}
-            />
           </div>
         </SidebarSection>
       )}

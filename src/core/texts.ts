@@ -29,14 +29,16 @@ export type Text = {
 };
 
 type Texts = {
+  nextPoint: Position | null;
   style: TextStyle;
 };
 
 export const textsInitialState: Texts = {
+  nextPoint: null,
   style: {
     color: "#000000",
     width: 24,
-    label: "",
+    label: "Text",
     outline: "white",
   },
 };
@@ -52,6 +54,12 @@ export const texts = ({ mutate, get }: App) => ({
       if (selectedEntity?.type === "Text") {
         Object.assign(selectedEntity.style, style);
       }
+    });
+  },
+
+  updateNextPoint: (coordinates: Position | null) => {
+    mutate((state) => {
+      state.texts.nextPoint = coordinates;
     });
   },
 

@@ -25,11 +25,11 @@ export type PinStyle = {
   pinType: string;
   width: number;
   color: string;
-  label: string;
 };
 
 export type Pins = {
   style: PinStyle;
+  nextPoint: Position | null;
 };
 
 export const pinsInitialState: Pins = {
@@ -38,8 +38,8 @@ export const pinsInitialState: Pins = {
     pinType: "pelipin",
     width: 6,
     color: theme.colors.yellow[500],
-    label: "",
   },
+  nextPoint: null,
 };
 
 export const pins = ({ mutate, get }: App) => ({
@@ -53,6 +53,12 @@ export const pins = ({ mutate, get }: App) => ({
       if (selectedEntity?.type === "Pin") {
         Object.assign(selectedEntity.style, style);
       }
+    });
+  },
+
+  updateNextPoint: (coordinates: Position | null) => {
+    mutate((state) => {
+      state.pins.nextPoint = coordinates;
     });
   },
 

@@ -2,7 +2,6 @@ import React from "react";
 
 import { ColorPicker } from "~/components/ColorPicker";
 import { IconSelector } from "~/components/IconSelector";
-import { LabelTextareaField } from "~/components/LabelTextareaField";
 import { PinPreview } from "~/components/PinPreview";
 import { PinSelector } from "~/components/PinSelector";
 import { SidebarHeader, SidebarHeading, SidebarSection } from "~/components/sidebar/Sidebar";
@@ -15,7 +14,6 @@ export const PinSidebar: React.FC = () => {
   const width = useStore((store) => store.pins.style.width);
   const icon = useStore((store) => store.pins.style.icon);
   const pinType = useStore((store) => store.pins.style.pinType);
-  const label = useStore((store) => store.pins.style.label);
 
   return (
     <>
@@ -40,10 +38,7 @@ export const PinSidebar: React.FC = () => {
       <SidebarSection>
         <SidebarHeader>
           <SidebarHeading>Size</SidebarHeading>
-          <div className="ml-2 text-2xs text-gray-600 tracking-wide leading-none">
-            {width}
-            <span className="text-gray-400 ml-px">px</span>
-          </div>
+          <div className="ml-2 text-2xs text-gray-600 tracking-wide leading-none">{width}</div>
         </SidebarHeader>
 
         <div className="mt-5 md:mt-4 px-1 md:w-full flex-1 flex justify-center mb-5 md:mb-0">
@@ -91,24 +86,6 @@ export const PinSidebar: React.FC = () => {
           <div className="mr-1 ml-4">
             <PinPreview color={color} icon={icon} pinType={pinType} />
           </div>
-        </div>
-      </SidebarSection>
-
-      <SidebarSection>
-        <SidebarHeader>
-          <SidebarHeading>Label</SidebarHeading>
-        </SidebarHeader>
-
-        <div className="mt-3 w-56 md:w-full">
-          <LabelTextareaField
-            value={label}
-            onChange={(label) => {
-              app.pins.setStyle({ label });
-            }}
-            onChangeComplete={(label) => {
-              app.pins.setStyle({ label });
-            }}
-          />
         </div>
       </SidebarSection>
     </>
