@@ -16,7 +16,7 @@ const transparentPixel = {
 
 type ImageComponents = {
   pin: ReactElement;
-  imgSrc?: string;
+  imgSrc: string | null;
   icon: ReactElement;
   dimensions: [number, number];
   offset: number;
@@ -44,7 +44,7 @@ const idToComponents = async (eventId: string): Promise<ImageComponents | null> 
 
   const { component: Pin, dimensions, offset } = allPins[pin];
   const Icon = await findIcon(icon.collection, icon.name);
-  const imgSrc = icon.collection === "emoji" ? imgSrcFromEmojiName(icon.name) : undefined;
+  const imgSrc = icon.collection === "emoji" ? imgSrcFromEmojiName(icon.name) : null;
   if (!Pin || !Icon) {
     return null;
   }
@@ -105,6 +105,7 @@ export const generateImage = (components: ImageComponents): Promise<ImageData> =
 
     await drawImage(context, {
       svg: components.pin,
+      imgSrc: null,
       width: pinWidth * scale,
       height: pinHeight * scale,
       offsetX: 0,
@@ -113,7 +114,7 @@ export const generateImage = (components: ImageComponents): Promise<ImageData> =
 
     await drawImage(context, {
       svg: components.icon,
-      imgSrc: components.imgSrc,
+      imgSrc: components.imgSrc || null,
       width: iconWidth * scale,
       height: iconHeight * scale,
       offsetX: ((pinWidth - iconWidth) / 2) * scale,
@@ -126,7 +127,7 @@ export const generateImage = (components: ImageComponents): Promise<ImageData> =
 
 type DrawImageOptions = {
   svg: ReactElement;
-  imgSrc?: string;
+  imgSrc: string | null;
   width: number;
   height: number;
   offsetX: number;
