@@ -15,8 +15,7 @@ const defaultIcons = icons();
 
 export const emoji = new EmojiConvertor();
 emoji.replace_mode = "img";
-emoji.img_sets.apple.path = "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.0/img/apple/64/";
-emoji.img_sets.apple.sheet = "https://cdn.jsdelivr.net/npm/emoji-datasource@6.0.0/img/apple/sheets/64.png";
+emoji.img_sets.apple.path = "/emoji-data/64/";
 
 export const getCollections = async (): Promise<{ [key: string]: IconCollection }> => {
   const maki = (await import("@iconify/json/json/maki.json")).default;
@@ -73,7 +72,10 @@ export const useIconCollections = (): { [key: string]: IconCollection } => {
 };
 
 export const iconFromEmojiName = (name: string, width: number, height: number): Icon => {
+  return iconFromImgUrl(imgSrcFromEmojiName(name), width, height);
+};
+
+export const imgSrcFromEmojiName = (name: string): string => {
   const imgEl = emoji.replace_unified(name);
-  const imgSrc = imgEl.slice(imgEl.indexOf("(") + 1, imgEl.indexOf(")"));
-  return iconFromImgUrl(imgSrc, width, height);
+  return imgEl.slice(imgEl.indexOf("(") + 1, imgEl.indexOf(")"));
 };

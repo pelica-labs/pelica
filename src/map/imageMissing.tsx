@@ -4,7 +4,7 @@ import ReactDOMServer from "react-dom/server";
 import { pins } from "~/components/Pin";
 import { getState } from "~/core/app";
 import { PinIcon } from "~/core/pins";
-import { findIcon } from "~/hooks/useIcon";
+import { findIcon, imgSrcFromEmojiName } from "~/hooks/useIcon";
 
 const allPins = pins();
 
@@ -16,6 +16,7 @@ const transparentPixel = {
 
 type ImageComponents = {
   pin: ReactElement;
+  imgSrc?: string;
   icon: ReactElement;
   dimensions: [number, number];
   offset: number;
@@ -43,7 +44,7 @@ const idToComponents = async (eventId: string): Promise<ImageComponents | null> 
 
   const { component: Pin, dimensions, offset } = allPins[pin];
   const Icon = await findIcon(icon.collection, icon.name);
-
+  const imgSrc = icon.collection === "emoji" ? imgSrcFromEmojiName(icon.name) : undefined;
   if (!Pin || !Icon) {
     return null;
   }
@@ -51,6 +52,7 @@ const idToComponents = async (eventId: string): Promise<ImageComponents | null> 
   return {
     pin: <Pin color={color} />,
     icon: <Icon color={color} />,
+    imgSrc,
     dimensions,
     offset,
   };
@@ -111,6 +113,7 @@ export const generateImage = (components: ImageComponents): Promise<ImageData> =
 
     await drawImage(context, {
       svg: components.icon,
+      imgSrc: components.imgSrc,
       width: iconWidth * scale,
       height: iconHeight * scale,
       offsetX: ((pinWidth - iconWidth) / 2) * scale,
@@ -123,6 +126,7 @@ export const generateImage = (components: ImageComponents): Promise<ImageData> =
 
 type DrawImageOptions = {
   svg: ReactElement;
+  imgSrc?: string;
   width: number;
   height: number;
   offsetX: number;
@@ -131,8 +135,6 @@ type DrawImageOptions = {
 
 const drawImage = (context: CanvasRenderingContext2D, options: DrawImageOptions) => {
   return new Promise((resolve) => {
-    const rawSvg = ReactDOMServer.renderToString(options.svg);
-
     const image = new Image(options.width, options.height);
 
     image.onload = () => {
@@ -140,6 +142,11 @@ const drawImage = (context: CanvasRenderingContext2D, options: DrawImageOptions)
       resolve();
     };
 
-    image.src = `data:image/svg+xml;base64,` + btoa(rawSvg);
+    if (!options.imgSrc) {
+      const rawSvg = ReactDOMServer.renderToString(options.svg);
+      image.src = `data:image/svg+xml;base64,` + btoa(rawSvg);
+    } else {
+      image.src = options.imgSrc;
+    }
   });
 };
