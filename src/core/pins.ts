@@ -36,7 +36,7 @@ export const pinsInitialState: Pins = {
   style: {
     icon: "star",
     pinType: "pelipin",
-    width: 6,
+    width: 4,
     color: theme.colors.yellow[500],
   },
   nextPoint: null,
