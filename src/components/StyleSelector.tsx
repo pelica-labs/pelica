@@ -19,6 +19,8 @@ type Props = {
   initialStyles: Style[];
 };
 
+const IMAGE_SIZE = [230, 122];
+
 export const StyleSelector: React.FC<Props> = ({ value, onChange, initialStyles }) => {
   const [previews, setPreviews] = useState<Record<string, string>>({});
   const { data } = useSWR<StylesResponse>("/api/styles", {
@@ -45,7 +47,8 @@ export const StyleSelector: React.FC<Props> = ({ value, onChange, initialStyles 
         bearing,
         pitch,
         style,
-        size: 256,
+        width: IMAGE_SIZE[0] * 2,
+        height: IMAGE_SIZE[1] * 2,
       });
     });
 
@@ -77,7 +80,12 @@ export const StyleSelector: React.FC<Props> = ({ value, onChange, initialStyles 
             <span className="text-xs uppercase text-gray-800 truncate inline-flex whitespace-no-wrap w-40 md:w-full mb-2 md:mb-0">
               {style.name}
             </span>
-            <StylePreview hash={style.hash || null} src={previews[style.id]} />
+            <StylePreview
+              hash={style.hash || null}
+              height={IMAGE_SIZE[1]}
+              src={previews[style.id]}
+              width={IMAGE_SIZE[0]}
+            />
           </button>
         );
       })}

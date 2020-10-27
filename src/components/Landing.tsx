@@ -2,10 +2,12 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/dist/client/router";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import useLocalStorage from "~/hooks/useLocalStorage";
 
 export const Landing: React.FC = () => {
+  const { t } = useTranslation();
   const images = ["/images/og-image.jpg", "/images/index/carousel1.jpg", "/images/index/carousel2.jpg"];
 
   // redirect the user to the app if they have visited the landing already
@@ -56,9 +58,7 @@ export const Landing: React.FC = () => {
         </Link>
       </header>
       <div className="flex flex-col items-center max-w-4xl my-6 mx-auto px-4">
-        <h1 className="text-center text-5xl text-gray-900 font-raleway mb-6 font-bold">
-          Create stunning maps in minutes
-        </h1>
+        <h1 className="text-center text-5xl text-gray-900 font-raleway mb-6 font-bold">{t("tagline")}</h1>
         <h2 className="font-raleway text-2xl text-center">Pelica is a tool to edit, style, and share custom maps.</h2>
 
         <div

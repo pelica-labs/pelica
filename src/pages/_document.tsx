@@ -10,10 +10,8 @@ class Document extends NextDocument {
   }
 
   render(): JSX.Element {
-    const lang = this.props.__NEXT_DATA__?.props?.pageProps?.lang ?? "en";
-
     return (
-      <Html lang={lang}>
+      <Html>
         <Head />
         <body>
           <Main />

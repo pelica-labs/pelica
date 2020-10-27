@@ -14,11 +14,4 @@ export const en = {
       export: "Export",
     },
   },
-
-  tips: {
-    routeMode: {
-      title: "Route mode",
-      tip: "Tap the last point to end your route (or tap <0>right here</0>)",
-    },
-  },
 };
