@@ -17,7 +17,13 @@ export const TextSidebar: React.FC = () => {
   const screenDimensions = useStore((store) => store.platform.screen.dimensions);
 
   useEffect(() => {
-    textContainer.current?.querySelector("textarea")?.select();
+    const textArea = textContainer.current?.querySelector("textarea");
+    if (!textArea) {
+      return;
+    }
+
+    textArea.value = "";
+    textArea.focus();
   }, []);
 
   return (
