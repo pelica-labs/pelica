@@ -131,7 +131,6 @@ export const SelectSidebar: React.FC = () => {
                 <SidebarHeading>Size</SidebarHeading>
                 <div className="ml-2 text-2xs text-gray-600 tracking-wide leading-none">
                   {selectedEntity.transientStyle?.width ?? selectedEntity.style.width}
-                  <span className="text-gray-400 ml-px">px</span>
                   {allTexts && <span className="text-gray-400 ml-px">px</span>}
                 </div>
               </>
