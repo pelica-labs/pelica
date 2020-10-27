@@ -20,8 +20,10 @@ export type Pin = {
   transientStyle?: PinStyle;
 };
 
+export type PinIcon = { collection: string; name: string };
+
 export type PinStyle = {
-  icon: string;
+  icon: PinIcon;
   pinType: string;
   width: number;
   color: string;
@@ -34,7 +36,7 @@ export type Pins = {
 
 export const pinsInitialState: Pins = {
   style: {
-    icon: "star",
+    icon: { collection: "default", name: "star" },
     pinType: "pelipin",
     width: 4,
     color: theme.colors.yellow[500],

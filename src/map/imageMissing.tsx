@@ -1,11 +1,11 @@
 import React, { ReactElement } from "react";
 import ReactDOMServer from "react-dom/server";
 
-import { icons } from "~/components/Icon";
 import { pins } from "~/components/Pin";
 import { getState } from "~/core/app";
+import { PinIcon } from "~/core/pins";
+import { findIcon, imgSrcFromEmojiName } from "~/hooks/useIcon";
 
-const allIcons = icons();
 const allPins = pins();
 
 const transparentPixel = {
@@ -16,6 +16,7 @@ const transparentPixel = {
 
 type ImageComponents = {
   pin: ReactElement;
+  imgSrc?: string;
   icon: ReactElement;
   dimensions: [number, number];
   offset: number;
@@ -23,11 +24,11 @@ type ImageComponents = {
 
 type PinProps = {
   pin: string;
-  icon: string;
+  icon: PinIcon;
   color: string;
 };
 
-const idToComponents = (eventId: string): ImageComponents | null => {
+const idToComponents = async (eventId: string): Promise<ImageComponents | null> => {
   let json: PinProps | null = null;
   try {
     json = JSON.parse(eventId);
@@ -42,8 +43,8 @@ const idToComponents = (eventId: string): ImageComponents | null => {
   const { pin, icon, color } = json;
 
   const { component: Pin, dimensions, offset } = allPins[pin];
-  const Icon = allIcons[icon];
-
+  const Icon = await findIcon(icon.collection, icon.name);
+  const imgSrc = icon.collection === "emoji" ? imgSrcFromEmojiName(icon.name) : undefined;
   if (!Pin || !Icon) {
     return null;
   }
@@ -51,6 +52,7 @@ const idToComponents = (eventId: string): ImageComponents | null => {
   return {
     pin: <Pin color={color} />,
     icon: <Icon color={color} />,
+    imgSrc,
     dimensions,
     offset,
   };
@@ -62,9 +64,9 @@ type MapImageMissingEvent = {
 
 export const applyImageMissingHandler = (map: mapboxgl.Map): void => {
   const onImageMissing = async (event: MapImageMissingEvent) => {
-    const components = idToComponents(event.id);
-
     map.addImage(event.id, transparentPixel);
+
+    const components = await idToComponents(event.id);
 
     if (!components) {
       return;
@@ -111,6 +113,7 @@ export const generateImage = (components: ImageComponents): Promise<ImageData> =
 
     await drawImage(context, {
       svg: components.icon,
+      imgSrc: components.imgSrc,
       width: iconWidth * scale,
       height: iconHeight * scale,
       offsetX: ((pinWidth - iconWidth) / 2) * scale,
@@ -123,6 +126,7 @@ export const generateImage = (components: ImageComponents): Promise<ImageData> =
 
 type DrawImageOptions = {
   svg: ReactElement;
+  imgSrc?: string;
   width: number;
   height: number;
   offsetX: number;
@@ -131,8 +135,6 @@ type DrawImageOptions = {
 
 const drawImage = (context: CanvasRenderingContext2D, options: DrawImageOptions) => {
   return new Promise((resolve) => {
-    const rawSvg = ReactDOMServer.renderToString(options.svg);
-
     const image = new Image(options.width, options.height);
 
     image.onload = () => {
@@ -140,6 +142,11 @@ const drawImage = (context: CanvasRenderingContext2D, options: DrawImageOptions)
       resolve();
     };
 
-    image.src = `data:image/svg+xml;base64,` + btoa(rawSvg);
+    if (!options.imgSrc) {
+      const rawSvg = ReactDOMServer.renderToString(options.svg);
+      image.src = `data:image/svg+xml;base64,` + btoa(rawSvg);
+    } else {
+      image.src = options.imgSrc;
+    }
   });
 };
