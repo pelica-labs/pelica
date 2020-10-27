@@ -53,7 +53,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: Actions): void => {
     }
 
     if (state.dragAndDrop.draggedEntityId) {
-      app.dragAndDrop.dragSelectedPin(event.lngLat.toArray());
+      app.dragAndDrop.dragSelectedEntity(event.lngLat.toArray());
     }
 
     if (state.selection.area) {
@@ -86,7 +86,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: Actions): void => {
     // handle pins drag start
     if (state.editor.mode === "select") {
       const features = map.queryRenderedFeatures(event.point, {
-        layers: ["pins", "pinsInteractions"],
+        layers: ["pins", "pinsInteractions", "texts"],
       });
 
       if (features?.length) {
@@ -122,7 +122,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: Actions): void => {
     }
 
     if (state.dragAndDrop.draggedEntityId && event) {
-      app.dragAndDrop.endDragSelectedPin(event.lngLat.toArray());
+      app.dragAndDrop.endDragSelectedEntity(event.lngLat.toArray());
     }
   };
 
@@ -135,10 +135,16 @@ export const applyInteractions = (map: mapboxgl.Map, app: Actions): void => {
       return;
     }
 
+    // place text
+    if (state.editor.mode === "text") {
+      app.texts.place(event.lngLat.toArray());
+      return;
+    }
+
     // select the given pin or route
     if (state.editor.mode === "select") {
       const features = map.queryRenderedFeatures(event.point, {
-        layers: ["pins", "pinsInteractions", "routesInteractions"],
+        layers: ["pins", "pinsInteractions", "routesInteractions", "texts"],
       });
 
       if (features?.length) {
@@ -168,7 +174,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: Actions): void => {
 
   const onFeatureRightClick = (event: MapMouseEvent | MapTouchEvent) => {
     const features = map.queryRenderedFeatures(event.point, {
-      layers: ["pins", "pinsInteractions", "routesInteractions"],
+      layers: ["pins", "pinsInteractions", "routesInteractions", "texts"],
     });
 
     if (!features?.length) {
@@ -203,6 +209,13 @@ export const applyInteractions = (map: mapboxgl.Map, app: Actions): void => {
       event.stopPropagation();
 
       app.pins.nudgeSelectedPin(keyCodeToDirection[event.keyCode]);
+    }
+
+    if (keyCodeToDirection[event.keyCode] && selectedEntity?.type === "Text") {
+      event.preventDefault();
+      event.stopPropagation();
+
+      app.texts.nudgeSelectedText(keyCodeToDirection[event.keyCode]);
     }
 
     if (event.keyCode === KeyCode.KEY_BACK_SPACE && selectedEntities.length > 0) {
@@ -276,7 +289,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: Actions): void => {
 
   updateMap();
 
-  ["pinsInteractions", "pins", "routesInteractions", "routesStop"].forEach((layer: string) => {
+  ["pinsInteractions", "pins", "routesInteractions", "routesStop", "texts"].forEach((layer: string) => {
     map.on("mousemove", layer, onFeatureHover);
     map.on("mouseleave", layer, onFeatureHoverEnd);
   });

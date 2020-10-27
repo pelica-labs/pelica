@@ -15,6 +15,7 @@ import {
   getRouteOverlay,
   getRouteStopOverlay,
   getSelectionAreaOverlay,
+  getTextOverlay,
   getWatermarkOverlay,
 } from "~/core/overlays";
 import { upscale } from "~/core/platform";
@@ -227,7 +228,7 @@ export const Map: React.FC = () => {
         applySources(map.current);
         applyLayers(map.current, style);
 
-        applyFeatures(map.current, getEntityFeatures(), [MapSource.Routes, MapSource.Pins]);
+        applyFeatures(map.current, getEntityFeatures(), [MapSource.Routes, MapSource.Pins, MapSource.Texts]);
       });
     }
   );
@@ -242,7 +243,7 @@ export const Map: React.FC = () => {
         return;
       }
 
-      applyFeatures(map.current, getEntityFeatures(), [MapSource.Routes, MapSource.Pins]);
+      applyFeatures(map.current, getEntityFeatures(), [MapSource.Routes, MapSource.Pins, MapSource.Texts]);
     }
   );
 
@@ -311,8 +312,9 @@ export const Map: React.FC = () => {
       entities: store.entities.items,
       editorMode: store.editor.mode,
       selectedIds: store.selection.ids,
+      zoom: store.map.zoom,
     }),
-    ({ editorMode }) => {
+    ({ editorMode, zoom }) => {
       if (!map.current) {
         return;
       }
@@ -328,6 +330,10 @@ export const Map: React.FC = () => {
 
           if (entity.type === "Route") {
             features.push(getRouteOverlay(entity));
+          }
+
+          if (entity.type === "Text") {
+            features.push(getTextOverlay(entity, zoom));
           }
         });
       }
@@ -413,7 +419,7 @@ export const Map: React.FC = () => {
         containerClasses.add("grabbing");
       } else if ((editorMode === "draw" || editorMode === "pin") && hoveredEntityId !== STOP_DRAWING_CIRCLE_ID) {
         containerClasses.add("crosshair");
-      } else if (hoveredEntity?.type === "Pin") {
+      } else if (hoveredEntity?.type === "Pin" || hoveredEntity?.type === "Text") {
         containerClasses.add("grab");
       } else if (hoveredEntity?.type === "Route") {
         containerClasses.add("pointer");

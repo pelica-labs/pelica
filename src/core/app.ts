@@ -18,6 +18,7 @@ import { platform, platformInitialState } from "~/core/platform";
 import { routes, routesInitialState } from "~/core/routes";
 import { selection, selectionInitialState } from "~/core/selection";
 import { sync } from "~/core/sync";
+import { texts, textsInitialState } from "~/core/texts";
 import { units, unitsInitialState } from "~/core/units";
 
 export type State = {
@@ -29,6 +30,7 @@ export type State = {
   routes: ReturnType<typeof routes>;
   itineraries: ReturnType<typeof itineraries>;
   pins: ReturnType<typeof pins>;
+  texts: ReturnType<typeof texts>;
   history: ReturnType<typeof history>;
   entities: ReturnType<typeof entities>;
   selection: ReturnType<typeof selection>;
@@ -48,6 +50,7 @@ export type Actions = {
   routes: Omit<State["routes"], keyof typeof routesInitialState>;
   itineraries: Omit<State["itineraries"], keyof typeof itinerariesInitialState>;
   pins: Omit<State["pins"], keyof typeof pinsInitialState>;
+  texts: Omit<State["texts"], keyof typeof textsInitialState>;
   history: Omit<State["history"], keyof typeof historyInitialState>;
   entities: Omit<State["entities"], keyof typeof entitiesInitialState>;
   selection: Omit<State["selection"], keyof typeof selectionInitialState>;
@@ -67,6 +70,7 @@ const state = (app: App) => {
     editor: editor(app),
     routes: routes(app),
     pins: pins(app),
+    texts: texts(app),
     itineraries: itineraries(app),
     history: history(app),
     entities: entities(app),

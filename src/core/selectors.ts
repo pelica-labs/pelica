@@ -4,6 +4,7 @@ import { getState, State } from "~/core/app";
 import { Entity, entityToFeature } from "~/core/entities";
 import { Pin } from "~/core/pins";
 import { Route } from "~/core/routes";
+import { Text } from "~/core/texts";
 import { defaultStyles } from "~/lib/style";
 import { RawFeature } from "~/map/features";
 
@@ -42,6 +43,12 @@ export const getSelectedRoutes = (state: State = getState()) => {
 export const getSelectedPins = (state: State = getState()) => {
   return getSelectedEntities(state).filter((entity: Entity): entity is Pin => {
     return entity.type === "Pin";
+  });
+};
+
+export const getSelectedTexts = (state: State = getState()) => {
+  return getSelectedEntities(state).filter((entity: Entity): entity is Text => {
+    return entity.type === "Text";
   });
 };
 

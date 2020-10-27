@@ -9,6 +9,7 @@ import { ItinerarySidebar } from "~/components/sidebar/ItinerarySidebar";
 import { PinSidebar } from "~/components/sidebar/PinSidebar";
 import { SelectSidebar } from "~/components/sidebar/SelectSidebar";
 import { StyleSidebar } from "~/components/sidebar/StyleSidebar";
+import { TextSidebar } from "~/components/sidebar/TextSidebar";
 import { Toolbar } from "~/components/Toolbar";
 import { app, useStore } from "~/core/app";
 import { getSelectedEntity } from "~/core/selectors";
@@ -35,6 +36,10 @@ export const Sidebar: React.FC<Props> = ({ initialStyles }) => {
   useEffect(() => {
     sidebarRef.current?.scrollTo({ left: 0 });
     toolbarRef.current?.scrollTo({ left: 0 });
+
+    if (screenDimensions.md) {
+      return;
+    }
 
     const expandSidebar = editorMode && editorMode !== "move" && (editorMode !== "select" || selectedEntity);
 
@@ -137,15 +142,11 @@ export const Sidebar: React.FC<Props> = ({ initialStyles }) => {
         <SidebarContext.Provider value={{ expanded: expandSidebar }}>
           <div className="flex divide-x md:flex-col md:space-x-0 md:divide-y  bg-white text-gray-800 md:w-48 xl:w-64 md:h-full overflow-y-auto md:shadow-md">
             {editorMode === "style" && <StyleSidebar initialStyles={initialStyles} />}
-
             {editorMode === "select" && <SelectSidebar />}
-
             {editorMode === "pin" && <PinSidebar />}
-
+            {editorMode === "text" && <TextSidebar />}
             {editorMode === "draw" && <DrawSidebar />}
-
             {editorMode === "itinerary" && <ItinerarySidebar />}
-
             {editorMode === "export" && <ExportSidebar />}
           </div>
         </SidebarContext.Provider>

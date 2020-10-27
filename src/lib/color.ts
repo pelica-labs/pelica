@@ -18,6 +18,10 @@ export const outlineColor = (color: string, outline: OutlineType): string | null
     return tinycolor("black").toHexString();
   }
 
+  if (outline === "white") {
+    return tinycolor("white").toHexString();
+  }
+
   if (outline === "glow") {
     return tinycolor(color).lighten(20).saturate().toHexString();
   }

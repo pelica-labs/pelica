@@ -13,6 +13,7 @@ const outlines: OutlineConfiguration[] = [
   { name: "Dark", outline: "dark" },
   { name: "Light", outline: "light" },
   { name: "Black", outline: "black" },
+  { name: "White", outline: "white" },
   { name: "None", outline: "none" },
 ];
 

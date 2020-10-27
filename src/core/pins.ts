@@ -100,24 +100,6 @@ export const pins = ({ mutate, get }: App) => ({
     });
   },
 
-  editSelectedPinCoordinates: (coordinates: Position) => {
-    mutate((state) => {
-      const selectedPin = getSelectedEntity(state) as Pin;
-
-      selectedPin.coordinates = coordinates;
-    });
-  },
-
-  endEditSelectedPinCoordinates: (coordinates: Position) => {
-    const selectedPin = getSelectedEntity(get()) as Pin;
-
-    get().history.push({
-      name: "movePin",
-      pinId: selectedPin.id,
-      coordinates,
-    });
-  },
-
   nudgeSelectedPin: (direction: Position) => {
     const selectedPin = getSelectedEntity(get()) as Pin;
 

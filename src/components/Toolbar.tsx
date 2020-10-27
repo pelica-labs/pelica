@@ -1,6 +1,15 @@
 import React from "react";
 
-import { ExportIcon, HandIcon, MousePointerIcon, PencilIcon, PinIcon, RouteIcon, StyleIcon } from "~/components/Icon";
+import {
+  ExportIcon,
+  HandIcon,
+  MousePointerIcon,
+  PencilIcon,
+  PinIcon,
+  RouteIcon,
+  StyleIcon,
+  TextIcon,
+} from "~/components/Icon";
 import { IconButton } from "~/components/IconButton";
 import { MenuButton } from "~/components/MenuButton";
 import { app, useStore } from "~/core/app";
@@ -24,6 +33,9 @@ export const Toolbar: React.FC = () => {
   });
   const PinHotkey = useHotkey({ key: "5", meta: true }, () => {
     app.editor.setEditorMode("pin");
+  });
+  const TextHotkey = useHotkey({ key: "6", meta: true }, () => {
+    app.editor.setEditorMode("text");
   });
 
   const tooltipPlacement = screenDimensions.md ? "left" : "above";
@@ -128,6 +140,25 @@ export const Toolbar: React.FC = () => {
           }}
         >
           <PinIcon className="w-8 h-8 md:w-6 md:h-6" />
+        </IconButton>
+
+        <IconButton
+          active={editorMode === "text"}
+          id="toolbar-text"
+          tooltip={{
+            placement: tooltipPlacement,
+            text: (
+              <div className="flex items-center">
+                <span className="mr-4 leading-none">Text</span>
+                <TextHotkey />
+              </div>
+            ),
+          }}
+          onClick={() => {
+            app.editor.setEditorMode("text");
+          }}
+        >
+          <TextIcon className="w-8 h-8 md:w-6 md:h-6" />
         </IconButton>
 
         <IconButton

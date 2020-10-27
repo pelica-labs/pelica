@@ -3,6 +3,7 @@ import { bbox, Feature, featureCollection, Geometry } from "@turf/turf";
 import { App } from "~/core/helpers";
 import { Pin } from "~/core/pins";
 import { Route } from "~/core/routes";
+import { Text } from "~/core/texts";
 import { outlineColor } from "~/lib/color";
 import { RawFeature } from "~/map/features";
 import { MapSource } from "~/map/sources";
@@ -11,7 +12,7 @@ export type Entities = {
   items: Entity[];
 };
 
-export type Entity = Route | Pin;
+export type Entity = Route | Pin | Text;
 
 export const entitiesInitialState: Entities = {
   items: [],
@@ -55,7 +56,7 @@ export const entities = ({ mutate, get }: App) => ({
 
         return null;
       })
-      .filter((entity): entity is Entity => {
+      .filter((entity): entity is Route | Pin => {
         return !!entity;
       });
 
@@ -148,6 +149,29 @@ export const entityToFeature = (entity: Entity): RawFeature | null => {
         outlineColor: outlineColor(style.color, style.outline),
         outlineWidth: style.outline === "none" ? -1 : style.outline === "glow" ? 7 : 1,
         outlineBlur: style.outline === "glow" ? 5 : 0,
+      },
+    };
+  }
+
+  if (entity.type === "Text") {
+    const style = {
+      ...entity.style,
+      ...entity.transientStyle,
+    };
+
+    return {
+      type: "Feature",
+      id: entity.id,
+      source: entity.source,
+      geometry: {
+        type: "Point",
+        coordinates: entity.coordinates,
+      },
+      properties: {
+        ...style,
+        outlineColor: outlineColor(style.color, style.outline),
+        outlineWidth: style.outline === "none" ? 0 : 0.5,
+        outlineBlur: style.outline === "glow" ? 1 : 0,
       },
     };
   }

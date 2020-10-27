@@ -1,4 +1,5 @@
 import { MAX_PIN_SIZE } from "~/core/pins";
+import { MAX_TEXT_SIZE, MIN_TEXT_SIZE } from "~/core/texts";
 import { defaultStyles, Style } from "~/lib/style";
 import { MapSource } from "~/map/sources";
 import { theme } from "~/styles/tailwind";
@@ -64,6 +65,18 @@ export const applyLayers = (map: mapboxgl.Map, style: Style): void => {
       "circle-stroke-color": theme.colors.orange[500],
       "circle-stroke-width": 1,
       "circle-color": theme.colors.orange[500],
+    },
+  });
+
+  addLayer(map, {
+    id: "overlaysUnderline",
+    type: "line",
+    source: MapSource.Overlays,
+    interactive: false,
+    filter: ["==", ["get", "target"], "Text"],
+    paint: {
+      "line-color": theme.colors.orange[500],
+      "line-width": 2,
     },
   });
 
@@ -231,6 +244,40 @@ export const applyLayers = (map: mapboxgl.Map, style: Style): void => {
       "circle-radius": 2,
       "circle-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 1, 0],
       "circle-color": theme.colors.orange[500],
+    },
+  });
+
+  addLayer(map, {
+    id: "texts",
+    type: "symbol",
+    source: MapSource.Texts,
+    layout: {
+      "text-field": ["get", "label"],
+      "text-font": styles.textFont,
+
+      "text-size": [
+        "interpolate",
+        ["linear"],
+        ["get", "width"],
+        MIN_TEXT_SIZE,
+        ["literal", MIN_TEXT_SIZE],
+        MAX_TEXT_SIZE,
+        ["literal", MAX_TEXT_SIZE],
+      ],
+      "text-transform": ["get", "textTransform"],
+      "text-anchor": "bottom",
+      "text-allow-overlap": true,
+    },
+    paint: {
+      "text-color": ["get", "color"],
+      "text-halo-color": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        theme.colors.orange[500],
+        ["get", "outlineColor"],
+      ],
+      "text-halo-blur": ["case", ["boolean", ["feature-state", "hover"], false], 0.5, ["get", "outlineBlur"]],
+      "text-halo-width": ["case", ["boolean", ["feature-state", "hover"], false], 0.5, ["get", "outlineWidth"]],
     },
   });
 };

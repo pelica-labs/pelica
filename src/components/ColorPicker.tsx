@@ -42,7 +42,7 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete
   const screenDimensions = useStore((store) => store.platform.screen.dimensions);
   const [recentColors, setRecentColors] = useAsyncStorage<string[]>(`recentColors`, []);
 
-  const size = screenDimensions.lg ? 22 : 26;
+  const size = screenDimensions.lg ? 18 : 26;
 
   const extendedPickerRef = useClickOutside<HTMLDivElement>(() => {
     if (showExtendedPicker) {

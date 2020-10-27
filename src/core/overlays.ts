@@ -1,7 +1,9 @@
 import { BBox, bbox, bboxPolygon, lineString, Position, transformScale } from "@turf/turf";
+import { MercatorCoordinate } from "mapbox-gl";
 
 import { Pin } from "~/core/pins";
 import { Route, STOP_DRAWING_CIRCLE_ID } from "~/core/routes";
+import { Text } from "~/core/texts";
 import { RawFeature } from "~/map/features";
 import { MapSource } from "~/map/sources";
 
@@ -82,6 +84,29 @@ export const getPinOverlay = (pin: Pin): RawFeature => {
     },
     properties: {
       target: "Pin",
+    },
+  };
+};
+
+export const getTextOverlay = (text: Text, zoom: number): RawFeature => {
+  const left = MercatorCoordinate.fromLngLat(text.coordinates as [number, number], 0);
+  const right = MercatorCoordinate.fromLngLat(text.coordinates as [number, number], 0);
+
+  const base = 2 ** (-zoom - 1);
+
+  left.x -= base / 10;
+  right.x += base / 10;
+
+  return {
+    type: "Feature",
+    id: -1,
+    source: MapSource.Overlays,
+    geometry: {
+      type: "LineString",
+      coordinates: [left.toLngLat().toArray(), right.toLngLat().toArray()],
+    },
+    properties: {
+      target: "Text",
     },
   };
 };
