@@ -8,7 +8,7 @@ export type Editor = {
   aspectRatio: AspectRatio;
 };
 
-export type EditorMode = "style" | "select" | "move" | "draw" | "itinerary" | "pin" | "aspectRatio" | "export";
+export type EditorMode = "style" | "select" | "move" | "draw" | "itinerary" | "pin" | "text" | "export";
 
 export const editorInitialState: Editor = {
   mode: "move",

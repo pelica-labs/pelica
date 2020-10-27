@@ -2,7 +2,7 @@ import React from "react";
 
 import { ColorPicker } from "~/components/ColorPicker";
 import { IconSelector } from "~/components/IconSelector";
-import { PinLabelField } from "~/components/PinLabelField";
+import { LabelTextareaField } from "~/components/LabelTextareaField";
 import { PinPreview } from "~/components/PinPreview";
 import { PinSelector } from "~/components/PinSelector";
 import { SidebarHeader, SidebarHeading, SidebarSection } from "~/components/sidebar/Sidebar";
@@ -39,9 +39,10 @@ export const PinSidebar: React.FC = () => {
 
       <SidebarSection>
         <SidebarHeader>
-          <SidebarHeading>Width</SidebarHeading>
-          <div className="ml-2 flex justify-center items-center w-3 h-3 rounded-full">
-            <div className="rounded-full" style={{ width: width, height: width, backgroundColor: color }} />
+          <SidebarHeading>Size</SidebarHeading>
+          <div className="ml-2 text-2xs text-gray-600 tracking-wide leading-none">
+            {width}
+            <span className="text-gray-400 ml-px">px</span>
           </div>
         </SidebarHeader>
 
@@ -99,9 +100,12 @@ export const PinSidebar: React.FC = () => {
         </SidebarHeader>
 
         <div className="mt-3 w-56 md:w-full">
-          <PinLabelField
+          <LabelTextareaField
             value={label}
             onChange={(label) => {
+              app.pins.setStyle({ label });
+            }}
+            onChangeComplete={(label) => {
               app.pins.setStyle({ label });
             }}
           />

@@ -1,43 +1,59 @@
 import classNames from "classnames";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 import { Button } from "~/components/Button";
 import { ColorPicker } from "~/components/ColorPicker";
-import { Distance } from "~/components/Distance";
-import { TrashIcon } from "~/components/Icon";
+import { Distance, formatDistance } from "~/components/Distance";
+import { PlusIcon, TrashIcon } from "~/components/Icon";
 import { IconSelector } from "~/components/IconSelector";
+import { LabelTextareaField } from "~/components/LabelTextareaField";
 import { OutlineSelector } from "~/components/OutlineSelector";
-import { PinLabelField } from "~/components/PinLabelField";
 import { PinPreview } from "~/components/PinPreview";
 import { PinSelector } from "~/components/PinSelector";
 import { SidebarHeader, SidebarHeading, SidebarSection } from "~/components/sidebar/Sidebar";
 import { SmartMatchingSelector } from "~/components/SmartMatchingSelector";
+import { Tooltip } from "~/components/Tooltip";
 import { WidthSlider } from "~/components/WidthSlider";
-import { app, useStore } from "~/core/app";
-import { Pin } from "~/core/pins";
+import { app, getState, useStore } from "~/core/app";
+import { MAX_PIN_SIZE, Pin } from "~/core/pins";
 import { computeDistance, Route } from "~/core/routes";
 import { getSelectedEntities } from "~/core/selectors";
+import { MAX_TEXT_SIZE, MIN_TEXT_SIZE, Text } from "~/core/texts";
 
 export const SelectSidebar: React.FC = () => {
+  const textContainer = useRef<HTMLDivElement | null>(null);
   const selectedEntities = useStore((store) => getSelectedEntities(store));
   const screenDimensions = useStore((store) => store.platform.screen.dimensions);
+
+  useEffect(() => {
+    textContainer.current?.querySelector("textarea")?.select();
+  }, [textContainer.current]);
 
   if (selectedEntities.length === 0) {
     return null;
   }
 
-  const selectedEntity = selectedEntities[0] as Route | Pin;
+  const selectedEntity = selectedEntities[0] as Route | Pin | Text;
   const allRoutes = selectedEntities.every((entity) => entity.type === "Route");
   const allNonItineraryRoutes = selectedEntities.every((entity) => entity.type === "Route" && !entity.itinerary);
   const allPins = selectedEntities.every((entity) => entity.type === "Pin");
-  const allSame = allRoutes || allPins;
+  const allTexts = selectedEntities.every((entity) => entity.type === "Text");
+  const allSame = allRoutes || allPins || allTexts;
 
   let name = "Mixed";
+  let minSize = 1;
+  let maxSize = 12;
   if (allRoutes) {
     name = selectedEntities.length > 1 ? "Routes" : "Route";
   }
   if (allPins) {
-    name = selectedEntities.length > 1 ? "Pins" : "pin";
+    name = selectedEntities.length > 1 ? "Pins" : "Pin";
+    maxSize = MAX_PIN_SIZE;
+  }
+  if (allTexts) {
+    name = selectedEntities.length > 1 ? "Texts" : "Text";
+    minSize = MIN_TEXT_SIZE;
+    maxSize = MAX_TEXT_SIZE;
   }
 
   return (
@@ -74,6 +90,8 @@ export const SelectSidebar: React.FC = () => {
                   app.routes.transientUpdateSelectedLine({ color });
                 } else if (allPins) {
                   app.pins.transientUpdateSelectedPin({ color });
+                } else if (allTexts) {
+                  app.texts.transientUpdateSelectedText({ color });
                 }
               }}
               onChangeComplete={(color) => {
@@ -81,6 +99,8 @@ export const SelectSidebar: React.FC = () => {
                   app.routes.updateSelectedLine({ color });
                 } else if (allPins) {
                   app.pins.updateSelectedPin({ color });
+                } else if (allTexts) {
+                  app.texts.updateSelectedText({ color });
                 }
               }}
             />
@@ -91,37 +111,56 @@ export const SelectSidebar: React.FC = () => {
       {allSame && (
         <SidebarSection>
           <SidebarHeader>
-            <SidebarHeading>Width</SidebarHeading>
-            <div className="ml-2 flex justify-center items-center w-3 h-3 rounded-full">
-              <div
-                className="rounded-full"
-                style={{
-                  width: selectedEntity.transientStyle?.width ?? selectedEntity.style.width,
-                  height: selectedEntity.transientStyle?.width ?? selectedEntity.style.width,
-                  backgroundColor: selectedEntity.transientStyle?.color ?? selectedEntity.style.color,
-                }}
-              />
-            </div>
+            {allRoutes && (
+              <>
+                <SidebarHeading>Width</SidebarHeading>
+                <div className="ml-2 flex justify-center items-center w-3 h-3 rounded-full">
+                  <div
+                    className="rounded-full"
+                    style={{
+                      width: selectedEntity.transientStyle?.width ?? selectedEntity.style.width,
+                      height: selectedEntity.transientStyle?.width ?? selectedEntity.style.width,
+                      backgroundColor: selectedEntity.transientStyle?.color ?? selectedEntity.style.color,
+                    }}
+                  />
+                </div>
+              </>
+            )}
+            {!allRoutes && (
+              <>
+                <SidebarHeading>Size</SidebarHeading>
+                <div className="ml-2 text-2xs text-gray-600 tracking-wide leading-none">
+                  {selectedEntity.transientStyle?.width ?? selectedEntity.style.width}
+                  <span className="text-gray-400 ml-px">px</span>
+                </div>
+              </>
+            )}
           </SidebarHeader>
 
           <div className="mt-5 md:mt-4 px-1 md:w-full flex-1 flex justify-center mb-5 md:mb-0">
             <WidthSlider
               color={selectedEntity.style.color}
-              max={12}
-              min={1}
+              max={maxSize}
+              min={minSize}
               value={selectedEntity.style.width}
               onChange={(width) => {
+                console.log("on change");
                 if (allRoutes) {
                   app.routes.transientUpdateSelectedLine({ width });
                 } else if (allPins) {
                   app.pins.transientUpdateSelectedPin({ width });
+                } else if (allTexts) {
+                  app.texts.transientUpdateSelectedText({ width });
                 }
               }}
               onChangeComplete={(width) => {
+                console.log("on change complete");
                 if (allRoutes) {
                   app.routes.updateSelectedLine({ width });
                 } else if (allPins) {
                   app.pins.updateSelectedPin({ width });
+                } else if (allTexts) {
+                  app.texts.updateSelectedText({ width });
                 }
               }}
             />
@@ -129,7 +168,7 @@ export const SelectSidebar: React.FC = () => {
         </SidebarSection>
       )}
 
-      {allRoutes && selectedEntity.type === "Route" && (
+      {(allRoutes || allTexts) && (selectedEntity.type === "Route" || selectedEntity.type === "Text") && (
         <SidebarSection>
           <SidebarHeader>
             <SidebarHeading>Outline</SidebarHeading>
@@ -138,7 +177,11 @@ export const SelectSidebar: React.FC = () => {
             <OutlineSelector
               value={selectedEntity.style.outline}
               onChange={(outline) => {
-                app.routes.updateSelectedLine({ outline });
+                if (selectedEntity.type === "Route") {
+                  app.routes.updateSelectedLine({ outline });
+                } else if (selectedEntity.type === "Text") {
+                  app.texts.updateSelectedText({ outline });
+                }
               }}
             />
           </div>
@@ -190,10 +233,33 @@ export const SelectSidebar: React.FC = () => {
           </SidebarHeader>
 
           <div className="mt-3 w-56 md:w-full">
-            <PinLabelField
-              value={selectedEntity.style.label}
+            <LabelTextareaField
+              value={selectedEntity.transientStyle?.label ?? selectedEntity.style.label}
               onChange={(label) => {
+                app.pins.transientUpdateSelectedPin({ label });
+              }}
+              onChangeComplete={(label) => {
                 app.pins.updateSelectedPin({ label });
+              }}
+            />
+          </div>
+        </SidebarSection>
+      )}
+
+      {allTexts && selectedEntity.type === "Text" && selectedEntities.length === 1 && (
+        <SidebarSection>
+          <SidebarHeader>
+            <SidebarHeading>Text</SidebarHeading>
+          </SidebarHeader>
+
+          <div ref={textContainer} className="mt-3 w-56 md:w-full">
+            <LabelTextareaField
+              value={selectedEntity.transientStyle?.label ?? selectedEntity.style.label}
+              onChange={(label) => {
+                app.texts.transientUpdateSelectedText({ label });
+              }}
+              onChangeComplete={(label) => {
+                app.texts.updateSelectedText({ label });
               }}
             />
           </div>
@@ -229,10 +295,23 @@ export const SelectSidebar: React.FC = () => {
             <SidebarHeading>Inspect</SidebarHeading>
           </SidebarHeader>
 
-          <div className="mt-5 md:mt-4">
-            <div className="flex items-center text-xs">
+          <div className="mt-5 md:mt-4 w-32 md:w-full">
+            <div className="flex items-center text-xs w-full">
               <span className="mr-4">Distance</span>
               <Distance value={computeDistance(selectedEntity)} />
+
+              <Tooltip className="ml-auto" placement="left" text="Insert distance on map">
+                <Button
+                  className="ml-3 py-px px-px"
+                  onClick={() => {
+                    const text = formatDistance(computeDistance(selectedEntity), getState().units.distance);
+
+                    app.texts.attachToRoute(selectedEntity, text);
+                  }}
+                >
+                  <PlusIcon className="w-4 h-4 md:w-3 md:h-3" />
+                </Button>
+              </Tooltip>
             </div>
           </div>
         </SidebarSection>

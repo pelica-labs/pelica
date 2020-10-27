@@ -47,6 +47,10 @@ export const WidthSlider: React.FC<Props> = ({ value, onChange, onChangeComplete
         onChangeComplete(value);
       }}
       onChange={(value) => {
+        if (width < min || width > max) {
+          return;
+        }
+
         onChange(value);
         setWidth(value);
       }}

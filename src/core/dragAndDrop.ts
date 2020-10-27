@@ -2,6 +2,7 @@ import { Position } from "@turf/turf";
 
 import { App } from "~/core/helpers";
 import { Pin } from "~/core/pins";
+import { Text } from "~/core/texts";
 
 export type DragAndDrop = {
   draggedEntityId: number | null;
@@ -52,15 +53,15 @@ export const dragAndDrop = ({ mutate, get }: App) => ({
     });
   },
 
-  dragSelectedPin: (coordinates: Position) => {
+  dragSelectedEntity: (coordinates: Position) => {
     mutate((state) => {
       if (!state.dragAndDrop.dragOffset) {
         return;
       }
 
-      const draggedEntity = state.entities.items.find(
-        (entity) => entity.id === state.dragAndDrop.draggedEntityId
-      ) as Pin;
+      const draggedEntity = state.entities.items.find((entity) => entity.id === state.dragAndDrop.draggedEntityId) as
+        | Pin
+        | Text;
 
       state.dragAndDrop.dragMoved = true;
 
@@ -71,8 +72,10 @@ export const dragAndDrop = ({ mutate, get }: App) => ({
     });
   },
 
-  endDragSelectedPin: (coordinates: Position) => {
-    const draggedEntity = get().entities.items.find((entity) => entity.id === get().dragAndDrop.draggedEntityId) as Pin;
+  endDragSelectedEntity: (coordinates: Position) => {
+    const draggedEntity = get().entities.items.find((entity) => entity.id === get().dragAndDrop.draggedEntityId) as
+      | Pin
+      | Text;
 
     const dragOffset = get().dragAndDrop.dragOffset;
     if (!dragOffset) {
@@ -80,11 +83,21 @@ export const dragAndDrop = ({ mutate, get }: App) => ({
     }
 
     if (get().dragAndDrop.dragMoved) {
-      get().history.push({
-        name: "movePin",
-        pinId: draggedEntity.id,
-        coordinates: [coordinates[0] - dragOffset[0], coordinates[1] - dragOffset[1]],
-      });
+      if (draggedEntity.type === "Pin") {
+        get().history.push({
+          name: "movePin",
+          pinId: draggedEntity.id,
+          coordinates: [coordinates[0] - dragOffset[0], coordinates[1] - dragOffset[1]],
+        });
+      }
+
+      if (draggedEntity.type === "Text") {
+        get().history.push({
+          name: "moveText",
+          textId: draggedEntity.id,
+          coordinates: [coordinates[0] - dragOffset[0], coordinates[1] - dragOffset[1]],
+        });
+      }
     }
 
     mutate(({ dragAndDrop }) => {

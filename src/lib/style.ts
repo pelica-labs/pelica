@@ -8,15 +8,11 @@ export type Style = {
 
 export type StyleOverrides = {
   textFont: string[];
-  textColor: string;
-  textHaloColor: string;
   textTransform: string;
 };
 
 export const defaultStyles: StyleOverrides = {
   textFont: ["Roboto Regular"],
-  textColor: "#000000",
-  textHaloColor: "#FFFFFF",
   textTransform: "none",
 };
 
@@ -36,10 +32,6 @@ export const availableStyles: Style[] = [
     owner: "bstnfrmry",
     name: "Basic",
     hash: "L03]AnozIAozogj[j@a}Mxof%Nt7",
-    overrides: {
-      textColor: "#FFFFFF",
-      textHaloColor: "#000000",
-    },
   },
   {
     id: "ckfgw9p0i2kzi19p8pt32p7c5",
@@ -57,19 +49,11 @@ export const availableStyles: Style[] = [
     id: "ckee9ewyn0p3b19ntk1blm5wc",
     owner: "bstnfrmry",
     name: "Navigation",
-    overrides: {
-      textColor: "#FFFFFF",
-      textHaloColor: "#000000",
-    },
   },
   {
     id: "ckgcic5yl0sfu1ap3d89uu5jm",
     owner: "bstnfrmry",
     name: "Decimal",
-    overrides: {
-      textColor: "#FFFFFF",
-      textHaloColor: "#000000",
-    },
   },
   {
     id: "ckgchqgiiafj51as4cvslzvkx",

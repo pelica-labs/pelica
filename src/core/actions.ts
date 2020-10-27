@@ -6,6 +6,7 @@ import { Entity } from "~/core/entities";
 import { ItineraryProfile, Place } from "~/core/itineraries";
 import { Pin, PinStyle } from "~/core/pins";
 import { ItineraryRoute, Route, RouteStyle } from "~/core/routes";
+import { Text, TextStyle } from "~/core/texts";
 import { SmartMatching } from "~/lib/smartMatching";
 import { Style } from "~/lib/style";
 
@@ -22,9 +23,12 @@ export type Action =
   | DeleteRouteStepAction
   | UpdateRouteProfileAction
   | PinAction
+  | PlaceTextAction
   | ImportGpxAction
   | UpdateStyleAction
   | MovePinAction
+  | MoveTextAction
+  | UpdateTextAction
   | UpdatePinAction
   | UpdateRouteAction
   | UpdateLineSmartMatchingAction
@@ -86,6 +90,23 @@ const PinHandler: Handler<PinAction> = {
 
 // ---
 
+type PlaceTextAction = {
+  name: "placeText";
+  text: Text;
+};
+
+const PlaceTextHandler: Handler<PlaceTextAction> = {
+  apply: (state, action) => {
+    state.entities.items.push(action.text);
+  },
+
+  undo: (state, action) => {
+    state.entities.items.splice(state.entities.items.findIndex((entity) => entity.id === action.text.id));
+  },
+};
+
+// ---
+
 type ImportGpxAction = {
   name: "importGpx";
   route: Route;
@@ -121,6 +142,31 @@ const MovePinHandler: Handler<MovePinAction> = {
 
   undo: (state, action) => {
     const point = state.entities.items.find((entity) => entity.id === action.pinId) as Pin;
+
+    point.coordinates = action.previousCoordinates;
+  },
+};
+
+// ---
+
+type MoveTextAction = {
+  name: "moveText";
+  textId: number;
+  coordinates: Position;
+
+  previousCoordinates?: Position;
+};
+
+const MoveTextHandler: Handler<MoveTextAction> = {
+  apply: (state, action) => {
+    const point = state.entities.items.find((entity) => entity.id === action.textId) as Text;
+
+    action.previousCoordinates = point.coordinates;
+    point.coordinates = action.coordinates;
+  },
+
+  undo: (state, action) => {
+    const point = state.entities.items.find((entity) => entity.id === action.textId) as Text;
 
     point.coordinates = action.previousCoordinates;
   },
@@ -201,6 +247,41 @@ const UpdatePinHandler: Handler<UpdatePinAction> = {
 
     pins.forEach((pin) => {
       pin.style = action.previousStyles[pin.id];
+    });
+  },
+};
+
+// ---
+
+type UpdateTextAction = {
+  name: "updateText";
+  textIds: number[];
+
+  style: Partial<TextStyle>;
+
+  previousStyles?: { [key: number]: TextStyle };
+};
+
+const UpdateTextHandler: Handler<UpdateTextAction> = {
+  apply: (state, action) => {
+    const texts = state.entities.items.filter((item): item is Text => action.textIds.includes(item.id));
+
+    action.previousStyles = {};
+    texts.forEach((text) => {
+      if (!action.previousStyles) {
+        return;
+      }
+
+      action.previousStyles[text.id] = { ...text.style };
+      Object.assign(text.style, action.style);
+    });
+  },
+
+  undo: (state, action) => {
+    const texts = state.entities.items.filter((item): item is Text => action.textIds.includes(item.id));
+
+    texts.forEach((text) => {
+      text.style = action.previousStyles[text.id];
     });
   },
 };
@@ -424,9 +505,12 @@ export const handlers = {
   deleteRouteStep: DeleteRouteStepActionHandler,
   updateRouteProfile: UpdateRouteProfileActionHandler,
   pin: PinHandler,
+  placeText: PlaceTextHandler,
   importGpx: ImportGpxHandler,
   movePin: MovePinHandler,
+  moveText: MoveTextHandler,
   updatePin: UpdatePinHandler,
+  updateText: UpdateTextHandler,
   updateRoute: UpdateRouteHandler,
   updateLineSmartMatching: UpdateLineSmartMatchingHandler,
   deleteEntity: DeleteEntityHandler,
