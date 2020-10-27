@@ -15,7 +15,7 @@ export const IconButton: React.FC<Props> = ({ active = false, className, tooltip
       [className]: true,
     }),
     [`hover:text-orange-500`]: !active && !attributes.disabled,
-    [`text-orange-600`]: active,
+    [`text-orange-600 bg-orange-100`]: active,
   });
 
   const button = <button className={buttonClasses} {...attributes} />;

@@ -5,7 +5,7 @@ import { capitalize, isEqual, snakeCase } from "lodash";
 import React, { useState } from "react";
 
 import { Button } from "~/components/Button";
-import { iconFromDangerousSvgString, icons } from "~/components/Icon";
+import { Icon, iconFromDangerousSvgString, icons } from "~/components/Icon";
 import { IconButton } from "~/components/IconButton";
 import { PinIcon } from "~/core/pins";
 import { useClickOutside } from "~/hooks/useClickOutside";
@@ -113,21 +113,28 @@ export const IconSelector: React.FC<Props> = ({ value, onChange, onChangeComplet
                   );
                 })
                 .concat(
-                  (emojiIndex.search(search) || []).slice(0, 15).map((o) => {
-                    const Icon = iconFromEmojiName((o as BaseEmoji).native, 32, 32);
-                    const icon = { collection: "emoji", name: (o as BaseEmoji).native };
-                    return (
-                      <SearchItem
-                        key={o.name}
-                        Icon={Icon}
-                        active={isEqual(icon, value)}
-                        icon={icon}
-                        setShowMenu={setShowMenu}
-                        onChange={onChange}
-                        onChangeComplete={onChangeComplete}
-                      />
-                    );
-                  })
+                  (emojiIndex.search(search) || [])
+                    .map((o) => ({
+                      Icon: iconFromEmojiName((o as BaseEmoji).native, 32, 32),
+                      icon: { collection: "emoji", name: (o as BaseEmoji).native },
+                    }))
+                    .filter((e) => {
+                      return !!e.Icon;
+                    })
+                    .map((e) => {
+                      return (
+                        <SearchItem
+                          key={e.icon.name}
+                          Icon={e.Icon as Icon}
+                          active={isEqual(e.icon, value)}
+                          icon={e.icon}
+                          setShowMenu={setShowMenu}
+                          onChange={onChange}
+                          onChangeComplete={onChangeComplete}
+                        />
+                      );
+                    })
+                    .slice(0, 15)
                 )}
             </>
           )}

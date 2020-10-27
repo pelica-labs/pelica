@@ -71,11 +71,15 @@ export const useIconCollections = (): { [key: string]: IconCollection } => {
   return collections;
 };
 
-export const iconFromEmojiName = (name: string, width: number, height: number): Icon => {
-  return iconFromImgUrl(imgSrcFromEmojiName(name), width, height);
+export const iconFromEmojiName = (name: string, width: number, height: number): Icon | null => {
+  const imgSrc = imgSrcFromEmojiName(name);
+  if (!imgSrc) return null;
+
+  return iconFromImgUrl(imgSrc, width, height);
 };
 
-export const imgSrcFromEmojiName = (name: string): string => {
+export const imgSrcFromEmojiName = (name: string): string | null => {
   const imgEl = emoji.replace_unified(name);
-  return imgEl.slice(imgEl.indexOf("(") + 1, imgEl.indexOf(")"));
+  if (imgEl.indexOf("(/") === -1) return null;
+  return imgEl.slice(imgEl.indexOf("(/") + 1, imgEl.indexOf(")"));
 };
