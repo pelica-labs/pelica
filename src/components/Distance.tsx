@@ -1,6 +1,7 @@
 import React from "react";
 
 import { app, useStore } from "~/core/app";
+import { Units } from "~/core/units";
 
 type Props = {
   value: number;
@@ -22,4 +23,11 @@ export const Distance: React.FC<Props> = ({ value }) => {
       <span className="ml-px text-gray-600">{unit === "metric" ? "km" : "mi"}</span>
     </div>
   );
+};
+
+export const formatDistance = (distance: number, unit: Units["distance"]): string => {
+  const convertedValue = (unit === "imperial" ? distance / 1.60934 : distance).toFixed(2);
+  const formattedUnit = unit === "metric" ? "km" : "mi";
+
+  return `${convertedValue} ${formattedUnit}`;
 };

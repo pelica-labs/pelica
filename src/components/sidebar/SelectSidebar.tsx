@@ -3,8 +3,8 @@ import React, { useEffect, useRef } from "react";
 
 import { Button } from "~/components/Button";
 import { ColorPicker } from "~/components/ColorPicker";
-import { Distance } from "~/components/Distance";
-import { TrashIcon } from "~/components/Icon";
+import { Distance, formatDistance } from "~/components/Distance";
+import { PlusIcon, TrashIcon } from "~/components/Icon";
 import { IconSelector } from "~/components/IconSelector";
 import { LabelTextareaField } from "~/components/LabelTextareaField";
 import { OutlineSelector } from "~/components/OutlineSelector";
@@ -12,8 +12,9 @@ import { PinPreview } from "~/components/PinPreview";
 import { PinSelector } from "~/components/PinSelector";
 import { SidebarHeader, SidebarHeading, SidebarSection } from "~/components/sidebar/Sidebar";
 import { SmartMatchingSelector } from "~/components/SmartMatchingSelector";
+import { Tooltip } from "~/components/Tooltip";
 import { WidthSlider } from "~/components/WidthSlider";
-import { app, useStore } from "~/core/app";
+import { app, getState, useStore } from "~/core/app";
 import { MAX_PIN_SIZE, Pin } from "~/core/pins";
 import { computeDistance, Route } from "~/core/routes";
 import { getSelectedEntities } from "~/core/selectors";
@@ -143,6 +144,7 @@ export const SelectSidebar: React.FC = () => {
               min={minSize}
               value={selectedEntity.style.width}
               onChange={(width) => {
+                console.log("on change");
                 if (allRoutes) {
                   app.routes.transientUpdateSelectedLine({ width });
                 } else if (allPins) {
@@ -152,6 +154,7 @@ export const SelectSidebar: React.FC = () => {
                 }
               }}
               onChangeComplete={(width) => {
+                console.log("on change complete");
                 if (allRoutes) {
                   app.routes.updateSelectedLine({ width });
                 } else if (allPins) {
@@ -292,10 +295,23 @@ export const SelectSidebar: React.FC = () => {
             <SidebarHeading>Inspect</SidebarHeading>
           </SidebarHeader>
 
-          <div className="mt-5 md:mt-4">
-            <div className="flex items-center text-xs">
+          <div className="mt-5 md:mt-4 w-32 md:w-full">
+            <div className="flex items-center text-xs w-full">
               <span className="mr-4">Distance</span>
               <Distance value={computeDistance(selectedEntity)} />
+
+              <Tooltip className="ml-auto" placement="left" text="Insert distance on map">
+                <Button
+                  className="ml-3 py-px px-px"
+                  onClick={() => {
+                    const text = formatDistance(computeDistance(selectedEntity), getState().units.distance);
+
+                    app.texts.attachToRoute(selectedEntity, text);
+                  }}
+                >
+                  <PlusIcon className="w-4 h-4 md:w-3 md:h-3" />
+                </Button>
+              </Tooltip>
             </div>
           </div>
         </SidebarSection>

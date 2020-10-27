@@ -7,11 +7,12 @@ import { theme } from "~/styles/tailwind";
 export type TooltipProps = {
   text: JSX.Element | string;
   placement?: PopoverPlace;
+  className?: string;
 };
 
 export type TooltipState = "hidden" | "shown" | "showing";
 
-export const Tooltip: React.FC<TooltipProps> = ({ text, placement, children }) => {
+export const Tooltip: React.FC<TooltipProps> = ({ text, placement, children, className }) => {
   const [tooltipState, setTooltipState] = useState<TooltipState>("hidden");
   const touch = useStore((store) => store.platform.screen.touch);
 
@@ -48,6 +49,7 @@ export const Tooltip: React.FC<TooltipProps> = ({ text, placement, children }) =
       }}
     >
       <span
+        className={className}
         onMouseEnter={() => {
           setTooltipState("showing");
         }}

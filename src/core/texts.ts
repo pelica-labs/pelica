@@ -1,9 +1,9 @@
-import { Position } from "@turf/turf";
+import { bbox, bboxPolygon, centerOfMass, lineString, Position } from "@turf/turf";
 import { MercatorCoordinate } from "mapbox-gl";
 
 import { nextEntityId } from "~/core/entities";
 import { App } from "~/core/helpers";
-import { OutlineType } from "~/core/routes";
+import { OutlineType, Route } from "~/core/routes";
 import { getSelectedEntity, getSelectedTexts } from "~/core/selectors";
 import { MapSource } from "~/map/sources";
 
@@ -66,6 +66,33 @@ export const texts = ({ mutate, get }: App) => ({
         source: MapSource.Texts,
         coordinates,
         style: get().texts.style,
+      },
+    });
+
+    get().selection.selectEntity(textId);
+  },
+
+  attachToRoute: (route: Route, label: string) => {
+    const center = centerOfMass(bboxPolygon(bbox(lineString(route.points))));
+    if (!center.geometry) {
+      return;
+    }
+
+    const textId = nextEntityId();
+
+    get().history.push({
+      name: "placeText",
+      text: {
+        type: "Text",
+        id: textId,
+        source: MapSource.Texts,
+        coordinates: center.geometry.coordinates,
+        style: {
+          color: route.style.color,
+          label,
+          width: 32,
+          outline: "dark",
+        },
       },
     });
 

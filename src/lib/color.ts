@@ -26,5 +26,5 @@ export const outlineColor = (color: string, outline: OutlineType): string | null
     return tinycolor(color).lighten(20).saturate().toHexString();
   }
 
-  return null;
+  return color;
 };
