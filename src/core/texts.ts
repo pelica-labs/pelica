@@ -49,11 +49,6 @@ export const texts = ({ mutate, get }: App) => ({
   setStyle: (style: Partial<TextStyle>) => {
     mutate((state) => {
       Object.assign(state.texts.style, style);
-
-      const selectedEntity = getSelectedEntity(state);
-      if (selectedEntity?.type === "Text") {
-        Object.assign(selectedEntity.style, style);
-      }
     });
   },
 

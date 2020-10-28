@@ -24,7 +24,7 @@ export type PinIcon = { collection: string; name: string };
 
 export type PinStyle = {
   icon: PinIcon;
-  pinType: string;
+  pinType: string | null;
   width: number;
   color: string;
 };
@@ -50,11 +50,6 @@ export const pins = ({ mutate, get }: App) => ({
   setStyle: (style: Partial<PinStyle>) => {
     mutate((state) => {
       Object.assign(state.pins.style, style);
-
-      const selectedEntity = getSelectedEntity(state);
-      if (selectedEntity?.type === "Pin") {
-        Object.assign(selectedEntity.style, style);
-      }
     });
   },
 

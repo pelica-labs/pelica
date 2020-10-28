@@ -5,7 +5,7 @@ import { PinIcon } from "~/core/pins";
 import { useIcon } from "~/hooks/useIcon";
 
 type Props = {
-  pinType: string;
+  pinType: string | null;
   icon: PinIcon;
   color: string;
 };
@@ -13,7 +13,7 @@ type Props = {
 const allPins = pins();
 
 export const PinPreview: React.FC<Props> = ({ pinType, icon, color }) => {
-  const { component: Pin, dimensions, offset } = allPins[pinType];
+  const { component: Pin, dimensions, offset } = allPins[pinType || "none"];
   const Icon = useIcon(icon.collection, icon.name);
   const scale = 0.6;
   const iconSize = 32;
@@ -21,8 +21,9 @@ export const PinPreview: React.FC<Props> = ({ pinType, icon, color }) => {
   return (
     <div className="relative">
       <div className="inset-0" style={{ width: dimensions[0] * scale, height: dimensions[1] * scale }}>
-        <Pin className="w-full h-full" color={color} />
+        {Pin && <Pin className="w-full h-full" color={color} />}
       </div>
+
       <div
         className="absolute inset-0"
         style={{

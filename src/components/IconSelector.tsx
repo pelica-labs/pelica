@@ -5,7 +5,7 @@ import { capitalize, isEqual, snakeCase } from "lodash";
 import React, { useState } from "react";
 
 import { Button } from "~/components/Button";
-import { Icon, iconFromDangerousSvgString, icons } from "~/components/Icon";
+import { Icon, iconFromDangerousSvgString, icons, SearchIcon } from "~/components/Icon";
 import { IconButton } from "~/components/IconButton";
 import { PinIcon } from "~/core/pins";
 import { useClickOutside } from "~/hooks/useClickOutside";
@@ -62,12 +62,18 @@ export const IconSelector: React.FC<Props> = ({ value, onChange, onChangeComplet
 
       {showMenu && (
         <div className="fixed bottom-0 md:bottom-auto md:absolute left-0 right-0 md:right-auto md:top-0 mt-8 bg-white text-gray-800 md:rounded border flex flex-wrap pl-1 pb-1 shadow z-50 w-full md:w-40 xl:w-48">
-          <input
-            className="shadow appearance-none m-2 border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            placeholder="Search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+          <div className="relative w-full my-1 mr-1">
+            <SearchIcon className="absolute text-gray-400 top-0 left-0 w-3 h-3 ml-2 mt-2" />
+
+            <input
+              autoFocus
+              className="shadow appearance-none p-1 text-xs border rounded w-full pl-6 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              placeholder="Search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+
           {search.length < 2 ? (
             Object.entries(defaultIcons).map(([name, Icon]) => {
               const icon = { collection: "default", name };

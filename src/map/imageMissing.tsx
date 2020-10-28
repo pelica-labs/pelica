@@ -15,7 +15,7 @@ const transparentPixel = {
 };
 
 type ImageComponents = {
-  pin: ReactElement;
+  pin: ReactElement | null;
   imgSrc: string | null;
   icon: ReactElement;
   dimensions: [number, number];
@@ -23,7 +23,7 @@ type ImageComponents = {
 };
 
 type PinProps = {
-  pin: string;
+  pin: string | null;
   icon: PinIcon;
   color: string;
 };
@@ -42,15 +42,15 @@ const idToComponents = async (eventId: string): Promise<ImageComponents | null> 
 
   const { pin, icon, color } = json;
 
-  const { component: Pin, dimensions, offset } = allPins[pin];
+  const { component: Pin, dimensions, offset } = allPins[pin || "none"];
   const Icon = await findIcon(icon.collection, icon.name);
   const imgSrc = icon.collection === "emoji" ? imgSrcFromEmojiName(icon.name) : null;
-  if (!Pin || !Icon) {
+  if (!Icon) {
     return null;
   }
 
   return {
-    pin: <Pin color={color} />,
+    pin: Pin ? <Pin color={color} /> : null,
     icon: <Icon color={color} />,
     imgSrc,
     dimensions,
@@ -103,14 +103,16 @@ export const generateImage = (components: ImageComponents): Promise<ImageData> =
       throw new Error("failed to create canvas 2d context");
     }
 
-    await drawImage(context, {
-      svg: components.pin,
-      imgSrc: null,
-      width: pinWidth * scale,
-      height: pinHeight * scale,
-      offsetX: 0,
-      offsetY: 0,
-    });
+    if (components.pin) {
+      await drawImage(context, {
+        svg: components.pin,
+        imgSrc: null,
+        width: pinWidth * scale,
+        height: pinHeight * scale,
+        offsetX: 0,
+        offsetY: 0,
+      });
+    }
 
     await drawImage(context, {
       svg: components.icon,

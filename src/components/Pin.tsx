@@ -1,7 +1,7 @@
 import React, { SVGAttributes } from "react";
 
 type PinConfiguration = {
-  component: React.FC<Props>;
+  component: React.FC<Props> | null;
   dimensions: [number, number];
   offset: number;
 };
@@ -22,6 +22,7 @@ export const pins = (): { [key: string]: PinConfiguration } => ({
   squaredClassical: { component: SquaredClassicalPin, dimensions: [56, 72], offset: 9 },
   squaredPeaky: { component: SquaredPeakyPin, dimensions: [56, 72], offset: 9 },
   squared: { component: SquaredPin, dimensions: [67.2, 72], offset: 12 },
+  none: { component: null, dimensions: [64, 72], offset: 12 },
 });
 
 type Props = SVGAttributes<SVGElement> & {
