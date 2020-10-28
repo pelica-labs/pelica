@@ -5,6 +5,7 @@ import { Position } from "@turf/turf";
 import CheapRuler from "cheap-ruler";
 import { chunk } from "lodash";
 
+import { DrawingMode } from "~/core/routes";
 import { mapboxDirections, mapboxMapMatching } from "~/lib/mapbox";
 
 export type SmartMatching = {
@@ -19,26 +20,39 @@ type SmartMatchingSegment = {
   method: "mapMatch" | "directions";
 };
 
-export const smartMatch = async (points: Position[], profile: SmartMatchingProfile): Promise<Position[]> => {
+export const smartMatch = async (
+  points: Position[],
+  profile: SmartMatchingProfile,
+  drawingMode?: DrawingMode
+): Promise<Position[]> => {
+  console.log(points, drawingMode);
+
   if (points.length < 2) {
     return points;
   }
 
-  const chunks = await Promise.all(
-    chunkByDistance(points).map((segment) => {
-      if (segment.method === "mapMatch") {
-        return mapMatch(segment.points, profile);
-      }
+  if (drawingMode === "pointByPoint") {
+    return directionsMatch(points, profile);
+  } else if (drawingMode === "freeDrawing") {
+    return mapMatch(points, profile);
+  } else {
+    // chunk by distance and apply directions or mapmatch based on distance.
+    const chunks = await Promise.all(
+      chunkByDistance(points).map((segment) => {
+        if (segment.method === "mapMatch") {
+          return mapMatch(segment.points, profile);
+        }
 
-      if (segment.method === "directions") {
-        return directionsMatch(segment.points, profile);
-      }
+        if (segment.method === "directions") {
+          return directionsMatch(segment.points, profile);
+        }
 
-      return [];
-    })
-  );
+        return [];
+      })
+    );
 
-  return chunks.flat();
+    return chunks.flat();
+  }
 };
 
 const mapMatch = async (points: Position[], profile: SmartMatchingProfile): Promise<Position[]> => {
@@ -121,7 +135,7 @@ const directionsMatch = async (points: Position[], profile: SmartMatchingProfile
  * Returns an array of points chunked by distance between points.
  * Points within 100m of each other will be chunked in the same group.
  */
-const chunkByDistance = (points: Position[]): SmartMatchingSegment[] => {
+export const chunkByDistance = (points: Position[]): SmartMatchingSegment[] => {
   if (points.length < 3) {
     return [{ points, method: "directions" }];
   }

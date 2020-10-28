@@ -10,6 +10,8 @@ import { theme } from "~/styles/tailwind";
 
 export type OutlineType = "dark" | "light" | "black" | "white" | "glow" | "none";
 
+export type DrawingMode = "freeDrawing" | "pointByPoint";
+
 export type Route = {
   id: number;
   source: MapSource;
@@ -18,6 +20,7 @@ export type Route = {
   rawPoints: Position[];
   points: Position[];
   smartMatching: SmartMatching;
+  drawingMode?: DrawingMode;
   style: RouteStyle;
   transientStyle?: RouteStyle;
   itinerary?: {
@@ -110,6 +113,7 @@ export const routes = ({ mutate, get }: App) => ({
         type: "Route",
         id,
         source: MapSource.Routes,
+        drawingMode: "pointByPoint",
         transientPoints: [],
         rawPoints: [],
         points: [],
@@ -124,7 +128,7 @@ export const routes = ({ mutate, get }: App) => ({
       state.routes.isDrawing = true;
 
       const selectedRoute = getSelectedEntity(state) as Route;
-
+      selectedRoute.drawingMode = "pointByPoint";
       selectedRoute.transientPoints.push(coordinates);
     });
   },
@@ -135,7 +139,7 @@ export const routes = ({ mutate, get }: App) => ({
     });
   },
 
-  addRouteStep: (coordinates: Position) => {
+  addRouteStep: (coordinates: Position, freeDrawing = false) => {
     get().routes.updateNextPoint(coordinates);
 
     mutate((state) => {
@@ -146,7 +150,7 @@ export const routes = ({ mutate, get }: App) => ({
       const selectedRoute = getSelectedEntity(state) as Route;
 
       selectedRoute.transientPoints = [...selectedRoute.transientPoints, coordinates];
-
+      selectedRoute.drawingMode = freeDrawing ? "freeDrawing" : "pointByPoint";
       if (selectedRoute.transientPoints.length <= 2) {
         return;
       }
@@ -172,7 +176,8 @@ export const routes = ({ mutate, get }: App) => ({
     const points = selectedRoute.smartMatching.enabled
       ? await smartMatch(
           [...selectedRoute.points.slice(-1), ...selectedRoute.transientPoints],
-          selectedRoute.smartMatching.profile as SmartMatchingProfile
+          selectedRoute.smartMatching.profile as SmartMatchingProfile,
+          selectedRoute.drawingMode
         )
       : selectedRoute.transientPoints;
 
@@ -225,7 +230,11 @@ export const routes = ({ mutate, get }: App) => ({
     const selectedRoute = getSelectedEntity(get()) as Route;
 
     const points = smartMatching.enabled
-      ? await smartMatch(selectedRoute.rawPoints, smartMatching.profile as SmartMatchingProfile)
+      ? await smartMatch(
+          selectedRoute.rawPoints,
+          smartMatching.profile as SmartMatchingProfile,
+          selectedRoute.drawingMode
+        )
       : selectedRoute.rawPoints;
 
     get().history.push({

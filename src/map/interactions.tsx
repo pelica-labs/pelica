@@ -47,7 +47,7 @@ export const applyInteractions = (map: mapboxgl.Map, app: Actions): void => {
     if (state.routes.isDrawing) {
       // find the closest line feature and project to it if we're in match mode
       const point = state.routes.smartMatching.enabled ? snap(map, event) : event.lngLat.toArray();
-      app.routes.addRouteStep(point);
+      app.routes.addRouteStep(point, true);
     } else if (state.editor.mode === "draw") {
       app.routes.updateNextPoint(event.lngLat.toArray());
     } else if (state.editor.mode === "text") {
