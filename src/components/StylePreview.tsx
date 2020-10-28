@@ -13,7 +13,7 @@ type Props = {
 
 export const StylePreview: React.FC<Props> = ({ src, hash, width, height }) => {
   return (
-    <div className="flex relative justify-center items-center w-40 md:w-full h-full mt-1 border overflow-hidden">
+    <div className="flex relative justify-center items-center w-40 md:w-full h-full mt-1 rounded overflow-hidden">
       {hash && (
         <div className="absolute w-full h-full">
           <Blurhash hash={hash} height="100%" punch={1} resolutionX={32} resolutionY={32} width="100%" />
@@ -22,7 +22,7 @@ export const StylePreview: React.FC<Props> = ({ src, hash, width, height }) => {
 
       <BounceLoader color={theme.colors.orange[500]} size={20} />
 
-      {src && <img className="absolute" height={height} src={src} width={width} />}
+      {src && <img className="absolute w-full h-full rounded" height={height} src={src} width={width} />}
     </div>
   );
 };

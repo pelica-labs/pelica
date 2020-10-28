@@ -33,7 +33,7 @@ export const MenuButton: React.FC = () => {
                 <Menu.Button
                   as="div"
                   className={classNames({
-                    "inline-flex justify-center w-full text-sm font-medium leading-5 transition duration-150 ease-in-out text-gray-800 rounded-md focus:outline-none": true,
+                    "appearance-none inline-flex justify-center w-full text-sm font-medium leading-5 transition duration-150 ease-in-out text-gray-800 rounded-md focus:outline-none": true,
                     "bg-orange-200 rounded": open,
                     "hover:text-orange-600": !open,
                   })}
