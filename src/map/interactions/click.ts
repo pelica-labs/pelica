@@ -1,46 +1,11 @@
-import { Position } from "@turf/turf";
 import CheapRuler from "cheap-ruler";
-import * as KeyCode from "keycode-js";
-import { throttle } from "lodash";
-import { memoize } from "lodash";
-import { MapLayerMouseEvent, MapMouseEvent, MapTouchEvent, MapWheelEvent } from "mapbox-gl";
+import { memoize, throttle } from "lodash";
+import { MapMouseEvent, MapTouchEvent } from "mapbox-gl";
 
-import { Actions, getState } from "~/core/app";
-import { getSelectedEntities, getSelectedEntity, getSelectedItinerary } from "~/core/selectors";
+import { app, getState } from "~/core/app";
+import { getSelectedItinerary } from "~/core/selectors";
 
-export const applyInteractions = (map: mapboxgl.Map, app: Actions): void => {
-  const canvas = map.getCanvas();
-
-  const onWheel = (event: MapWheelEvent) => {
-    const { originalEvent } = event;
-
-    // Shift scroll for horizontal zoom is natively handled.
-
-    // Meta key always triggers the native zoom.
-    if (originalEvent.metaKey) {
-      return;
-    }
-
-    // 🧙‍♂️
-    // During a pinch event, the browser thinks CTRL is pressed.
-    if (originalEvent.ctrlKey) {
-      return;
-    }
-
-    const x = originalEvent.deltaX;
-    const y = originalEvent.deltaY;
-
-    map.panBy([x, y], { animate: false });
-
-    event.preventDefault();
-  };
-
-  const updateMap = () => {
-    app.map.move(map.getCenter().toArray(), map.getZoom(), map.getBearing(), map.getPitch());
-    app.map.setBounds(map.getBounds().toArray().flat() as [number, number, number, number]);
-    app.map.updateFeatures(map.getCenter().toArray());
-  };
-
+export const applyClickInteractions = (map: mapboxgl.Map): void => {
   const onMouseMove = throttle((event: MapMouseEvent | MapTouchEvent) => {
     const state = getState();
 
@@ -114,19 +79,6 @@ export const applyInteractions = (map: mapboxgl.Map, app: Actions): void => {
     }
   };
 
-  const onMouseLeave = () => {
-    setTimeout(() => {
-      const state = getState();
-      if (state.editor.mode === "draw") {
-        app.routes.updateNextPoint(null);
-      } else if (state.editor.mode === "text") {
-        app.texts.updateNextPoint(null);
-      } else if (state.editor.mode === "pin") {
-        app.pins.updateNextPoint(null);
-      }
-    }, 50);
-  };
-
   const onMouseUp = (event?: MapMouseEvent | MapTouchEvent) => {
     const state = getState();
 
@@ -189,130 +141,6 @@ export const applyInteractions = (map: mapboxgl.Map, app: Actions): void => {
     }
   };
 
-  const onFeatureRightClick = (event: MapMouseEvent | MapTouchEvent) => {
-    const features = map.queryRenderedFeatures(event.point, {
-      layers: ["pins", "pinsInteractions", "routesInteractions", "texts"],
-    });
-
-    if (!features?.length) {
-      return;
-    }
-
-    app.editor.setEditorMode("select");
-    app.selection.selectEntity(features[0].id as number);
-  };
-
-  const onWindowBlur = () => {
-    onMouseUp();
-  };
-
-  const onCanvasKeyUp = (event: KeyboardEvent) => {
-    const state = getState();
-
-    const selectedEntities = getSelectedEntities(state);
-    const selectedEntity = getSelectedEntity(state);
-
-    const coefficient = event.shiftKey ? 0.1 : 0.01;
-
-    const keyCodeToDirection: { [key: number]: Position } = {
-      [KeyCode.KEY_LEFT]: [-coefficient, 0],
-      [KeyCode.KEY_UP]: [0, -coefficient],
-      [KeyCode.KEY_RIGHT]: [coefficient, 0],
-      [KeyCode.KEY_DOWN]: [0, coefficient],
-    };
-
-    if (keyCodeToDirection[event.keyCode] && selectedEntity?.type === "Pin") {
-      event.preventDefault();
-      event.stopPropagation();
-
-      app.pins.nudgeSelectedPin(keyCodeToDirection[event.keyCode]);
-    }
-
-    if (keyCodeToDirection[event.keyCode] && selectedEntity?.type === "Text") {
-      event.preventDefault();
-      event.stopPropagation();
-
-      app.texts.nudgeSelectedText(keyCodeToDirection[event.keyCode]);
-    }
-
-    if (event.keyCode === KeyCode.KEY_BACK_SPACE && selectedEntities.length > 0) {
-      event.preventDefault();
-      event.stopPropagation();
-
-      app.selection.deleteSelectedEntities();
-    }
-
-    if (event.keyCode === KeyCode.KEY_ESCAPE) {
-      event.preventDefault();
-      event.stopPropagation();
-
-      app.selection.clear();
-      app.routes.stopRoute();
-    }
-  };
-
-  const onFeatureHover = (event: MapLayerMouseEvent) => {
-    const state = getState();
-
-    if (!event.features?.length) {
-      return;
-    }
-
-    if (state.editor.mode !== "select") {
-      return;
-    }
-
-    // remove previous hover if it changed
-    if (
-      state.dragAndDrop.hoveredEntityId &&
-      state.dragAndDrop.hoveredEntityId !== event.features[0].id &&
-      state.dragAndDrop.hoveredEntitySource
-    ) {
-      const feature = { id: state.dragAndDrop.hoveredEntityId, source: state.dragAndDrop.hoveredEntitySource };
-
-      map.setFeatureState(feature, {
-        hover: false,
-      });
-    }
-
-    app.dragAndDrop.startHover(event.features[0].id as number, event.features[0].source);
-
-    map.setFeatureState(event.features[0], {
-      hover: true,
-    });
-  };
-
-  const onFeatureHoverEnd = (event: MapLayerMouseEvent) => {
-    const state = getState();
-
-    if (!state.dragAndDrop.hoveredEntityId || !state.dragAndDrop.hoveredEntitySource) {
-      return;
-    }
-
-    const features = map.queryRenderedFeatures(event.point);
-
-    const stillHovering = features.find((feature) => feature.state.hover);
-    if (!stillHovering) {
-      app.dragAndDrop.endHover();
-    }
-
-    const feature = { id: state.dragAndDrop.hoveredEntityId, source: state.dragAndDrop.hoveredEntitySource };
-    map.setFeatureState(feature, {
-      hover: false,
-    });
-  };
-
-  map.scrollZoom.setZoomRate(0.03);
-
-  updateMap();
-
-  ["pinsInteractions", "pins", "routesInteractions", "routesStop", "texts"].forEach((layer: string) => {
-    map.on("mousemove", layer, onFeatureHover);
-    map.on("mouseleave", layer, onFeatureHoverEnd);
-  });
-
-  map.on("contextmenu", onFeatureRightClick);
-
   map.on("mousemove", onMouseMove);
   map.on("touchmove", onMouseMove);
 
@@ -323,16 +151,6 @@ export const applyInteractions = (map: mapboxgl.Map, app: Actions): void => {
   map.on("touchend", onMouseUp);
 
   map.on("click", onClick);
-  map.on("touchend", onClick);
-
-  map.on("wheel", onWheel);
-
-  map.on("moveend", updateMap);
-
-  window.addEventListener("blur", onWindowBlur);
-
-  canvas.addEventListener("mouseleave", onMouseLeave);
-  canvas.addEventListener("keydown", onCanvasKeyUp);
 };
 
 const hierarchy: { [key: string]: number } = {
@@ -343,7 +161,7 @@ const hierarchy: { [key: string]: number } = {
   tertiary: 5,
 };
 
-function snap(map: mapboxgl.Map, event: MapMouseEvent | MapTouchEvent) {
+const snap = (map: mapboxgl.Map, event: MapMouseEvent | MapTouchEvent) => {
   const ruler = new CheapRuler(event.lngLat.lat);
 
   const point = event.lngLat.toArray() as [number, number];
@@ -376,7 +194,7 @@ function snap(map: mapboxgl.Map, event: MapMouseEvent | MapTouchEvent) {
   }
 
   return event.lngLat.toArray();
-}
+};
 
 const getCoords = (feature: GeoJSON.Feature): [number, number][] => {
   return (feature.geometry.type === "MultiLineString"

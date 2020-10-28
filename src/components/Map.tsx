@@ -27,7 +27,13 @@ import { getEnv } from "~/lib/config";
 import { styleToUrl } from "~/lib/style";
 import { applyFeatures, parseFeatures, RawFeature } from "~/map/features";
 import { applyImageMissingHandler } from "~/map/imageMissing";
-import { applyInteractions } from "~/map/interactions";
+import { applyClickInteractions } from "~/map/interactions/click";
+import { applyHoverInteractions } from "~/map/interactions/hover";
+import { applyKeyboardInteractions } from "~/map/interactions/keyboard";
+import { applyMoveInteractions } from "~/map/interactions/move";
+import { applyPinchInteractions } from "~/map/interactions/pinch";
+import { applyRightClickInteractions } from "~/map/interactions/rightClick";
+import { applyScrollInteractions } from "~/map/interactions/scroll";
 import { applyLayers } from "~/map/layers";
 import { applySources, MapSource } from "~/map/sources";
 
@@ -83,7 +89,15 @@ export const Map: React.FC = () => {
 
       applySources(map);
       applyLayers(map, state.editor.style);
-      applyInteractions(map, app);
+
+      applyMoveInteractions(map);
+      applyHoverInteractions(map);
+      applyPinchInteractions(map);
+      applyScrollInteractions(map);
+      applyKeyboardInteractions(map);
+      applyClickInteractions(map);
+      applyRightClickInteractions(map);
+
       applyImageMissingHandler(map);
     });
 
