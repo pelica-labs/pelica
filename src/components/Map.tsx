@@ -461,15 +461,12 @@ export const Map: React.FC = () => {
   useStoreSubscription(
     (store) => ({
       editorMode: store.editor.mode,
-      draggedEntityId: store.dragAndDrop.draggedEntityId,
       hoveredEntityId: store.dragAndDrop.hoveredEntityId,
     }),
-    ({ editorMode, draggedEntityId, hoveredEntityId }) => {
+    ({ editorMode, hoveredEntityId }) => {
       if (!map.current) {
         return null;
       }
-
-      const hoveredEntity = getState().entities.items.find((item) => item.id === hoveredEntityId);
 
       const containerClasses = map.current.getCanvasContainer().classList;
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -477,19 +474,12 @@ export const Map: React.FC = () => {
       containerClasses.remove(...containerClasses.values());
       containerClasses.add("mapboxgl-canvas-container");
 
-      if (draggedEntityId) {
-        containerClasses.add("grabbing");
-      } else if (
-        (editorMode === "draw" || editorMode === "pin" || editorMode === "text") &&
-        hoveredEntityId !== STOP_DRAWING_CIRCLE_ID
-      ) {
-        containerClasses.add("crosshair");
-      } else if (hoveredEntity?.type === "Pin" || hoveredEntity?.type === "Text") {
-        containerClasses.add("grab");
-      } else if (hoveredEntity?.type === "Route") {
-        containerClasses.add("pointer");
-      } else if (hoveredEntityId === STOP_DRAWING_CIRCLE_ID) {
-        containerClasses.add("pointer");
+      if (editorMode === "pin" || editorMode === "text") {
+        containerClasses.add("place");
+      } else if (editorMode === "draw" && hoveredEntityId !== STOP_DRAWING_CIRCLE_ID) {
+        containerClasses.add("draw");
+      } else if (editorMode === "move") {
+        containerClasses.add("move");
       }
     }
   );
