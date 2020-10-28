@@ -15,7 +15,6 @@ export const Meta: React.FC = () => {
       <title>{title}</title>
 
       <meta content={description} name="Description" />
-      <meta content="user-scalable=no" name="viewport" />
 
       <link href="/images/icon-512.png" rel="shortcut icon" type="image/png" />
       <link href="/images/icon-512.png" rel="apple-touch-icon" />

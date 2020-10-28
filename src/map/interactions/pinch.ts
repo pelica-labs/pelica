@@ -2,6 +2,7 @@ import { Position } from "@turf/turf";
 
 type GestureEvent = Event & {
   scale: number;
+  rotation: number;
 };
 
 export const applyPinchInteractions = (map: mapboxgl.Map): void => {
@@ -23,15 +24,17 @@ export const applyPinchInteractions = (map: mapboxgl.Map): void => {
       return;
     }
 
-    const zoom = initialZoom * (event as GestureEvent).scale;
+    const { scale } = event as GestureEvent;
+
+    const zoom = initialZoom * scale;
 
     map.setZoom(zoom);
-    // map.setCenter([
-    //   initialCenter[0] +
-    //     (Math.log(zoom / initialZoom) / Math.log(23 / initialZoom)) * (cursorPosition[0] - initialCenter[0]),
-    //   initialCenter[1] +
-    //     (Math.log(zoom / initialZoom) / Math.log(23 / initialZoom)) * (cursorPosition[1] - initialCenter[1]),
-    // ]);
+    map.setCenter([
+      initialCenter[0] +
+        (Math.log(zoom / initialZoom) / Math.log(23 / initialZoom)) * (cursorPosition[0] - initialCenter[0]),
+      initialCenter[1] +
+        (Math.log(zoom / initialZoom) / Math.log(23 / initialZoom)) * (cursorPosition[1] - initialCenter[1]),
+    ]);
   };
 
   const onGestureEnd = (event: Event) => {
