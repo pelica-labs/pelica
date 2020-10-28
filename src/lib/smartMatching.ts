@@ -25,8 +25,6 @@ export const smartMatch = async (
   profile: SmartMatchingProfile,
   drawingMode?: DrawingMode
 ): Promise<Position[]> => {
-  console.log(points, drawingMode);
-
   if (points.length < 2) {
     return points;
   }
