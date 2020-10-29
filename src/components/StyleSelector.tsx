@@ -69,8 +69,8 @@ export const StyleSelector: React.FC<Props> = ({ value, onChange, initialStyles 
           <button
             key={style.id}
             className={classnames({
-              "p-2 rounded font-medium cursor-pointer hover:bg-orange-200 h-full md:w-full md:h-40 focus:outline-none focus:shadow-outline overflow-hidden": true,
-              "bg-orange-300": isSelectedStyle,
+              "flex flex-col items-stretch p-2 rounded font-medium cursor-pointer hover:bg-orange-100 h-full md:w-full md:h-40 focus:outline-none focus:shadow-outline overflow-hidden": true,
+              "bg-orange-100 shadow-outline": isSelectedStyle,
             })}
             onClick={() => {
               onChange(style);
