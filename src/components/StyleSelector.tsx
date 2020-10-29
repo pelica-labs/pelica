@@ -79,12 +79,7 @@ export const StyleSelector: React.FC<Props> = ({ value, onChange, initialStyles 
             <span className="block text-left text-xs uppercase text-gray-800 whitespace-no-wrap w-40 md:w-full mb-2 md:mb-0">
               {style.name}
             </span>
-            <StylePreview
-              hash={style.hash || null}
-              height={IMAGE_SIZE[1]}
-              src={previews[style.id]}
-              width={IMAGE_SIZE[0]}
-            />
+            <StylePreview hash={style.hash || null} src={previews[style.id]} />
           </button>
         );
       })}

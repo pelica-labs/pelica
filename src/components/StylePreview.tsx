@@ -7,11 +7,9 @@ import { theme } from "~/styles/tailwind";
 type Props = {
   src: string | null;
   hash: string | null;
-  width: number;
-  height: number;
 };
 
-export const StylePreview: React.FC<Props> = ({ src, hash, width, height }) => {
+export const StylePreview: React.FC<Props> = ({ src, hash }) => {
   return (
     <div className="flex-grow flex relative justify-center items-center w-40 md:w-full mt-1 rounded overflow-hidden">
       {hash && (
@@ -23,12 +21,7 @@ export const StylePreview: React.FC<Props> = ({ src, hash, width, height }) => {
       <BounceLoader color={theme.colors.orange[500]} size={20} />
 
       {src && (
-        <img
-          className="absolute w-full h-full rounded object-cover object-center border border-gray-400"
-          height={height}
-          src={src}
-          width={width}
-        />
+        <img className="absolute w-full h-full rounded object-cover object-center border border-gray-400" src={src} />
       )}
     </div>
   );
