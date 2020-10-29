@@ -5,7 +5,33 @@ import { MapMouseEvent, MapTouchEvent } from "mapbox-gl";
 import { app, getState } from "~/core/app";
 import { getSelectedItinerary } from "~/core/selectors";
 
+type TouchEventHandler = (event: MapMouseEvent | MapTouchEvent) => void;
+
 export const applyClickInteractions = (map: mapboxgl.Map): void => {
+  const handleSingleTouchEvent = (handler: TouchEventHandler): TouchEventHandler => {
+    let timeout: NodeJS.Timeout | null = null;
+
+    return (event) => {
+      const isMultitouch = "touches" in event.originalEvent && event.originalEvent.touches.length > 1;
+
+      if (!isMultitouch) {
+        timeout = setTimeout(() => {
+          handler(event);
+        }, 50);
+      }
+
+      if (isMultitouch && timeout) {
+        clearTimeout(timeout);
+        timeout = null;
+
+        // event.preventDefault();
+        event.originalEvent.preventDefault();
+        event.originalEvent.stopPropagation();
+        event.originalEvent.stopImmediatePropagation();
+      }
+    };
+  };
+
   const onMouseMove = throttle((event: MapMouseEvent | MapTouchEvent) => {
     const state = getState();
 
@@ -142,13 +168,13 @@ export const applyClickInteractions = (map: mapboxgl.Map): void => {
   };
 
   map.on("mousemove", onMouseMove);
-  map.on("touchmove", onMouseMove);
+  map.on("touchmove", handleSingleTouchEvent(onMouseMove));
 
   map.on("mousedown", onMouseDown);
-  map.on("touchstart", onMouseDown);
+  map.on("touchstart", handleSingleTouchEvent(onMouseDown));
 
   map.on("mouseup", onMouseUp);
-  map.on("touchend", onMouseUp);
+  map.on("touchend", handleSingleTouchEvent(onMouseUp));
 
   map.on("click", onClick);
 };
