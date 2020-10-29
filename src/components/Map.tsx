@@ -508,13 +508,19 @@ export const Map: React.FC = () => {
         return;
       }
 
-      if (mode === "draw" || mode === "select" || mode === "export") {
-        map.current.dragPan.disable();
-      } else {
-        map.current.dragPan.enable();
-      }
+      const setMinDragTouches = (min: number) => {
+        if (map.current) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          map.current.dragPan._touchPan._minTouches = min;
+        }
+      };
 
-      map.current.scrollZoom.enable();
+      if (mode === "draw" || mode === "select") {
+        setMinDragTouches(2);
+      } else {
+        setMinDragTouches(1);
+      }
     }
   );
 
