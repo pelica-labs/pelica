@@ -186,7 +186,7 @@ export const applyLayers = (): void => {
     source: MapSource.RouteNextPoint,
     paint: {
       "circle-color": ["get", "color"],
-      "circle-opacity": 0.5,
+      "circle-opacity": 0.3,
       "circle-radius": 3,
       "circle-stroke-color": ["get", "color"],
       "circle-stroke-width": 1,
