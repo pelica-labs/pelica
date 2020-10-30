@@ -1,12 +1,11 @@
-import classNames from "classnames";
 import React, { useRef } from "react";
 
 import { Alerts } from "~/components/Alerts";
 import { GeolocationButton } from "~/components/GeolocationButton";
-import { RedoIcon, UndoIcon } from "~/components/Icon";
-import { IconButton } from "~/components/IconButton";
+import { HistoryButtons } from "~/components/HistoryButtons";
 import { ItineraryInput } from "~/components/ItineraryInput";
 import { Map } from "~/components/Map";
+import { MiniToolbar } from "~/components/MiniToolbar";
 import { PlaceAutocomplete } from "~/components/PlaceAutocomplete";
 import { ResetOrientationButton } from "~/components/ResetOrientationButton";
 import { Sidebar } from "~/components/sidebar/Sidebar";
@@ -27,8 +26,10 @@ export const MapEditor: React.FC<Props> = ({ initialStyles }) => {
   const currentLocation = useStore((store) => store.geolocation.currentLocation);
   const selectedItinerary = useStore((store) => getSelectedItinerary(store));
   const screenDimensions = useStore((store) => store.platform.screen.dimensions);
-  const canUndo = useStore((store) => store.history.actions.length > 0);
-  const canRedo = useStore((store) => store.history.redoStack.length > 0);
+
+  const showTopLeftControls = editorMode !== "export";
+  const showHistoryButtons = !screenDimensions.md && editorMode !== "export";
+  const showMinitoolbar = !screenDimensions.md && editorMode !== "move";
 
   useKeyboard();
   useScreenDimensions();
@@ -56,44 +57,22 @@ export const MapEditor: React.FC<Props> = ({ initialStyles }) => {
           <Alerts />
         </div>
 
-        {!screenDimensions.md && editorMode !== "export" && (
-          <div className="absolute bottom-0 left-0 flex mb-2 ml-2 bg-white border rounded-full">
-            <IconButton
-              className="rounded-full"
-              disabled={!canUndo}
-              onClick={() => {
-                app.history.undo();
-              }}
-            >
-              <UndoIcon
-                className={classNames({
-                  "w-5 h-5": true,
-                  "text-gray-400": !canUndo,
-                })}
-              />
-            </IconButton>
+        {showHistoryButtons && (
+          <div className="absolute bottom-0 left-0">
+            <HistoryButtons />
+          </div>
+        )}
 
-            <IconButton
-              className="rounded-full"
-              disabled={!canRedo}
-              onClick={() => {
-                app.history.redo();
-              }}
-            >
-              <RedoIcon
-                className={classNames({
-                  "w-5 h-5": true,
-                  "text-gray-400": !canRedo,
-                })}
-              />
-            </IconButton>
+        {showMinitoolbar && (
+          <div className="absolute bottom-0 left-0">
+            <MiniToolbar />
           </div>
         )}
       </div>
 
       <Sidebar initialStyles={initialStyles} />
 
-      {editorMode !== "export" && (
+      {showTopLeftControls && (
         <div className="absolute top-0 left-0 flex flex-col space-y-2 mt-2 ml-2">
           {selectedItinerary && (
             <div ref={itineraryContainer}>

@@ -1,17 +1,40 @@
+import {
+  ExportIcon,
+  HandIcon,
+  MousePointerIcon,
+  PencilIcon,
+  PinIcon,
+  RouteIcon,
+  StyleIcon,
+  TextIcon,
+} from "~/components/Icon";
 import { App } from "~/core/helpers";
 import { AspectRatio } from "~/lib/aspectRatio";
 import { defaultStyle, Style } from "~/lib/style";
 
 export type Editor = {
   mode: EditorMode;
+  moving: boolean;
   style: Style;
   aspectRatio: AspectRatio;
 };
 
 export type EditorMode = "style" | "select" | "move" | "draw" | "itinerary" | "pin" | "text" | "export";
 
+export const modeIcons = {
+  style: StyleIcon,
+  export: ExportIcon,
+  text: TextIcon,
+  pin: PinIcon,
+  itinerary: RouteIcon,
+  draw: PencilIcon,
+  select: MousePointerIcon,
+  move: HandIcon,
+};
+
 export const editorInitialState: Editor = {
   mode: "move",
+  moving: true,
 
   style: defaultStyle as Style,
   aspectRatio: "fill",
@@ -42,6 +65,7 @@ export const editor = ({ mutate, get }: App) => ({
 
     mutate((state) => {
       state.editor.mode = mode;
+      state.editor.moving = mode === "move";
     });
 
     get().selection.endArea();
@@ -62,5 +86,11 @@ export const editor = ({ mutate, get }: App) => ({
     if (mode === "draw") {
       get().routes.startNewRoute();
     }
+  },
+
+  toggleMoving: (moving: boolean) => {
+    mutate((state) => {
+      state.editor.moving = moving;
+    });
   },
 });

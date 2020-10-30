@@ -442,21 +442,22 @@ export const Map: React.FC = () => {
   useStoreSubscription(
     (store) => ({
       editorMode: store.editor.mode,
+      moving: store.editor.moving,
       hoveredEntityId: store.dragAndDrop.hoveredEntityId,
     }),
-    ({ editorMode, hoveredEntityId }) => {
+    ({ editorMode, hoveredEntityId, moving }) => {
       const containerClasses = getMap().getCanvasContainer().classList;
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       containerClasses.remove(...containerClasses.values());
       containerClasses.add("mapboxgl-canvas-container");
 
-      if (editorMode === "pin" || editorMode === "text") {
+      if (moving) {
+        containerClasses.add("move");
+      } else if (editorMode === "pin" || editorMode === "text") {
         containerClasses.add("place");
       } else if (editorMode === "draw" && hoveredEntityId !== STOP_DRAWING_CIRCLE_ID) {
         containerClasses.add("draw");
-      } else if (editorMode === "move") {
-        containerClasses.add("move");
       }
     }
   );
@@ -465,15 +466,15 @@ export const Map: React.FC = () => {
    * Sync events
    */
   useStoreSubscription(
-    (store) => store.editor.mode,
-    (mode) => {
+    (store) => ({ editorMode: store.editor.mode, moving: store.editor.moving }),
+    ({ editorMode, moving }) => {
       const setMinDragTouches = (min: number) => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         getMap().dragPan._touchPan._minTouches = min;
       };
 
-      if (mode === "draw" || mode === "select") {
+      if ((editorMode === "draw" || editorMode === "select") && !moving) {
         setMinDragTouches(2);
       } else {
         setMinDragTouches(1);

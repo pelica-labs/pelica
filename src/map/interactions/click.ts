@@ -36,6 +36,10 @@ export const applyClickInteractions = (): void => {
   const onMouseEvent = throttle((event: MapMouseEvent) => {
     const state = getState();
 
+    if (state.editor.moving) {
+      return;
+    }
+
     if (state.editor.mode === "draw") {
       app.routes.updateNextPoint(event.lngLat.toArray());
     } else if (state.editor.mode === "text") {
@@ -47,6 +51,10 @@ export const applyClickInteractions = (): void => {
 
   const onMouseMove = throttle((event: MapMouseEvent | MapTouchEvent) => {
     const state = getState();
+
+    if (state.editor.moving) {
+      return;
+    }
 
     if (state.routes.isDrawing) {
       // find the closest line feature and project to it if we're in match mode
@@ -65,6 +73,10 @@ export const applyClickInteractions = (): void => {
 
   const onMouseDown = (event: MapMouseEvent | MapTouchEvent) => {
     const state = getState();
+
+    if (state.editor.moving) {
+      return;
+    }
 
     // handle draw mode
     if (state.editor.mode === "draw") {
@@ -115,6 +127,10 @@ export const applyClickInteractions = (): void => {
   const onMouseUp = (event: MapMouseEvent | MapTouchEvent) => {
     const state = getState();
 
+    if (state.editor.moving) {
+      return;
+    }
+
     if (state.editor.mode === "draw") {
       app.routes.stopSegment();
     }
@@ -130,6 +146,10 @@ export const applyClickInteractions = (): void => {
 
   const onClick = (event: MapMouseEvent) => {
     const state = getState();
+
+    if (state.editor.moving) {
+      return;
+    }
 
     // place a pin
     if (state.editor.mode === "pin") {
