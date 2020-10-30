@@ -205,8 +205,10 @@ export const ExportSidebar: React.FC = () => {
                 <div className="text-xs flex justify-between">
                   <span className="flex-1 mr-4">Resolution</span>
                   <span>
-                    {ratio[0].toFixed(0)} <span className="text-gray-500">×</span> {ratio[1].toFixed(0)}{" "}
-                    <span className="text-gray-500">px</span>
+                    {ratio[0].toFixed(0)}
+                    <span className="text-gray-500 mx-px">×</span>
+                    {ratio[1].toFixed(0)}
+                    <span className="text-gray-500 ml-1">px</span>
                   </span>
                 </div>
               </>
