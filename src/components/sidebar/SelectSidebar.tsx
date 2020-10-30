@@ -4,7 +4,7 @@ import React, { useEffect, useRef } from "react";
 import { Button } from "~/components/Button";
 import { ColorPicker } from "~/components/ColorPicker";
 import { Distance, formatDistance } from "~/components/Distance";
-import { PlusIcon, TrashIcon } from "~/components/Icon";
+import { InformationIcon, PencilIcon, PinIcon, PlusIcon, TextIcon, TrashIcon } from "~/components/Icon";
 import { IconSelector } from "~/components/IconSelector";
 import { LabelTextareaField } from "~/components/LabelTextareaField";
 import { OutlineSelector } from "~/components/OutlineSelector";
@@ -30,7 +30,7 @@ export const SelectSidebar: React.FC = () => {
   }, [textContainer.current]);
 
   if (selectedEntities.length === 0) {
-    return null;
+    return <EmptySelectSection />;
   }
 
   const selectedEntity = selectedEntities[0] as Route | Pin | Text;
@@ -295,5 +295,49 @@ export const SelectSidebar: React.FC = () => {
         </SidebarSection>
       )}
     </>
+  );
+};
+
+const EmptySelectSection: React.FC = () => {
+  return (
+    <SidebarSection>
+      <div className="flex items-start text-sm md:text-xs">
+        <InformationIcon className="w-4 h-4 md:hidden mr-3 md:mr-0 mt-1" />
+        <div className="flex flex-col md:space-y-4">
+          <span>Select a route, pin or text by taping on them.</span>
+          <span>Select multiple items by drawing a rectangle around them.</span>
+
+          <div className="flex md:flex-col md:space-x-0 md:space-y-1 space-x-2 border-t border-gray-200 mt-5 pt-5 md:mt-2 md:pt-3">
+            <Button
+              className="text-center space-x-2 md:justify-center"
+              onClick={() => {
+                app.editor.setEditorMode("draw");
+              }}
+            >
+              <PencilIcon className="w-4 h-4" />
+              <span>Draw a route</span>
+            </Button>
+            <Button
+              className="text-center space-x-2 md:justify-center"
+              onClick={() => {
+                app.editor.setEditorMode("pin");
+              }}
+            >
+              <PinIcon className="w-4 h-4" />
+              <span>Add a pin</span>
+            </Button>
+            <Button
+              className="text-center space-x-2 md:justify-center"
+              onClick={() => {
+                app.editor.setEditorMode("text");
+              }}
+            >
+              <TextIcon className="w-4 h-4" />
+              <span>Add text</span>
+            </Button>
+          </div>
+        </div>
+      </div>
+    </SidebarSection>
   );
 };
