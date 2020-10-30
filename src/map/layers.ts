@@ -169,7 +169,7 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: "routeNextPoint",
+    id: "routeNextPointLine",
     type: "line",
     source: MapSource.RouteNextPoint,
     paint: {
@@ -177,6 +177,19 @@ export const applyLayers = (): void => {
       "line-width": 2,
       "line-dasharray": [2, 2],
       "line-opacity": 0.5,
+    },
+  });
+
+  addLayer(map, {
+    id: "routeNextPoint",
+    type: "circle",
+    source: MapSource.RouteNextPoint,
+    paint: {
+      "circle-color": ["get", "color"],
+      "circle-opacity": 0.5,
+      "circle-radius": 3,
+      "circle-stroke-color": ["get", "color"],
+      "circle-stroke-width": 1,
     },
   });
 

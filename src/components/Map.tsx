@@ -293,8 +293,10 @@ export const Map: React.FC = () => {
       const selectedEntity = getSelectedEntity();
 
       const features: RawFeature[] = [];
-      if (editorMode === "draw" && !isDrawing && selectedEntity?.type === "Route" && selectedEntity.points.length) {
-        features.push(getRouteStopOverlay(selectedEntity));
+      if (editorMode === "draw" && !isDrawing && selectedEntity?.type === "Route") {
+        if (selectedEntity.points.length) {
+          features.push(getRouteStopOverlay(selectedEntity));
+        }
 
         if (nextPoint) {
           features.push(getNextPointOverlay(selectedEntity, nextPoint));

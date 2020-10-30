@@ -1,4 +1,4 @@
-import { BBox, bbox, bboxPolygon, lineString, Position, transformScale } from "@turf/turf";
+import { BBox, bbox, bboxPolygon, lineString, Position, Properties, transformScale } from "@turf/turf";
 import { MercatorCoordinate } from "mapbox-gl";
 
 import { Pin } from "~/core/pins";
@@ -24,6 +24,22 @@ export const getNextPointOverlay = (route: Route, nextPoint: Position): RawFeatu
   const lastPoint = route.transientPoints.length
     ? route.transientPoints[route.transientPoints.length - 1]
     : route.points[route.points.length - 1];
+
+  if (!lastPoint) {
+    return {
+      type: "Feature",
+      id: -1,
+      source: MapSource.RouteNextPoint,
+      geometry: {
+        type: "Point",
+        coordinates: nextPoint,
+      },
+      properties: {
+        color: route.style.color,
+        width: route.style.width,
+      },
+    };
+  }
 
   return {
     type: "Feature",
