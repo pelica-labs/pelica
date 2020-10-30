@@ -44,7 +44,7 @@ export const Sidebar: React.FC<Props> = ({ initialStyles }) => {
       {sidebarDimensions && (
         <div
           ref={toolbarRef}
-          className="fixed z-10 bottom-0 md:bottom-auto md:top-0 flex justify-between md:flex-col bg-orange-50 border border-orange-200 md:bg-white md:border-gray-100 md:m-2 p-1 md:shadow md:rounded overflow-x-auto"
+          className="fixed z-10 bottom-0 md:bottom-auto md:top-0 flex justify-between md:flex-col bg-gray-100 border border-gray-300 md:bg-white md:border-gray-100 md:m-2 p-1 md:shadow md:rounded overflow-x-auto"
           style={{
             right: screenDimensions.md ? sidebarDimensions.width : 0,
             left: screenDimensions.md ? "initial" : 0,
@@ -62,7 +62,7 @@ export const Sidebar: React.FC<Props> = ({ initialStyles }) => {
             "transition ease-in-out duration-75": editorMode !== "move",
           })}
           style={{
-            bottom: sidebarDimensions?.height + 13,
+            bottom: sidebarDimensions?.height + 14,
             transform: `translateX(${editorMode === "move" ? "-200px" : "0"})`,
           }}
         >
