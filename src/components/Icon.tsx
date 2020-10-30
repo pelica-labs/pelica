@@ -141,6 +141,11 @@ export const ChevronLeftIcon = icon(
   32
 );
 
+export const ChevronRightLightIcon = icon(
+  <path d="M8.593 18.157L14.25 12.5L8.593 6.843l-.707.707l4.95 4.95l-4.95 4.95l.707.707z" fill="currentColor" />,
+  24
+);
+
 export const PencilIcon = icon(
   <path
     d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"

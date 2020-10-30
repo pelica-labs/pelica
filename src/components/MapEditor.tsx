@@ -5,7 +5,6 @@ import { GeolocationButton } from "~/components/GeolocationButton";
 import { HistoryButtons } from "~/components/HistoryButtons";
 import { ItineraryInput } from "~/components/ItineraryInput";
 import { Map } from "~/components/Map";
-import { MiniToolbar } from "~/components/MiniToolbar";
 import { PlaceAutocomplete } from "~/components/PlaceAutocomplete";
 import { ResetOrientationButton } from "~/components/ResetOrientationButton";
 import { Sidebar } from "~/components/sidebar/Sidebar";
@@ -29,7 +28,6 @@ export const MapEditor: React.FC<Props> = ({ initialStyles }) => {
 
   const showTopLeftControls = editorMode !== "export";
   const showHistoryButtons = !screenDimensions.md && editorMode !== "export";
-  const showMinitoolbar = !screenDimensions.md && editorMode !== "move";
 
   useKeyboard();
   useScreenDimensions();
@@ -60,12 +58,6 @@ export const MapEditor: React.FC<Props> = ({ initialStyles }) => {
         {showHistoryButtons && (
           <div className="absolute bottom-0 left-0">
             <HistoryButtons />
-          </div>
-        )}
-
-        {showMinitoolbar && (
-          <div className="absolute bottom-0 left-0">
-            <MiniToolbar />
           </div>
         )}
       </div>

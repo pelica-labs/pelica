@@ -2,6 +2,7 @@ import classNames from "classnames";
 import React, { useEffect, useRef, useState } from "react";
 import { Trans } from "react-i18next";
 
+import { MiniToolbar } from "~/components/MiniToolbar";
 import { DrawSidebar } from "~/components/sidebar/DrawSidebar";
 import { ExportSidebar } from "~/components/sidebar/ExportSidebar";
 import { ItinerarySidebar } from "~/components/sidebar/ItinerarySidebar";
@@ -43,7 +44,7 @@ export const Sidebar: React.FC<Props> = ({ initialStyles }) => {
       {sidebarDimensions && (
         <div
           ref={toolbarRef}
-          className="fixed z-10 bottom-0 md:bottom-auto md:top-0 flex justify-between md:flex-col bg-white border md:m-2 p-1 md:shadow md:rounded overflow-x-auto transition-all duration-150 ease-in-out"
+          className="fixed z-10 bottom-0 md:bottom-auto md:top-0 flex justify-between md:flex-col bg-orange-50 border border-orange-200 md:bg-white md:border-gray-100 md:m-2 p-1 md:shadow md:rounded overflow-x-auto transition-all duration-150 delay-75 ease-in-out"
           style={{
             right: screenDimensions.md ? sidebarDimensions.width : 0,
             left: screenDimensions.md ? "initial" : 0,
@@ -54,14 +55,32 @@ export const Sidebar: React.FC<Props> = ({ initialStyles }) => {
         </div>
       )}
 
+      {!screenDimensions.md && sidebarDimensions && (
+        <div
+          className={classNames({
+            "absolute transition duration-150 ease-in-out": true,
+            "delay-0": editorMode === "move",
+            "delay-150": editorMode !== "move",
+          })}
+          style={{
+            bottom: sidebarDimensions?.height + 13,
+            transform: `translateX(${editorMode === "move" ? "-200px" : "0"})`,
+          }}
+        >
+          <MiniToolbar />
+        </div>
+      )}
+
       <div
         ref={sidebarRef}
         className={classNames({
           "flex md:pt-0 md:pb-0 divide-x md:flex-col md:space-x-0 md:divide-y border md:border-none h-40 bg-white text-gray-800 md:w-48 xl:w-64 md:h-full overflow-y-auto md:shadow-md transition-all duration-150 ease-in-out min-w-full pt-3": true,
+          "delay-75": editorMode === "move",
+          "delay-0": editorMode !== "move",
         })}
         style={{
           ...(!screenDimensions.md && {
-            marginBottom: !showToolbar ? 0 : -94,
+            marginBottom: !showToolbar ? 0 : -100,
           }),
         }}
       >

@@ -47,6 +47,7 @@ export const Toolbar: React.FC = () => {
 
         <IconButton
           active={editorMode === "move"}
+          className="ml-1 md:ml-0"
           id="toolbar-move"
           tooltip={{
             placement: tooltipPlacement,
