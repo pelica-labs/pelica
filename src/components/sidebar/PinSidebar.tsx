@@ -7,7 +7,7 @@ import { PinSelector } from "~/components/PinSelector";
 import { SidebarHeader, SidebarHeading, SidebarSection } from "~/components/sidebar/Sidebar";
 import { WidthSlider } from "~/components/WidthSlider";
 import { app, useStore } from "~/core/app";
-import { MAX_PIN_SIZE } from "~/core/pins";
+import { MAX_PIN_SIZE, MIN_PIN_SIZE } from "~/core/pins";
 
 export const PinSidebar: React.FC = () => {
   const color = useStore((store) => store.pins.style.color);
@@ -45,7 +45,7 @@ export const PinSidebar: React.FC = () => {
           <WidthSlider
             color={color}
             max={MAX_PIN_SIZE}
-            min={1}
+            min={MIN_PIN_SIZE}
             value={width}
             onChange={(width) => {
               app.pins.setStyle({ width });

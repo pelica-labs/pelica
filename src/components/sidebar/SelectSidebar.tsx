@@ -309,31 +309,31 @@ const EmptySelectSection: React.FC = () => {
 
           <div className="flex md:flex-col md:space-x-0 md:space-y-1 space-x-2 border-t border-gray-200 mt-5 pt-5 md:mt-2 md:pt-3">
             <Button
-              className="text-center space-x-2 md:justify-center"
+              className="text-center space-x-2"
               onClick={() => {
                 app.editor.setEditorMode("draw");
               }}
             >
               <PencilIcon className="w-4 h-4" />
-              <span>Draw a route</span>
+              <span className="flex-1 text-center">Draw a route</span>
             </Button>
             <Button
-              className="text-center space-x-2 md:justify-center"
+              className="text-center space-x-2"
               onClick={() => {
                 app.editor.setEditorMode("pin");
               }}
             >
               <PinIcon className="w-4 h-4" />
-              <span>Add a pin</span>
+              <span className="flex-1 text-center">Add a pin</span>
             </Button>
             <Button
-              className="text-center space-x-2 md:justify-center"
+              className="text-center space-x-2"
               onClick={() => {
                 app.editor.setEditorMode("text");
               }}
             >
               <TextIcon className="w-4 h-4" />
-              <span>Add text</span>
+              <span className="flex-1 text-center">Add text</span>
             </Button>
           </div>
         </div>

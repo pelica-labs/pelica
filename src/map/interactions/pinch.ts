@@ -1,5 +1,6 @@
 import { Position } from "@turf/turf";
 
+import { getState } from "~/core/app";
 import { getMap } from "~/core/selectors";
 
 type GestureEvent = Event & {

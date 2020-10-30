@@ -5,6 +5,7 @@ import { Trans } from "react-i18next";
 import { DrawSidebar } from "~/components/sidebar/DrawSidebar";
 import { ExportSidebar } from "~/components/sidebar/ExportSidebar";
 import { ItinerarySidebar } from "~/components/sidebar/ItinerarySidebar";
+import { MoveSidebar } from "~/components/sidebar/MoveSidebar";
 import { PinSidebar } from "~/components/sidebar/PinSidebar";
 import { SelectSidebar } from "~/components/sidebar/SelectSidebar";
 import { StyleSidebar } from "~/components/sidebar/StyleSidebar";
@@ -73,12 +74,13 @@ export const Sidebar: React.FC<Props> = ({ initialStyles }) => {
         )}
 
         <div className="flex divide-x md:flex-col md:space-x-0 md:divide-y  bg-white text-gray-800 md:w-48 xl:w-64 md:h-full overflow-y-auto md:shadow-md">
-          {editorMode === "style" && <StyleSidebar initialStyles={initialStyles} />}
+          {editorMode === "move" && <MoveSidebar />}
           {editorMode === "select" && <SelectSidebar />}
+          {editorMode === "draw" && <DrawSidebar />}
           {editorMode === "pin" && <PinSidebar />}
           {editorMode === "text" && <TextSidebar />}
-          {editorMode === "draw" && <DrawSidebar />}
           {editorMode === "itinerary" && <ItinerarySidebar />}
+          {editorMode === "style" && <StyleSidebar initialStyles={initialStyles} />}
           {editorMode === "export" && <ExportSidebar />}
         </div>
       </div>

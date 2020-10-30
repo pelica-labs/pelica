@@ -11,7 +11,7 @@ const FourOhFour: NextPage = () => {
       <Navbar />
 
       <div className="flex flex-col items-center justify-center max-w-4xl my-12 mx-auto px-4">
-        <h1 className="text-center text-5xl text-gray-900 font-raleway mb-6 font-bold">There&apos;s nothing here.</h1>
+        <h1 className="text-center text-5xl text-gray-900 font-raleway mb-6 font-bold">There's nothing here.</h1>
         <h2 className="font-raleway text-2xl text-center">This page was not found.</h2>
 
         <div className="w-3/4 max-w-sm my-6">

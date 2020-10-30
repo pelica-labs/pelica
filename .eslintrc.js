@@ -18,6 +18,7 @@ module.exports = {
     "simple-import-sort/sort": "warn",
     "prettier/prettier": "warn",
     "react/prop-types": "off",
+    "react/no-unescaped-entities": "off",
     "react/jsx-sort-props": [
       "warn",
       {
