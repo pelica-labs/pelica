@@ -48,7 +48,7 @@ export const Sidebar: React.FC<Props> = ({ initialStyles }) => {
           style={{
             right: screenDimensions.md ? sidebarDimensions.width : 0,
             left: screenDimensions.md ? "initial" : 0,
-            transform: !screenDimensions.md && !showToolbar ? "translateY(100px)" : "initial",
+            transform: !screenDimensions.md && !showToolbar ? "translateX(-100vw)" : "initial",
           }}
         >
           <Toolbar />
