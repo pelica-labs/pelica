@@ -7,30 +7,41 @@ import { getSelectedItinerary } from "~/core/selectors";
 
 type TouchEventHandler = (event: MapMouseEvent | MapTouchEvent) => void;
 
-export const applyClickInteractions = (map: mapboxgl.Map): void => {
-  const handleSingleTouchEvent = (handler: TouchEventHandler): TouchEventHandler => {
-    let timeout: NodeJS.Timeout | null = null;
+const handleSingleTouchEvent = (handler: TouchEventHandler): TouchEventHandler => {
+  let timeout: NodeJS.Timeout | null = null;
 
-    return (event) => {
-      const isMultitouch = "touches" in event.originalEvent && event.originalEvent.touches.length > 1;
+  return (event) => {
+    const isMultitouch = "touches" in event.originalEvent && event.originalEvent.touches.length > 1;
 
-      if (!isMultitouch) {
-        timeout = setTimeout(() => {
-          handler(event);
-        }, 50);
-      }
+    if (!isMultitouch) {
+      timeout = setTimeout(() => {
+        handler(event);
+      }, 50);
+    }
 
-      if (isMultitouch && timeout) {
-        clearTimeout(timeout);
-        timeout = null;
+    if (isMultitouch && timeout) {
+      clearTimeout(timeout);
+      timeout = null;
 
-        // event.preventDefault();
-        event.originalEvent.preventDefault();
-        event.originalEvent.stopPropagation();
-        event.originalEvent.stopImmediatePropagation();
-      }
-    };
+      event.originalEvent.preventDefault();
+      event.originalEvent.stopPropagation();
+      event.originalEvent.stopImmediatePropagation();
+    }
   };
+};
+
+export const applyClickInteractions = (map: mapboxgl.Map): void => {
+  const onMouseEvent = throttle((event: MapMouseEvent) => {
+    const state = getState();
+
+    if (state.editor.mode === "draw") {
+      app.routes.updateNextPoint(event.lngLat.toArray());
+    } else if (state.editor.mode === "text") {
+      app.texts.updateNextPoint(event.lngLat.toArray());
+    } else if (state.editor.mode === "pin") {
+      app.pins.updateNextPoint(event.lngLat.toArray());
+    }
+  }, 1000 / 30);
 
   const onMouseMove = throttle((event: MapMouseEvent | MapTouchEvent) => {
     const state = getState();
@@ -39,12 +50,6 @@ export const applyClickInteractions = (map: mapboxgl.Map): void => {
       // find the closest line feature and project to it if we're in match mode
       const point = state.routes.smartMatching.enabled ? snap(map, event) : event.lngLat.toArray();
       app.routes.addRouteStep(point, true);
-    } else if (state.editor.mode === "draw") {
-      app.routes.updateNextPoint(event.lngLat.toArray());
-    } else if (state.editor.mode === "text") {
-      app.texts.updateNextPoint(event.lngLat.toArray());
-    } else if (state.editor.mode === "pin") {
-      app.pins.updateNextPoint(event.lngLat.toArray());
     }
 
     if (state.dragAndDrop.draggedEntityId) {
@@ -105,7 +110,7 @@ export const applyClickInteractions = (map: mapboxgl.Map): void => {
     }
   };
 
-  const onMouseUp = (event?: MapMouseEvent | MapTouchEvent) => {
+  const onMouseUp = (event: MapMouseEvent | MapTouchEvent) => {
     const state = getState();
 
     if (state.editor.mode === "draw") {
@@ -116,7 +121,7 @@ export const applyClickInteractions = (map: mapboxgl.Map): void => {
       app.selection.endArea();
     }
 
-    if (state.dragAndDrop.draggedEntityId && event) {
+    if (state.dragAndDrop.draggedEntityId) {
       app.dragAndDrop.endDragSelectedEntity(event.lngLat.toArray());
     }
   };
@@ -167,16 +172,18 @@ export const applyClickInteractions = (map: mapboxgl.Map): void => {
     }
   };
 
-  map.on("mousemove", onMouseMove);
   map.on("touchmove", handleSingleTouchEvent(onMouseMove));
-
-  map.on("mousedown", onMouseDown);
   map.on("touchstart", handleSingleTouchEvent(onMouseDown));
-
-  map.on("mouseup", onMouseUp);
   map.on("touchend", handleSingleTouchEvent(onMouseUp));
 
+  map.on("mousemove", onMouseMove);
+  map.on("mousedown", onMouseDown);
+  map.on("mouseup", onMouseUp);
   map.on("click", onClick);
+
+  ["mousemove", "mousedown", "mouseup", "click"].forEach((event) => {
+    map.on(event, onMouseEvent);
+  });
 };
 
 const hierarchy: { [key: string]: number } = {

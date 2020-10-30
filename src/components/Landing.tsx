@@ -4,6 +4,7 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { Navbar } from "~/components/Navbar";
 import useLocalStorage from "~/hooks/useLocalStorage";
 
 export const Landing: React.FC = () => {
@@ -43,20 +44,8 @@ export const Landing: React.FC = () => {
 
   return (
     <div className="absolute h-full w-full overflow-y-scroll bg-gray-100 z-50 text-lg text-gray-900">
-      <header className="relative p-2 h-16 w-full flex items-center ">
-        <img className="h-full mr-auto" src="/images/icon-512.png" />
-        <a className="mx-4 text-gray-700 hover:text-gray-600 font-light" href="https://scratch.pelica.co">
-          scratch map
-        </a>
-        <Link passHref href="/app">
-          <button
-            className="mx-4 bg-gray-700 hover:bg-gray-600 transition-colors duration-150 ease-in-out text-gray-100 px-6 py-1 rounded-full font-light focus:outline-none focus:shadow-outline"
-            onClick={onClick}
-          >
-            go to the app
-          </button>
-        </Link>
-      </header>
+      <Navbar />
+
       <div className="flex flex-col items-center max-w-4xl my-6 mx-auto px-4">
         <h1 className="text-center text-5xl text-gray-900 font-raleway mb-6 font-bold">{t("tagline")}</h1>
         <h2 className="font-raleway text-2xl text-center">Pelica is a tool to edit, style, and share custom maps.</h2>
