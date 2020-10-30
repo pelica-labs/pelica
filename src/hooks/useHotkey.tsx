@@ -23,7 +23,14 @@ export const useHotkey = (hotkey: Hotkey, callback: Callback): (() => ReturnType
 
   const onKey = useCallback(
     (event: KeyboardEvent) => {
-      if (!hotkey.global && event.target !== map.getCanvas()) {
+      const target = event.target as HTMLElement;
+
+      if (
+        !hotkey.global &&
+        event.target !== map.getCanvas() &&
+        target.tagName !== "BODY" &&
+        target.tagName !== "BUTTON"
+      ) {
         return;
       }
 

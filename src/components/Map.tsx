@@ -381,7 +381,7 @@ export const Map: React.FC = () => {
             features.push(getPinOverlay(entity));
           }
 
-          if (entity.type === "Route") {
+          if (entity.type === "Route" && entity.points.length > 0) {
             features.push(getRouteOverlay(entity));
           }
 
