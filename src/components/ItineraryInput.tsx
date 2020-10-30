@@ -192,9 +192,12 @@ export const ItineraryInput: React.FC<Props> = ({
           {(provided, snapshot) => (
             <div
               className={classNames({
-                "p-1 pb-0 rounded": true,
+                "p-1 pb-0 rounded overflow-y-auto": true,
                 "bg-gray-200": snapshot.isDraggingOver,
               })}
+              style={{
+                maxHeight: 350,
+              }}
               {...provided.droppableProps}
               ref={provided.innerRef}
             >
@@ -234,7 +237,7 @@ export const ItineraryInput: React.FC<Props> = ({
                         </div>
 
                         <button
-                          className="absolute right-0 mr-2 focus:outline-none hidden group-hover:block rounded-full border border-gray-600 bg-white hover:bg-orange-100 py-1"
+                          className="absolute right-0 mr-2 focus:outline-none md:hidden group-hover:block rounded-full md:border border-gray-600 bg-white hover:bg-orange-100 py-1"
                           tabIndex={-1}
                           onClick={() => {
                             onStepDeleted(index);
