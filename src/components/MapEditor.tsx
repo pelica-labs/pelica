@@ -117,6 +117,10 @@ export const MapEditor: React.FC<Props> = ({ initialStyles }) => {
                 value={place}
                 onChange={(place) => {
                   app.map.setPlace(place);
+
+                  if (place) {
+                    app.pins.place(place?.center);
+                  }
                 }}
               />
 
