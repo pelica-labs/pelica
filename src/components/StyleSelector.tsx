@@ -47,8 +47,8 @@ export const StyleSelector: React.FC<Props> = ({ value, onChange, initialStyles 
         bearing,
         pitch,
         style,
-        width: IMAGE_SIZE[0],
-        height: IMAGE_SIZE[1],
+        width: IMAGE_SIZE[0] * 2,
+        height: IMAGE_SIZE[1] * 2,
       });
     });
 
