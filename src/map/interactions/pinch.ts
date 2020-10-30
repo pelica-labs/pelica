@@ -1,11 +1,15 @@
 import { Position } from "@turf/turf";
 
+import { getMap } from "~/core/selectors";
+
 type GestureEvent = Event & {
   scale: number;
   rotation: number;
 };
 
-export const applyPinchInteractions = (map: mapboxgl.Map): void => {
+export const applyPinchInteractions = (): void => {
+  const map = getMap();
+
   let initialZoom: number | null = null;
   let initialCenter: Position | null = null;
   let cursorPosition: Position | null = null;

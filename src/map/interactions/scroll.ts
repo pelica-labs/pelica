@@ -1,6 +1,10 @@
 import { MapWheelEvent } from "mapbox-gl";
 
-export const applyScrollInteractions = (map: mapboxgl.Map): void => {
+import { getMap } from "~/core/selectors";
+
+export const applyScrollInteractions = (): void => {
+  const map = getMap();
+
   const onWheel = (event: MapWheelEvent) => {
     const { originalEvent } = event;
 

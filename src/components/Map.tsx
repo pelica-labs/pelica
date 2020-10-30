@@ -21,7 +21,7 @@ import {
 } from "~/core/overlays";
 import { upscale } from "~/core/platform";
 import { STOP_DRAWING_CIRCLE_ID } from "~/core/routes";
-import { getEntityFeatures, getSelectedEntities, getSelectedEntity } from "~/core/selectors";
+import { getEntityFeatures, getMap, getSelectedEntities, getSelectedEntity } from "~/core/selectors";
 import { computeMapDimensions, computeResizingRatio } from "~/lib/aspectRatio";
 import { getEnv } from "~/lib/config";
 import { styleToUrl } from "~/lib/style";
@@ -32,13 +32,14 @@ import { applyHoverInteractions } from "~/map/interactions/hover";
 import { applyKeyboardInteractions } from "~/map/interactions/keyboard";
 import { applyMoveInteractions } from "~/map/interactions/move";
 import { applyPinchInteractions } from "~/map/interactions/pinch";
+import { applyResizeInteractions } from "~/map/interactions/resize";
 import { applyRightClickInteractions } from "~/map/interactions/rightClick";
 import { applyScrollInteractions } from "~/map/interactions/scroll";
 import { applyLayers } from "~/map/layers";
 import { applySources, MapSource } from "~/map/sources";
 
 export const Map: React.FC = () => {
-  const map = useRef<mapboxgl.Map>();
+  // const map = useRef<mapboxgl.Map>();
   const container = useRef<HTMLDivElement>(null);
   const wrapper = useRef<HTMLDivElement>(null);
   const aspectRatio = useStore((store) => store.editor.aspectRatio);
@@ -58,7 +59,7 @@ export const Map: React.FC = () => {
     const state = getState();
     const accessToken = getEnv("NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN", process.env.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN);
 
-    map.current = new mapboxgl.Map({
+    const map = new mapboxgl.Map({
       accessToken,
       container: wrapper.current,
       style: styleToUrl(state.editor.style),
@@ -72,7 +73,9 @@ export const Map: React.FC = () => {
       preserveDrawingBuffer: true,
     });
 
-    map.current.on("load", async ({ target: map }) => {
+    app.map.initialize(map);
+
+    map.on("load", async () => {
       map.getCanvas().classList.add("loaded");
       map.getCanvas().style.outline = "none";
       map.getCanvas().focus();
@@ -87,21 +90,22 @@ export const Map: React.FC = () => {
 
       map.resize();
 
-      applySources(map);
-      applyLayers(map, state.editor.style);
+      applySources();
+      applyLayers();
 
-      applyMoveInteractions(map);
-      applyHoverInteractions(map);
-      applyPinchInteractions(map);
-      applyScrollInteractions(map);
-      applyKeyboardInteractions(map);
-      applyClickInteractions(map);
-      applyRightClickInteractions(map);
+      applyMoveInteractions();
+      applyHoverInteractions();
+      applyPinchInteractions();
+      applyScrollInteractions();
+      applyKeyboardInteractions();
+      applyClickInteractions();
+      applyRightClickInteractions();
+      applyResizeInteractions();
 
-      applyImageMissingHandler(map);
+      applyImageMissingHandler();
     });
 
-    return () => map.current?.remove();
+    return () => map.remove();
   }, []);
 
   /**
@@ -120,7 +124,7 @@ export const Map: React.FC = () => {
   useStoreSubscription(
     (store) => store.map.coordinates,
     (coordinates) => {
-      map.current?.flyTo({
+      getMap().flyTo({
         center: coordinates as [number, number],
         duration: 500,
       });
@@ -133,7 +137,7 @@ export const Map: React.FC = () => {
   useStoreSubscription(
     (store) => store.map.zoom,
     (zoom) => {
-      map.current?.zoomTo(zoom);
+      getMap().zoomTo(zoom);
     }
   );
 
@@ -143,7 +147,7 @@ export const Map: React.FC = () => {
   useStoreSubscription(
     (store) => store.map.bearing,
     (bearing) => {
-      map.current?.setBearing(bearing);
+      getMap().setBearing(bearing);
     }
   );
 
@@ -153,7 +157,7 @@ export const Map: React.FC = () => {
   useStoreSubscription(
     (store) => store.map.pitch,
     (pitch) => {
-      map.current?.setPitch(pitch);
+      getMap().setPitch(pitch);
     }
   );
 
@@ -167,7 +171,7 @@ export const Map: React.FC = () => {
       screen: store.platform.screen,
     }),
     ({ exporting, aspectRatio, screen }) => {
-      const canvas = map.current?.getCanvas();
+      const canvas = getMap().getCanvas();
       if (!canvas || !wrapper.current || !container.current) {
         return;
       }
@@ -187,7 +191,7 @@ export const Map: React.FC = () => {
 
       // Queues this up for after all rerender occurs.
       setTimeout(() => {
-        map.current?.resize();
+        getMap().resize();
 
         if (exporting) {
           setTimeout(() => {
@@ -207,10 +211,11 @@ export const Map: React.FC = () => {
       if (!place) {
         return;
       }
+
       if (place.bbox) {
-        map.current?.fitBounds(place.bbox as LngLatBoundsLike, { padding: 10 });
+        getMap().fitBounds(place.bbox as LngLatBoundsLike, { padding: 10 });
       } else {
-        map.current?.flyTo({
+        getMap().flyTo({
           center: {
             lng: place.center[0],
             lat: place.center[1],
@@ -228,21 +233,15 @@ export const Map: React.FC = () => {
   useStoreSubscription(
     (store) => store.editor.style,
     (style) => {
-      if (!map.current) {
-        return;
-      }
+      const map = getMap();
 
-      map.current.setStyle(styleToUrl(style));
+      map.setStyle(styleToUrl(style));
 
-      map.current.once("styledata", () => {
-        if (!map.current) {
-          return;
-        }
+      map.once("styledata", () => {
+        applySources();
+        applyLayers();
 
-        applySources(map.current);
-        applyLayers(map.current, style);
-
-        applyFeatures(map.current, getEntityFeatures(), [MapSource.Routes, MapSource.Pins, MapSource.Texts]);
+        applyFeatures(getEntityFeatures(), [MapSource.Routes, MapSource.Pins, MapSource.Texts]);
       });
     }
   );
@@ -253,11 +252,7 @@ export const Map: React.FC = () => {
   useStoreSubscription(
     (store) => store.entities.items,
     () => {
-      if (!map.current) {
-        return;
-      }
-
-      applyFeatures(map.current, getEntityFeatures(), [MapSource.Routes, MapSource.Pins, MapSource.Texts]);
+      applyFeatures(getEntityFeatures(), [MapSource.Routes, MapSource.Pins, MapSource.Texts]);
     }
   );
 
@@ -272,10 +267,6 @@ export const Map: React.FC = () => {
       isDrawing: store.routes.isDrawing,
     }),
     ({ editorMode, isDrawing }) => {
-      if (!map.current) {
-        return;
-      }
-
       const selectedEntity = getSelectedEntity();
 
       const features: RawFeature[] = [];
@@ -283,7 +274,7 @@ export const Map: React.FC = () => {
         features.push(getRouteStopOverlay(selectedEntity));
       }
 
-      applyFeatures(map.current, features, [MapSource.RouteStop]);
+      applyFeatures(features, [MapSource.RouteStop]);
     }
   );
 
@@ -299,10 +290,6 @@ export const Map: React.FC = () => {
       nextPoint: store.routes.nextPoint,
     }),
     ({ editorMode, isDrawing, nextPoint }) => {
-      if (!map.current) {
-        return;
-      }
-
       const selectedEntity = getSelectedEntity();
 
       const features: RawFeature[] = [];
@@ -314,7 +301,7 @@ export const Map: React.FC = () => {
         }
       }
 
-      applyFeatures(map.current, features, [MapSource.RouteNextPoint]);
+      applyFeatures(features, [MapSource.RouteNextPoint]);
     }
   );
 
@@ -328,10 +315,6 @@ export const Map: React.FC = () => {
       textStyle: store.texts.style,
     }),
     ({ editorMode, nextPoint, textStyle }) => {
-      if (!map.current) {
-        return;
-      }
-
       const features: RawFeature[] = [];
       if (editorMode === "text" && nextPoint) {
         const feature = entityToFeature({
@@ -345,7 +328,7 @@ export const Map: React.FC = () => {
         features.push(feature);
       }
 
-      applyFeatures(map.current, features, [MapSource.TextPreview]);
+      applyFeatures(features, [MapSource.TextPreview]);
     }
   );
 
@@ -359,10 +342,6 @@ export const Map: React.FC = () => {
       pinStyle: store.pins.style,
     }),
     ({ editorMode, nextPoint, pinStyle }) => {
-      if (!map.current) {
-        return;
-      }
-
       const features: RawFeature[] = [];
       if (editorMode === "pin" && nextPoint) {
         const feature = entityToFeature({
@@ -376,7 +355,7 @@ export const Map: React.FC = () => {
         features.push(feature);
       }
 
-      applyFeatures(map.current, features, [MapSource.PinPreview]);
+      applyFeatures(features, [MapSource.PinPreview]);
     }
   );
 
@@ -391,10 +370,6 @@ export const Map: React.FC = () => {
       zoom: store.map.zoom,
     }),
     ({ editorMode, zoom }) => {
-      if (!map.current) {
-        return;
-      }
-
       const selectedEntities = editorMode === "select" ? getSelectedEntities() : [];
 
       const features: RawFeature[] = [];
@@ -414,7 +389,7 @@ export const Map: React.FC = () => {
         });
       }
 
-      applyFeatures(map.current, features, [MapSource.Overlays]);
+      applyFeatures(features, [MapSource.Overlays]);
     }
   );
 
@@ -426,16 +401,12 @@ export const Map: React.FC = () => {
       selectionArea: store.selection.area,
     }),
     ({ selectionArea }) => {
-      if (!map.current) {
-        return;
-      }
-
       const features: RawFeature[] = [];
       if (selectionArea) {
         features.push(getSelectionAreaOverlay(selectionArea));
       }
 
-      applyFeatures(map.current, features, [MapSource.SelectionArea]);
+      applyFeatures(features, [MapSource.SelectionArea]);
     }
   );
 
@@ -448,15 +419,11 @@ export const Map: React.FC = () => {
       exporting: store.exports.exporting,
     }),
     ({ editorMode, exporting }) => {
-      if (!map.current) {
-        return;
-      }
-
       const features: RawFeature[] = [];
       const mapboxControls = document.querySelector(".mapboxgl-control-container")?.classList;
 
       if (exporting) {
-        features.push(getWatermarkOverlay(map.current.getBounds().getSouthWest().toArray()));
+        features.push(getWatermarkOverlay(getMap().getBounds().getSouthWest().toArray()));
       }
 
       if (editorMode === "export" || exporting) {
@@ -465,7 +432,7 @@ export const Map: React.FC = () => {
         mapboxControls?.remove("hidden");
       }
 
-      applyFeatures(map.current, features, [MapSource.Watermark]);
+      applyFeatures(features, [MapSource.Watermark]);
     }
   );
 
@@ -478,11 +445,7 @@ export const Map: React.FC = () => {
       hoveredEntityId: store.dragAndDrop.hoveredEntityId,
     }),
     ({ editorMode, hoveredEntityId }) => {
-      if (!map.current) {
-        return null;
-      }
-
-      const containerClasses = map.current.getCanvasContainer().classList;
+      const containerClasses = getMap().getCanvasContainer().classList;
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       containerClasses.remove(...containerClasses.values());
@@ -504,16 +467,10 @@ export const Map: React.FC = () => {
   useStoreSubscription(
     (store) => store.editor.mode,
     (mode) => {
-      if (!map.current) {
-        return;
-      }
-
       const setMinDragTouches = (min: number) => {
-        if (map.current) {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          map.current.dragPan._touchPan._minTouches = min;
-        }
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        getMap().dragPan._touchPan._minTouches = min;
       };
 
       if (mode === "draw" || mode === "select") {
@@ -575,7 +532,7 @@ export const Map: React.FC = () => {
 
       <DocumentTitle />
 
-      {map.current && <Clipboard watch={map.current.getCanvas()} onCopy={onCopy} onCut={onCut} onPaste={onPaste} />}
+      {getMap() && <Clipboard watch={getMap().getCanvas()} onCopy={onCopy} onCut={onCut} onPaste={onPaste} />}
 
       <div
         className={classNames("flex justify-center items-center w-full h-full bg-gray-200", {

@@ -8,6 +8,15 @@ import { Text } from "~/core/texts";
 import { defaultStyles } from "~/lib/style";
 import { RawFeature } from "~/map/features";
 
+export const getMap = (state: State = getState()): mapboxgl.Map => {
+  if (!state.map.current) {
+    // Trust the map has been initialized. This simplifies a lot of code behind.
+    return (null as unknown) as mapboxgl.Map;
+  }
+
+  return state.map.current;
+};
+
 export const getEntity = (id: number, state: State = getState()) => {
   return state.entities.items.find((entity) => {
     return entity.id === id;

@@ -1,10 +1,15 @@
+import { getState } from "~/core/app";
 import { MAX_PIN_SIZE } from "~/core/pins";
+import { getMap } from "~/core/selectors";
 import { MAX_TEXT_SIZE, MIN_TEXT_SIZE } from "~/core/texts";
-import { defaultStyles, Style } from "~/lib/style";
+import { defaultStyles } from "~/lib/style";
 import { MapSource } from "~/map/sources";
 import { theme } from "~/styles/tailwind";
 
-export const applyLayers = (map: mapboxgl.Map, style: Style): void => {
+export const applyLayers = (): void => {
+  const map = getMap();
+
+  const style = getState().editor.style;
   const styles = Object.assign({}, defaultStyles, style.overrides);
 
   addLayer(map, {

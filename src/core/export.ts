@@ -1,4 +1,5 @@
 import { App } from "~/core/helpers";
+import { getMap } from "~/core/selectors";
 
 type Exports = {
   exporting: boolean;
@@ -10,7 +11,7 @@ export const exportsInitialState: Exports = {
   imageData: null,
 };
 
-export const exports = ({ mutate }: App) => ({
+export const exports = ({ mutate, get }: App) => ({
   ...exportsInitialState,
 
   prepareCanvas: () => {
@@ -29,10 +30,7 @@ export const exports = ({ mutate }: App) => ({
   },
 
   generateImage: () => {
-    const canvas = document.querySelector("canvas");
-    if (!canvas) {
-      throw new Error("Could not fetch canvas");
-    }
+    const canvas = getMap(get()).getCanvas();
 
     mutate((state) => {
       state.exports.imageData = canvas.toDataURL("image/jpeg", 0.9);

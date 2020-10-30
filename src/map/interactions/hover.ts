@@ -1,8 +1,11 @@
 import { MapLayerMouseEvent } from "mapbox-gl";
 
 import { app, getState } from "~/core/app";
+import { getMap } from "~/core/selectors";
 
-export const applyHoverInteractions = (map: mapboxgl.Map): void => {
+export const applyHoverInteractions = (): void => {
+  const map = getMap();
+
   const onMouseLeave = () => {
     setTimeout(() => {
       const state = getState();

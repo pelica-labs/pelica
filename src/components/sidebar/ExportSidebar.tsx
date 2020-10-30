@@ -24,7 +24,8 @@ export const ExportSidebar: React.FC = () => {
   const imageData = useStore((store) => store.exports.imageData);
   const aspectRatio = useStore((store) => store.editor.aspectRatio);
   const screenDimensions = useStore((store) => store.platform.screen.dimensions);
-  const { ratio } = aspectRatios[aspectRatio];
+  const canvasSize = useStore((store) => store.map.canvas);
+  const ratio = aspectRatios[aspectRatio].ratio || [canvasSize.width, canvasSize.height];
 
   const { shareFeature } = useBrowserFeatures();
 

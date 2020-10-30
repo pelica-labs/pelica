@@ -1,5 +1,7 @@
 import { AnySourceData } from "mapbox-gl";
 
+import { getMap } from "~/core/selectors";
+
 export enum MapSource {
   Pins = "pins",
   PinPreview = "pinPreview",
@@ -21,7 +23,9 @@ const EmptyGeoJsonSource: AnySourceData = {
   },
 };
 
-export const applySources = (map: mapboxgl.Map): void => {
+export const applySources = (): void => {
+  const map = getMap();
+
   addSource(map, MapSource.Routes);
   addSource(map, MapSource.RouteStop);
   addSource(map, MapSource.RouteNextPoint);

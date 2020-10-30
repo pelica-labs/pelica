@@ -4,9 +4,12 @@ import { throttle } from "lodash";
 
 import { App } from "~/core/helpers";
 import { Place } from "~/core/itineraries";
+import { getMap } from "~/core/selectors";
 import { mapboxGeocoding } from "~/lib/mapbox";
 
 export type Map = {
+  current: mapboxgl.Map | null;
+
   coordinates: Position;
 
   zoom: number;
@@ -18,9 +21,16 @@ export type Map = {
   place: Place | null;
 
   features: GeocodeFeature[];
+
+  canvas: {
+    width: number;
+    height: number;
+  };
 };
 
 export const mapInitialState: Map = {
+  current: null,
+
   coordinates: [2.3522219, 48.856614],
 
   bounds: null,
@@ -32,17 +42,30 @@ export const mapInitialState: Map = {
   place: null,
 
   features: [],
+
+  canvas: {
+    width: 1200,
+    height: 800,
+  },
 };
 
-export const map = ({ mutate }: App) => ({
+export const map = ({ mutate, get }: App) => ({
   ...mapInitialState,
 
+  initialize: (map: mapboxgl.Map) => {
+    mutate((state) => {
+      state.map.current = map;
+    });
+
+    get().map.updateCanvasSize();
+  },
+
   move: (coordinates: Position, zoom: number, bearing: number, pitch: number) => {
-    mutate(({ map }) => {
-      map.coordinates = coordinates;
-      map.zoom = zoom;
-      map.bearing = bearing;
-      map.pitch = pitch;
+    mutate((state) => {
+      state.map.coordinates = coordinates;
+      state.map.zoom = zoom;
+      state.map.bearing = bearing;
+      state.map.pitch = pitch;
     });
   },
 
@@ -80,6 +103,15 @@ export const map = ({ mutate }: App) => ({
       mutate(({ map }) => {
         map.pitch = 0;
       });
+    });
+  },
+
+  updateCanvasSize: () => {
+    mutate((state) => {
+      const canvas = getMap(state).getCanvas();
+
+      state.map.canvas.width = canvas.width;
+      state.map.canvas.height = canvas.height;
     });
   },
 });

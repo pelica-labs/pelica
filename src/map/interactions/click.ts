@@ -3,7 +3,7 @@ import { memoize, throttle } from "lodash";
 import { MapMouseEvent, MapTouchEvent } from "mapbox-gl";
 
 import { app, getState } from "~/core/app";
-import { getSelectedItinerary } from "~/core/selectors";
+import { getMap, getSelectedItinerary } from "~/core/selectors";
 
 type TouchEventHandler = (event: MapMouseEvent | MapTouchEvent) => void;
 
@@ -30,7 +30,9 @@ const handleSingleTouchEvent = (handler: TouchEventHandler): TouchEventHandler =
   };
 };
 
-export const applyClickInteractions = (map: mapboxgl.Map): void => {
+export const applyClickInteractions = (): void => {
+  const map = getMap();
+
   const onMouseEvent = throttle((event: MapMouseEvent) => {
     const state = getState();
 

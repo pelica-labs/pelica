@@ -14,7 +14,17 @@ export const sync = ({ mutate, get }: App) => ({
   },
 
   saveState: async () => {
-    const state = JSON.parse(JSON.stringify(get()));
+    const serialisableState = get();
+
+    const state = JSON.parse(
+      JSON.stringify({
+        ...serialisableState,
+        map: {
+          ...serialisableState.map,
+          current: undefined,
+        },
+      })
+    );
 
     if (process.env.NODE_ENV === "development") {
       Object.assign(window, {

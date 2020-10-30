@@ -2,9 +2,11 @@ import { Position } from "@turf/turf";
 import * as KeyCode from "keycode-js";
 
 import { app, getState } from "~/core/app";
-import { getSelectedEntities, getSelectedEntity } from "~/core/selectors";
+import { getMap, getSelectedEntities, getSelectedEntity } from "~/core/selectors";
 
-export const applyKeyboardInteractions = (map: mapboxgl.Map): void => {
+export const applyKeyboardInteractions = (): void => {
+  const map = getMap();
+
   const onCanvasKeyUp = (event: KeyboardEvent) => {
     const state = getState();
 

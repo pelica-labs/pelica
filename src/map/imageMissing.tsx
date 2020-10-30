@@ -4,6 +4,7 @@ import ReactDOMServer from "react-dom/server";
 import { pins } from "~/components/Pin";
 import { getState } from "~/core/app";
 import { PinIcon } from "~/core/pins";
+import { getMap } from "~/core/selectors";
 import { findIcon, imgSrcFromEmojiName } from "~/hooks/useIcon";
 
 const allPins = pins();
@@ -62,7 +63,9 @@ type MapImageMissingEvent = {
   id: string;
 };
 
-export const applyImageMissingHandler = (map: mapboxgl.Map): void => {
+export const applyImageMissingHandler = (): void => {
+  const map = getMap();
+
   const onImageMissing = async (event: MapImageMissingEvent) => {
     map.addImage(event.id, transparentPixel);
 
