@@ -147,24 +147,20 @@ export const applyClickInteractions = (): void => {
   const onClick = (event: MapMouseEvent) => {
     const state = getState();
 
-    if (state.editor.moving) {
-      return;
-    }
-
     // place a pin
-    if (state.editor.mode === "pin") {
+    if (state.editor.mode === "pin" && !state.editor.moving) {
       app.pins.place(event.lngLat.toArray());
       return;
     }
 
     // place text
-    if (state.editor.mode === "text") {
+    if (state.editor.mode === "text" && !state.editor.moving) {
       app.texts.place(event.lngLat.toArray());
       return;
     }
 
-    // select the given pin or route
-    if (state.editor.mode === "select") {
+    // select the given entity
+    if (state.editor.mode === "select" || state.editor.moving) {
       const features = map.queryRenderedFeatures(event.point, {
         layers: ["pins", "pinsInteractions", "routesInteractions", "texts"],
       });
@@ -175,6 +171,7 @@ export const applyClickInteractions = (): void => {
         if (state.platform.keyboard.shiftKey) {
           app.selection.toggleEntitySelection(featureId);
         } else {
+          app.editor.setEditorMode("select");
           app.selection.selectEntity(featureId);
         }
         return;
