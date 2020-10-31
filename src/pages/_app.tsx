@@ -2,7 +2,8 @@ import "~/styles/index.css";
 
 import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
-import NextApp from "next/app";
+import NextApp, { NextWebVitalsMetric } from "next/app";
+import Router from "next/router";
 import React, { ErrorInfo } from "react";
 import FullStory from "react-fullstory";
 import { I18nextProvider } from "react-i18next";
@@ -10,6 +11,7 @@ import { I18nextProvider } from "react-i18next";
 import { Meta } from "~/components/Meta";
 import { getState } from "~/core/app";
 import { getSerializableState } from "~/core/selectors";
+import { initAnalytics, logEvent, logPageView } from "~/lib/analytics";
 import { i18n } from "~/lib/i18n";
 
 Sentry.init({
@@ -19,7 +21,15 @@ Sentry.init({
   tracesSampleRate: 1,
 });
 
+Router.events.on("routeChangeComplete", () => {
+  logPageView();
+});
+
 class App extends NextApp {
+  componentDidMount(): void {
+    initAnalytics();
+  }
+
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     const state = getSerializableState(getState());
 
@@ -33,6 +43,8 @@ class App extends NextApp {
       });
 
       Sentry.captureException(error);
+
+      logEvent("Web", "Error");
     });
 
     super.componentDidCatch(error, errorInfo);
@@ -56,5 +68,13 @@ class App extends NextApp {
     );
   }
 }
+
+export const reportWebVitals = ({ id, name, label, value }: NextWebVitalsMetric): void => {
+  logEvent(`${label} metric`, name, {
+    value: Math.round(name === "CLS" ? value * 1000 : value),
+    label: id,
+    nonInteraction: true,
+  });
+};
 
 export default App;

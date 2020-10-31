@@ -1,3 +1,4 @@
+import { capitalize, mapValues } from "lodash";
 import { useEffect } from "react";
 import create, { StateSelector } from "zustand";
 import shallow from "zustand/shallow";
@@ -20,6 +21,7 @@ import { selection, selectionInitialState } from "~/core/selection";
 import { sync } from "~/core/sync";
 import { texts, textsInitialState } from "~/core/texts";
 import { units, unitsInitialState } from "~/core/units";
+import { logEvent } from "~/lib/analytics";
 
 export type State = {
   alerts: ReturnType<typeof alerts>;
@@ -60,6 +62,11 @@ export type Actions = {
   sync: State["sync"];
   units: Omit<State["units"], keyof typeof unitsInitialState>;
 };
+
+const unloggedActions = [
+  ["sync", "saveState"],
+  ["platform", "updateKeyboard"],
+];
 
 const state = (app: App) => {
   return {
@@ -117,4 +124,34 @@ export const subscribe = <T extends State, StateSlice>(
 
 export const getState = (): State => useStore.getState();
 
-export const app: Readonly<Actions> = getState();
+export const app = mapValues(getState() as Readonly<Actions>, (service, name) => {
+  return new Proxy(
+    {},
+    {
+      get: (_, action) => {
+        const skipLogs = unloggedActions.find((item) => {
+          return name === item[0] && action === item[1];
+        });
+
+        if (skipLogs) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          return service[action];
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return (...args: any) => {
+          if (process.env.NODE_ENV === "development") {
+            console.debug(`${name}.${action as string}`, ...args);
+          }
+
+          logEvent(capitalize(name), action as string);
+
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          return service[action](...args);
+        };
+      },
+    }
+  );
+});
