@@ -1,4 +1,4 @@
-import { BBox, bbox, bboxPolygon, lineString, Position, Properties, transformScale } from "@turf/turf";
+import { BBox, bbox, bboxPolygon, lineString, Position, transformScale } from "@turf/turf";
 import { MercatorCoordinate } from "mapbox-gl";
 
 import { Pin } from "~/core/pins";
