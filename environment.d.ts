@@ -11,7 +11,9 @@ declare namespace NodeJS {
     AWS_S3_REGION: string;
     AWS_S3_BUCKET: string;
 
-    FULLSTORY_ORG_ID: string;
+    NEXT_PUBLIC_FULLSTORY_ORG_ID: string;
+
+    NEXT_PUBLIC_SENTRY_DSN: string;
 
     [key: string]: never;
   }

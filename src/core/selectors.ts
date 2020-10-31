@@ -97,3 +97,13 @@ export const getMapTitle = (state: State = getState()) => {
 
   return feature?.place_name;
 };
+
+export const getSerializableState = (state: State = getState()) => {
+  return {
+    ...state,
+    map: {
+      ...state.map,
+      current: undefined,
+    },
+  };
+};
