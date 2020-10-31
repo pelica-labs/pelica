@@ -22,7 +22,7 @@ export type Map = {
 
   features: GeocodeFeature[];
 
-  canvas: {
+  dimensions: {
     width: number;
     height: number;
   };
@@ -43,8 +43,8 @@ export const mapInitialState: Map = {
 
   features: [],
 
-  canvas: {
-    width: 1200,
+  dimensions: {
+    width: 900,
     height: 800,
   },
 };
@@ -83,25 +83,25 @@ export const map = ({ mutate, get }: App) => ({
       })
       .send();
 
-    mutate(({ map }) => {
-      map.features = res.body.features;
+    mutate((state) => {
+      state.map.features = res.body.features;
     });
   }, 2000),
 
   setPlace: (place: Place | null) => {
-    mutate(({ map }) => {
-      map.place = place;
+    mutate((state) => {
+      state.map.place = place;
     });
   },
 
   resetOrientation: () => {
-    mutate(({ map }) => {
-      map.bearing = 0;
+    mutate((state) => {
+      state.map.bearing = 0;
     });
 
     setTimeout(() => {
-      mutate(({ map }) => {
-        map.pitch = 0;
+      mutate((state) => {
+        state.map.pitch = 0;
       });
     });
   },
@@ -110,8 +110,8 @@ export const map = ({ mutate, get }: App) => ({
     mutate((state) => {
       const canvas = getMap(state).getCanvas();
 
-      state.map.canvas.width = canvas.width;
-      state.map.canvas.height = canvas.height;
+      state.map.dimensions.width = canvas.width;
+      state.map.dimensions.height = canvas.height;
     });
   },
 });
