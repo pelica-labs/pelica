@@ -66,6 +66,7 @@ export type Actions = {
 const unloggedActions = [
   ["sync", "saveState"],
   ["platform", "updateKeyboard"],
+  ["*", "updateNextPoint"],
 ];
 
 const state = (app: App) => {
@@ -130,7 +131,7 @@ export const app = mapValues(getState() as Readonly<Actions>, (service, name) =>
     {
       get: (_, action) => {
         const skipLogs = unloggedActions.find((item) => {
-          return name === item[0] && action === item[1];
+          return (name === item[0] || item[0] === "*") && action === item[1];
         });
 
         if (skipLogs) {
