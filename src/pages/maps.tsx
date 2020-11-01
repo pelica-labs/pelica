@@ -49,7 +49,7 @@ const Maps: NextPage<Props> = ({ maps }) => {
 
       {data && (
         <div className="mt-8 container mx-auto">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between px-1">
             <h1 className="px-2 text-2xl">Saved maps</h1>
             <button
               className="h-8 bg-orange-600 hover:bg-orange-500 shadow transition duration-300 ease-in-out text-gray-100 px-3 py-1 rounded-full uppercase tracking-wider font-medium hover:scale-105 hover:shadow focus:outline-none focus:shadow-outline text-sm"

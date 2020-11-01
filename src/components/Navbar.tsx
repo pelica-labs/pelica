@@ -25,18 +25,19 @@ export const Navbar: React.FC = () => {
       <div className="mr-auto flex items-center">
         <Link passHref href="/">
           <a>
-            <Image height={64} src="/images/icon-512.png" width={64} />
+            <Image height={48} src="/images/icon-512.png" width={48} />
           </a>
         </Link>
 
         <NavLink passHref href="/maps">
-          <a className="mx-4 text-gray-700 hover:text-gray-600 font-light">Saved maps</a>
+          <a className="lg:mx-4 md:mx-2 text-gray-700 hover:text-gray-600 font-light whitespace-no-wrap">Saved maps</a>
         </NavLink>
       </div>
 
-      <a className="mx-4 text-gray-700 hover:text-gray-600 font-light" href="https://scratch.pelica.co">
+      <a className="hidden md:block mx-4 text-gray-700 hover:text-gray-600 font-light" href="https://scratch.pelica.co">
         scratch map
       </a>
+
       <button
         className="mx-4 bg-gray-700 hover:bg-gray-600 transition-colors duration-150 ease-in-out text-gray-100 px-6 py-1 rounded-full font-light focus:outline-none focus:shadow-outline"
         disabled={creating}
@@ -44,7 +45,8 @@ export const Navbar: React.FC = () => {
           createMap();
         }}
       >
-        {creating ? "creating map..." : "go to the app"}
+        <span className="hidden sm:block">{creating ? "creating map..." : "go to the app"}</span>
+        <span className="sm:hidden">{creating ? "creating..." : "app"}</span>
       </button>
     </header>
   );

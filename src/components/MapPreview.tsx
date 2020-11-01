@@ -72,7 +72,7 @@ export const MapPreview: React.FC<Props> = ({ map, onMapDeleted }) => {
   };
 
   return (
-    <div className="p-1 w-1/3 flex flex-col items-stretch h-64">
+    <div className="p-1 w-full md:w-1/2 lg:w-1/3 flex flex-col items-stretch h-64">
       <span className="group relative flex flex-col items-stretch h-full p-1 border border-gray-200 rounded hover:shadow">
         <div className="flex justify-between items-center pl-1">
           <div className="flex flex-col mr-4">
@@ -82,7 +82,7 @@ export const MapPreview: React.FC<Props> = ({ map, onMapDeleted }) => {
           <Menu>
             {({ open }) => (
               <>
-                <Menu.Button as="div" className="appearance-none hidden group-hover:block">
+                <Menu.Button as="div" className="appearance-none lg:hidden group-hover:block">
                   <IconButton>
                     <VerticalDotsIcon className="w-4 h-4" />
                   </IconButton>
