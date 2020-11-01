@@ -4,6 +4,7 @@ import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
 import NextApp, { NextWebVitalsMetric } from "next/app";
 import Router from "next/router";
+import NProgress from "nprogress";
 import React, { ErrorInfo } from "react";
 import FullStory from "react-fullstory";
 import { I18nextProvider } from "react-i18next";
@@ -23,6 +24,28 @@ Sentry.init({
 
 Router.events.on("routeChangeComplete", () => {
   logPageView();
+});
+
+let nprogressTimeout: NodeJS.Timeout | null = null;
+
+Router.events.on("routeChangeStart", () => {
+  nprogressTimeout = setTimeout(() => {
+    NProgress.start();
+  }, 200);
+});
+
+Router.events.on("routeChangeComplete", () => {
+  if (nprogressTimeout) {
+    clearTimeout(nprogressTimeout);
+  }
+  NProgress.done();
+});
+
+Router.events.on("routeChangeError", () => {
+  if (nprogressTimeout) {
+    clearTimeout(nprogressTimeout);
+  }
+  NProgress.done();
 });
 
 class App extends NextApp {

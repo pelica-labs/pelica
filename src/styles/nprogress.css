@@ -1,0 +1,10 @@
+@import "../../node_modules/nprogress/nprogress.css";
+
+#nprogress .bar {
+  background: #F97316 !important;
+}
+
+#nprogress .spinner-icon {
+  border-top-color: #F97316 !important;
+  border-left-color: #F97316 !important;
+}

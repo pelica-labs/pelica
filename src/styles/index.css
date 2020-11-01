@@ -17,4 +17,5 @@ input[type=number].appearance-none::-webkit-outer-spin-button {
   margin: 0;
 }
 
-@import "./cursor.css"
+@import "./cursor.css";
+@import "./nprogress.css";
