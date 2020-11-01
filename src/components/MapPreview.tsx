@@ -91,7 +91,7 @@ export const MapPreview: React.FC<Props> = ({ map, onMapDeleted }) => {
                 {open && (
                   <Menu.Items
                     static
-                    className="absolute right-0 mt-12 mr-2 z-50 bg-white border md:rounded md:shadow outline-none py-1"
+                    className="absolute right-0 top-0 mt-10 mr-2 z-50 bg-white border md:rounded md:shadow outline-none py-1"
                   >
                     <div className="flex flex-col w-32">
                       <Menu.Item>
