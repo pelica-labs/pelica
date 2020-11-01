@@ -5,11 +5,15 @@ import { ID } from "~/lib/id";
 type Sync = {
   id: ID | null;
   userId: ID | null;
+  createdAt: number | null;
+  updatedAt: number | null;
 };
 
 export const syncInitialState: Sync = {
   id: null,
   userId: null,
+  createdAt: null,
+  updatedAt: null,
 };
 
 export const sync = ({ mutate }: App) => ({

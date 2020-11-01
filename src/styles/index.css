@@ -7,6 +7,8 @@
 html, body, #__next {
   height: 100%;
   overscroll-behavior: none;
+
+  @apply bg-gray-100;
 }
 
 input[type=number].appearance-none::-webkit-inner-spin-button,

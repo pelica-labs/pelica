@@ -7,6 +7,10 @@ import { Style } from "~/lib/style";
 export type MapModel = {
   id: ID;
   userId: ID;
+  createdAt: number;
+  updatedAt: number;
+
+  name?: string;
 
   coordinates?: Position;
   zoom?: number;

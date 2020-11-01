@@ -1,17 +1,17 @@
-import { NextPage } from "next";
+import { GetServerSideProps, NextPage } from "next";
 import React from "react";
 
 import { MapEditor } from "~/components/MapEditor";
 import { MapModel } from "~/lib/db";
 import { dynamo } from "~/lib/dynamo";
-import { redirect } from "~/lib/redirect";
+import { EmptyProps, redirect } from "~/lib/redirect";
 import { withSession } from "~/lib/session";
 
 type Props = {
   map: MapModel;
 };
 
-export const getServerSideProps = withSession(async (ctx) => {
+export const getServerSideProps: GetServerSideProps<Props | EmptyProps> = withSession(async (ctx) => {
   const id = ctx.query.id as string;
   const userId = ctx.req.session.get("userId");
   if (!userId) {

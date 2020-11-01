@@ -11,7 +11,7 @@ type Props = {
 
 export const StylePreview: React.FC<Props> = ({ src, hash }) => {
   return (
-    <div className="flex-grow flex relative justify-center items-center w-40 md:w-full mt-1 rounded overflow-hidden">
+    <div className="flex-grow flex relative justify-center items-center w-40 md:w-full rounded overflow-hidden">
       {hash && (
         <div className="absolute w-full h-full">
           <Blurhash hash={hash} height="100%" punch={1} resolutionX={32} resolutionY={32} width="100%" />

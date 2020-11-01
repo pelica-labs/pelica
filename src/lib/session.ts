@@ -9,7 +9,7 @@ export type Session = {
   userId: ID;
 };
 
-export const withSession = (handler: GetServerSideProps): GetServerSideProps => {
+export const withSession = <T>(handler: GetServerSideProps<T>): GetServerSideProps<T> => {
   return withIronSession(handler, {
     password: getEnv("COOKIE_PASSWORD", process.env.COOKIE_PASSWORD),
     cookieName: "pelica.co",

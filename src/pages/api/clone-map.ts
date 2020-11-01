@@ -1,45 +1,54 @@
 import HttpStatus from "http-status-codes";
 import { NextApiHandler } from "next";
 
-import { MapModel } from "~/lib/db";
 import { dynamo } from "~/lib/dynamo";
+import { readableUniqueId } from "~/lib/id";
 import { withApiSession } from "~/lib/session";
 
-const SyncMap: NextApiHandler = withApiSession(async (req, res) => {
+const CloneMap: NextApiHandler = withApiSession(async (req, res) => {
   if (req.method !== "POST") {
     return res.status(HttpStatus.METHOD_NOT_ALLOWED).json({
       error: "Method not allowed",
     });
   }
 
+  const id = req.body.id;
   const userId = req.session.get("userId");
-  if (!userId) {
-    return res.status(HttpStatus.UNAUTHORIZED).json({
-      error: "Unauthorized",
+
+  const map = await dynamo
+    .get({
+      TableName: "maps",
+      Key: {
+        id,
+        userId,
+      },
+    })
+    .promise();
+
+  if (!map.Item) {
+    return res.status(HttpStatus.NOT_FOUND).json({
+      error: "Map not found",
+      id,
     });
   }
 
-  const payload = req.body as MapModel;
-
-  if (userId !== payload.userId) {
-    return res.status(HttpStatus.FORBIDDEN).json({
-      error: "Forbidden",
-    });
-  }
+  const newId = readableUniqueId();
 
   await dynamo
     .put({
       TableName: "maps",
       Item: {
-        ...payload,
+        ...map.Item,
+        id: newId,
+        createdAt: Date.now(),
         updatedAt: Date.now(),
       },
     })
     .promise();
 
   return res.status(HttpStatus.OK).json({
-    message: "Map updated",
+    id: newId,
   });
 });
 
-export default SyncMap;
+export default CloneMap;

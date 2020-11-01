@@ -113,6 +113,10 @@ export const getSyncableState = (state: State = getState()): MapModel => {
   return {
     id: state.sync.id as string,
     userId: state.sync.userId as string,
+    createdAt: state.sync.createdAt as number,
+    updatedAt: state.sync.updatedAt as number,
+
+    name: getMapTitle(state),
 
     coordinates: state.map.coordinates,
     zoom: state.map.zoom,

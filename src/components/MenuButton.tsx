@@ -156,7 +156,7 @@ export const MenuButton: React.FC = () => {
 
                     <Menu.Item>
                       {({ active }) => (
-                        <Link href="/about">
+                        <Link href="/">
                           <a
                             className={classNames({
                               "text-gray-800 text-sm px-2 py-1 hover:bg-orange-200": true,
