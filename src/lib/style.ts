@@ -85,6 +85,14 @@ export const availableStyles: Style[] = [
     name: "North Star",
   },
   {
+    id: "ckgz0ard77h9v19pa5otqzbig",
+    owner: "bstnfrmry",
+    name: "Le Shine",
+    overrides: {
+      textFont: ["League Spartan Bold"],
+    },
+  },
+  {
     id: "ckfs2skk31k2519pm37a42aeo",
     owner: "bstnfrmry",
     name: "Too blue",
