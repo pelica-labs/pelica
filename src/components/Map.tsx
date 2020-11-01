@@ -21,7 +21,7 @@ import {
 } from "~/core/overlays";
 import { upscale } from "~/core/platform";
 import { STOP_DRAWING_CIRCLE_ID } from "~/core/routes";
-import { getEntityFeatures, getMap, getSelectedEntities, getSelectedEntity } from "~/core/selectors";
+import { getEntityFeatures, getMap, getSelectedEntities, getSelectedEntity, getSyncableState } from "~/core/selectors";
 import { computeMapDimensions, computeResizingRatio } from "~/lib/aspectRatio";
 import { getEnv } from "~/lib/config";
 import { styleToUrl } from "~/lib/style";
@@ -92,6 +92,7 @@ export const Map: React.FC = () => {
 
       applySources();
       applyLayers();
+      applyFeatures(getEntityFeatures(), [MapSource.Routes, MapSource.Pins, MapSource.Texts]);
 
       applyMoveInteractions();
       applyHoverInteractions();
@@ -112,9 +113,9 @@ export const Map: React.FC = () => {
    * Sync state to storage
    */
   useStoreSubscription(
-    (store) => store,
-    debounce(() => {
-      app.sync.saveState();
+    (store) => getSyncableState(store),
+    debounce((map) => {
+      app.sync.saveState(map);
     }, 1000)
   );
 

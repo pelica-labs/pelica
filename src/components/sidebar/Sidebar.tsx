@@ -14,13 +14,8 @@ import { TextSidebar } from "~/components/sidebar/TextSidebar";
 import { Toolbar } from "~/components/Toolbar";
 import { useStore } from "~/core/app";
 import { useDimensions } from "~/hooks/useDimensions";
-import { Style } from "~/lib/style";
 
-type Props = {
-  initialStyles: Style[];
-};
-
-export const Sidebar: React.FC<Props> = ({ initialStyles }) => {
+export const Sidebar: React.FC = () => {
   const [showToolbar, setShowToolbar] = useState(true);
   const editorMode = useStore((store) => store.editor.mode);
   const screenDimensions = useStore((store) => store.platform.screen.dimensions);
@@ -96,7 +91,7 @@ export const Sidebar: React.FC<Props> = ({ initialStyles }) => {
           {editorMode === "pin" && <PinSidebar />}
           {editorMode === "text" && <TextSidebar />}
           {editorMode === "itinerary" && <ItinerarySidebar />}
-          {editorMode === "style" && <StyleSidebar initialStyles={initialStyles} />}
+          {editorMode === "style" && <StyleSidebar />}
           {editorMode === "export" && <ExportSidebar />}
         </div>
       </div>

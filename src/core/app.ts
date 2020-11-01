@@ -18,7 +18,7 @@ import { pins, pinsInitialState } from "~/core/pins";
 import { platform, platformInitialState } from "~/core/platform";
 import { routes, routesInitialState } from "~/core/routes";
 import { selection, selectionInitialState } from "~/core/selection";
-import { sync } from "~/core/sync";
+import { sync, syncInitialState } from "~/core/sync";
 import { texts, textsInitialState } from "~/core/texts";
 import { units, unitsInitialState } from "~/core/units";
 import { logEvent } from "~/lib/analytics";
@@ -59,7 +59,7 @@ export type Actions = {
   dragAndDrop: Omit<State["dragAndDrop"], keyof typeof dragAndDropInitialState>;
   exports: Omit<State["exports"], keyof typeof exportsInitialState>;
   imports: State["imports"];
-  sync: State["sync"];
+  sync: Omit<State["sync"], keyof typeof syncInitialState>;
   units: Omit<State["units"], keyof typeof unitsInitialState>;
 };
 

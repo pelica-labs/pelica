@@ -1,27 +1,13 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useRouter } from "next/dist/client/router";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Navbar } from "~/components/Navbar";
-import useLocalStorage from "~/hooks/useLocalStorage";
 
 export const Landing: React.FC = () => {
   const { t } = useTranslation();
   const images = ["/images/og-image.jpg", "/images/index/carousel1.jpg", "/images/index/carousel2.jpg"];
-
-  // redirect the user to the app if they have visited the landing already
-  const router = useRouter();
-  const [hasVisitedLanding, setHasVisitedLanding] = useLocalStorage<boolean>("hasVisitedLanding", false);
-  useEffect(() => {
-    if (hasVisitedLanding && router.pathname === "/") {
-      router.replace("/app");
-    }
-  }, [hasVisitedLanding]);
-
-  // set the landing as visited when accessing it from the landing
-  const onClick = () => setHasVisitedLanding(true);
 
   // rotate the images
   const [currentImage, setCurrentImage] = useState<number>(0);
@@ -70,10 +56,7 @@ export const Landing: React.FC = () => {
             style={{ background: `linear-gradient(rgba(0,0,0,0), rgba(28, 25, 23, 0.5))` }}
           >
             <Link passHref href="/app">
-              <button
-                className="h-12 mb-6 mt-12 bg-orange-600 hover:bg-orange-500 shadow transition duration-300 ease-in-out text-gray-100 px-6 py-1 rounded-full uppercase tracking-wider font-bold hover:scale-105 hover:shadow transform hover:-translate-y-1 focus:outline-none focus:shadow-outline"
-                onClick={onClick}
-              >
+              <button className="h-12 mb-6 mt-12 bg-orange-600 hover:bg-orange-500 shadow transition duration-300 ease-in-out text-gray-100 px-6 py-1 rounded-full uppercase tracking-wider font-bold hover:scale-105 hover:shadow transform hover:-translate-y-1 focus:outline-none focus:shadow-outline">
                 Start mapping
               </button>
             </Link>

@@ -15,20 +15,13 @@ type StylesResponse = {
 type Props = {
   value: Style;
   onChange: (value: Style) => void;
-
-  initialStyles: Style[];
 };
 
 const IMAGE_SIZE = [230, 122];
 
-export const StyleSelector: React.FC<Props> = ({ value, onChange, initialStyles }) => {
+export const StyleSelector: React.FC<Props> = ({ value, onChange }) => {
   const [previews, setPreviews] = useState<Record<string, string>>({});
-  const { data } = useSWR<StylesResponse>("/api/styles", {
-    revalidateOnMount: true,
-    initialData: {
-      styles: initialStyles,
-    },
-  });
+  const { data } = useSWR<StylesResponse>("/api/styles");
 
   useEffect(() => {
     if (!data) {

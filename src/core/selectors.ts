@@ -5,6 +5,7 @@ import { Entity, entityToFeature } from "~/core/entities";
 import { Pin } from "~/core/pins";
 import { Route } from "~/core/routes";
 import { Text } from "~/core/texts";
+import { MapModel } from "~/lib/db";
 import { defaultStyles } from "~/lib/style";
 import { RawFeature } from "~/map/features";
 
@@ -105,5 +106,20 @@ export const getSerializableState = (state: State = getState()) => {
       ...state.map,
       current: undefined,
     },
+  };
+};
+
+export const getSyncableState = (state: State = getState()): MapModel => {
+  return {
+    id: state.sync.id as string,
+    userId: state.sync.userId as string,
+
+    coordinates: state.map.coordinates,
+    zoom: state.map.zoom,
+    bearing: state.map.bearing,
+    pitch: state.map.pitch,
+
+    style: state.editor.style,
+    entities: state.entities.items,
   };
 };

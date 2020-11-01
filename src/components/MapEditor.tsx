@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 
 import { Alerts } from "~/components/Alerts";
 import { GeolocationButton } from "~/components/GeolocationButton";
@@ -12,13 +12,13 @@ import { app, useStore, useStoreSubscription } from "~/core/app";
 import { getSelectedItinerary } from "~/core/selectors";
 import { useKeyboard } from "~/hooks/useKeyboard";
 import { useScreenDimensions } from "~/hooks/useScreenDimensions";
-import { Style } from "~/lib/style";
+import { MapModel } from "~/lib/db";
 
 type Props = {
-  initialStyles: Style[];
+  map: MapModel;
 };
 
-export const MapEditor: React.FC<Props> = ({ initialStyles }) => {
+export const MapEditor: React.FC<Props> = ({ map }) => {
   const itineraryContainer = useRef<HTMLDivElement>(null);
   const place = useStore((store) => store.map.place);
   const editorMode = useStore((store) => store.editor.mode);
@@ -31,6 +31,14 @@ export const MapEditor: React.FC<Props> = ({ initialStyles }) => {
 
   useKeyboard();
   useScreenDimensions();
+
+  useEffect(() => {
+    app.sync.mergeState(map);
+
+    setTimeout(() => {
+      app.entities.forceRerender();
+    });
+  }, [map]);
 
   /**
    * Focus itinerary input when switching to mode
@@ -62,7 +70,7 @@ export const MapEditor: React.FC<Props> = ({ initialStyles }) => {
         )}
       </div>
 
-      <Sidebar initialStyles={initialStyles} />
+      <Sidebar />
 
       {showTopLeftControls && (
         <div className="absolute top-0 left-0 flex flex-col space-y-2 mt-2 ml-2">

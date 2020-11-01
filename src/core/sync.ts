@@ -1,28 +1,59 @@
-import { merge } from "lodash";
-import { State } from "zustand";
-
 import { App } from "~/core/helpers";
-import { getSerializableState } from "~/core/selectors";
-import { asyncStorage } from "~/hooks/useAsyncStorage";
+import { MapModel } from "~/lib/db";
+import { ID } from "~/lib/id";
 
-export const sync = ({ mutate, get }: App) => ({
-  restoreState: async () => {
-    const savedState = await asyncStorage.getItem<State>("state");
+type Sync = {
+  id: ID | null;
+  userId: ID | null;
+};
 
+export const syncInitialState: Sync = {
+  id: null,
+  userId: null,
+};
+
+export const sync = ({ mutate }: App) => ({
+  ...syncInitialState,
+
+  mergeState: (map: MapModel) => {
     mutate((state) => {
-      merge(state, savedState);
+      state.sync.id = map.id;
+      state.sync.userId = map.userId;
+
+      if (map.coordinates) {
+        state.map.coordinates = map.coordinates;
+      }
+
+      if (map.zoom) {
+        state.map.zoom = map.zoom;
+      }
+
+      if (map.bearing) {
+        state.map.bearing = map.bearing;
+      }
+
+      if (map.pitch) {
+        state.map.pitch = map.pitch;
+      }
+
+      if (map.style) {
+        state.editor.style = map.style;
+      }
+
+      if (map.entities) {
+        state.entities.items = map.entities;
+      }
     });
   },
 
-  saveState: async () => {
-    const state = JSON.parse(JSON.stringify(getSerializableState(get())));
-
-    if (process.env.NODE_ENV === "development") {
-      Object.assign(window, {
-        pelica: { state },
-      });
-    }
-
-    await asyncStorage.setItem("state", state);
+  saveState: async (map: MapModel) => {
+    await fetch("/api/sync-map", {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(map),
+    });
   },
 });
