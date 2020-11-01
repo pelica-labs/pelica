@@ -64,7 +64,7 @@ const Maps: NextPage<Props> = ({ maps }) => {
 
           <div className="mt-4 flex flex-wrap">
             {!data.maps.length && (
-              <div className="w-full h-64 flex items-center justify-center text-gray-600 mt-10 space-x-10">
+              <div className="w-full h-64 flex items-center justify-center text-gray-600 mt-10 gap-10 px-4 flex-wrap">
                 <div className="w-64">
                   <Image height={862} src="/images/404.svg" width={1132} />
                 </div>
