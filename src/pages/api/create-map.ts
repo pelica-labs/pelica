@@ -4,7 +4,7 @@ import { NextApiHandler } from "next";
 import { MapModel } from "~/lib/db";
 import { dynamo } from "~/lib/dynamo";
 import { readableUniqueId } from "~/lib/id";
-import { getUserId, withApiSession } from "~/lib/session";
+import { initializeSession, withApiSession } from "~/lib/session";
 
 const CreateMap: NextApiHandler = withApiSession(async (req, res) => {
   if (req.method !== "POST") {
@@ -14,7 +14,7 @@ const CreateMap: NextApiHandler = withApiSession(async (req, res) => {
   }
 
   const id = readableUniqueId();
-  const userId = await getUserId(req);
+  const userId = await initializeSession(req);
 
   const map: MapModel = {
     id,

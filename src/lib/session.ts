@@ -29,7 +29,7 @@ export const withApiSession = (handler: NextApiHandler): NextApiHandler => {
   });
 };
 
-export const getUserId = async (req: IncomingMessage): Promise<ID> => {
+export const initializeSession = async (req: IncomingMessage): Promise<ID> => {
   let userId = req.session.get("userId");
 
   if (userId === undefined) {
@@ -39,4 +39,9 @@ export const getUserId = async (req: IncomingMessage): Promise<ID> => {
   }
 
   return userId;
+};
+
+export const impersonate = async (req: IncomingMessage, userId: ID): Promise<void> => {
+  req.session.set("userId", userId);
+  await req.session.save();
 };
