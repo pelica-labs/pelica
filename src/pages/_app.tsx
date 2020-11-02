@@ -2,6 +2,7 @@ import "~/styles/index.css";
 
 import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
+import { Provider } from "next-auth/client";
 import NextApp, { NextWebVitalsMetric } from "next/app";
 import Router from "next/router";
 import NProgress from "nprogress";
@@ -86,7 +87,9 @@ class App extends NextApp {
 
         <FullStory org={process.env.NEXT_PUBLIC_FULLSTORY_ORG_ID} />
 
-        <Component {...pageProps} />
+        <Provider session={pageProps.session}>
+          <Component {...pageProps} />
+        </Provider>
       </I18nextProvider>
     );
   }

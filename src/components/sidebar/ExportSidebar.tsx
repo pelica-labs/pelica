@@ -1,5 +1,7 @@
 import { format } from "date-fns";
+import { signIn, useSession } from "next-auth/client";
 import React, { useEffect, useState } from "react";
+import GoogleButton from "react-google-button";
 import { useTranslation } from "react-i18next";
 import BounceLoader from "react-spinners/BounceLoader";
 import uniqid from "uniqid";
@@ -17,6 +19,7 @@ import { theme } from "~/styles/tailwind";
 
 export const ExportSidebar: React.FC = () => {
   const { t } = useTranslation();
+  const [session, loading] = useSession();
   const [imageId, setImageId] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
   const [sharing, setSharing] = useState(false);
@@ -215,6 +218,25 @@ export const ExportSidebar: React.FC = () => {
             )}
           </div>
         </SidebarSection>
+
+        {!session && !loading && (
+          <SidebarSection>
+            <SidebarHeader>
+              <SidebarHeading>Account</SidebarHeading>
+            </SidebarHeader>
+            <div className="mt-2">
+              <p className="text-xs">Create an account to access this map from anywhere.</p>
+
+              <GoogleButton
+                className="mt-2 transform origin-top-left scale-75 md:scale-65 xl:scale-75"
+                type="light"
+                onClick={() => {
+                  signIn("google");
+                }}
+              />
+            </div>
+          </SidebarSection>
+        )}
 
         <div className="md:mt-auto px-3 md:pt-3 md:pb-2 w-64 md:w-auto">
           <SidebarHeader>

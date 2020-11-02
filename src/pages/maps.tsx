@@ -1,7 +1,9 @@
 import { GetServerSideProps, NextPage } from "next";
+import { signIn, useSession } from "next-auth/client";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
+import GoogleButton from "react-google-button";
 import useSWR from "swr";
 
 import { MapPreview } from "~/components/MapPreview";
@@ -28,6 +30,8 @@ const Maps: NextPage<Props> = ({ maps }) => {
   const [creating, setCreating] = useState(false);
   const router = useRouter();
 
+  const [session, loading] = useSession();
+
   const { data, revalidate } = useSWR<Props>("/api/list-maps", {
     initialData: { maps },
   });
@@ -46,6 +50,22 @@ const Maps: NextPage<Props> = ({ maps }) => {
   return (
     <div className="bg-gray-100 pb-8">
       <Navbar />
+
+      {!session && !loading && (
+        <div className="container mx-auto mt-8 px-3 flex items-center justify-between gap-4 flex-wrap bg-orange-100 border border-orange-200 shadow rounded-lg py-2">
+          <div className="flex flex-col">
+            <span className="text-lg">Don't lose your hard work!</span>
+            <span className="text-sm">Create a Pelica account to save your maps and access them from anywhere.</span>
+          </div>
+
+          <GoogleButton
+            className="transform origin-right scale-75"
+            onClick={() => {
+              signIn("google");
+            }}
+          />
+        </div>
+      )}
 
       {data && (
         <div className="mt-8 container mx-auto">

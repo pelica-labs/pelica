@@ -2,7 +2,7 @@ import HttpStatus from "http-status-codes";
 import { NextApiHandler } from "next";
 
 import { dynamo } from "~/lib/dynamo";
-import { withApiSession } from "~/lib/session";
+import { getUserId, withApiSession } from "~/lib/session";
 
 const DeleteMap: NextApiHandler = withApiSession(async (req, res) => {
   if (req.method !== "POST") {
@@ -12,7 +12,7 @@ const DeleteMap: NextApiHandler = withApiSession(async (req, res) => {
   }
 
   const id = req.body.id;
-  const userId = req.session.get("userId");
+  const userId = await getUserId(req);
 
   await dynamo
     .delete({

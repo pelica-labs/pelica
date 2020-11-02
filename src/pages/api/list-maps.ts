@@ -4,10 +4,10 @@ import { NextApiHandler } from "next";
 
 import { MapModel } from "~/lib/db";
 import { dynamo } from "~/lib/dynamo";
-import { withApiSession } from "~/lib/session";
+import { getUserId, withApiSession } from "~/lib/session";
 
 export const fetchMaps = async (req: IncomingMessage): Promise<MapModel[]> => {
-  const userId = req.session.get("userId");
+  const userId = await getUserId(req);
   if (!userId) {
     return [];
   }

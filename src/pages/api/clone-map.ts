@@ -2,8 +2,8 @@ import HttpStatus from "http-status-codes";
 import { NextApiHandler } from "next";
 
 import { dynamo } from "~/lib/dynamo";
-import { readableUniqueId } from "~/lib/id";
-import { withApiSession } from "~/lib/session";
+import { uniqueId } from "~/lib/id";
+import { getUserId, withApiSession } from "~/lib/session";
 
 const CloneMap: NextApiHandler = withApiSession(async (req, res) => {
   if (req.method !== "POST") {
@@ -13,7 +13,7 @@ const CloneMap: NextApiHandler = withApiSession(async (req, res) => {
   }
 
   const id = req.body.id;
-  const userId = req.session.get("userId");
+  const userId = await getUserId(req);
 
   const map = await dynamo
     .get({
@@ -32,7 +32,7 @@ const CloneMap: NextApiHandler = withApiSession(async (req, res) => {
     });
   }
 
-  const newId = readableUniqueId();
+  const newId = uniqueId();
 
   await dynamo
     .put({

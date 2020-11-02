@@ -14,7 +14,7 @@ module.exports = withSourceMaps({
     defaultLocale: "en",
   },
   images: {
-    domains: ["api.mapbox.com"],
+    domains: ["api.mapbox.com", "lh3.googleusercontent.com"],
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {

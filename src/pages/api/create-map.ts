@@ -3,8 +3,8 @@ import { NextApiHandler } from "next";
 
 import { MapModel } from "~/lib/db";
 import { dynamo } from "~/lib/dynamo";
-import { readableUniqueId } from "~/lib/id";
-import { initializeSession, withApiSession } from "~/lib/session";
+import { uniqueId } from "~/lib/id";
+import { initializeAnonymousSession, withApiSession } from "~/lib/session";
 
 const CreateMap: NextApiHandler = withApiSession(async (req, res) => {
   if (req.method !== "POST") {
@@ -13,8 +13,8 @@ const CreateMap: NextApiHandler = withApiSession(async (req, res) => {
     });
   }
 
-  const id = readableUniqueId();
-  const userId = await initializeSession(req);
+  const id = uniqueId();
+  const userId = await initializeAnonymousSession(req);
 
   const map: MapModel = {
     id,

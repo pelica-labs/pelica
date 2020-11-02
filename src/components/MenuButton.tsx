@@ -1,6 +1,9 @@
 import { Menu } from "@headlessui/react";
 import classNames from "classnames";
+import { signOut, useSession } from "next-auth/client";
+import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import React from "react";
 
 import { DoubleCheckIcon, MenuIcon, RedoIcon, TrashIcon, UndoIcon } from "~/components/Icon";
@@ -12,6 +15,8 @@ export const MenuButton: React.FC = () => {
   const canSelectAll = useStore((store) => store.entities.items.length > 0);
   const canUndo = useStore((store) => store.history.actions.length > 0);
   const canRedo = useStore((store) => store.history.redoStack.length > 0);
+  const router = useRouter();
+  const [session] = useSession();
 
   const UndoHotkey = useHotkey({ key: "z", meta: true }, () => {
     app.history.undo();
@@ -34,13 +39,31 @@ export const MenuButton: React.FC = () => {
                   as="div"
                   className={classNames({
                     "appearance-none inline-flex justify-center w-full text-sm font-medium leading-5 transition duration-150 ease-in-out text-gray-800 rounded-md focus:outline-none": true,
-                    "bg-orange-200 rounded": open,
+                    "bg-orange-200 rounded": open && !session,
                     "hover:text-orange-600": !open,
                   })}
                 >
-                  <IconButton>
-                    <MenuIcon className="w-8 h-8 md:w-6 md:h-6" id="toolbar-menu" />
-                  </IconButton>
+                  {session && (
+                    <button
+                      className={classNames({
+                        "rounded-full focus:outline-none focus:border-orange-300 transition duration-75 transform hover:scale-105": true,
+                        "scale-110 hover:scale-110": open,
+                      })}
+                    >
+                      <Image
+                        className="w-8 h-8 md:w-6 md:h-6 rounded-full border-2 border-orange-300"
+                        height={40}
+                        src={session.user.image}
+                        width={40}
+                      />
+                    </button>
+                  )}
+
+                  {!session && (
+                    <IconButton>
+                      <MenuIcon className="w-8 h-8 md:w-6 md:h-6" id="toolbar-menu" />
+                    </IconButton>
+                  )}
                 </Menu.Button>
               </span>
 
@@ -198,6 +221,33 @@ export const MenuButton: React.FC = () => {
                         </Link>
                       )}
                     </Menu.Item>
+
+                    <div className="border-t my-1" />
+
+                    {session && (
+                      <>
+                        <span className="my-2 px-2 text-gray-500 font-light tracking-wide leading-none uppercase text-xs">
+                          {session.user.name}
+                        </span>
+
+                        <Menu.Item>
+                          {({ active }) => (
+                            <a
+                              className={classNames({
+                                "text-gray-800 text-sm px-2 py-1 hover:bg-orange-200 cursor-pointer": true,
+                                "bg-orange-200": active,
+                              })}
+                              onClick={async () => {
+                                await signOut();
+                                window.location.replace("/");
+                              }}
+                            >
+                              Sign out
+                            </a>
+                          )}
+                        </Menu.Item>
+                      </>
+                    )}
                   </div>
                 </Menu.Items>
               )}

@@ -8,3 +8,9 @@ declare module "http" {
     session: Session;
   }
 }
+
+declare module "next-auth" {
+  interface User {
+    id: string;
+  }
+}

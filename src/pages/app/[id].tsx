@@ -5,7 +5,7 @@ import { MapEditor } from "~/components/MapEditor";
 import { MapModel } from "~/lib/db";
 import { dynamo } from "~/lib/dynamo";
 import { EmptyProps, redirect } from "~/lib/redirect";
-import { withSession } from "~/lib/session";
+import { getUserId, withSession } from "~/lib/session";
 
 type Props = {
   map: MapModel;
@@ -13,7 +13,7 @@ type Props = {
 
 export const getServerSideProps: GetServerSideProps<Props | EmptyProps> = withSession(async (ctx) => {
   const id = ctx.query.id as string;
-  const userId = ctx.req.session.get("userId");
+  const userId = await getUserId(ctx.req);
   if (!userId) {
     return redirect(ctx.res, "/404");
   }
