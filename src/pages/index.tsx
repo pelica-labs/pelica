@@ -4,6 +4,8 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { Container } from "~/components/Container";
+import { Footer } from "~/components/Footer";
 import { Navbar } from "~/components/Navbar";
 
 const Home: NextPage = () => {
@@ -46,7 +48,7 @@ const Home: NextPage = () => {
     <div className="absolute h-full w-full overflow-y-scroll z-50 text-lg text-gray-900">
       <Navbar />
 
-      <div className="flex flex-col items-center max-w-4xl my-6 mx-auto px-4">
+      <Container>
         <h1 className="text-center text-5xl text-gray-900 font-raleway mb-6 font-bold">{t("tagline")}</h1>
         <h2 className="font-raleway text-2xl text-center">Pelica is a tool to edit, style, and share custom maps.</h2>
 
@@ -80,7 +82,9 @@ const Home: NextPage = () => {
             </button>
           </div>
         </div>
-      </div>
+      </Container>
+
+      <Footer />
     </div>
   );
 };

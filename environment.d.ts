@@ -15,6 +15,8 @@ declare namespace NodeJS {
 
     NEXT_PUBLIC_SENTRY_DSN: string;
 
+    NEXT_PUBLIC_GOOGLE_ANALYTICS_ID: string;
+
     COOKIE_PASSWORD: string;
 
     GOOGLE_CLIENT_ID: string;
