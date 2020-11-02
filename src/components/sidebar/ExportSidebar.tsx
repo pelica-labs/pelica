@@ -3,14 +3,13 @@ import { signIn, useSession } from "next-auth/client";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import BounceLoader from "react-spinners/BounceLoader";
-import uniqid from "uniqid";
 
 import { AspectRatioSelector } from "~/components/AspectRatioSelector";
 import { Button } from "~/components/Button";
 import { CopyIcon } from "~/components/Icon";
 import { SidebarHeader, SidebarHeading, SidebarSection } from "~/components/sidebar/Sidebar";
 import { GoogleButton } from "~/components/SocialButtons";
-import { app, useStore } from "~/core/app";
+import { app, getState, useStore } from "~/core/app";
 import { getMapTitle } from "~/core/selectors";
 import { useBrowserFeatures } from "~/hooks/useBrowserFeatures";
 import { aspectRatios } from "~/lib/aspectRatio";
@@ -45,6 +44,47 @@ export const ExportSidebar: React.FC = () => {
   const onCopy = () => {
     app.exports.prepareCanvas();
     setCopying(true);
+  };
+
+  const upload = async () => {
+    if (!imageData) {
+      return;
+    }
+
+    const data = new FormData();
+
+    data.append("image", dataUrlToBlob(imageData));
+
+    const res = await fetch("/api/create-image", {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        mapId: getState().sync.id,
+      }),
+    });
+    const json = await res.json();
+
+    setImageId(json.id);
+
+    data.append("id", json.id);
+    data.append("width", `${ratio[0]}`);
+    data.append("height", `${ratio[1]}`);
+
+    const mapTitle = getMapTitle();
+    if (mapTitle) {
+      data.append("name", mapTitle);
+    }
+
+    await fetch("/api/upload-map", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+      },
+      body: data,
+    });
   };
 
   useEffect(() => {
@@ -97,29 +137,9 @@ export const ExportSidebar: React.FC = () => {
     }
 
     const timeout = setTimeout(() => {
-      const data = new FormData();
-
-      data.append("image", dataUrlToBlob(imageData));
-
-      const imageId = uniqid();
-      data.append("id", imageId);
-
-      setImageId(imageId);
-
-      const mapTitle = getMapTitle();
-      if (mapTitle) {
-        data.append("name", mapTitle);
-      }
-
-      fetch("/api/upload-map", {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-        },
-        body: data,
-      }).catch((error) => {
-        // @todo: handle error
+      upload().catch((error) => {
         console.error(error);
+        // @todo: handle error
       });
     }, 200);
 

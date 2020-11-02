@@ -2,37 +2,35 @@ import HttpStatus from "http-status-codes";
 import { NextApiHandler } from "next";
 
 import { dynamo } from "~/lib/aws";
-import { MapModel } from "~/lib/db";
+import { ImageModel } from "~/lib/db";
 import { uniqueId } from "~/lib/id";
-import { initializeAnonymousSession, withApiSession } from "~/lib/session";
 
-const CreateMap: NextApiHandler = withApiSession(async (req, res) => {
+const CreateImage: NextApiHandler = async (req, res) => {
   if (req.method !== "POST") {
     return res.status(HttpStatus.METHOD_NOT_ALLOWED).json({
       error: "Method not allowed",
     });
   }
 
+  const mapId = req.body.mapId;
   const id = uniqueId();
-  const userId = await initializeAnonymousSession(req);
 
-  const map: MapModel = {
+  const image: ImageModel = {
     id,
-    userId,
+    mapId,
     createdAt: Date.now(),
-    updatedAt: Date.now(),
   };
 
   await dynamo
     .put({
-      TableName: "maps",
-      Item: map,
+      TableName: "images",
+      Item: image,
     })
     .promise();
 
   return res.status(HttpStatus.CREATED).json({
     id,
   });
-});
+};
 
-export default CreateMap;
+export default CreateImage;

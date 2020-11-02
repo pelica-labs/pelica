@@ -3,8 +3,8 @@ import HttpStatus from "http-status-codes";
 import { orderBy } from "lodash";
 import { NextApiHandler } from "next";
 
+import { dynamo } from "~/lib/aws";
 import { MapModel } from "~/lib/db";
-import { dynamo } from "~/lib/dynamo";
 import { getUserId, withApiSession } from "~/lib/session";
 
 export const fetchMaps = async (req: IncomingMessage): Promise<MapModel[]> => {
@@ -16,7 +16,7 @@ export const fetchMaps = async (req: IncomingMessage): Promise<MapModel[]> => {
   const response = await dynamo
     .scan({
       TableName: "maps",
-      FilterExpression: "userId = :userId",
+      FilterExpression: "userId = :userId and attribute_not_exists(deletedAt)",
       ExpressionAttributeValues: {
         ":userId": userId,
       },

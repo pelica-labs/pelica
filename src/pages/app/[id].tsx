@@ -2,8 +2,8 @@ import { GetServerSideProps, NextPage } from "next";
 import React from "react";
 
 import { MapEditor } from "~/components/MapEditor";
+import { dynamo } from "~/lib/aws";
 import { MapModel } from "~/lib/db";
-import { dynamo } from "~/lib/dynamo";
 import { EmptyProps, redirect } from "~/lib/redirect";
 import { getUserId, withSession } from "~/lib/session";
 
@@ -21,7 +21,7 @@ export const getServerSideProps: GetServerSideProps<Props | EmptyProps> = withSe
     })
     .promise();
 
-  if (!map.Item) {
+  if (!map.Item || map.Item.deletedAt) {
     return redirect(ctx.res, "/404");
   }
 

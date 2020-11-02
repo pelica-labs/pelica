@@ -1,4 +1,4 @@
-import { GetServerSideProps, NextPage } from "next";
+import { NextPage } from "next";
 import { signIn, useSession } from "next-auth/client";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -21,7 +21,7 @@ const Maps: NextPage<Props> = () => {
 
   const [session, loading] = useSession();
 
-  const { data, revalidate } = useSWR<Props>("/api/list-maps");
+  const { data } = useSWR<Props>("/api/list-maps");
 
   const createMap = async () => {
     setCreating(true);
@@ -78,15 +78,7 @@ const Maps: NextPage<Props> = () => {
             )}
 
             {data.maps.map((map) => {
-              return (
-                <MapPreview
-                  key={map.id}
-                  map={map}
-                  onMapDeleted={() => {
-                    revalidate();
-                  }}
-                />
-              );
+              return <MapPreview key={map.id} map={map} />;
             })}
           </div>
         ) : (

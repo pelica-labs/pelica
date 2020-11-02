@@ -3,13 +3,18 @@ import fs from "fs";
 import HttpStatus from "http-status-codes";
 import { NextApiHandler, NextApiRequest } from "next";
 
+import { dynamo, s3 } from "~/lib/aws";
 import { getEnv } from "~/lib/config";
-import { generateFilePrefix, s3 } from "~/lib/s3";
 
 type UploadedMap = {
   id: string;
   image: File;
   name?: string;
+  size: [number, number];
+};
+
+const generateFilePrefix = (folder: string): string => {
+  return process.env.NODE_ENV + (process.env.USER ? `-${process.env.USER}` : "") + "/" + folder + "/";
 };
 
 const parseUpload = (req: NextApiRequest): Promise<UploadedMap> => {
@@ -25,6 +30,7 @@ const parseUpload = (req: NextApiRequest): Promise<UploadedMap> => {
         id: fields.id as string,
         image: files.image,
         name: fields.name as string | undefined,
+        size: [parseInt(fields.width as string), parseInt(fields.height as string)],
       });
     });
   });
@@ -39,17 +45,24 @@ const UploadMap: NextApiHandler = async (req, res) => {
 
   const bucket = getEnv("AWS_S3_BUCKET", process.env.AWS_S3_BUCKET);
 
-  const { id, name, image } = await parseUpload(req);
+  const { id, name, image, size } = await parseUpload(req);
   const proxyPath = `${req.headers.host}/map/${id}`;
-  const s3Path = generateFilePrefix("maps") + id + ".jpeg";
+  const path = generateFilePrefix("maps") + id + ".jpeg";
 
-  const existingImage = await s3
-    .headObject({ Bucket: bucket, Key: s3Path })
-    .promise()
-    .catch(() => {
-      // Expected to throw
+  const existingImage = await dynamo
+    .get({
+      TableName: "images",
+      Key: { id },
+    })
+    .promise();
+
+  if (!existingImage.Item) {
+    return res.status(HttpStatus.BAD_REQUEST).json({
+      error: "Image hasn't been initialised properly",
     });
-  if (existingImage) {
+  }
+
+  if (existingImage.Item.path) {
     return res.status(HttpStatus.BAD_REQUEST).json({
       error: "File already exists",
     });
@@ -58,11 +71,20 @@ const UploadMap: NextApiHandler = async (req, res) => {
   await s3
     .upload({
       Bucket: bucket,
-      Key: s3Path,
+      Key: path,
       Body: fs.createReadStream(image.path),
       ContentType: "image/jpeg",
-      Metadata: {
-        ...(name && { name }),
+    })
+    .promise();
+
+  await dynamo
+    .put({
+      TableName: "images",
+      Item: {
+        ...existingImage.Item,
+        name,
+        size,
+        path,
       },
     })
     .promise();

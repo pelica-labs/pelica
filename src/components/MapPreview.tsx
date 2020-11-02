@@ -16,12 +16,11 @@ import { theme } from "~/styles/tailwind";
 
 type Props = {
   map: MapModel;
-
-  onMapDeleted: () => void;
 };
 
-export const MapPreview: React.FC<Props> = ({ map, onMapDeleted }) => {
+export const MapPreview: React.FC<Props> = ({ map }) => {
   const [loadingMessage, setLoadingMessage] = useState<string | null>(null);
+  const [deleted, setDeleted] = useState(false);
   const router = useRouter();
 
   const url = staticImage({
@@ -48,7 +47,25 @@ export const MapPreview: React.FC<Props> = ({ map, onMapDeleted }) => {
       }),
     });
 
-    onMapDeleted();
+    setDeleted(true);
+    setLoadingMessage(null);
+  };
+
+  const onRestore = async () => {
+    setLoadingMessage("Restoring map...");
+
+    await fetch("/api/restore-map", {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: map.id,
+      }),
+    });
+
+    setDeleted(false);
     setLoadingMessage(null);
   };
 
@@ -83,113 +100,142 @@ export const MapPreview: React.FC<Props> = ({ map, onMapDeleted }) => {
                   setLoadingMessage("Loading map...");
                 }}
               >
-                <span className="truncate ">{map.name || "Untitled"}</span>
+                <span
+                  className={classNames({
+                    "truncate": true,
+                    "line-through text-gray-500": deleted,
+                  })}
+                >
+                  {map.name || "Untitled"}
+                </span>
               </a>
             </Link>
-            <span className="text-xs text-gray-500">Last update {formatRelative(map.updatedAt, new Date())}</span>
+            {!deleted && (
+              <span className="text-xs text-gray-500">Last update {formatRelative(map.updatedAt, new Date())}</span>
+            )}
+            {deleted && (
+              <span className="text-xs text-gray-500">
+                Deleted a few moments ago ·
+                <a
+                  className="ml-1 underline cursor-pointer"
+                  onClick={() => {
+                    onRestore();
+                  }}
+                >
+                  Restore
+                </a>
+              </span>
+            )}
           </div>
-          <Menu>
-            {({ open }) => (
-              <>
-                <Menu.Button as="div" className="appearance-none lg:hidden group-hover:block">
-                  <IconButton>
-                    <VerticalDotsIcon className="w-4 h-4" />
-                  </IconButton>
-                </Menu.Button>
+          {!deleted && (
+            <Menu>
+              {({ open }) => (
+                <>
+                  <Menu.Button as="div" className="appearance-none lg:hidden group-hover:block">
+                    <IconButton>
+                      <VerticalDotsIcon className="w-4 h-4" />
+                    </IconButton>
+                  </Menu.Button>
 
-                {open && (
-                  <Menu.Items
-                    static
-                    className="absolute right-0 top-0 mt-10 mr-2 z-50 bg-white border md:rounded md:shadow outline-none py-1"
-                  >
-                    <div className="flex flex-col w-32">
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link passHref href={`/map/${map.id}`}>
+                  {open && (
+                    <Menu.Items
+                      static
+                      className="absolute right-0 top-0 mt-10 mr-2 z-50 bg-white border md:rounded md:shadow outline-none py-1"
+                    >
+                      <div className="flex flex-col w-32">
+                        <Menu.Item>
+                          {({ active }) => (
+                            <Link passHref href={`/map/${map.id}`}>
+                              <a
+                                className={classNames({
+                                  "flex items-center justify-between px-2 py-1 cursor-pointer hover:bg-orange-200 text-sm": true,
+                                  "bg-orange-200": active,
+                                })}
+                                target="_blank"
+                              >
+                                <ExternalIcon className="w-4 h-4" />
+
+                                <span>Preview</span>
+                              </a>
+                            </Link>
+                          )}
+                        </Menu.Item>
+
+                        <Menu.Item>
+                          {({ active }) => (
                             <a
                               className={classNames({
                                 "flex items-center justify-between px-2 py-1 cursor-pointer hover:bg-orange-200 text-sm": true,
                                 "bg-orange-200": active,
                               })}
-                              target="_blank"
+                              onClick={() => {
+                                setLoadingMessage("Loading map...");
+                                router.push(`/app/${map.id}`);
+                              }}
                             >
-                              <ExternalIcon className="w-4 h-4" />
+                              <EditIcon className="w-4 h-4" />
 
-                              <span>Preview</span>
+                              <span>Edit</span>
                             </a>
-                          </Link>
-                        )}
-                      </Menu.Item>
+                          )}
+                        </Menu.Item>
 
-                      <Menu.Item>
-                        {({ active }) => (
-                          <a
-                            className={classNames({
-                              "flex items-center justify-between px-2 py-1 cursor-pointer hover:bg-orange-200 text-sm": true,
-                              "bg-orange-200": active,
-                            })}
-                            onClick={() => {
-                              setLoadingMessage("Loading map...");
-                              router.push(`/app/${map.id}`);
-                            }}
-                          >
-                            <EditIcon className="w-4 h-4" />
+                        <Menu.Item>
+                          {({ active }) => (
+                            <a
+                              className={classNames({
+                                "flex items-center justify-between px-2 py-1 cursor-pointer hover:bg-orange-200 text-sm": true,
+                                "bg-orange-200": active,
+                              })}
+                              onClick={() => {
+                                onCloneMap();
+                              }}
+                            >
+                              <CopyIcon className="w-4 h-4" />
 
-                            <span>Edit</span>
-                          </a>
-                        )}
-                      </Menu.Item>
+                              <span>Duplicate</span>
+                            </a>
+                          )}
+                        </Menu.Item>
 
-                      <Menu.Item>
-                        {({ active }) => (
-                          <a
-                            className={classNames({
-                              "flex items-center justify-between px-2 py-1 cursor-pointer hover:bg-orange-200 text-sm": true,
-                              "bg-orange-200": active,
-                            })}
-                            onClick={() => {
-                              onCloneMap();
-                            }}
-                          >
-                            <CopyIcon className="w-4 h-4" />
+                        <div className="border-t my-1" />
 
-                            <span>Duplicate</span>
-                          </a>
-                        )}
-                      </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <a
+                              className={classNames({
+                                "flex items-center justify-between px-2 py-1 cursor-pointer hover:bg-orange-200 text-sm": true,
+                                "bg-orange-200": active,
+                              })}
+                              onClick={() => {
+                                onDeleteMap();
+                              }}
+                            >
+                              <TrashIcon className="w-4 h-4" />
 
-                      <div className="border-t my-1" />
-
-                      <Menu.Item>
-                        {({ active }) => (
-                          <a
-                            className={classNames({
-                              "flex items-center justify-between px-2 py-1 cursor-pointer hover:bg-orange-200 text-sm": true,
-                              "bg-orange-200": active,
-                            })}
-                            onClick={() => {
-                              onDeleteMap();
-                            }}
-                          >
-                            <TrashIcon className="w-4 h-4" />
-
-                            <span>Delete</span>
-                          </a>
-                        )}
-                      </Menu.Item>
-                    </div>
-                  </Menu.Items>
-                )}
-              </>
-            )}
-          </Menu>
+                              <span>Delete</span>
+                            </a>
+                          )}
+                        </Menu.Item>
+                      </div>
+                    </Menu.Items>
+                  )}
+                </>
+              )}
+            </Menu>
+          )}
         </div>
 
-        <Link passHref href={`/app/${map.id}`}>
+        <Link passHref href={deleted ? "#" : `/app/${map.id}`}>
           <a
-            className="mt-2 relative flex flex-col items-stretch h-full border border-transparent rounded transition duration-75"
+            className={classNames({
+              "mt-2 relative flex flex-col items-stretch h-full border border-transparent rounded transition duration-75": true,
+              "cursor-default opacity-50": deleted,
+            })}
             onClick={() => {
-              setLoadingMessage("Loading map...");
+              if (!deleted) {
+                setLoadingMessage("Loading map...");
+              }
             }}
           >
             <StylePreview hash={map.style?.hash || null} src={url} />

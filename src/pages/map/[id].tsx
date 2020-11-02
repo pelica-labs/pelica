@@ -5,8 +5,8 @@ import { useTranslation } from "react-i18next";
 
 import { FourOhFour } from "~/components/404";
 import { MapViewer } from "~/components/MapViewer";
+import { dynamo } from "~/lib/aws";
 import { MapModel } from "~/lib/db";
-import { dynamo } from "~/lib/dynamo";
 import { staticImage } from "~/lib/staticImages";
 import { defaultStyle } from "~/lib/style";
 
@@ -26,7 +26,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     })
     .promise();
 
-  if (!map.Item) {
+  if (!map.Item || map.Item.deletedAt) {
     return { props: { currentUrl, map: null } };
   }
 

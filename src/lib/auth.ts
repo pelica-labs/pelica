@@ -1,8 +1,8 @@
 import { IncomingMessage } from "http";
 import { User } from "next-auth";
 
+import { dynamo } from "~/lib/aws";
 import { MapModel } from "~/lib/db";
-import { dynamo } from "~/lib/dynamo";
 import { clearAnonymousSession, getAnonymousUserId } from "~/lib/session";
 
 /**

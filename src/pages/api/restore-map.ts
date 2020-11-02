@@ -4,7 +4,7 @@ import { NextApiHandler } from "next";
 import { dynamo } from "~/lib/aws";
 import { getUserId, withApiSession } from "~/lib/session";
 
-const DeleteMap: NextApiHandler = withApiSession(async (req, res) => {
+const RestoreMap: NextApiHandler = withApiSession(async (req, res) => {
   if (req.method !== "POST") {
     return res.status(HttpStatus.METHOD_NOT_ALLOWED).json({
       error: "Method not allowed",
@@ -32,16 +32,13 @@ const DeleteMap: NextApiHandler = withApiSession(async (req, res) => {
     .update({
       TableName: "maps",
       Key: { id },
-      UpdateExpression: "set deletedAt = :now",
-      ExpressionAttributeValues: {
-        ":now": Date.now(),
-      },
+      UpdateExpression: "remove deletedAt",
     })
     .promise();
 
   return res.status(HttpStatus.OK).json({
-    message: "Map deleted",
+    message: "Map restored",
   });
 });
 
-export default DeleteMap;
+export default RestoreMap;

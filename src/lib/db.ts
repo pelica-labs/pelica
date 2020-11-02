@@ -9,6 +9,7 @@ export type MapModel = {
   userId: ID;
   createdAt: number;
   updatedAt: number;
+  deletedAt?: number;
 
   name?: string;
 
@@ -19,4 +20,14 @@ export type MapModel = {
 
   style?: Style;
   entities?: Entity[];
+};
+
+export type ImageModel = {
+  id: ID;
+  mapId: ID;
+  createdAt: number;
+
+  path?: string;
+  name?: string;
+  size?: [number, number];
 };

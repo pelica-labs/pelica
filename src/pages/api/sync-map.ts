@@ -1,8 +1,8 @@
 import HttpStatus from "http-status-codes";
 import { NextApiHandler } from "next";
 
+import { dynamo } from "~/lib/aws";
 import { MapModel } from "~/lib/db";
-import { dynamo } from "~/lib/dynamo";
 import { getUserId, withApiSession } from "~/lib/session";
 
 const SyncMap: NextApiHandler = withApiSession(async (req, res) => {
