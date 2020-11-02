@@ -97,10 +97,9 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
       applyLayers();
       applyFeatures(getEntityFeatures(), [MapSource.Routes, MapSource.Pins, MapSource.Texts]);
 
-      applyScrollInteractions();
-      applyPinchInteractions();
-
       if (!readOnly) {
+        applyScrollInteractions();
+        applyPinchInteractions();
         applyMoveInteractions();
         applyHoverInteractions();
         applyKeyboardInteractions();
