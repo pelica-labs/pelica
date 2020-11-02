@@ -193,7 +193,7 @@ export const MenuButton: React.FC = () => {
 
                     <Menu.Item>
                       {({ active }) => (
-                        <Link href="/maps">
+                        <Link href="/app">
                           <a
                             className={classNames({
                               "text-gray-800 text-sm px-2 py-1 hover:bg-orange-200": true,

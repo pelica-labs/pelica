@@ -3,11 +3,12 @@ import { signIn, useSession } from "next-auth/client";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import GoogleButton from "react-google-button";
 import useSWR from "swr";
 
+import { MapPlusIcon } from "~/components/Icon";
 import { MapPreview } from "~/components/MapPreview";
 import { Navbar } from "~/components/Navbar";
+import { GoogleButton } from "~/components/SocialButtons";
 import { MapModel } from "~/lib/db";
 import { withSession } from "~/lib/session";
 import { fetchMaps } from "~/pages/api/list-maps";
@@ -52,14 +53,13 @@ const Maps: NextPage<Props> = ({ maps }) => {
       <Navbar />
 
       {!session && !loading && (
-        <div className="container mx-auto mt-8 px-3 flex items-center justify-between gap-4 flex-wrap bg-orange-100 border border-orange-200 shadow rounded-lg py-2">
+        <div className="container mx-auto mt-8 px-3 flex items-center justify-between gap-4 flex-wrap bg-white shadow rounded-lg py-2 max-w-4xl">
           <div className="flex flex-col">
             <span className="text-lg">Don't lose your hard work!</span>
             <span className="text-sm">Create a Pelica account to save your maps and access them from anywhere.</span>
           </div>
 
           <GoogleButton
-            className="transform origin-right scale-75"
             onClick={() => {
               signIn("google");
             }}
@@ -68,17 +68,17 @@ const Maps: NextPage<Props> = ({ maps }) => {
       )}
 
       {data && (
-        <div className="mt-8 container mx-auto">
+        <div className="mt-8 container mx-auto max-w-4xl">
           <div className="flex items-center justify-between px-1">
             <h1 className="px-2 text-2xl">Saved maps</h1>
             <button
-              className="h-8 bg-orange-600 hover:bg-orange-500 shadow transition duration-300 ease-in-out text-gray-100 px-3 py-1 rounded-full uppercase tracking-wider font-medium hover:scale-105 hover:shadow focus:outline-none focus:shadow-outline text-sm"
+              className="w-12 h-12 flex items-center justify-center bg-orange-600 hover:bg-orange-500 shadow transition duration-300 ease-in-out text-gray-100 px-3 py-1 rounded-full uppercase tracking-wider font-medium hover:scale-105 hover:shadow focus:outline-none focus:shadow-outline text-sm"
               disabled={creating}
               onClick={() => {
                 createMap();
               }}
             >
-              {creating ? "Creating map..." : "Create a new map"}
+              {creating ? "Creating map..." : <MapPlusIcon className="w-8 h-8" />}
             </button>
           </div>
 

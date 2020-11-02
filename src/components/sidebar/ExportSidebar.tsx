@@ -1,7 +1,6 @@
 import { format } from "date-fns";
 import { signIn, useSession } from "next-auth/client";
 import React, { useEffect, useState } from "react";
-import GoogleButton from "react-google-button";
 import { useTranslation } from "react-i18next";
 import BounceLoader from "react-spinners/BounceLoader";
 import uniqid from "uniqid";
@@ -10,6 +9,7 @@ import { AspectRatioSelector } from "~/components/AspectRatioSelector";
 import { Button } from "~/components/Button";
 import { CopyIcon } from "~/components/Icon";
 import { SidebarHeader, SidebarHeading, SidebarSection } from "~/components/sidebar/Sidebar";
+import { GoogleButton } from "~/components/SocialButtons";
 import { app, useStore } from "~/core/app";
 import { getMapTitle } from "~/core/selectors";
 import { useBrowserFeatures } from "~/hooks/useBrowserFeatures";
@@ -228,8 +228,7 @@ export const ExportSidebar: React.FC = () => {
               <p className="text-xs">Create an account to access this map from anywhere.</p>
 
               <GoogleButton
-                className="mt-2 transform origin-top-left scale-75 md:scale-65 xl:scale-75"
-                type="light"
+                className="mt-2 w-full"
                 onClick={() => {
                   signIn("google");
                 }}

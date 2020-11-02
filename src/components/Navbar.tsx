@@ -3,8 +3,6 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 
-import { NavLink } from "~/components/NavLink";
-
 export const Navbar: React.FC = () => {
   const [creating, setCreating] = useState(false);
   const router = useRouter();
@@ -21,33 +19,31 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <header className="relative p-2 h-16 w-full flex items-center">
+    <header className="relative p-2 h-16 w-full flex items-center bg-white shadow">
       <div className="mr-auto flex items-center">
         <Link passHref href="/">
           <a>
             <Image height={48} src="/images/icon-512.png" width={48} />
           </a>
         </Link>
-
-        <NavLink passHref href="/maps">
-          <a className="lg:mx-4 md:mx-2 text-gray-700 hover:text-gray-600 font-light whitespace-no-wrap">Saved maps</a>
-        </NavLink>
       </div>
-
-      <a className="hidden md:block mx-4 text-gray-700 hover:text-gray-600 font-light" href="https://scratch.pelica.co">
-        scratch map
-      </a>
-
-      <button
-        className="mx-4 bg-gray-700 hover:bg-gray-600 transition-colors duration-150 ease-in-out text-gray-100 px-6 py-1 rounded-full font-light focus:outline-none focus:shadow-outline"
-        disabled={creating}
-        onClick={() => {
-          createMap();
-        }}
-      >
-        <span className="hidden sm:block">{creating ? "creating map..." : "go to the app"}</span>
-        <span className="sm:hidden">{creating ? "creating..." : "app"}</span>
-      </button>
+      {router.pathname === "/app" ? (
+        <button
+          className="mx-4 bg-gray-700 hover:bg-gray-600 transition-colors duration-150 ease-in-out text-gray-100 px-6 py-1 rounded-full font-light focus:outline-none focus:shadow-outline"
+          disabled={creating}
+          onClick={() => {
+            createMap();
+          }}
+        >
+          <span className="block">{creating ? "creating map..." : "new map"}</span>
+        </button>
+      ) : (
+        <Link href="/app">
+          <button className="mx-4 bg-gray-700 hover:bg-gray-600 transition-colors duration-150 ease-in-out text-gray-100 px-6 py-1 rounded-full font-light focus:outline-none focus:shadow-outline">
+            <span className="block">my maps</span>
+          </button>
+        </Link>
+      )}
     </header>
   );
 };
