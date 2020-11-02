@@ -3,7 +3,6 @@ import classNames from "classnames";
 import { signOut, useSession } from "next-auth/client";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import React from "react";
 
 import { DoubleCheckIcon, MenuIcon, RedoIcon, TrashIcon, UndoIcon } from "~/components/Icon";
@@ -15,7 +14,6 @@ export const MenuButton: React.FC = () => {
   const canSelectAll = useStore((store) => store.entities.items.length > 0);
   const canUndo = useStore((store) => store.history.actions.length > 0);
   const canRedo = useStore((store) => store.history.redoStack.length > 0);
-  const router = useRouter();
   const [session] = useSession();
 
   const UndoHotkey = useHotkey({ key: "z", meta: true }, () => {
