@@ -107,9 +107,9 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
         applyClickInteractions();
         applyRightClickInteractions();
         applyResizeInteractions();
-
-        applyImageMissingHandler();
       }
+
+      applyImageMissingHandler();
     });
 
     return () => map.remove();
