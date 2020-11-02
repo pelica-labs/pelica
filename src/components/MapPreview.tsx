@@ -73,10 +73,19 @@ export const MapPreview: React.FC<Props> = ({ map, onMapDeleted }) => {
 
   return (
     <div className="p-1 w-full md:w-1/2 lg:w-1/3 flex flex-col items-stretch h-64">
-      <span className="group relative flex flex-col items-stretch h-full p-1 border border-gray-200 rounded hover:shadow">
+      <span className="group relative flex flex-col items-stretch h-full p-2 border border-gray-200 bg-white rounded hover:shadow">
         <div className="flex justify-between items-center pl-1">
           <div className="flex flex-col mr-4">
-            <span className="truncate ">{map.name || "Untitled"}</span>
+            <Link passHref href={`/app/${map.id}`}>
+              <a
+                className="relative flex flex-col items-stretch h-full hover:text-gray-700 border border-transparent rounded transition duration-75"
+                onClick={() => {
+                  setLoadingMessage("Loading map...");
+                }}
+              >
+                <span className="truncate ">{map.name || "Untitled"}</span>
+              </a>
+            </Link>
             <span className="text-xs text-gray-500">Last update {formatRelative(map.updatedAt, new Date())}</span>
           </div>
           <Menu>
@@ -178,7 +187,7 @@ export const MapPreview: React.FC<Props> = ({ map, onMapDeleted }) => {
 
         <Link passHref href={`/app/${map.id}`}>
           <a
-            className="mt-2 relative flex flex-col items-stretch h-full hover:border-orange-500 hover:shadow border border-transparent rounded transition duration-75"
+            className="mt-2 relative flex flex-col items-stretch h-full border border-transparent rounded transition duration-75"
             onClick={() => {
               setLoadingMessage("Loading map...");
             }}
@@ -195,6 +204,21 @@ export const MapPreview: React.FC<Props> = ({ map, onMapDeleted }) => {
             )}
           </a>
         </Link>
+      </span>
+    </div>
+  );
+};
+
+export const MapPreviewLoading: React.FC = () => {
+  return (
+    <div className="p-1 w-full md:w-1/2 lg:w-1/3 flex flex-col items-stretch h-64">
+      <span className="group relative flex flex-col items-stretch h-full p-2 border border-gray-200 bg-white rounded">
+        <div className="flex flex-col mr-4">
+          <span className="bg-gray-200 animate-pulse w-32 h-4 rounded mb-2"></span>
+          <span className="bg-gray-200 animate-pulse w-24 h-2 rounded mb-2"></span>
+        </div>
+
+        <div className="bg-gray-200 animate-pulse flex-grow flex relative justify-center items-center md:w-full rounded overflow-hidden" />
       </span>
     </div>
   );
