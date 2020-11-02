@@ -59,17 +59,17 @@ const ViewMap: NextPage<Props> = ({ currentUrl, map }) => {
   return (
     <>
       <Head>
-        <meta content={title} property="og:title" />
-        <meta content={t("tagline")} property="og:description" />
-        <meta content={imageUrl} property="og:image" />
-        <meta content={currentUrl} property="og:url" />
+        <meta key="ogTitle" content={title} property="og:title" />
+        <meta key="ogDescription" content={t("tagline")} property="og:description" />
+        <meta key="ogImage" content={imageUrl} property="og:image" />
+        <meta key="ogUrl" content={currentUrl} property="og:url" />
 
-        <meta content={title} name="twitter:title" />
-        <meta content={t("tagline")} name="twitter:description" />
-        <meta content={imageUrl} name="twitter:image" />
-        <meta content="summary_large_image" name="twitter:card" />
+        <meta key="twitterTitle" content={title} name="twitter:title" />
+        <meta key="twitterDescription" content={t("tagline")} name="twitter:description" />
+        <meta key="twitterImage" content={imageUrl} name="twitter:image" />
+        <meta key="twitterCard" content="summary_large_image" name="twitter:card" />
 
-        <title>{title}</title>
+        <title key="title">{title}</title>
       </Head>
 
       <MapViewer map={map} />

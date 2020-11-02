@@ -12,22 +12,23 @@ export const Meta: React.FC = () => {
 
   return (
     <Head>
-      <title>{title}</title>
+      <title key="title">{title}</title>
 
       <meta content={description} name="Description" />
 
       <link href="/images/icon-512.png" rel="shortcut icon" type="image/png" />
       <link href="/images/icon-512.png" rel="apple-touch-icon" />
 
-      <meta content={description} name="description" />
-      <meta content={title} property="og:title" />
-      <meta content={description} property="og:description" />
-      <meta content={ogImageUrl} property="og:image" />
-      <meta content={url} property="og:url" />
-      <meta content={title} name="twitter:title" />
-      <meta content={description} name="twitter:description" />
-      <meta content={ogImageUrl} name="twitter:image" />
-      <meta content="summary_large_image" name="twitter:card"></meta>
+      <meta key="description" content={description} name="description" />
+      <meta key="ogTitle" content={title} property="og:title" />
+      <meta key="ogDescription" content={description} property="og:description" />
+      <meta key="ogImage" content={ogImageUrl} property="og:image" />
+      <meta key="ogUrl" content={url} property="og:url" />
+      <meta key="twitterTitle" content={title} name="twitter:title" />
+      <meta key="twitterDescription" content={description} name="twitter:description" />
+      <meta key="twitterImage" content={ogImageUrl} name="twitter:image" />
+      <meta key="twitterCard" content="summary_large_image" name="twitter:card"></meta>
+
       <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet" />
     </Head>
   );
