@@ -15,6 +15,7 @@ import { defaultStyle, Style } from "~/lib/style";
 export type Editor = {
   mode: EditorMode;
   moving: boolean;
+  readOnly: boolean;
   style: Style;
   aspectRatio: AspectRatio;
 };
@@ -35,6 +36,7 @@ export const modeIcons = {
 export const editorInitialState: Editor = {
   mode: "move",
   moving: true,
+  readOnly: false,
 
   style: defaultStyle as Style,
   aspectRatio: "fill",
@@ -85,6 +87,16 @@ export const editor = ({ mutate, get }: App) => ({
 
     if (mode === "draw") {
       get().routes.startNewRoute();
+    }
+  },
+
+  setReadOnly: (readOnly: boolean) => {
+    mutate((state) => {
+      state.editor.readOnly = readOnly;
+    });
+
+    if (readOnly) {
+      get().editor.setEditorMode("move");
     }
   },
 

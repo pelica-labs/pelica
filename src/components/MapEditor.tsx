@@ -1,3 +1,4 @@
+import { debounce } from "lodash";
 import React, { useEffect, useRef } from "react";
 
 import { Alerts } from "~/components/Alerts";
@@ -9,7 +10,7 @@ import { PlaceAutocomplete } from "~/components/PlaceAutocomplete";
 import { ResetOrientationButton } from "~/components/ResetOrientationButton";
 import { Sidebar } from "~/components/sidebar/Sidebar";
 import { app, useStore, useStoreSubscription } from "~/core/app";
-import { getSelectedItinerary } from "~/core/selectors";
+import { getSelectedItinerary, getSyncableState } from "~/core/selectors";
 import { useKeyboard } from "~/hooks/useKeyboard";
 import { useScreenDimensions } from "~/hooks/useScreenDimensions";
 import { MapModel } from "~/lib/db";
@@ -39,6 +40,13 @@ export const MapEditor: React.FC<Props> = ({ map }) => {
       app.entities.forceRerender();
     });
   }, [map]);
+
+  useStoreSubscription(
+    (store) => getSyncableState(store),
+    debounce((map) => {
+      app.sync.saveState(map);
+    }, 1000)
+  );
 
   /**
    * Focus itinerary input when switching to mode

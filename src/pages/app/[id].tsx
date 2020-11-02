@@ -13,23 +13,21 @@ type Props = {
 
 export const getServerSideProps: GetServerSideProps<Props | EmptyProps> = withSession(async (ctx) => {
   const id = ctx.query.id as string;
-  const userId = await getUserId(ctx.req);
-  if (!userId) {
-    return redirect(ctx.res, "/404");
-  }
 
   const map = await dynamo
     .get({
       TableName: "maps",
-      Key: {
-        id,
-        userId,
-      },
+      Key: { id },
     })
     .promise();
 
   if (!map.Item) {
     return redirect(ctx.res, "/404");
+  }
+
+  const userId = await getUserId(ctx.req);
+  if (map.Item.userId !== userId) {
+    return redirect(ctx.res, `/map/${id}`);
   }
 
   return {

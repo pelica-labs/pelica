@@ -18,14 +18,11 @@ const CloneMap: NextApiHandler = withApiSession(async (req, res) => {
   const map = await dynamo
     .get({
       TableName: "maps",
-      Key: {
-        id,
-        userId,
-      },
+      Key: { id },
     })
     .promise();
 
-  if (!map.Item) {
+  if (!map.Item || map.Item.userId !== userId) {
     return res.status(HttpStatus.NOT_FOUND).json({
       error: "Map not found",
       id,

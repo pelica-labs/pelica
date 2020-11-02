@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import React, { useState } from "react";
 import BounceLoader from "react-spinners/BounceLoader";
 
-import { CopyIcon, EditIcon, TrashIcon, VerticalDotsIcon } from "~/components/Icon";
+import { CopyIcon, EditIcon, ExternalIcon, TrashIcon, VerticalDotsIcon } from "~/components/Icon";
 import { IconButton } from "~/components/IconButton";
 import { StylePreview } from "~/components/StylePreview";
 import { MapModel } from "~/lib/db";
@@ -94,6 +94,24 @@ export const MapPreview: React.FC<Props> = ({ map, onMapDeleted }) => {
                     className="absolute right-0 top-0 mt-10 mr-2 z-50 bg-white border md:rounded md:shadow outline-none py-1"
                   >
                     <div className="flex flex-col w-32">
+                      <Menu.Item>
+                        {({ active }) => (
+                          <Link passHref href={`/map/${map.id}`}>
+                            <a
+                              className={classNames({
+                                "flex items-center justify-between px-2 py-1 cursor-pointer hover:bg-orange-200 text-sm": true,
+                                "bg-orange-200": active,
+                              })}
+                              target="_blank"
+                            >
+                              <ExternalIcon className="w-4 h-4" />
+
+                              <span>Preview</span>
+                            </a>
+                          </Link>
+                        )}
+                      </Menu.Item>
+
                       <Menu.Item>
                         {({ active }) => (
                           <a

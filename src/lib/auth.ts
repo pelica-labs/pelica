@@ -39,7 +39,7 @@ export const mergeAnonymousAccount = async (req: IncomingMessage, user: User): P
       await dynamo
         .delete({
           TableName: "maps",
-          Key: { id: map.id, userId: map.userId },
+          Key: { id: map.id },
         })
         .promise();
 

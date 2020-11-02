@@ -1,5 +1,6 @@
 import { IncomingMessage } from "http";
 import HttpStatus from "http-status-codes";
+import { orderBy } from "lodash";
 import { NextApiHandler } from "next";
 
 import { MapModel } from "~/lib/db";
@@ -22,7 +23,7 @@ export const fetchMaps = async (req: IncomingMessage): Promise<MapModel[]> => {
     })
     .promise();
 
-  return response.Items as MapModel[];
+  return orderBy(response.Items, (map) => map.updatedAt, "desc") as MapModel[];
 };
 
 const ListMaps: NextApiHandler = withApiSession(async (req, res) => {

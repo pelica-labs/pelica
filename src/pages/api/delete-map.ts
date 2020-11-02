@@ -14,10 +14,24 @@ const DeleteMap: NextApiHandler = withApiSession(async (req, res) => {
   const id = req.body.id;
   const userId = await getUserId(req);
 
+  const map = await dynamo
+    .get({
+      TableName: "maps",
+      Key: { id },
+    })
+    .promise();
+
+  if (!map.Item || map.Item.userId !== userId) {
+    return res.status(HttpStatus.NOT_FOUND).json({
+      error: "Map not found",
+      id,
+    });
+  }
+
   await dynamo
     .delete({
       TableName: "maps",
-      Key: { id, userId },
+      Key: { id },
     })
     .promise();
 

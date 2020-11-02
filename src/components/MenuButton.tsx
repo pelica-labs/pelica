@@ -14,6 +14,7 @@ export const MenuButton: React.FC = () => {
   const canSelectAll = useStore((store) => store.entities.items.length > 0);
   const canUndo = useStore((store) => store.history.actions.length > 0);
   const canRedo = useStore((store) => store.history.redoStack.length > 0);
+  const mapId = useStore((store) => store.sync.id);
   const [session] = useSession();
 
   const UndoHotkey = useHotkey({ key: "z", meta: true }, () => {
@@ -162,6 +163,21 @@ export const MenuButton: React.FC = () => {
 
                     <Menu.Item>
                       {({ active }) => (
+                        <Link href={`/map/${mapId}`}>
+                          <a
+                            className={classNames({
+                              "text-gray-800 text-sm px-2 py-1 hover:bg-orange-200": true,
+                              "bg-orange-200": active,
+                            })}
+                          >
+                            Preview
+                          </a>
+                        </Link>
+                      )}
+                    </Menu.Item>
+
+                    <Menu.Item>
+                      {({ active }) => (
                         <Link href="/app">
                           <a
                             className={classNames({
@@ -220,10 +236,10 @@ export const MenuButton: React.FC = () => {
                       )}
                     </Menu.Item>
 
-                    <div className="border-t my-1" />
-
                     {session && (
                       <>
+                        <div className="border-t my-1" />
+
                         <span className="my-2 px-2 text-gray-500 font-light tracking-wide leading-none uppercase text-xs">
                           {session.user.name}
                         </span>

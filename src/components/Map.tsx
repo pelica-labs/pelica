@@ -1,6 +1,5 @@
 import { featureCollection } from "@turf/turf";
 import classNames from "classnames";
-import { debounce } from "lodash";
 import mapboxgl, { LngLatBoundsLike } from "mapbox-gl";
 import Head from "next/head";
 import React, { useEffect, useRef } from "react";
@@ -21,7 +20,7 @@ import {
 } from "~/core/overlays";
 import { upscale } from "~/core/platform";
 import { STOP_DRAWING_CIRCLE_ID } from "~/core/routes";
-import { getEntityFeatures, getMap, getSelectedEntities, getSelectedEntity, getSyncableState } from "~/core/selectors";
+import { getEntityFeatures, getMap, getSelectedEntities, getSelectedEntity } from "~/core/selectors";
 import { computeMapDimensions, computeResizingRatio } from "~/lib/aspectRatio";
 import { getEnv } from "~/lib/config";
 import { styleToUrl } from "~/lib/style";
@@ -38,13 +37,17 @@ import { applyScrollInteractions } from "~/map/interactions/scroll";
 import { applyLayers } from "~/map/layers";
 import { applySources, MapSource } from "~/map/sources";
 
-export const Map: React.FC = () => {
-  // const map = useRef<mapboxgl.Map>();
+type Props = {
+  readOnly?: boolean;
+};
+
+export const Map: React.FC<Props> = ({ readOnly = false }) => {
   const container = useRef<HTMLDivElement>(null);
   const wrapper = useRef<HTMLDivElement>(null);
   const aspectRatio = useStore((store) => store.editor.aspectRatio);
   const editorMode = useStore((store) => store.editor.mode);
-  const exporting = useStore((store) => store.exports.exporting);
+
+  const displayHtmlWatermark = readOnly || editorMode !== "export";
 
   /**
    * Initialize map
@@ -94,30 +97,23 @@ export const Map: React.FC = () => {
       applyLayers();
       applyFeatures(getEntityFeatures(), [MapSource.Routes, MapSource.Pins, MapSource.Texts]);
 
-      applyMoveInteractions();
-      applyHoverInteractions();
-      applyPinchInteractions();
       applyScrollInteractions();
-      applyKeyboardInteractions();
-      applyClickInteractions();
-      applyRightClickInteractions();
-      applyResizeInteractions();
+      applyPinchInteractions();
 
-      applyImageMissingHandler();
+      if (!readOnly) {
+        applyMoveInteractions();
+        applyHoverInteractions();
+        applyKeyboardInteractions();
+        applyClickInteractions();
+        applyRightClickInteractions();
+        applyResizeInteractions();
+
+        applyImageMissingHandler();
+      }
     });
 
     return () => map.remove();
   }, []);
-
-  /**
-   * Sync state to storage
-   */
-  useStoreSubscription(
-    (store) => getSyncableState(store),
-    debounce((map) => {
-      app.sync.saveState(map);
-    }, 1000)
-  );
 
   /**
    * Sync coordinates
@@ -557,7 +553,7 @@ export const Map: React.FC = () => {
             })}
             id="map"
           >
-            {editorMode === "export" && !exporting && (
+            {displayHtmlWatermark && (
               <div className="absolute bottom-0 left-0 flex mb-1 ml-1">
                 <img alt="Watermark" className="w-24" src="/images/watermark.png" />
               </div>
