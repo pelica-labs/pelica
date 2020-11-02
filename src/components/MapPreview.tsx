@@ -208,3 +208,18 @@ export const MapPreview: React.FC<Props> = ({ map, onMapDeleted }) => {
     </div>
   );
 };
+
+export const MapPreviewLoading: React.FC = () => {
+  return (
+    <div className="p-1 w-full md:w-1/2 lg:w-1/3 flex flex-col items-stretch h-64">
+      <span className="group relative flex flex-col items-stretch h-full p-2 border border-gray-200 bg-white rounded">
+        <div className="flex flex-col mr-4">
+          <span className="bg-gray-200 animate-pulse w-32 h-4 rounded mb-2"></span>
+          <span className="bg-gray-200 animate-pulse w-24 h-2 rounded mb-2"></span>
+        </div>
+
+        <div className="bg-gray-200 animate-pulse flex-grow flex relative justify-center items-center md:w-full rounded overflow-hidden" />
+      </span>
+    </div>
+  );
+};

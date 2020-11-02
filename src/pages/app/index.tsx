@@ -6,36 +6,22 @@ import React, { useState } from "react";
 import useSWR from "swr";
 
 import { MapPlusIcon } from "~/components/Icon";
-import { MapPreview } from "~/components/MapPreview";
+import { MapPreview, MapPreviewLoading } from "~/components/MapPreview";
 import { Navbar } from "~/components/Navbar";
 import { GoogleButton } from "~/components/SocialButtons";
 import { MapModel } from "~/lib/db";
-import { withSession } from "~/lib/session";
-import { fetchMaps } from "~/pages/api/list-maps";
 
 type Props = {
   maps: MapModel[];
 };
 
-export const getServerSideProps: GetServerSideProps<Props> = withSession(async (ctx) => {
-  const maps = await fetchMaps(ctx.req);
-
-  return {
-    props: {
-      maps,
-    },
-  };
-});
-
-const Maps: NextPage<Props> = ({ maps }) => {
+const Maps: NextPage<Props> = () => {
   const [creating, setCreating] = useState(false);
   const router = useRouter();
 
   const [session, loading] = useSession();
 
-  const { data, revalidate } = useSWR<Props>("/api/list-maps", {
-    initialData: { maps },
-  });
+  const { data, revalidate } = useSWR<Props>("/api/list-maps");
 
   const createMap = async () => {
     setCreating(true);
@@ -67,21 +53,20 @@ const Maps: NextPage<Props> = ({ maps }) => {
         </div>
       )}
 
-      {data && (
-        <div className="mt-8 container mx-auto max-w-4xl">
-          <div className="flex items-center justify-between px-1">
-            <h1 className="px-2 text-2xl">Saved maps</h1>
-            <button
-              className="w-12 h-12 flex items-center justify-center bg-orange-600 hover:bg-orange-500 shadow transition duration-300 ease-in-out text-gray-100 px-3 py-1 rounded-full uppercase tracking-wider font-medium hover:scale-105 hover:shadow focus:outline-none focus:shadow-outline text-sm"
-              disabled={creating}
-              onClick={() => {
-                createMap();
-              }}
-            >
-              {creating ? "Creating map..." : <MapPlusIcon className="w-8 h-8" />}
-            </button>
-          </div>
-
+      <div className="mt-8 container mx-auto max-w-4xl">
+        <div className="flex items-center justify-between px-1">
+          <h1 className="px-2 text-2xl">Saved maps</h1>
+          <button
+            className="w-12 h-12 flex items-center justify-center bg-orange-600 hover:bg-orange-500 shadow transition duration-300 ease-in-out text-gray-100 px-3 py-1 rounded-full uppercase tracking-wider font-medium hover:scale-105 hover:shadow focus:outline-none focus:shadow-outline text-sm"
+            disabled={creating}
+            onClick={() => {
+              createMap();
+            }}
+          >
+            {creating ? "Creating map..." : <MapPlusIcon className="w-8 h-8" />}
+          </button>
+        </div>
+        {data ? (
           <div className="mt-4 flex flex-wrap">
             {!data.maps.length && (
               <div className="w-full h-64 flex items-center justify-center text-gray-600 mt-10 gap-10 px-4 flex-wrap">
@@ -104,8 +89,12 @@ const Maps: NextPage<Props> = ({ maps }) => {
               );
             })}
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="mt-4 flex flex-wrap">
+            <MapPreviewLoading />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
