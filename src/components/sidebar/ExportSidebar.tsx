@@ -67,7 +67,7 @@ export const ExportSidebar: React.FC = () => {
       return;
     }
 
-    const url = `${window.location.protocol}//${window.location.host}/map/${imageId}`;
+    const url = `${window.location.protocol}//${window.location.host}/image/${imageId}`;
 
     if (sharing) {
       setSharing(false);

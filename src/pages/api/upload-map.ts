@@ -1,17 +1,10 @@
-import AWS from "aws-sdk";
 import { File, IncomingForm } from "formidable";
 import fs from "fs";
 import HttpStatus from "http-status-codes";
 import { NextApiHandler, NextApiRequest } from "next";
 
 import { getEnv } from "~/lib/config";
-import { generateFilePrefix } from "~/lib/s3";
-
-const s3 = new AWS.S3({
-  accessKeyId: getEnv("AWS_KEY", process.env.AWS_KEY),
-  secretAccessKey: getEnv("AWS_SECRET", process.env.AWS_SECRET),
-  region: getEnv("AWS_S3_REGION", process.env.AWS_S3_REGION),
-});
+import { generateFilePrefix, s3 } from "~/lib/s3";
 
 type UploadedMap = {
   id: string;

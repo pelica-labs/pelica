@@ -20,7 +20,7 @@ type Props = {
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   const path = generateFilePrefix("maps") + ctx.query.id + ".jpeg";
-  const currentUrl = ctx.req.headers.host + "/map/" + ctx.query.id;
+  const currentUrl = ctx.req.headers.host + "/image/" + ctx.query.id;
 
   const objectParams = {
     Bucket: getEnv("AWS_S3_BUCKET", process.env.AWS_S3_BUCKET),
