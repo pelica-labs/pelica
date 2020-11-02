@@ -5,9 +5,9 @@ declare namespace NodeJS {
     NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN: string;
     MAPBOX_SECRET_TOKEN: string;
 
-    AWS_REGION: string;
-    AWS_ACCESS_KEY_ID: string;
-    AWS_SECRET_ACCESS_KEY: string;
+    OMANYD_AWS_REGION: string;
+    OMANYD_AWS_ACCESS_KEY_ID: string;
+    OMANYD_AWS_SECRET_ACCESS_KEY: string;
 
     AWS_S3_BUCKET: string;
 
