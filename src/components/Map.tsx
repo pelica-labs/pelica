@@ -21,6 +21,7 @@ import {
 import { upscale } from "~/core/platform";
 import { STOP_DRAWING_CIRCLE_ID } from "~/core/routes";
 import { getEntityFeatures, getMap, getSelectedEntities, getSelectedEntity } from "~/core/selectors";
+import { useAutoSaveAlert } from "~/hooks/useAutoSaveAlert";
 import { computeMapDimensions, computeResizingRatio } from "~/lib/aspectRatio";
 import { getEnv } from "~/lib/config";
 import { styleToUrl } from "~/lib/style";
@@ -46,6 +47,8 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
   const wrapper = useRef<HTMLDivElement>(null);
   const aspectRatio = useStore((store) => store.editor.aspectRatio);
   const editorMode = useStore((store) => store.editor.mode);
+
+  useAutoSaveAlert();
 
   const displayHtmlWatermark = readOnly || editorMode !== "export";
 
