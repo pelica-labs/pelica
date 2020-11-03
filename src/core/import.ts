@@ -1,6 +1,6 @@
-import { nextEntityId } from "~/core/entities";
 import { App } from "~/core/helpers";
 import { parseGpx } from "~/lib/gpx";
+import { numericId } from "~/lib/id";
 import { MapSource } from "~/map/sources";
 
 export const imports = ({ get }: App) => ({
@@ -21,7 +21,7 @@ export const imports = ({ get }: App) => ({
         name: "importGpx",
         route: {
           type: "Route",
-          id: nextEntityId(),
+          id: numericId(),
           source: MapSource.Routes,
           smartMatching: { enabled: false, profile: null },
           transientPoints: [],

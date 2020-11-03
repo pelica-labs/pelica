@@ -3,14 +3,15 @@ import { Position } from "@turf/turf";
 import { App } from "~/core/helpers";
 import { Pin } from "~/core/pins";
 import { Text } from "~/core/texts";
+import { ID } from "~/lib/id";
 
 export type DragAndDrop = {
-  draggedEntityId: number | null;
+  draggedEntityId: ID | null;
   dragMoved: boolean;
   // @todo: this probably should be stored as a mercator projection
   dragOffset: Position | null;
 
-  hoveredEntityId: number | null;
+  hoveredEntityId: ID | null;
   hoveredEntitySource: string | null;
 };
 
@@ -26,21 +27,21 @@ export const dragAndDropInitialState: DragAndDrop = {
 export const dragAndDrop = ({ mutate, get }: App) => ({
   ...dragAndDropInitialState,
 
-  startHover: (id: number, source: string) => {
-    mutate(({ dragAndDrop: drag }) => {
-      drag.hoveredEntityId = id;
-      drag.hoveredEntitySource = source;
+  startHover: (id: ID, source: string) => {
+    mutate((state) => {
+      state.dragAndDrop.hoveredEntityId = id;
+      state.dragAndDrop.hoveredEntitySource = source;
     });
   },
 
   endHover: () => {
-    mutate(({ dragAndDrop: drag }) => {
-      drag.hoveredEntityId = null;
-      drag.hoveredEntitySource = null;
+    mutate((state) => {
+      state.dragAndDrop.hoveredEntityId = null;
+      state.dragAndDrop.hoveredEntitySource = null;
     });
   },
 
-  startDrag: (entityId: number, coordinates: Position) => {
+  startDrag: (entityId: ID, coordinates: Position) => {
     mutate((state) => {
       const draggedEntity = state.entities.items.find((entity) => entity.id === entityId) as Pin;
 
@@ -100,10 +101,10 @@ export const dragAndDrop = ({ mutate, get }: App) => ({
       }
     }
 
-    mutate(({ dragAndDrop }) => {
-      dragAndDrop.draggedEntityId = null;
-      dragAndDrop.dragMoved = false;
-      dragAndDrop.dragOffset = null;
+    mutate((state) => {
+      state.dragAndDrop.draggedEntityId = null;
+      state.dragAndDrop.dragMoved = false;
+      state.dragAndDrop.dragOffset = null;
     });
   },
 });

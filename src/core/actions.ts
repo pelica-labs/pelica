@@ -7,6 +7,7 @@ import { ItineraryProfile, Place } from "~/core/itineraries";
 import { Pin, PinStyle } from "~/core/pins";
 import { ItineraryRoute, Route, RouteStyle } from "~/core/routes";
 import { Text, TextStyle } from "~/core/texts";
+import { ID } from "~/lib/id";
 import { SmartMatching } from "~/lib/smartMatching";
 import { Style } from "~/lib/style";
 
@@ -39,7 +40,7 @@ export type Action =
 
 type DrawAction = {
   name: "draw";
-  routeId: number;
+  routeId: ID;
   rawPoints: Position[];
   points: Position[];
 
@@ -126,7 +127,7 @@ const ImportGpxHandler: Handler<ImportGpxAction> = {
 
 type MovePinAction = {
   name: "movePin";
-  pinId: number;
+  pinId: ID;
   coordinates: Position;
 
   previousCoordinates?: Position;
@@ -151,7 +152,7 @@ const MovePinHandler: Handler<MovePinAction> = {
 
 type MoveTextAction = {
   name: "moveText";
-  textId: number;
+  textId: ID;
   coordinates: Position;
 
   previousCoordinates?: Position;
@@ -196,7 +197,7 @@ const UpdateStyleHandler: Handler<UpdateStyleAction> = {
 
 type DeleteEntityAction = {
   name: "deleteEntity";
-  entityIds: number[];
+  entityIds: ID[];
 
   deletedEntity?: Entity[];
 };
@@ -220,11 +221,11 @@ const DeleteEntityHandler: Handler<DeleteEntityAction> = {
 
 type UpdatePinAction = {
   name: "updatePin";
-  pinIds: number[];
+  pinIds: ID[];
 
   style: Partial<PinStyle>;
 
-  previousStyles?: { [key: number]: PinStyle };
+  previousStyles?: { [key: string]: PinStyle };
 };
 
 const UpdatePinHandler: Handler<UpdatePinAction> = {
@@ -255,11 +256,11 @@ const UpdatePinHandler: Handler<UpdatePinAction> = {
 
 type UpdateTextAction = {
   name: "updateText";
-  textIds: number[];
+  textIds: ID[];
 
   style: Partial<TextStyle>;
 
-  previousStyles?: { [key: number]: TextStyle };
+  previousStyles?: { [key: string]: TextStyle };
 };
 
 const UpdateTextHandler: Handler<UpdateTextAction> = {
@@ -290,10 +291,10 @@ const UpdateTextHandler: Handler<UpdateTextAction> = {
 
 type UpdateRouteAction = {
   name: "updateRoute";
-  routeIds: number[];
+  routeIds: ID[];
   style: Partial<RouteStyle>;
 
-  previousStyles?: { [key: number]: RouteStyle };
+  previousStyles?: { [key: string]: RouteStyle };
 };
 
 const UpdateRouteHandler: Handler<UpdateRouteAction> = {
@@ -324,7 +325,7 @@ const UpdateRouteHandler: Handler<UpdateRouteAction> = {
 
 type UpdateLineSmartMatchingAction = {
   name: "updateLineSmartMatching";
-  lineId: number;
+  lineId: ID;
   points: Position[];
   smartMatching: SmartMatching;
 
@@ -359,7 +360,7 @@ const UpdateLineSmartMatchingHandler: Handler<UpdateLineSmartMatchingAction> = {
 
 type AddRouteStepAction = {
   name: "addRouteStep";
-  entityId: number;
+  entityId: ID;
   place: Place;
 };
 
@@ -381,7 +382,7 @@ const AddRouteStepActionHandler: Handler<AddRouteStepAction> = {
 
 type UpdateRouteStepAction = {
   name: "updateRouteStep";
-  entityId: number;
+  entityId: ID;
   index: number;
   place: Place;
 
@@ -407,7 +408,7 @@ const UpdateRouteStepActionHandler: Handler<UpdateRouteStepAction> = {
 
 type MoveRouteStepAction = {
   name: "moveRouteStep";
-  entityId: number;
+  entityId: ID;
   from: number;
   to: number;
 };
@@ -432,7 +433,7 @@ const MoveRouteStepActionHandler: Handler<MoveRouteStepAction> = {
 
 type DeleteRouteStepAction = {
   name: "deleteRouteStep";
-  entityId: number;
+  entityId: ID;
   index: number;
 
   place?: Place;
@@ -457,7 +458,7 @@ const DeleteRouteStepActionHandler: Handler<DeleteRouteStepAction> = {
 
 type UpdateRouteProfileAction = {
   name: "updateRouteProfile";
-  entityId: number;
+  entityId: ID;
   profile: ItineraryProfile;
 
   previousProfile?: ItineraryProfile;

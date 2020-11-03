@@ -4,6 +4,7 @@ import { MapMouseEvent, MapTouchEvent } from "mapbox-gl";
 
 import { app, getState } from "~/core/app";
 import { getMap, getSelectedItinerary } from "~/core/selectors";
+import { ID } from "~/lib/id";
 
 type TouchEventHandler = (event: MapMouseEvent | MapTouchEvent) => void;
 
@@ -106,7 +107,7 @@ export const applyClickInteractions = (): void => {
       if (features?.length) {
         event.preventDefault();
 
-        app.dragAndDrop.startDrag(features[0].id as number, event.lngLat.toArray());
+        app.dragAndDrop.startDrag(features[0].id as ID, event.lngLat.toArray());
         return;
       }
     }
@@ -166,7 +167,7 @@ export const applyClickInteractions = (): void => {
       });
 
       if (features?.length) {
-        const featureId = features[0].id as number;
+        const featureId = features[0].id as ID;
 
         if (state.platform.keyboard.shiftKey) {
           app.selection.toggleEntitySelection(featureId);

@@ -2,6 +2,7 @@ import { MapLayerMouseEvent } from "mapbox-gl";
 
 import { app, getState } from "~/core/app";
 import { getMap } from "~/core/selectors";
+import { ID } from "~/lib/id";
 
 export const applyHoverInteractions = (): void => {
   const map = getMap();
@@ -43,7 +44,7 @@ export const applyHoverInteractions = (): void => {
       });
     }
 
-    app.dragAndDrop.startHover(event.features[0].id as number, event.features[0].source);
+    app.dragAndDrop.startHover(event.features[0].id as ID, event.features[0].source);
 
     map.setFeatureState(event.features[0], {
       hover: true,

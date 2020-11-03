@@ -2,7 +2,7 @@ import HttpStatus from "http-status-codes";
 import { NextApiHandler } from "next";
 
 import { dynamo } from "~/lib/aws";
-import { uniqueId } from "~/lib/id";
+import { stringId } from "~/lib/id";
 import { getUserId, withApiSession } from "~/lib/session";
 
 const CloneMap: NextApiHandler = withApiSession(async (req, res) => {
@@ -29,7 +29,7 @@ const CloneMap: NextApiHandler = withApiSession(async (req, res) => {
     });
   }
 
-  const newId = uniqueId();
+  const newId = stringId();
 
   await dynamo
     .put({

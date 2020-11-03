@@ -3,7 +3,7 @@ import { NextApiHandler } from "next";
 
 import { dynamo } from "~/lib/aws";
 import { ImageModel } from "~/lib/db";
-import { uniqueId } from "~/lib/id";
+import { stringId } from "~/lib/id";
 
 const CreateImage: NextApiHandler = async (req, res) => {
   if (req.method !== "POST") {
@@ -13,7 +13,7 @@ const CreateImage: NextApiHandler = async (req, res) => {
   }
 
   const mapId = req.body.mapId;
-  const id = uniqueId();
+  const id = stringId();
 
   const image: ImageModel = {
     id,

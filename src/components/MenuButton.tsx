@@ -14,6 +14,7 @@ export const MenuButton: React.FC = () => {
   const canSelectAll = useStore((store) => store.entities.items.length > 0);
   const canUndo = useStore((store) => store.history.actions.length > 0);
   const canRedo = useStore((store) => store.history.redoStack.length > 0);
+  const canClear = useStore((store) => store.entities.items.length > 0);
   const mapId = useStore((store) => store.sync.id);
   const [session] = useSession();
 
@@ -138,7 +139,7 @@ export const MenuButton: React.FC = () => {
                       )}
                     </Menu.Item>
 
-                    <Menu.Item disabled={!canUndo}>
+                    <Menu.Item disabled={!canClear}>
                       {({ active, disabled }) => (
                         <a
                           className={classNames({

@@ -6,6 +6,7 @@ import { Pin } from "~/core/pins";
 import { Route } from "~/core/routes";
 import { Text } from "~/core/texts";
 import { MapModel } from "~/lib/db";
+import { ID } from "~/lib/id";
 import { defaultStyles } from "~/lib/style";
 import { RawFeature } from "~/map/features";
 
@@ -18,7 +19,7 @@ export const getMap = (state: State = getState()): mapboxgl.Map => {
   return state.map.current;
 };
 
-export const getEntity = (id: number, state: State = getState()) => {
+export const getEntity = (id: ID, state: State = getState()) => {
   return state.entities.items.find((entity) => {
     return entity.id === id;
   });

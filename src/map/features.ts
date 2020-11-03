@@ -3,10 +3,11 @@ import { isArray } from "lodash";
 import { GeoJSONSource } from "mapbox-gl";
 
 import { getMap } from "~/core/selectors";
+import { ID } from "~/lib/id";
 import { MapSource } from "~/map/sources";
 
 export type RawFeature = Feature<Geometry> & {
-  id: number;
+  id: ID;
   source: MapSource;
 };
 

@@ -2,6 +2,7 @@ import { MapMouseEvent, MapTouchEvent } from "mapbox-gl";
 
 import { app } from "~/core/app";
 import { getMap } from "~/core/selectors";
+import { ID } from "~/lib/id";
 
 export const applyRightClickInteractions = (): void => {
   const map = getMap();
@@ -16,7 +17,7 @@ export const applyRightClickInteractions = (): void => {
     }
 
     app.editor.setEditorMode("select");
-    app.selection.selectEntity(features[0].id as number);
+    app.selection.selectEntity(features[0].id as ID);
   };
 
   map.on("contextmenu", onFeatureRightClick);

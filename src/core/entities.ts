@@ -5,6 +5,7 @@ import { Pin } from "~/core/pins";
 import { Route } from "~/core/routes";
 import { Text } from "~/core/texts";
 import { outlineColor } from "~/lib/color";
+import { numericId } from "~/lib/id";
 import { RawFeature } from "~/map/features";
 import { MapSource } from "~/map/sources";
 
@@ -30,7 +31,7 @@ export const entities = ({ mutate, get }: App) => ({
       .map((feature) => {
         if (feature.geometry?.type === "Point") {
           return {
-            id: nextEntityId(),
+            id: numericId(),
             type: "Pin",
             source: MapSource.Pins,
             coordinates: feature.geometry.coordinates,
@@ -40,7 +41,7 @@ export const entities = ({ mutate, get }: App) => ({
 
         if (feature.geometry?.type === "LineString") {
           return {
-            id: nextEntityId(),
+            id: numericId(),
             type: "Route",
             source: MapSource.Routes,
             transientPoints: [],
@@ -77,7 +78,7 @@ export const entities = ({ mutate, get }: App) => ({
     mutate((state) => {
       state.entities.items.push({
         type: "Pin",
-        id: -1,
+        id: "RERENDER",
         source: MapSource.Pins,
         coordinates: [0, 0],
         style: {

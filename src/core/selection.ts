@@ -4,13 +4,14 @@ import { uniq } from "lodash";
 import { entityToFeature } from "~/core/entities";
 import { App } from "~/core/helpers";
 import { getSelectedEntities } from "~/core/selectors";
+import { ID } from "~/lib/id";
 import { RawFeature } from "~/map/features";
 
 export type Selection = {
   area: BBox | null;
 
-  ids: number[];
-  preservedIds: number[];
+  ids: ID[];
+  preservedIds: ID[];
 };
 
 export const selectionInitialState: Selection = {
@@ -76,7 +77,7 @@ export const selection = ({ mutate, get }: App) => ({
     });
   },
 
-  selectEntity: (entityId: number) => {
+  selectEntity: (entityId: ID) => {
     get().selection.clear();
 
     mutate((state) => {
@@ -89,7 +90,7 @@ export const selection = ({ mutate, get }: App) => ({
     }
   },
 
-  toggleEntitySelection: (entityId: number) => {
+  toggleEntitySelection: (entityId: ID) => {
     mutate((state) => {
       const entityIndex = state.selection.ids.indexOf(entityId);
       if (entityIndex >= 0) {

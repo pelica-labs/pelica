@@ -19,7 +19,6 @@ import {
   getWatermarkOverlay,
 } from "~/core/overlays";
 import { upscale } from "~/core/platform";
-import { STOP_DRAWING_CIRCLE_ID } from "~/core/routes";
 import { getEntityFeatures, getMap, getSelectedEntities, getSelectedEntity } from "~/core/selectors";
 import { useAutoSaveAlert } from "~/hooks/useAutoSaveAlert";
 import { computeMapDimensions, computeResizingRatio } from "~/lib/aspectRatio";
@@ -320,7 +319,7 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
       if (editorMode === "text" && nextPoint) {
         const feature = entityToFeature({
           type: "Text",
-          id: -1,
+          id: "TEXT_PREVIEW",
           source: MapSource.TextPreview,
           coordinates: nextPoint,
           style: textStyle,
@@ -347,7 +346,7 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
       if (editorMode === "pin" && nextPoint) {
         const feature = entityToFeature({
           type: "Pin",
-          id: -1,
+          id: "PIN_PREVIEW",
           source: MapSource.PinPreview,
           coordinates: nextPoint,
           style: pinStyle,
@@ -457,7 +456,7 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
         containerClasses.add("move");
       } else if (editorMode === "pin" || editorMode === "text") {
         containerClasses.add("place");
-      } else if (editorMode === "draw" && hoveredEntityId !== STOP_DRAWING_CIRCLE_ID) {
+      } else if (editorMode === "draw" && hoveredEntityId !== "ROUTE_STOP") {
         containerClasses.add("draw");
       }
     }

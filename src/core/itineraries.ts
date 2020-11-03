@@ -1,9 +1,9 @@
 import { Position } from "@turf/turf";
 
-import { nextEntityId } from "~/core/entities";
 import { App } from "~/core/helpers";
 import { ItineraryRoute, Route } from "~/core/routes";
 import { getSelectedEntity } from "~/core/selectors";
+import { numericId } from "~/lib/id";
 import { MapSource } from "~/map/sources";
 
 export type Place = {
@@ -47,7 +47,7 @@ export const itineraries = ({ mutate, get }: App) => ({
 
   startNewItininerary: () => {
     mutate((state) => {
-      const id = nextEntityId();
+      const id = numericId();
 
       state.selection.ids = [id];
       state.entities.items.push({

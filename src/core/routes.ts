@@ -1,9 +1,9 @@
 import { distance, Feature, LineString, lineString, Position, simplify } from "@turf/turf";
 
-import { nextEntityId } from "~/core/entities";
 import { App } from "~/core/helpers";
 import { ItineraryProfile, Place } from "~/core/itineraries";
 import { getSelectedEntity, getSelectedRoutes } from "~/core/selectors";
+import { ID, numericId } from "~/lib/id";
 import { smartMatch, SmartMatching, SmartMatchingProfile } from "~/lib/smartMatching";
 import { MapSource } from "~/map/sources";
 import { theme } from "~/styles/tailwind";
@@ -13,7 +13,7 @@ export type OutlineType = "dark" | "light" | "black" | "white" | "glow" | "none"
 export type DrawingMode = "freeDrawing" | "pointByPoint";
 
 export type Route = {
-  id: number;
+  id: ID;
   source: MapSource;
   type: "Route";
   transientPoints: Position[];
@@ -65,8 +65,6 @@ export const routesInitialState: Routes = {
   },
 };
 
-export const STOP_DRAWING_CIRCLE_ID = 999999999; // 🙉
-
 export const computeDistance = (route: Route): number => {
   const points = [...route.points, ...route.transientPoints];
 
@@ -106,7 +104,7 @@ export const routes = ({ mutate, get }: App) => ({
 
   startNewRoute: () => {
     mutate((state) => {
-      const id = nextEntityId();
+      const id = numericId();
 
       state.selection.ids = [id];
       state.entities.items.push({

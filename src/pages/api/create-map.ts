@@ -3,7 +3,7 @@ import { NextApiHandler } from "next";
 
 import { dynamo } from "~/lib/aws";
 import { MapModel } from "~/lib/db";
-import { uniqueId } from "~/lib/id";
+import { stringId } from "~/lib/id";
 import { initializeAnonymousSession, withApiSession } from "~/lib/session";
 
 const CreateMap: NextApiHandler = withApiSession(async (req, res) => {
@@ -13,7 +13,7 @@ const CreateMap: NextApiHandler = withApiSession(async (req, res) => {
     });
   }
 
-  const id = uniqueId();
+  const id = stringId();
   const userId = await initializeAnonymousSession(req);
 
   const map: MapModel = {

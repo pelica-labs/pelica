@@ -4,7 +4,7 @@ import { getSession } from "next-auth/client";
 import { withIronSession } from "next-iron-session";
 
 import { getEnv } from "~/lib/config";
-import { ID, uniqueId } from "~/lib/id";
+import { ID, stringId } from "~/lib/id";
 
 const SESSION_KEY = "pelica-anonymous-session";
 
@@ -50,7 +50,7 @@ export const initializeAnonymousSession = async (req: IncomingMessage): Promise<
   let userId = req.session.get(SESSION_KEY);
 
   if (userId === undefined) {
-    userId = uniqueId();
+    userId = stringId();
     req.session.set(SESSION_KEY, userId);
     await req.session.save();
   }

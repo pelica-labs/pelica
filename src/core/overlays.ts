@@ -2,7 +2,7 @@ import { BBox, bbox, bboxPolygon, lineString, Position, transformScale } from "@
 import { MercatorCoordinate } from "mapbox-gl";
 
 import { Pin } from "~/core/pins";
-import { Route, STOP_DRAWING_CIRCLE_ID } from "~/core/routes";
+import { Route } from "~/core/routes";
 import { Text } from "~/core/texts";
 import { RawFeature } from "~/map/features";
 import { MapSource } from "~/map/sources";
@@ -10,7 +10,7 @@ import { MapSource } from "~/map/sources";
 export const getWatermarkOverlay = (position: Position): RawFeature => {
   return {
     type: "Feature",
-    id: -1,
+    id: "WATERMARK",
     source: MapSource.Watermark,
     geometry: {
       type: "Point",
@@ -28,7 +28,7 @@ export const getNextPointOverlay = (route: Route, nextPoint: Position): RawFeatu
   if (!lastPoint) {
     return {
       type: "Feature",
-      id: -1,
+      id: "NEXT_POINT",
       source: MapSource.RouteNextPoint,
       geometry: {
         type: "Point",
@@ -43,7 +43,7 @@ export const getNextPointOverlay = (route: Route, nextPoint: Position): RawFeatu
 
   return {
     type: "Feature",
-    id: -1,
+    id: "NEXT_POINT",
     source: MapSource.RouteNextPoint,
     geometry: {
       type: "LineString",
@@ -63,7 +63,7 @@ export const getRouteStopOverlay = (route: Route): RawFeature => {
 
   return {
     type: "Feature",
-    id: STOP_DRAWING_CIRCLE_ID,
+    id: "ROUTE_STOP",
     source: MapSource.RouteStop,
     geometry: {
       type: "Point",
@@ -81,7 +81,7 @@ export const getRouteOverlay = (route: Route): RawFeature => {
 
   return {
     type: "Feature",
-    id: -1,
+    id: "ROUTE_OVERLAY",
     source: MapSource.Overlays,
 
     geometry: polygon.geometry,
@@ -92,7 +92,7 @@ export const getRouteOverlay = (route: Route): RawFeature => {
 export const getPinOverlay = (pin: Pin): RawFeature => {
   return {
     type: "Feature",
-    id: -1,
+    id: "PIN_OVERLAY",
     source: MapSource.Overlays,
     geometry: {
       type: "Point",
@@ -115,7 +115,7 @@ export const getTextOverlay = (text: Text, zoom: number): RawFeature => {
 
   return {
     type: "Feature",
-    id: -1,
+    id: "TEXT_OVERLAY",
     source: MapSource.Overlays,
     geometry: {
       type: "LineString",
@@ -132,7 +132,7 @@ export const getSelectionAreaOverlay = (bbox: BBox): RawFeature => {
 
   return {
     type: "Feature",
-    id: -1,
+    id: "SELECTION_AREA_OVERLAY",
     source: MapSource.SelectionArea,
     geometry: polygon.geometry,
     properties: {},

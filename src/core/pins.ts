@@ -1,9 +1,9 @@
 import { Position } from "@turf/turf";
 import { MercatorCoordinate } from "mapbox-gl";
 
-import { nextEntityId } from "~/core/entities";
 import { App } from "~/core/helpers";
 import { getSelectedEntity, getSelectedPins } from "~/core/selectors";
+import { ID, numericId } from "~/lib/id";
 import { MapSource } from "~/map/sources";
 import { theme } from "~/styles/tailwind";
 
@@ -11,7 +11,7 @@ export const MIN_PIN_SIZE = 1;
 export const MAX_PIN_SIZE = 12;
 
 export type Pin = {
-  id: number;
+  id: ID;
   source: MapSource;
   type: "Pin";
   coordinates: Position;
@@ -61,7 +61,7 @@ export const pins = ({ mutate, get }: App) => ({
   },
 
   place: (coordinates: Position) => {
-    const pinId = nextEntityId();
+    const pinId = numericId();
 
     get().history.push({
       name: "pin",

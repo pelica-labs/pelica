@@ -1,10 +1,10 @@
 import { bbox, bboxPolygon, centerOfMass, lineString, Position } from "@turf/turf";
 import { MercatorCoordinate } from "mapbox-gl";
 
-import { nextEntityId } from "~/core/entities";
 import { App } from "~/core/helpers";
 import { OutlineType, Route } from "~/core/routes";
 import { getSelectedEntity, getSelectedTexts } from "~/core/selectors";
+import { ID, numericId } from "~/lib/id";
 import { MapSource } from "~/map/sources";
 
 export const MIN_TEXT_SIZE = 6;
@@ -18,7 +18,7 @@ export type TextStyle = {
 };
 
 export type Text = {
-  id: number;
+  id: ID;
   source: MapSource;
   type: "Text";
   coordinates: Position;
@@ -59,7 +59,7 @@ export const texts = ({ mutate, get }: App) => ({
   },
 
   place: (coordinates: Position) => {
-    const textId = nextEntityId();
+    const textId = numericId();
 
     get().history.push({
       name: "placeText",
@@ -81,7 +81,7 @@ export const texts = ({ mutate, get }: App) => ({
       return;
     }
 
-    const textId = nextEntityId();
+    const textId = numericId();
 
     get().history.push({
       name: "placeText",
