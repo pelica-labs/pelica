@@ -1,10 +1,8 @@
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
-import ClipLoader from "react-spinners/ClipLoader";
 
-import { DoubleCheckIcon } from "~/components/Icon";
+import { CloudCheck, CloudUpload } from "~/components/Icon";
 import { useStore } from "~/core/app";
-import { theme } from "~/styles/tailwind";
 
 export const SyncIndicator: React.FC = () => {
   const syncing = useStore((store) => store.sync.syncing);
@@ -22,7 +20,7 @@ export const SyncIndicator: React.FC = () => {
 
       const timeout = setTimeout(() => {
         setJustSynced(false);
-      }, 1000);
+      }, 3000);
 
       return () => {
         clearTimeout(timeout);
@@ -31,20 +29,18 @@ export const SyncIndicator: React.FC = () => {
   }, [syncing]);
 
   return (
-    <div className="flex items-center">
-      <div
+    <div className="relative flex items-center">
+      <CloudUpload
         className={classNames({
-          "absolute transition-opacity duration-300": true,
-          "opacity-100": syncing,
-          "opacity-0": !syncing,
+          "absolute w-4 h-4 text-orange-400 transition-opacity duration-300": true,
+          "opacity-100": justSynced && syncing,
+          "opacity-0": !(justSynced && syncing),
         })}
-      >
-        <ClipLoader color={theme.colors.orange[400]} size={14} />
-      </div>
+      />
 
-      <DoubleCheckIcon
+      <CloudCheck
         className={classNames({
-          "w-4 h-4 text-orange-400 transition-opacity duration-300": true,
+          "absolute w-4 h-4 text-blue-400 transition-opacity duration-300": true,
           "opacity-100": justSynced && !syncing,
           "opacity-0": !(justSynced && !syncing),
         })}

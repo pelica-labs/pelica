@@ -85,7 +85,7 @@ export const Sidebar: React.FC = () => {
               <MapTitleInput />
             </div>
 
-            <div className="absolute right-0 mr-12 pr-2">
+            <div className="right-0 mx-3">
               <SyncIndicator />
             </div>
 
