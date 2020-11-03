@@ -43,8 +43,6 @@ export const Toolbar: React.FC = () => {
   return (
     <>
       <div className="flex md:flex-col md:space-y-1">
-        <MenuButton />
-
         <IconButton
           active={editorMode === "move"}
           className="ml-1 md:ml-0"
@@ -191,6 +189,12 @@ export const Toolbar: React.FC = () => {
         >
           <ExportIcon className="w-8 h-8 md:w-6 md:h-6" />
         </IconButton>
+
+        {!screenDimensions.md && (
+          <div className="mx-2 flex items-center">
+            <MenuButton />
+          </div>
+        )}
       </div>
     </>
   );

@@ -5,6 +5,8 @@ import { ID } from "~/lib/id";
 type Sync = {
   id: ID | null;
   userId: ID | null;
+  name: string | null;
+  syncing: boolean;
   createdAt: number | null;
   updatedAt: number | null;
 };
@@ -12,6 +14,8 @@ type Sync = {
 export const syncInitialState: Sync = {
   id: null,
   userId: null,
+  name: null,
+  syncing: false,
   createdAt: null,
   updatedAt: null,
 };
@@ -19,10 +23,20 @@ export const syncInitialState: Sync = {
 export const sync = ({ mutate }: App) => ({
   ...syncInitialState,
 
+  updateName: (name: string | null) => {
+    mutate((state) => {
+      state.sync.name = name;
+    });
+  },
+
   mergeState: (map: MapModel) => {
     mutate((state) => {
       state.sync.id = map.id;
       state.sync.userId = map.userId;
+
+      if (map.name) {
+        state.sync.name = map.name;
+      }
 
       if (map.coordinates) {
         state.map.coordinates = map.coordinates;
@@ -51,6 +65,10 @@ export const sync = ({ mutate }: App) => ({
   },
 
   saveState: async (map: MapModel) => {
+    mutate((state) => {
+      state.sync.syncing = true;
+    });
+
     await fetch("/api/sync-map", {
       method: "POST",
       headers: {
@@ -58,6 +76,10 @@ export const sync = ({ mutate }: App) => ({
         "Content-Type": "application/json",
       },
       body: JSON.stringify(map),
+    });
+
+    mutate((state) => {
+      state.sync.syncing = false;
     });
   },
 });

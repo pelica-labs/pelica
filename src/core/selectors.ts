@@ -85,6 +85,10 @@ export const getEntityFeatures = (state: State = getState()) => {
 };
 
 export const getMapTitle = (state: State = getState()) => {
+  if (state.sync.name) {
+    return state.sync.name;
+  }
+
   const feature = state.map.features
     .filter((feature) => {
       return !feature.place_type.includes("postcode") && !feature.place_type.includes("address");
@@ -117,7 +121,7 @@ export const getSyncableState = (state: State = getState()): MapModel => {
     createdAt: state.sync.createdAt as number,
     updatedAt: state.sync.updatedAt as number,
 
-    name: getMapTitle(state),
+    name: state.sync.name || getMapTitle(state),
 
     coordinates: state.map.coordinates,
     zoom: state.map.zoom,
