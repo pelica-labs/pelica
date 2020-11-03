@@ -51,7 +51,9 @@ const Home: NextPage = () => {
 
       <Container>
         <h1 className="text-center text-5xl text-gray-900 font-raleway mb-6 font-bold">{t("tagline")}</h1>
-        <h2 className="font-raleway text-2xl text-center">Pelica is a tool to edit, style, and share custom maps.</h2>
+        <h2 className="font-light font-raleway text-2xl text-center">
+          Pelica is a tool to edit, style, and share custom maps.
+        </h2>
 
         <div
           className="relative w-full mt-6 overflow-hidden rounded-lg border-2 border-gray-600 border-opacity-25"
@@ -113,8 +115,8 @@ const Features: React.FC = () => {
                 </div>
                 <div className="ml-4">
                   <h4 className="text-lg leading-6 font-medium text-gray-900">Beautiful curated styles</h4>
-                  <p className="mt-2 text-base leading-6 text-gray-500">
-                    Select from a list of pre-designed styles. Your maps will look good no matter what.
+                  <p className="mt-2 text-base leading-6 text-gray-600">
+                    Select from a list of styles designed by cartographers. Your maps will look good no matter what.
                   </p>
                 </div>
               </div>
@@ -127,9 +129,9 @@ const Features: React.FC = () => {
                   </div>
                 </div>
                 <div className="ml-4">
-                  <h4 className="text-lg leading-6 font-medium text-gray-900">Simple yet powerful drawing tools</h4>
-                  <p className="mt-2 text-base leading-6 text-gray-500">
-                    Draw routes, add pins, write texts. That's about it.
+                  <h4 className="text-lg leading-6 font-medium text-gray-900">Simple and powerful drawing tools</h4>
+                  <p className="mt-2 text-base leading-6 text-gray-600">
+                    Draw routes, add pins, write text, and customize it all.
                   </p>
                 </div>
               </div>
@@ -143,8 +145,8 @@ const Features: React.FC = () => {
                 </div>
                 <div className="ml-4">
                   <h4 className="text-lg leading-6 font-medium text-gray-900">Built for sharing</h4>
-                  <p className="mt-2 text-base leading-6 text-gray-500">
-                    Share interactive maps or just raw images right from the app.
+                  <p className="mt-2 text-base leading-6 text-gray-600">
+                    Share interactive maps or exported images right from the app.
                   </p>
                 </div>
               </div>
@@ -158,8 +160,8 @@ const Features: React.FC = () => {
                 </div>
                 <div className="ml-4">
                   <h4 className="text-lg leading-6 font-medium text-gray-900">High resolution exports</h4>
-                  <p className="mt-2 text-base leading-6 text-gray-500">
-                    Generate high res images, suited for print / professional work. Don't compromise on quality.
+                  <p className="mt-2 text-base leading-6 text-gray-600">
+                    Generate HD images, suited for print and professional work. Don't compromise on quality.
                   </p>
                 </div>
               </div>

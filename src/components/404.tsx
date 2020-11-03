@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
@@ -8,7 +7,7 @@ import { Navbar } from "~/components/Navbar";
 
 export const FourOhFour: React.FC = () => {
   return (
-    <div className="absolute min-h-full w-full pt-32 pb-8 overflow-y-scroll bg-gray-100 z-50 text-lg text-gray-900">
+    <div className="absolute min-h-full w-full overflow-y-scroll bg-gray-100 z-50 text-lg text-gray-900">
       <Navbar />
 
       <Container>
@@ -16,7 +15,7 @@ export const FourOhFour: React.FC = () => {
         <h2 className="font-raleway text-2xl text-center">This page was not found.</h2>
 
         <div className="w-3/4 max-w-sm my-6">
-          <Image height={862} src="/images/404.svg" width={1132} />
+          <img src="/images/404.svg" />
         </div>
         <Link passHref href="/app">
           <button className="h-12 mb-6 mt-12 bg-orange-600 hover:bg-orange-500 shadow transition duration-300 ease-in-out text-gray-100 px-6 py-1 rounded-full uppercase tracking-wider font-bold hover:scale-105 hover:shadow transform hover:-translate-y-1 focus:outline-none focus:shadow-outline">

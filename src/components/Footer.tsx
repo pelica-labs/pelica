@@ -5,14 +5,14 @@ import React from "react";
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="bg-gray-900 text-gray-400">
+    <footer className="bg-gray-800 text-gray-400 text-sm">
       <div className="max-w-4xl mx-auto py-8">
         <div className="flex flex-wrap gap-10 px-4">
           <div className="flex flex-col h-full justify-between flex-1 px- md:px-0">
             <Link passHref href="/">
               <a className="flex items-center">
                 <Image height={48} src="/images/icon-512.png" width={48} />
-                <span className="ml-4 text-2xl">Pelica</span>
+                <span className="ml-4 text-2xl font-raleway font-bold">Pelica</span>
               </a>
             </Link>
             <div className="flex flex-col text-sm mt-4 md:mt-16 ml-3">
@@ -50,7 +50,7 @@ export const Footer: React.FC = () => {
               </Link>
               <a
                 className="hover:underline"
-                href="/terms"
+                href="#"
                 onClick={() => {
                   signIn("google");
                 }}

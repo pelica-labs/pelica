@@ -1,8 +1,8 @@
 import { NextPage } from "next";
 import { signIn, useSession } from "next-auth/client";
-import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
+import { BounceLoader } from "react-spinners";
 import useSWR from "swr";
 
 import { Container } from "~/components/Container";
@@ -11,6 +11,7 @@ import { MapPreview, MapPreviewLoading } from "~/components/MapPreview";
 import { Navbar } from "~/components/Navbar";
 import { GoogleButton } from "~/components/SocialButtons";
 import { MapModel } from "~/lib/db";
+import { theme } from "~/styles/tailwind";
 
 type Props = {
   maps: MapModel[];
@@ -65,7 +66,11 @@ const Maps: NextPage<Props> = () => {
                 createMap();
               }}
             >
-              {creating ? "Creating map..." : <MapPlusIcon className="w-8 h-8" />}
+              {creating ? (
+                <BounceLoader color={theme.colors.orange[700]} size={20} />
+              ) : (
+                <MapPlusIcon className="w-8 h-8" />
+              )}
             </button>
           </div>
           {data ? (
@@ -73,7 +78,7 @@ const Maps: NextPage<Props> = () => {
               {!data.maps.length && (
                 <div className="w-full h-64 flex items-center justify-center text-gray-600 mt-10 gap-10 px-4 flex-wrap">
                   <div className="w-64">
-                    <Image height={862} src="/images/404.svg" width={1132} />
+                    <img alt="no maps found" src="/images/404.svg" />
                   </div>
                   <span>You haven't created any maps yet.</span>
                 </div>

@@ -28,6 +28,7 @@ Router.events.on("routeChangeComplete", () => {
 });
 
 let nprogressTimeout: NodeJS.Timeout | null = null;
+NProgress.configure({ showSpinner: false });
 
 Router.events.on("routeChangeStart", () => {
   nprogressTimeout = setTimeout(() => {
