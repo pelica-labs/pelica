@@ -268,28 +268,22 @@ export const routes = ({ mutate, get }: App) => ({
   insertPoint: (edgeId: ID) => {
     const edge = getEntity(edgeId, get()) as RouteEdge;
 
-    mutate((state) => {
-      const route = getEntity(edge.routeId, state) as Route;
-
-      const from = MercatorCoordinate.fromLngLat(route.points[edge.fromIndex] as [number, number]);
-      const to = MercatorCoordinate.fromLngLat(route.points[edge.fromIndex + 1] as [number, number]);
-
-      from.x += (to.x - from.x) / 2;
-      from.y += (to.y - from.y) / 2;
-
-      route.points.splice(edge.fromIndex + 1, 0, from.toLngLat().toArray());
+    get().history.push({
+      name: "addRouteVertex",
+      routeId: edge.routeId,
+      afterPointIndex: edge.fromIndex,
     });
   },
 
   deletePoint: (vertexId: ID) => {
     const vertex = getEntity(vertexId, get()) as RouteVertex;
+    const route = getEntity(vertex.routeId, get()) as Route;
 
-    mutate((state) => {
-      const route = getEntity(vertex.routeId, state) as Route;
-
-      if (route.points.length > 2) {
-        route.points.splice(vertex.pointIndex, 1);
-      }
-    });
+    if (route.points.length > 2) {
+      get().history.push({
+        name: "deleteRouteVertex",
+        vertexId: vertex.id,
+      });
+    }
   },
 });

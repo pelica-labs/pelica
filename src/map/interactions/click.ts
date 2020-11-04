@@ -168,12 +168,10 @@ export const applyClickInteractions = (): void => {
 
       if (feature) {
         const featureId = feature.id as ID;
-        console.log(feature);
 
         if (feature.layer.id === "routesEdges") {
           app.routes.insertPoint(featureId);
         } else if (feature.layer.id === "routesVertices") {
-          console.log("What");
           app.routes.deletePoint(featureId);
         } else if (state.platform.keyboard.shiftKey) {
           app.selection.toggleEntitySelection(featureId);

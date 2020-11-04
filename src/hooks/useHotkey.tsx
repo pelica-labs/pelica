@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect } from "react";
 
 import { useStore } from "~/core/app";
-import { getMap } from "~/core/selectors";
 
 type Hotkey = HotkeyModifiers & {
   key: string;
@@ -19,18 +18,11 @@ type Callback = (event: KeyboardEvent) => void | false | Promise<void | false>;
 
 export const useHotkey = (hotkey: Hotkey, callback: Callback): (() => ReturnType<typeof HotkeyView>) => {
   const appleLike = useStore((store) => store.platform.os.appleLike);
-  const map = useStore((store) => getMap(store));
 
   const onKey = useCallback(
     (event: KeyboardEvent) => {
       const target = event.target as HTMLElement;
-
-      if (
-        !hotkey.global &&
-        event.target !== map.getCanvas() &&
-        target.tagName !== "BODY" &&
-        target.tagName !== "BUTTON"
-      ) {
+      if (!hotkey.global && target.tagName !== "CANVAS" && target.tagName !== "BODY" && target.tagName !== "BUTTON") {
         return;
       }
 

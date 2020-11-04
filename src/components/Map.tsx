@@ -259,7 +259,9 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
       const transientItems: Entity[] = [];
 
       if (selectedEntity?.type === "Route" && editorMode === "select") {
-        selectedEntity.points.forEach((point, index) => {
+        const points = selectedEntity.transientPoints.length ? selectedEntity.transientPoints : selectedEntity.points;
+
+        points.forEach((point, index) => {
           transientItems.push({
             id: 10 ** 3 + index,
             type: "RouteVertex",

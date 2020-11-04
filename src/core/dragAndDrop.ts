@@ -49,6 +49,9 @@ export const dragAndDrop = ({ mutate, get }: App) => ({
   startDrag: (entityId: ID, coordinates: Position) => {
     mutate((state) => {
       const draggedEntity = getEntity(entityId, state) as DraggableEntity;
+      if (!draggedEntity) {
+        return;
+      }
 
       state.dragAndDrop.draggedEntityId = draggedEntity.id;
       state.dragAndDrop.dragMoved = false;
@@ -56,6 +59,14 @@ export const dragAndDrop = ({ mutate, get }: App) => ({
         coordinates[0] - draggedEntity.coordinates[0],
         coordinates[1] - draggedEntity.coordinates[1],
       ];
+
+      if (draggedEntity.type === "RouteVertex") {
+        const route = getEntity(draggedEntity.routeId, state) as Route;
+
+        route.transientPoints = route.points;
+        route.rawPoints = route.points;
+        route.points = [];
+      }
     });
   },
 
@@ -77,7 +88,7 @@ export const dragAndDrop = ({ mutate, get }: App) => ({
       if (draggedEntity.type === "RouteVertex") {
         const route = getEntity(draggedEntity.routeId, state) as Route;
 
-        route.points[draggedEntity.pointIndex] = [
+        route.transientPoints[draggedEntity.pointIndex] = [
           coordinates[0] - state.dragAndDrop.dragOffset[0],
           coordinates[1] - state.dragAndDrop.dragOffset[1],
         ];
@@ -98,6 +109,15 @@ export const dragAndDrop = ({ mutate, get }: App) => ({
       return;
     }
 
+    if (draggedEntity.type === "RouteVertex") {
+      mutate((state) => {
+        const route = getEntity(draggedEntity.routeId, state) as Route;
+
+        route.points = route.rawPoints;
+        route.transientPoints = [];
+      });
+    }
+
     if (get().dragAndDrop.dragMoved) {
       if (draggedEntity.type === "Pin") {
         get().history.push({
@@ -111,6 +131,15 @@ export const dragAndDrop = ({ mutate, get }: App) => ({
         get().history.push({
           name: "moveText",
           textId: draggedEntity.id,
+          coordinates: [coordinates[0] - dragOffset[0], coordinates[1] - dragOffset[1]],
+        });
+      }
+
+      if (draggedEntity.type === "RouteVertex") {
+        get().history.push({
+          name: "moveRouteVertex",
+          routeId: draggedEntity.routeId,
+          pointIndex: draggedEntity.pointIndex,
           coordinates: [coordinates[0] - dragOffset[0], coordinates[1] - dragOffset[1]],
         });
       }

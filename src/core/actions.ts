@@ -1,11 +1,14 @@
 import { Position } from "@turf/turf";
-import { partition } from "lodash";
+import { get, partition } from "lodash";
+import { MercatorCoordinate } from "mapbox-gl";
+import { route } from "next/dist/next-server/server/router";
 
 import { State } from "~/core/app";
 import { Entity } from "~/core/entities";
 import { ItineraryProfile, Place } from "~/core/itineraries";
 import { Pin, PinStyle } from "~/core/pins";
-import { ItineraryRoute, Route, RouteStyle } from "~/core/routes";
+import { ItineraryRoute, Route, RouteStyle, RouteVertex } from "~/core/routes";
+import { getEntity } from "~/core/selectors";
 import { Text, TextStyle } from "~/core/texts";
 import { ID } from "~/lib/id";
 import { SmartMatching } from "~/lib/smartMatching";
@@ -34,7 +37,10 @@ export type Action =
   | UpdateRouteAction
   | UpdateLineSmartMatchingAction
   | DeleteEntityAction
-  | InsertEntitiesAction;
+  | InsertEntitiesAction
+  | MoveRouteVertexAction
+  | AddRouteVertexAction
+  | DeleteRouteVertexAction;
 
 // ---
 
@@ -498,6 +504,89 @@ const InsertEntitiesHandler: Handler<InsertEntitiesAction> = {
   },
 };
 
+// ---
+
+type MoveRouteVertexAction = {
+  name: "moveRouteVertex";
+  routeId: ID;
+  pointIndex: number;
+  coordinates: Position;
+
+  previousCoordinates?: Position;
+};
+
+const MoveRouteVertexHandler: Handler<MoveRouteVertexAction> = {
+  apply: (state, action) => {
+    const route = getEntity(action.routeId, state) as Route;
+
+    action.previousCoordinates = route.points[action.pointIndex];
+    route.points[action.pointIndex] = action.coordinates;
+  },
+
+  undo: (state, action) => {
+    const route = getEntity(action.routeId, state) as Route;
+
+    route.points[action.pointIndex] = action.previousCoordinates;
+  },
+};
+
+// ---
+
+type AddRouteVertexAction = {
+  name: "addRouteVertex";
+  routeId: ID;
+  afterPointIndex: number;
+};
+
+const AddRouteVertexHandler: Handler<AddRouteVertexAction> = {
+  apply: (state, action) => {
+    const route = getEntity(action.routeId, state) as Route;
+
+    const from = MercatorCoordinate.fromLngLat(route.points[action.afterPointIndex] as [number, number]);
+    const to = MercatorCoordinate.fromLngLat(route.points[action.afterPointIndex + 1] as [number, number]);
+
+    from.x += (to.x - from.x) / 2;
+    from.y += (to.y - from.y) / 2;
+
+    route.points.splice(action.afterPointIndex + 1, 0, from.toLngLat().toArray());
+  },
+
+  undo: (state, action) => {
+    const route = getEntity(action.routeId, state) as Route;
+
+    route.points.splice(action.afterPointIndex + 1, 1);
+  },
+};
+
+// ---
+
+type DeleteRouteVertexAction = {
+  name: "deleteRouteVertex";
+  vertexId: ID;
+
+  routeId?: ID;
+  deletedIndex?: number;
+  deletedPosition?: Position;
+};
+
+const DeleteRouteVertexHandler: Handler<DeleteRouteVertexAction> = {
+  apply: (state, action) => {
+    const vertex = getEntity(action.vertexId, state) as RouteVertex;
+    const route = getEntity(vertex.routeId, state) as Route;
+
+    action.routeId = route.id;
+    action.deletedIndex = vertex.pointIndex;
+    action.deletedPosition = route.points[vertex.pointIndex];
+    route.points.splice(vertex.pointIndex, 1);
+  },
+
+  undo: (state, action) => {
+    const route = getEntity(action.routeId, state) as Route;
+
+    route.points.splice(action.deletedIndex, 0, action.deletedPosition);
+  },
+};
+
 export const handlers = {
   draw: DrawHandler,
   addRouteStep: AddRouteStepActionHandler,
@@ -517,4 +606,7 @@ export const handlers = {
   deleteEntity: DeleteEntityHandler,
   updateStyle: UpdateStyleHandler,
   insertEntities: InsertEntitiesHandler,
+  moveRouteVertex: MoveRouteVertexHandler,
+  addRouteVertex: AddRouteVertexHandler,
+  deleteRouteVertex: DeleteRouteVertexHandler,
 };
