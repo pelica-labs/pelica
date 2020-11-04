@@ -1,9 +1,14 @@
 import { Position } from "@turf/turf";
 
+import { Entity } from "~/core/entities";
 import { App } from "~/core/helpers";
-import { Pin } from "~/core/pins";
-import { Text } from "~/core/texts";
+import { Route } from "~/core/routes";
+import { getEntity } from "~/core/selectors";
 import { ID } from "~/lib/id";
+
+export type DraggableEntity = Entity & {
+  coordinates: Position;
+};
 
 export type DragAndDrop = {
   draggedEntityId: ID | null;
@@ -43,7 +48,7 @@ export const dragAndDrop = ({ mutate, get }: App) => ({
 
   startDrag: (entityId: ID, coordinates: Position) => {
     mutate((state) => {
-      const draggedEntity = state.entities.items.find((entity) => entity.id === entityId) as Pin;
+      const draggedEntity = getEntity(entityId, state) as DraggableEntity;
 
       state.dragAndDrop.draggedEntityId = draggedEntity.id;
       state.dragAndDrop.dragMoved = false;
@@ -56,13 +61,11 @@ export const dragAndDrop = ({ mutate, get }: App) => ({
 
   dragSelectedEntity: (coordinates: Position) => {
     mutate((state) => {
-      if (!state.dragAndDrop.dragOffset) {
+      if (!state.dragAndDrop.dragOffset || !state.dragAndDrop.draggedEntityId) {
         return;
       }
 
-      const draggedEntity = state.entities.items.find((entity) => entity.id === state.dragAndDrop.draggedEntityId) as
-        | Pin
-        | Text;
+      const draggedEntity = getEntity(state.dragAndDrop.draggedEntityId, state) as DraggableEntity;
 
       state.dragAndDrop.dragMoved = true;
 
@@ -70,13 +73,25 @@ export const dragAndDrop = ({ mutate, get }: App) => ({
         coordinates[0] - state.dragAndDrop.dragOffset[0],
         coordinates[1] - state.dragAndDrop.dragOffset[1],
       ];
+
+      if (draggedEntity.type === "RouteVertex") {
+        const route = getEntity(draggedEntity.routeId, state) as Route;
+
+        route.points[draggedEntity.pointIndex] = [
+          coordinates[0] - state.dragAndDrop.dragOffset[0],
+          coordinates[1] - state.dragAndDrop.dragOffset[1],
+        ];
+      }
     });
   },
 
   endDragSelectedEntity: (coordinates: Position) => {
-    const draggedEntity = get().entities.items.find((entity) => entity.id === get().dragAndDrop.draggedEntityId) as
-      | Pin
-      | Text;
+    const draggedEntityId = get().dragAndDrop.draggedEntityId;
+    if (!draggedEntityId) {
+      return;
+    }
+
+    const draggedEntity = getEntity(draggedEntityId, get()) as DraggableEntity;
 
     const dragOffset = get().dragAndDrop.dragOffset;
     if (!dragOffset) {

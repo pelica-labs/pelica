@@ -23,7 +23,19 @@ export const applyHoverInteractions = (): void => {
   const onFeatureHover = (event: MapLayerMouseEvent) => {
     const state = getState();
 
-    if (!event.features?.length) {
+    const [feature] = map.queryRenderedFeatures(event.point, {
+      layers: [
+        "pinsInteractions",
+        "pins",
+        "routesInteractions",
+        "routesStop",
+        "texts",
+        "routesVertices",
+        "routesEdges",
+      ],
+    });
+
+    if (!feature) {
       return;
     }
 
@@ -34,7 +46,7 @@ export const applyHoverInteractions = (): void => {
     // remove previous hover if it changed
     if (
       state.dragAndDrop.hoveredEntityId &&
-      state.dragAndDrop.hoveredEntityId !== event.features[0].id &&
+      state.dragAndDrop.hoveredEntityId !== feature.id &&
       state.dragAndDrop.hoveredEntitySource
     ) {
       const feature = { id: state.dragAndDrop.hoveredEntityId, source: state.dragAndDrop.hoveredEntitySource };
@@ -44,9 +56,13 @@ export const applyHoverInteractions = (): void => {
       });
     }
 
-    app.dragAndDrop.startHover(event.features[0].id as ID, event.features[0].source);
+    if (state.selection.ids.find((id) => id === feature.id)) {
+      return;
+    }
 
-    map.setFeatureState(event.features[0], {
+    app.dragAndDrop.startHover(feature.id as ID, feature.source);
+
+    map.setFeatureState(feature, {
       hover: true,
     });
   };
@@ -71,10 +87,12 @@ export const applyHoverInteractions = (): void => {
     });
   };
 
-  ["pinsInteractions", "pins", "routesInteractions", "routesStop", "texts"].forEach((layer: string) => {
-    map.on("mousemove", layer, onFeatureHover);
-    map.on("mouseleave", layer, onFeatureHoverEnd);
-  });
+  ["pinsInteractions", "pins", "routesInteractions", "routesStop", "texts", "routesVertices", "routesEdges"].forEach(
+    (layer) => {
+      map.on("mousemove", layer, onFeatureHover);
+      map.on("mouseleave", layer, onFeatureHoverEnd);
+    }
+  );
 
   map.getCanvas().addEventListener("mouseleave", onMouseLeave);
 };

@@ -76,6 +76,7 @@ export const history = ({ mutate }: App) => ({
       state.history.actions = [];
       state.history.redoStack = [];
       state.entities.items = [];
+      state.entities.transientItems = [];
       state.selection.clear();
     });
   },

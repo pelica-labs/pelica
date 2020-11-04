@@ -8,7 +8,7 @@ import { Clipboard } from "~/components/Clipboard";
 import { DocumentTitle } from "~/components/DocumentTitle";
 import { ErrorIcon, WarningIcon } from "~/components/Icon";
 import { app, getState, useStore, useStoreSubscription } from "~/core/app";
-import { entityToFeature } from "~/core/entities";
+import { Entity, entityToFeature } from "~/core/entities";
 import {
   getNextPointOverlay,
   getPinOverlay,
@@ -19,7 +19,13 @@ import {
   getWatermarkOverlay,
 } from "~/core/overlays";
 import { upscale } from "~/core/platform";
-import { getEntityFeatures, getMap, getSelectedEntities, getSelectedEntity } from "~/core/selectors";
+import {
+  getEntityFeatures,
+  getMap,
+  getSelectedEntities,
+  getSelectedEntity,
+  getTransientEntityFeatures,
+} from "~/core/selectors";
 import { useAutoSaveAlert } from "~/hooks/useAutoSaveAlert";
 import { computeMapDimensions, computeResizingRatio } from "~/lib/aspectRatio";
 import { getEnv } from "~/lib/config";
@@ -245,12 +251,61 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
   );
 
   /**
+   * Sync transient entities
+   */
+  useStoreSubscription(
+    (store) => ({ editorMode: store.editor.mode, selectedEntity: getSelectedEntity(store) }),
+    ({ editorMode, selectedEntity }) => {
+      const transientItems: Entity[] = [];
+
+      if (selectedEntity?.type === "Route" && editorMode === "select") {
+        selectedEntity.points.forEach((point, index) => {
+          transientItems.push({
+            id: 10 ** 3 + index,
+            type: "RouteVertex",
+            source: MapSource.RouteVertex,
+            coordinates: point,
+            style: selectedEntity.style,
+            routeId: selectedEntity.id,
+            pointIndex: index,
+          });
+
+          if (index) {
+            transientItems.push({
+              id: 10 * 6 + index,
+              type: "RouteEdge",
+              source: MapSource.RouteEdge,
+              routeId: selectedEntity.id,
+              style: selectedEntity.style,
+              fromIndex: index - 1,
+              from: selectedEntity.points[index - 1],
+              to: point,
+            });
+          }
+        });
+      }
+
+      app.entities.updateTransientFeatures(transientItems);
+    }
+  );
+
+  /**
    * Sync entities to map
    */
   useStoreSubscription(
-    (store) => store.entities.items,
+    (store) => ({ entities: store.entities.items }),
     () => {
       applyFeatures(getEntityFeatures(), [MapSource.Routes, MapSource.Pins, MapSource.Texts]);
+    }
+  );
+
+  /**
+   * Sync transient entities to map
+   */
+  useStoreSubscription(
+    (store) => ({ entities: store.entities.transientItems }),
+    () => {
+      applyFeatures(getTransientEntityFeatures(), [MapSource.RouteVertex, MapSource.RouteEdge]);
     }
   );
 

@@ -1,8 +1,9 @@
 import { distance, Feature, LineString, lineString, Position, simplify } from "@turf/turf";
+import { MercatorCoordinate } from "mapbox-gl";
 
 import { App } from "~/core/helpers";
 import { ItineraryProfile, Place } from "~/core/itineraries";
-import { getSelectedEntity, getSelectedRoutes } from "~/core/selectors";
+import { getEntity, getSelectedEntity, getSelectedRoutes } from "~/core/selectors";
 import { ID, numericId } from "~/lib/id";
 import { smartMatch, SmartMatching, SmartMatchingProfile } from "~/lib/smartMatching";
 import { MapSource } from "~/map/sources";
@@ -34,6 +35,27 @@ export type ItineraryRoute = Route & {
     steps: Place[];
     profile: ItineraryProfile;
   };
+};
+
+export type RouteVertex = {
+  id: ID;
+  source: MapSource;
+  type: "RouteVertex";
+  coordinates: Position;
+  style: RouteStyle;
+  routeId: ID;
+  pointIndex: number;
+};
+
+export type RouteEdge = {
+  id: ID;
+  source: MapSource;
+  type: "RouteEdge";
+  from: Position;
+  to: Position;
+  style: RouteStyle;
+  routeId: ID;
+  fromIndex: number;
 };
 
 export type RouteStyle = {
@@ -240,6 +262,34 @@ export const routes = ({ mutate, get }: App) => ({
       lineId: selectedRoute.id,
       smartMatching,
       points,
+    });
+  },
+
+  insertPoint: (edgeId: ID) => {
+    const edge = getEntity(edgeId, get()) as RouteEdge;
+
+    mutate((state) => {
+      const route = getEntity(edge.routeId, state) as Route;
+
+      const from = MercatorCoordinate.fromLngLat(route.points[edge.fromIndex] as [number, number]);
+      const to = MercatorCoordinate.fromLngLat(route.points[edge.fromIndex + 1] as [number, number]);
+
+      from.x += (to.x - from.x) / 2;
+      from.y += (to.y - from.y) / 2;
+
+      route.points.splice(edge.fromIndex + 1, 0, from.toLngLat().toArray());
+    });
+  },
+
+  deletePoint: (vertexId: ID) => {
+    const vertex = getEntity(vertexId, get()) as RouteVertex;
+
+    mutate((state) => {
+      const route = getEntity(vertex.routeId, state) as Route;
+
+      if (route.points.length > 2) {
+        route.points.splice(vertex.pointIndex, 1);
+      }
     });
   },
 });

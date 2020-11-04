@@ -10,6 +10,8 @@ export enum MapSource {
   Routes = "routes",
   RouteStop = "routeStop",
   RouteNextPoint = "routeNextPoint",
+  RouteVertex = "routeVertex",
+  RouteEdge = "routeEdge",
   Overlays = "overlays",
   SelectionArea = "selectionArea",
   Watermark = "watermark",
@@ -29,6 +31,8 @@ export const applySources = (): void => {
   addSource(map, MapSource.Routes);
   addSource(map, MapSource.RouteStop);
   addSource(map, MapSource.RouteNextPoint);
+  addSource(map, MapSource.RouteVertex);
+  addSource(map, MapSource.RouteEdge);
   addSource(map, MapSource.Pins);
   addSource(map, MapSource.PinPreview);
   addSource(map, MapSource.Texts);

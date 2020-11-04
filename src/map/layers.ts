@@ -144,8 +144,33 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
+    id: "routesVertices",
+    type: "circle",
+    source: MapSource.RouteVertex,
+    paint: {
+      "circle-radius": ["+", ["get", "width"], 5],
+      "circle-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 0.5, 0.1],
+      "circle-stroke-color": ["get", "color"],
+      "circle-stroke-width": 1,
+      "circle-color": ["get", "color"],
+    },
+  });
+
+  addLayer(map, {
+    id: "routesEdges",
+    before: "routesVertices",
+    type: "line",
+    source: MapSource.RouteEdge,
+    paint: {
+      "line-color": ["get", "color"],
+      "line-width": ["+", ["get", "width"], 3],
+      "line-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 0.5, 0],
+    },
+  });
+
+  addLayer(map, {
     id: "routesInteractions",
-    before: "routes",
+    before: "routesEdges",
     type: "line",
     source: MapSource.Routes,
     paint: {

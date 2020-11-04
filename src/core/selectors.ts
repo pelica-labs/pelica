@@ -19,8 +19,12 @@ export const getMap = (state: State = getState()): mapboxgl.Map => {
   return state.map.current;
 };
 
+export const getAllEntities = (state: State = getState()) => {
+  return [...state.entities.items, ...state.entities.transientItems];
+};
+
 export const getEntity = (id: ID, state: State = getState()) => {
-  return state.entities.items.find((entity) => {
+  return getAllEntities(state).find((entity) => {
     return entity.id === id;
   });
 };
@@ -69,8 +73,33 @@ export const getSelectedTexts = (state: State = getState()) => {
   });
 };
 
+export const getHoveredEntity = (state: State = getState()) => {
+  if (!state.dragAndDrop.hoveredEntityId) {
+    return null;
+  }
+
+  return state.entities.items.find((entity) => {
+    return entity.id === state.dragAndDrop.hoveredEntityId;
+  });
+};
+
 export const getEntityFeatures = (state: State = getState()) => {
   return state.entities.items
+    .map((entity) => {
+      return entityToFeature(entity);
+    })
+    .filter((entity): entity is RawFeature => {
+      return !!entity;
+    })
+    .map((feature) => {
+      Object.assign(feature.properties, defaultStyles, state.editor.style.overrides);
+
+      return feature;
+    });
+};
+
+export const getTransientEntityFeatures = (state: State = getState()) => {
+  return state.entities.transientItems
     .map((entity) => {
       return entityToFeature(entity);
     })
