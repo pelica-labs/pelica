@@ -161,6 +161,9 @@ export const applyLayers = (): void => {
     before: "routesVertices",
     type: "line",
     source: MapSource.RouteEdge,
+    layout: {
+      "line-cap": "round",
+    },
     paint: {
       "line-opacity": 0,
       "line-width": ["+", ["get", "width"], 10],
@@ -172,6 +175,9 @@ export const applyLayers = (): void => {
     before: "routesVertices",
     type: "line",
     source: MapSource.RouteEdge,
+    layout: {
+      "line-cap": "round",
+    },
     paint: {
       "line-color": ["get", "color"],
       "line-width": ["+", ["get", "width"], 3],
