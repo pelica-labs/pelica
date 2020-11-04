@@ -45,11 +45,7 @@ export const MapViewer: React.FC<Props> = ({ map }) => {
           }}
         />
 
-        <GeolocationButton
-          onChange={(coordinates) => {
-            app.map.move(coordinates, 16, 0, 0);
-          }}
-        />
+        <GeolocationButton showOnMap />
 
         <ResetOrientationButton />
       </div>

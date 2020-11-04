@@ -18,4 +18,5 @@ input[type=number].appearance-none::-webkit-outer-spin-button {
 }
 
 @import "./cursor.css";
+@import "./geolocation.css";
 @import "./nprogress.css";
