@@ -22,7 +22,6 @@ export const GeolocationButton: React.FC<Props> = ({ showOnMap = false }) => {
   const map = useStore((state) => state.map.current);
 
   useEffect(() => {
-    console.log(geolocate?._watchState);
     switch (geolocate?._watchState) {
       case "OFF":
         setGeolocationStatus("inactive");
