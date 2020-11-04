@@ -1,7 +1,6 @@
 import { Position } from "@turf/turf";
-import { get, partition } from "lodash";
+import { partition } from "lodash";
 import { MercatorCoordinate } from "mapbox-gl";
-import { route } from "next/dist/next-server/server/router";
 
 import { State } from "~/core/app";
 import { Entity } from "~/core/entities";
@@ -521,6 +520,7 @@ const MoveRouteVertexHandler: Handler<MoveRouteVertexAction> = {
 
     action.previousCoordinates = route.points[action.pointIndex];
     route.points[action.pointIndex] = action.coordinates;
+    route.smartMatching.enabled = false;
   },
 
   undo: (state, action) => {
@@ -549,6 +549,7 @@ const AddRouteVertexHandler: Handler<AddRouteVertexAction> = {
     from.y += (to.y - from.y) / 2;
 
     route.points.splice(action.afterPointIndex + 1, 0, from.toLngLat().toArray());
+    route.smartMatching.enabled = false;
   },
 
   undo: (state, action) => {
@@ -578,6 +579,7 @@ const DeleteRouteVertexHandler: Handler<DeleteRouteVertexAction> = {
     action.deletedIndex = vertex.pointIndex;
     action.deletedPosition = route.points[vertex.pointIndex];
     route.points.splice(vertex.pointIndex, 1);
+    route.smartMatching.enabled = false;
   },
 
   undo: (state, action) => {

@@ -1,5 +1,4 @@
 import { distance, Feature, LineString, lineString, Position, simplify } from "@turf/turf";
-import { MercatorCoordinate } from "mapbox-gl";
 
 import { App } from "~/core/helpers";
 import { ItineraryProfile, Place } from "~/core/itineraries";
@@ -56,6 +55,18 @@ export type RouteEdge = {
   style: RouteStyle;
   routeId: ID;
   fromIndex: number;
+  centerId: ID;
+};
+
+export type RouteEdgeCenter = {
+  id: ID;
+  source: MapSource;
+  type: "RouteEdgeCenter";
+  coordinates: Position;
+  style: RouteStyle;
+  routeId: ID;
+  pointIndex: number;
+  edgeId: ID;
 };
 
 export type RouteStyle = {

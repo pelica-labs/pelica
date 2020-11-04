@@ -78,7 +78,7 @@ export const getHoveredEntity = (state: State = getState()) => {
     return null;
   }
 
-  return state.entities.items.find((entity) => {
+  return getAllEntities(state).find((entity) => {
     return entity.id === state.dragAndDrop.hoveredEntityId;
   });
 };

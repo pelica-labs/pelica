@@ -2,7 +2,7 @@ import { bbox, Feature, featureCollection, Geometry } from "@turf/turf";
 
 import { App } from "~/core/helpers";
 import { Pin } from "~/core/pins";
-import { Route, RouteEdge, RouteVertex } from "~/core/routes";
+import { Route, RouteEdge, RouteEdgeCenter, RouteVertex } from "~/core/routes";
 import { Text } from "~/core/texts";
 import { outlineColor } from "~/lib/color";
 import { numericId } from "~/lib/id";
@@ -14,7 +14,7 @@ export type Entities = {
   transientItems: Entity[];
 };
 
-export type Entity = Route | Pin | Text | RouteVertex | RouteEdge;
+export type Entity = Route | Pin | Text | RouteVertex | RouteEdge | RouteEdgeCenter;
 
 export const entitiesInitialState: Entities = {
   items: [],
@@ -213,6 +213,21 @@ export const entityToFeature = (entity: Entity): RawFeature | null => {
       geometry: {
         type: "LineString",
         coordinates: [entity.from, entity.to],
+      },
+      properties: {
+        ...entity.style,
+      },
+    };
+  }
+
+  if (entity.type === "RouteEdgeCenter") {
+    return {
+      type: "Feature",
+      id: entity.id,
+      source: entity.source,
+      geometry: {
+        type: "Point",
+        coordinates: entity.coordinates,
       },
       properties: {
         ...entity.style,

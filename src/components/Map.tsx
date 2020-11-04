@@ -1,6 +1,7 @@
 import { featureCollection } from "@turf/turf";
 import classNames from "classnames";
-import mapboxgl, { LngLatBoundsLike } from "mapbox-gl";
+import mapboxgl, { LngLatBoundsLike, MercatorCoordinate } from "mapbox-gl";
+import { route } from "next/dist/next-server/server/router";
 import Head from "next/head";
 import React, { useEffect, useRef } from "react";
 
@@ -258,7 +259,7 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
     ({ editorMode, selectedEntity }) => {
       const transientItems: Entity[] = [];
 
-      if (selectedEntity?.type === "Route" && editorMode === "select") {
+      if (selectedEntity?.type === "Route" && !selectedEntity.itinerary && editorMode === "select") {
         const points = selectedEntity.transientPoints.length ? selectedEntity.transientPoints : selectedEntity.points;
 
         points.forEach((point, index) => {
@@ -273,8 +274,28 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
           });
 
           if (index) {
+            const edgeCenterId = 10 ** 5 + index;
+            const edgeId = 10 ** 4 + index;
+
+            const from = MercatorCoordinate.fromLngLat(points[index - 1] as [number, number]);
+            const to = MercatorCoordinate.fromLngLat(points[index] as [number, number]);
+
+            from.x += (to.x - from.x) / 2;
+            from.y += (to.y - from.y) / 2;
+
             transientItems.push({
-              id: 10 * 6 + index,
+              id: edgeCenterId,
+              type: "RouteEdgeCenter",
+              source: MapSource.RouteEdgeCenter,
+              coordinates: from.toLngLat().toArray(),
+              style: selectedEntity.style,
+              routeId: selectedEntity.id,
+              pointIndex: index,
+              edgeId,
+            });
+
+            transientItems.push({
+              id: edgeId,
               type: "RouteEdge",
               source: MapSource.RouteEdge,
               routeId: selectedEntity.id,
@@ -282,6 +303,7 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
               fromIndex: index - 1,
               from: selectedEntity.points[index - 1],
               to: point,
+              centerId: edgeCenterId,
             });
           }
         });
@@ -307,7 +329,11 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
   useStoreSubscription(
     (store) => ({ entities: store.entities.transientItems }),
     () => {
-      applyFeatures(getTransientEntityFeatures(), [MapSource.RouteVertex, MapSource.RouteEdge]);
+      applyFeatures(getTransientEntityFeatures(), [
+        MapSource.RouteVertex,
+        MapSource.RouteEdge,
+        MapSource.RouteEdgeCenter,
+      ]);
     }
   );
 

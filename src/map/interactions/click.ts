@@ -3,7 +3,8 @@ import { memoize, throttle } from "lodash";
 import { MapMouseEvent, MapTouchEvent } from "mapbox-gl";
 
 import { app, getState } from "~/core/app";
-import { getMap, getSelectedItinerary } from "~/core/selectors";
+import { RouteEdgeCenter } from "~/core/routes";
+import { getEntity, getMap, getSelectedItinerary } from "~/core/selectors";
 import { ID } from "~/lib/id";
 
 type TouchEventHandler = (event: MapMouseEvent | MapTouchEvent) => void;

@@ -1,8 +1,45 @@
-import { MapLayerMouseEvent } from "mapbox-gl";
+import { FeatureIdentifier, MapLayerMouseEvent } from "mapbox-gl";
 
 import { app, getState } from "~/core/app";
-import { getMap } from "~/core/selectors";
+import { RouteEdge } from "~/core/routes";
+import { getEntity, getMap } from "~/core/selectors";
 import { ID } from "~/lib/id";
+import { MapSource } from "~/map/sources";
+
+const hoverableLayers = [
+  "pinsInteractions",
+  "pins",
+  "routesInteractions",
+  "routesStop",
+  "texts",
+  "routesVertices",
+  "routesEdges",
+  "routesEdgeCenters",
+];
+
+const toggleHover = (feature: FeatureIdentifier | mapboxgl.MapboxGeoJSONFeature, value: boolean) => {
+  const map = getMap();
+
+  map.setFeatureState(feature, {
+    hover: value,
+  });
+
+  if (feature.source === MapSource.RouteEdge) {
+    const edge = getEntity(feature.id as ID) as RouteEdge;
+    if (!edge) {
+      return;
+    }
+
+    const centerFeature = {
+      id: edge.centerId,
+      source: MapSource.RouteEdgeCenter,
+    };
+
+    map.setFeatureState(centerFeature, {
+      groupHover: value,
+    });
+  }
+};
 
 export const applyHoverInteractions = (): void => {
   const map = getMap();
@@ -24,15 +61,7 @@ export const applyHoverInteractions = (): void => {
     const state = getState();
 
     const [feature] = map.queryRenderedFeatures(event.point, {
-      layers: [
-        "pinsInteractions",
-        "pins",
-        "routesInteractions",
-        "routesStop",
-        "texts",
-        "routesVertices",
-        "routesEdges",
-      ],
+      layers: hoverableLayers,
     });
 
     if (!feature) {
@@ -51,9 +80,7 @@ export const applyHoverInteractions = (): void => {
     ) {
       const feature = { id: state.dragAndDrop.hoveredEntityId, source: state.dragAndDrop.hoveredEntitySource };
 
-      map.setFeatureState(feature, {
-        hover: false,
-      });
+      toggleHover(feature, false);
     }
 
     if (state.selection.ids.find((id) => id === feature.id)) {
@@ -62,9 +89,7 @@ export const applyHoverInteractions = (): void => {
 
     app.dragAndDrop.startHover(feature.id as ID, feature.source);
 
-    map.setFeatureState(feature, {
-      hover: true,
-    });
+    toggleHover(feature, true);
   };
 
   const onFeatureHoverEnd = (event: MapLayerMouseEvent) => {
@@ -82,17 +107,13 @@ export const applyHoverInteractions = (): void => {
     }
 
     const feature = { id: state.dragAndDrop.hoveredEntityId, source: state.dragAndDrop.hoveredEntitySource };
-    map.setFeatureState(feature, {
-      hover: false,
-    });
+    toggleHover(feature, false);
   };
 
-  ["pinsInteractions", "pins", "routesInteractions", "routesStop", "texts", "routesVertices", "routesEdges"].forEach(
-    (layer) => {
-      map.on("mousemove", layer, onFeatureHover);
-      map.on("mouseleave", layer, onFeatureHoverEnd);
-    }
-  );
+  hoverableLayers.forEach((layer) => {
+    map.on("mousemove", layer, onFeatureHover);
+    map.on("mouseleave", layer, onFeatureHoverEnd);
+  });
 
   map.getCanvas().addEventListener("mouseleave", onMouseLeave);
 };
