@@ -16,6 +16,7 @@ jobs:
       run: zip -r deploy.zip . -x '*.git*'
     
     - name: Generate build number
+      id: buildnumber
       uses: einaregilsson/build-number@v3
       with:
         token: ${{secrets.github_token}}
@@ -27,6 +28,6 @@ jobs:
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         application_name: Pelica
         environment_name: Pelica-env-1
-        version_label: $BUILD_NUMBER
+        version_label: ${{ steps.buildnumber.outputs.build_number }}
         region: eu-west-3
         deployment_package: deploy.zip
