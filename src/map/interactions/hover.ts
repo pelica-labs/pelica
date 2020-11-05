@@ -4,17 +4,18 @@ import { app, getState } from "~/core/app";
 import { RouteEdge } from "~/core/routes";
 import { getEntity, getMap } from "~/core/selectors";
 import { ID } from "~/lib/id";
+import { MapLayer } from "~/map/layers";
 import { MapSource } from "~/map/sources";
 
 const hoverableLayers = [
-  "pinsInteractions",
-  "pins",
-  "routesInteractions",
-  "routesStop",
-  "texts",
-  "routesVertices",
-  "routesEdges",
-  "routesEdgeCenters",
+  MapLayer.PinsInteractions,
+  MapLayer.Pins,
+  MapLayer.RoutesInteractions,
+  MapLayer.RoutesStop,
+  MapLayer.Texts,
+  MapLayer.RoutesVertices,
+  MapLayer.RoutesEdges,
+  MapLayer.RoutesEdgeCenters,
 ];
 
 const toggleHover = (feature: FeatureIdentifier | mapboxgl.MapboxGeoJSONFeature, value: boolean) => {

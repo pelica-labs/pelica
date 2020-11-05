@@ -3,9 +3,9 @@ import { memoize, throttle } from "lodash";
 import { MapMouseEvent, MapTouchEvent } from "mapbox-gl";
 
 import { app, getState } from "~/core/app";
-import { RouteEdgeCenter } from "~/core/routes";
-import { getEntity, getMap, getSelectedItinerary } from "~/core/selectors";
+import { getMap, getSelectedItinerary } from "~/core/selectors";
 import { ID } from "~/lib/id";
+import { MapLayer } from "~/map/layers";
 
 type TouchEventHandler = (event: MapMouseEvent | MapTouchEvent) => void;
 
@@ -85,7 +85,7 @@ export const applyClickInteractions = (): void => {
       event.preventDefault();
 
       // end route if we're clicking on the routesStop target
-      const routesStops = map.queryRenderedFeatures(event.point, { layers: ["routesStop"] });
+      const routesStops = map.queryRenderedFeatures(event.point, { layers: [MapLayer.RoutesStop] });
       if (routesStops.length) {
         app.routes.stopRoute();
 
@@ -102,7 +102,7 @@ export const applyClickInteractions = (): void => {
     // handle pins drag start
     if (state.editor.mode === "select") {
       const [feature] = map.queryRenderedFeatures(event.point, {
-        layers: ["pins", "pinsInteractions", "texts", "routesVertices"],
+        layers: [MapLayer.Pins, MapLayer.PinsInteractions, MapLayer.Texts, MapLayer.RoutesVertices],
       });
 
       if (feature) {
@@ -164,15 +164,22 @@ export const applyClickInteractions = (): void => {
     // select the given entity
     if (state.editor.mode === "select" || state.editor.moving) {
       const [feature] = map.queryRenderedFeatures(event.point, {
-        layers: ["pins", "pinsInteractions", "routesInteractions", "texts", "routesEdges", "routesVertices"],
+        layers: [
+          MapLayer.Pins,
+          MapLayer.PinsInteractions,
+          MapLayer.RoutesInteractions,
+          MapLayer.Texts,
+          MapLayer.RoutesEdges,
+          MapLayer.RoutesVertices,
+        ],
       });
 
       if (feature) {
         const featureId = feature.id as ID;
 
-        if (feature.layer.id === "routesEdges") {
+        if (feature.layer.id === MapLayer.RoutesEdges) {
           app.routes.insertPoint(featureId);
-        } else if (feature.layer.id === "routesVertices") {
+        } else if (feature.layer.id === MapLayer.RoutesVertices) {
           app.routes.deletePoint(featureId);
         } else if (state.platform.keyboard.shiftKey) {
           app.selection.toggleEntitySelection(featureId);

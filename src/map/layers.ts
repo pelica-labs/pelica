@@ -6,6 +6,43 @@ import { defaultStyles } from "~/lib/style";
 import { MapSource } from "~/map/sources";
 import { theme } from "~/styles/tailwind";
 
+export enum MapLayer {
+  Watermark = "watermark",
+
+  SelectionAreaFill = "selectionAreaFill",
+  SelectionAreaContour = "selectionAreaContour",
+
+  OverlaysBackground = "overlaysBackground",
+  OverlaysPoint = "overlaysPoint",
+  OverlaysUnderline = "overlaysUnderline",
+  OverlaysContour = "overlaysContour",
+
+  Routes = "routes",
+  RoutesOutlines = "routesOutlines",
+  RoutesHover = "routesHover",
+  RoutesVertices = "routesVertices",
+  RoutesEdges = "routesEdges",
+  RoutesEdgesOutlines = "routesEdgesOutlines",
+  RoutesEdgeCenters = "routesEdgeCenters",
+  RoutesEdgeCenterPlus = "routesEdgeCenterPlus",
+  RoutesInteractions = "routesInteractions",
+  RoutesStop = "routesStop",
+  RouteNextPointLine = "routeNextPointLine",
+  RouteNextPoint = "routeNextPoint",
+
+  Pins = "pins",
+  PinPreview = "pinPreview",
+  PinsInteractions = "pinsInteractions",
+  PinsHover = "pinsHover",
+  PinsHoverCenter = "pinsHoverCenter",
+
+  Texts = "texts",
+  TextPreview = "textPreview",
+
+  // Mapbox
+  WaterwayLabel = "waterway-label",
+}
+
 export const applyLayers = (): void => {
   const map = getMap();
 
@@ -13,7 +50,7 @@ export const applyLayers = (): void => {
   const styles = Object.assign({}, defaultStyles, style.overrides);
 
   addLayer(map, {
-    id: "watermark",
+    id: MapLayer.Watermark,
     type: "symbol",
     source: MapSource.Watermark,
     interactive: false,
@@ -26,7 +63,7 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: "selectionAreaFill",
+    id: MapLayer.SelectionAreaFill,
     type: "fill",
     source: MapSource.SelectionArea,
     interactive: false,
@@ -37,7 +74,7 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: "selectionAreaContour",
+    id: MapLayer.SelectionAreaContour,
     type: "line",
     source: MapSource.SelectionArea,
     interactive: false,
@@ -48,7 +85,7 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: "overlaysBackground",
+    id: MapLayer.OverlaysBackground,
     type: "fill",
     source: MapSource.Overlays,
     interactive: false,
@@ -59,7 +96,7 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: "overlaysPoint",
+    id: MapLayer.OverlaysPoint,
     type: "circle",
     source: MapSource.Overlays,
     interactive: false,
@@ -74,7 +111,7 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: "overlaysUnderline",
+    id: MapLayer.OverlaysUnderline,
     type: "line",
     source: MapSource.Overlays,
     interactive: false,
@@ -86,7 +123,7 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: "overlaysContour",
+    id: MapLayer.OverlaysContour,
     type: "line",
     source: MapSource.Overlays,
     interactive: false,
@@ -97,8 +134,8 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: "routes",
-    before: "waterway-label",
+    id: MapLayer.Routes,
+    before: MapLayer.WaterwayLabel,
     type: "line",
     source: MapSource.Routes,
     layout: {
@@ -112,8 +149,8 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: "routesOutlines",
-    before: "routes",
+    id: MapLayer.RoutesOutlines,
+    before: MapLayer.Routes,
     type: "line",
     source: MapSource.Routes,
     layout: {
@@ -128,8 +165,8 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: "routesHover",
-    before: "routes",
+    id: MapLayer.RoutesHover,
+    before: MapLayer.Routes,
     type: "line",
     interactive: false,
     source: MapSource.Routes,
@@ -144,7 +181,7 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: "routesVertices",
+    id: MapLayer.RoutesVertices,
     type: "circle",
     source: MapSource.RouteVertex,
     paint: {
@@ -161,8 +198,8 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: "routesEdges",
-    before: "routesVertices",
+    id: MapLayer.RoutesEdges,
+    before: MapLayer.RoutesVertices,
     type: "line",
     source: MapSource.RouteEdge,
     layout: {
@@ -175,8 +212,8 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: "routesEdgesOutlines",
-    before: "routesVertices",
+    id: MapLayer.RoutesEdgesOutlines,
+    before: MapLayer.RoutesVertices,
     type: "line",
     source: MapSource.RouteEdge,
     layout: {
@@ -190,7 +227,7 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: "routesEdgeCenters",
+    id: MapLayer.RoutesEdgeCenters,
     type: "circle",
     source: MapSource.RouteEdgeCenter,
     paint: {
@@ -223,7 +260,7 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: "routesEdgeCenterPlus",
+    id: MapLayer.RoutesEdgeCenterPlus,
     type: "symbol",
     source: MapSource.RouteEdgeCenter,
     layout: {
@@ -243,8 +280,8 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: "routesInteractions",
-    before: "routesEdges",
+    id: MapLayer.RoutesInteractions,
+    before: MapLayer.RoutesEdges,
     type: "line",
     source: MapSource.Routes,
     paint: {
@@ -254,8 +291,8 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: "routesStop",
-    before: "waterway-label",
+    id: MapLayer.RoutesStop,
+    before: MapLayer.WaterwayLabel,
     type: "circle",
     source: MapSource.RouteStop,
     paint: {
@@ -268,7 +305,7 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: "routeNextPointLine",
+    id: MapLayer.RouteNextPointLine,
     type: "line",
     source: MapSource.RouteNextPoint,
     paint: {
@@ -280,7 +317,7 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: "routeNextPoint",
+    id: MapLayer.RouteNextPoint,
     type: "circle",
     source: MapSource.RouteNextPoint,
     paint: {
@@ -293,7 +330,7 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: "pins",
+    id: MapLayer.Pins,
     type: "symbol",
     source: MapSource.Pins,
     layout: {
@@ -305,7 +342,7 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: "pinPreview",
+    id: MapLayer.PinPreview,
     type: "symbol",
     source: MapSource.PinPreview,
     layout: {
@@ -320,7 +357,7 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: "pinsInteractions",
+    id: MapLayer.PinsInteractions,
     type: "circle",
     source: MapSource.Pins,
     paint: {
@@ -330,8 +367,8 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: "pinsHover",
-    before: "pins",
+    id: MapLayer.PinsHover,
+    before: MapLayer.Pins,
     type: "circle",
     interactive: false,
     source: MapSource.Pins,
@@ -346,8 +383,8 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: "pinsHoverCenter",
-    before: "pins",
+    id: MapLayer.PinsHoverCenter,
+    before: MapLayer.Pins,
     type: "circle",
     interactive: false,
     source: MapSource.Pins,
@@ -359,7 +396,7 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: "texts",
+    id: MapLayer.Texts,
     type: "symbol",
     source: MapSource.Texts,
     layout: {
@@ -393,7 +430,7 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: "textPreview",
+    id: MapLayer.TextPreview,
     type: "symbol",
     source: MapSource.TextPreview,
     layout: {
@@ -423,7 +460,7 @@ export const applyLayers = (): void => {
   });
 };
 
-const addLayer = (map: mapboxgl.Map, layer: mapboxgl.Layer & { before?: string }) => {
+const addLayer = (map: mapboxgl.Map, layer: mapboxgl.Layer & { id: MapLayer; before?: MapLayer }) => {
   if (map.getLayer(layer.id)) {
     return;
   }
