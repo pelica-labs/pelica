@@ -19,6 +19,16 @@ const hoverableLayers = [
   MapLayer.RoutesEdgeCenters,
 ];
 
+const selectOnlyHoverableLayers = [
+  MapLayer.PinsInteractions,
+  MapLayer.Pins,
+  MapLayer.RoutesInteractions,
+  MapLayer.Texts,
+  MapLayer.RoutesVertices,
+  MapLayer.RoutesEdges,
+  MapLayer.RoutesEdgeCenters,
+];
+
 const toggleHover = (feature: FeatureIdentifier | mapboxgl.MapboxGeoJSONFeature, value: boolean) => {
   const map = getMap();
 
@@ -70,9 +80,9 @@ export const applyHoverInteractions = (): void => {
       return;
     }
 
-    // if (state.editor.mode !== "select") {
-    //   return;
-    // }
+    if (selectOnlyHoverableLayers.indexOf(feature.layer.id as MapLayer) >= 0 && state.editor.mode !== "select") {
+      return;
+    }
 
     // remove previous hover if it changed
     if (
