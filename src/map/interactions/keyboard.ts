@@ -49,6 +49,7 @@ export const applyKeyboardInteractions = (): void => {
 
       app.selection.clear();
       app.routes.stopRoute();
+      app.editor.leaveRouteEditorMode();
     }
   };
 

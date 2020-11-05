@@ -20,7 +20,7 @@ export type Editor = {
   aspectRatio: AspectRatio;
 };
 
-export type EditorMode = "style" | "select" | "move" | "draw" | "itinerary" | "pin" | "text" | "export";
+export type EditorMode = "style" | "select" | "edit" | "move" | "draw" | "itinerary" | "pin" | "text" | "export";
 
 export const modeIcons = {
   style: StyleIcon,
@@ -103,6 +103,14 @@ export const editor = ({ mutate, get }: App) => ({
   toggleMoving: (moving: boolean) => {
     mutate((state) => {
       state.editor.moving = moving;
+    });
+  },
+
+  leaveRouteEditorMode: () => {
+    mutate((state) => {
+      if (state.editor.mode === "edit") {
+        state.editor.mode = "select";
+      }
     });
   },
 });

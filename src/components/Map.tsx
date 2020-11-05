@@ -268,8 +268,7 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
     (store) => ({ editorMode: store.editor.mode, selectedEntity: getSelectedEntity(store) }),
     ({ editorMode, selectedEntity }) => {
       const transientItems: TransientEntity[] = [];
-
-      if (selectedEntity?.type === "Route" && !selectedEntity.itinerary && editorMode === "select") {
+      if (selectedEntity?.type === "Route" && !selectedEntity.itinerary && editorMode === "edit") {
         const points = selectedEntity.transientPoints.length ? selectedEntity.transientPoints : selectedEntity.points;
 
         points.forEach((point, index) => {

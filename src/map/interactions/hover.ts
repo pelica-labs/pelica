@@ -101,6 +101,7 @@ export const applyHoverInteractions = (): void => {
       state.dragAndDrop.hoveredEntitySource
     ) {
       toggleHover({ id: state.dragAndDrop.hoveredEntityId, source: state.dragAndDrop.hoveredEntitySource }, false);
+      app.dragAndDrop.endHover();
     }
 
     if (state.selection.ids.find((id) => id === feature.id)) {
