@@ -6,9 +6,8 @@ import React, { useEffect, useRef } from "react";
 
 import { Clipboard } from "~/components/Clipboard";
 import { DocumentTitle } from "~/components/DocumentTitle";
-import { ErrorIcon, WarningIcon } from "~/components/Icon";
 import { app, getState, useStore, useStoreSubscription } from "~/core/app";
-import { Entity, entityToFeature } from "~/core/entities";
+import { entityToFeature, TransientEntity } from "~/core/entities";
 import {
   getNextPointOverlay,
   getPinOverlay,
@@ -32,7 +31,7 @@ import { useAutoSaveAlert } from "~/hooks/useAutoSaveAlert";
 import { computeMapDimensions, computeResizingRatio } from "~/lib/aspectRatio";
 import { getEnv } from "~/lib/config";
 import { styleToUrl } from "~/lib/style";
-import { applyFeatures, parseFeatures, RawFeature } from "~/map/features";
+import { applyFeatures, RawFeature } from "~/map/features";
 import { applyImageMissingHandler } from "~/map/imageMissing";
 import { applyClickInteractions } from "~/map/interactions/click";
 import { applyHoverInteractions } from "~/map/interactions/hover";
@@ -268,7 +267,7 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
   useStoreSubscription(
     (store) => ({ editorMode: store.editor.mode, selectedEntity: getSelectedEntity(store) }),
     ({ editorMode, selectedEntity }) => {
-      const transientItems: Entity[] = [];
+      const transientItems: TransientEntity[] = [];
 
       if (selectedEntity?.type === "Route" && !selectedEntity.itinerary && editorMode === "select") {
         const points = selectedEntity.transientPoints.length ? selectedEntity.transientPoints : selectedEntity.points;

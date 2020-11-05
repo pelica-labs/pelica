@@ -1,7 +1,7 @@
 import { BBox, bboxPolygon, booleanWithin } from "@turf/turf";
 
 import { getState, State } from "~/core/app";
-import { Entity, entityToFeature } from "~/core/entities";
+import { CoreEntity, Entity, entityToFeature } from "~/core/entities";
 import { Pin } from "~/core/pins";
 import { Route } from "~/core/routes";
 import { Text } from "~/core/texts";
@@ -29,13 +29,13 @@ export const getEntity = (id: ID, state: State = getState()) => {
   });
 };
 
-export const getSelectedEntities = (state: State = getState()) => {
+export const getSelectedEntities = (state: State = getState()): CoreEntity[] => {
   return state.entities.items.filter((entity) => {
     return state.selection.ids.includes(entity.id);
   });
 };
 
-export const getSelectedEntity = (state: State = getState()) => {
+export const getSelectedEntity = (state: State = getState()): CoreEntity | null => {
   const entities = getSelectedEntities(state);
 
   if (entities.length !== 1) {

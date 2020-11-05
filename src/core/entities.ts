@@ -10,11 +10,15 @@ import { RawFeature } from "~/map/features";
 import { MapSource } from "~/map/sources";
 
 export type Entities = {
-  items: Entity[];
-  transientItems: Entity[];
+  items: CoreEntity[];
+  transientItems: TransientEntity[];
 };
 
-export type Entity = Route | Pin | Text | RouteVertex | RouteEdge | RouteEdgeCenter;
+export type Entity = CoreEntity | TransientEntity;
+
+export type CoreEntity = Route | Pin | Text;
+
+export type TransientEntity = RouteVertex | RouteEdge | RouteEdgeCenter;
 
 export const entitiesInitialState: Entities = {
   items: [],
@@ -24,7 +28,7 @@ export const entitiesInitialState: Entities = {
 export const entities = ({ mutate, get }: App) => ({
   ...entitiesInitialState,
 
-  updateTransientFeatures: (features: Entity[]) => {
+  updateTransientFeatures: (features: TransientEntity[]) => {
     mutate((state) => {
       state.entities.transientItems = features;
     });
@@ -43,7 +47,10 @@ export const entities = ({ mutate, get }: App) => ({
             type: "Pin",
             source: MapSource.Pins,
             coordinates: feature.geometry.coordinates,
-            style: get().pins.style,
+            style: {
+              ...get().pins.style,
+              ...feature.properties,
+            },
           } as Pin;
         }
 
@@ -56,7 +63,10 @@ export const entities = ({ mutate, get }: App) => ({
             transientPoints: [],
             rawPoints: feature.geometry.coordinates,
             points: feature.geometry.coordinates,
-            style: get().routes.style,
+            style: {
+              ...get().routes.style,
+              ...feature.properties,
+            },
             smartMatching: {
               enabled: false,
               profile: null,

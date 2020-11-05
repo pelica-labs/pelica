@@ -73,40 +73,42 @@ export const SelectSidebar: React.FC = () => {
         </Button>
       </SidebarSection>
 
-      {allSame && (
-        <SidebarSection>
-          <SidebarHeader>
-            <SidebarHeading>Color</SidebarHeading>
-            <div
-              className="ml-2 w-3 h-3 rounded-full border border-gray-200"
-              style={{ backgroundColor: selectedEntity.transientStyle?.color ?? selectedEntity.style.color }}
-            />
-          </SidebarHeader>
-          <div className="mt-4">
-            <ColorPicker
-              value={selectedEntity.style.color}
-              onChange={(color) => {
-                if (allRoutes) {
-                  app.routes.transientUpdateSelectedLine({ color });
-                } else if (allPins) {
-                  app.pins.transientUpdateSelectedPin({ color });
-                } else if (allTexts) {
-                  app.texts.transientUpdateSelectedText({ color });
-                }
-              }}
-              onChangeComplete={(color) => {
-                if (allRoutes) {
-                  app.routes.updateSelectedLine({ color });
-                } else if (allPins) {
-                  app.pins.updateSelectedPin({ color });
-                } else if (allTexts) {
-                  app.texts.updateSelectedText({ color });
-                }
-              }}
-            />
-          </div>
-        </SidebarSection>
-      )}
+      <SidebarSection>
+        <SidebarHeader>
+          <SidebarHeading>Color</SidebarHeading>
+          <div
+            className="ml-2 w-3 h-3 rounded-full border border-gray-200"
+            style={{ backgroundColor: selectedEntity.transientStyle?.color ?? selectedEntity.style.color }}
+          />
+        </SidebarHeader>
+        <div className="mt-4">
+          <ColorPicker
+            value={selectedEntity.style.color}
+            onChange={(color) => {
+              if (allRoutes) {
+                app.routes.transientUpdateSelectedLine({ color });
+              } else if (allPins) {
+                app.pins.transientUpdateSelectedPin({ color });
+              } else if (allTexts) {
+                app.texts.transientUpdateSelectedText({ color });
+              } else {
+                app.selection.transientUpdateSelection({ color });
+              }
+            }}
+            onChangeComplete={(color) => {
+              if (allRoutes) {
+                app.routes.updateSelectedLine({ color });
+              } else if (allPins) {
+                app.pins.updateSelectedPin({ color });
+              } else if (allTexts) {
+                app.texts.updateSelectedText({ color });
+              } else {
+                app.selection.updateSelection({ color });
+              }
+            }}
+          />
+        </div>
+      </SidebarSection>
 
       {allSame && (
         <SidebarSection>

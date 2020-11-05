@@ -2,7 +2,7 @@ import { Position } from "@turf/turf";
 import { partition } from "lodash";
 
 import { State } from "~/core/app";
-import { Entity } from "~/core/entities";
+import { CoreEntity } from "~/core/entities";
 import { ItineraryProfile, Place } from "~/core/itineraries";
 import { Pin, PinStyle } from "~/core/pins";
 import { computeCenter, ItineraryRoute, Route, RouteStyle, RouteVertex } from "~/core/routes";
@@ -34,6 +34,7 @@ export type Action =
   | UpdatePinAction
   | UpdateRouteAction
   | UpdateLineSmartMatchingAction
+  | UpdateEntitiesAction
   | DeleteEntityAction
   | InsertEntitiesAction
   | MoveRouteVertexAction
@@ -80,7 +81,7 @@ const DrawHandler: Handler<DrawAction> = {
 
 type PinAction = {
   name: "pin";
-  point: Pin;
+  point: CoreEntity;
 };
 
 const PinHandler: Handler<PinAction> = {
@@ -199,11 +200,45 @@ const UpdateStyleHandler: Handler<UpdateStyleAction> = {
 
 // ---
 
+type UpdateEntitiesAction = {
+  name: "updateEntities";
+  entityIds: ID[];
+  style: Partial<RouteStyle & PinStyle & TextStyle>;
+
+  previousStyles?: { [key: string]: RouteStyle | PinStyle | TextStyle };
+};
+
+const UpdateEntitiesHandler: Handler<UpdateEntitiesAction> = {
+  apply: (state, action) => {
+    const entities = state.entities.items.filter((item): item is CoreEntity => action.entityIds.includes(item.id));
+
+    action.previousStyles = {};
+    entities.forEach((entity) => {
+      if (!action.previousStyles) {
+        return;
+      }
+
+      action.previousStyles[entity.id] = { ...entity.style };
+      Object.assign(entity.style, action.style);
+    });
+  },
+
+  undo: (state, action) => {
+    const entities = state.entities.items.filter((item): item is CoreEntity => action.entityIds.includes(item.id));
+
+    entities.forEach((entity) => {
+      entity.style = action.previousStyles[entity.id];
+    });
+  },
+};
+
+// ---
+
 type DeleteEntityAction = {
   name: "deleteEntity";
   entityIds: ID[];
 
-  deletedEntity?: Entity[];
+  deletedEntity?: CoreEntity[];
 };
 
 const DeleteEntityHandler: Handler<DeleteEntityAction> = {
@@ -487,7 +522,7 @@ const UpdateRouteProfileActionHandler: Handler<UpdateRouteProfileAction> = {
 
 type InsertEntitiesAction = {
   name: "insertEntities";
-  entities: Entity[];
+  entities: CoreEntity[];
 };
 
 const InsertEntitiesHandler: Handler<InsertEntitiesAction> = {
@@ -602,6 +637,7 @@ export const handlers = {
   updateText: UpdateTextHandler,
   updateRoute: UpdateRouteHandler,
   updateLineSmartMatching: UpdateLineSmartMatchingHandler,
+  updateEntities: UpdateEntitiesHandler,
   deleteEntity: DeleteEntityHandler,
   updateStyle: UpdateStyleHandler,
   insertEntities: InsertEntitiesHandler,

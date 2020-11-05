@@ -1,6 +1,6 @@
 import { Position } from "@turf/turf";
 
-import { Entity } from "~/core/entities";
+import { CoreEntity } from "~/core/entities";
 import { ID } from "~/lib/id";
 import { Style } from "~/lib/style";
 
@@ -19,7 +19,7 @@ export type MapModel = {
   pitch?: number;
 
   style?: Style;
-  entities?: Entity[];
+  entities?: CoreEntity[];
 };
 
 export type ImageModel = {

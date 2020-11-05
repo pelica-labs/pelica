@@ -3,7 +3,10 @@ import { uniq } from "lodash";
 
 import { entityToFeature } from "~/core/entities";
 import { App } from "~/core/helpers";
+import { PinStyle } from "~/core/pins";
+import { RouteStyle } from "~/core/routes";
 import { getSelectedEntities } from "~/core/selectors";
+import { TextStyle } from "~/core/texts";
 import { ID } from "~/lib/id";
 import { RawFeature } from "~/map/features";
 
@@ -131,5 +134,32 @@ export const selection = ({ mutate, get }: App) => ({
     });
 
     get().itineraries.close();
+  },
+
+  transientUpdateSelection: (style: Partial<RouteStyle> & Partial<PinStyle> & Partial<TextStyle>) => {
+    mutate((state) => {
+      getSelectedEntities(state).forEach((entity) => {
+        if (!entity.transientStyle) {
+          entity.transientStyle = entity.style;
+        }
+
+        Object.assign(entity.transientStyle, style);
+      });
+    });
+  },
+
+  updateSelection: (style: Partial<RouteStyle> & Partial<PinStyle> & Partial<TextStyle>) => {
+    mutate((state) => {
+      getSelectedEntities(state).forEach((entity) => {
+        delete entity.transientStyle;
+      });
+    });
+
+    const selectedEntities = getSelectedEntities(get());
+    get().history.push({
+      name: "updateEntities",
+      entityIds: selectedEntities.map((route) => route.id),
+      style,
+    });
   },
 });
