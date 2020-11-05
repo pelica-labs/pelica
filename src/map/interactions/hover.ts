@@ -85,6 +85,7 @@ export const applyHoverInteractions = (): void => {
     if (!feature) {
       if (state.dragAndDrop.hoveredEntityId && state.dragAndDrop.hoveredEntitySource) {
         toggleHover({ id: state.dragAndDrop.hoveredEntityId, source: state.dragAndDrop.hoveredEntitySource }, false);
+        app.dragAndDrop.endHover();
       }
       return;
     }
@@ -99,9 +100,7 @@ export const applyHoverInteractions = (): void => {
       state.dragAndDrop.hoveredEntityId !== feature.id &&
       state.dragAndDrop.hoveredEntitySource
     ) {
-      const feature = { id: state.dragAndDrop.hoveredEntityId, source: state.dragAndDrop.hoveredEntitySource };
-
-      toggleHover(feature, false);
+      toggleHover({ id: state.dragAndDrop.hoveredEntityId, source: state.dragAndDrop.hoveredEntitySource }, false);
     }
 
     if (state.selection.ids.find((id) => id === feature.id)) {
