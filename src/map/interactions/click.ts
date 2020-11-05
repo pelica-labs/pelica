@@ -3,7 +3,7 @@ import { memoize, throttle } from "lodash";
 import { MapMouseEvent, MapTouchEvent } from "mapbox-gl";
 
 import { app, getState } from "~/core/app";
-import { getMap, getSelectedItinerary } from "~/core/selectors";
+import { canSelect, getMap, getSelectedItinerary } from "~/core/selectors";
 import { ID } from "~/lib/id";
 import { MapLayer } from "~/map/layers";
 
@@ -168,7 +168,7 @@ export const applyClickInteractions = (): void => {
     }
 
     // select the given entity
-    if (state.editor.mode === "select" || state.editor.moving) {
+    if (canSelect(state) || state.editor.moving) {
       const [feature] = map.queryRenderedFeatures(event.point, {
         layers: [
           MapLayer.Pins,

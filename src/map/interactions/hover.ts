@@ -2,7 +2,7 @@ import { FeatureIdentifier, MapLayerMouseEvent } from "mapbox-gl";
 
 import { app, getState } from "~/core/app";
 import { RouteEdge } from "~/core/routes";
-import { getEntity, getMap } from "~/core/selectors";
+import { canSelect, getEntity, getMap } from "~/core/selectors";
 import { ID } from "~/lib/id";
 import { MapLayer } from "~/map/layers";
 import { MapSource } from "~/map/sources";
@@ -80,7 +80,7 @@ export const applyHoverInteractions = (): void => {
       return;
     }
 
-    if (selectOnlyHoverableLayers.indexOf(feature.layer.id as MapLayer) >= 0 && state.editor.mode !== "select") {
+    if (selectOnlyHoverableLayers.indexOf(feature.layer.id as MapLayer) >= 0 && !canSelect(state)) {
       return;
     }
 
