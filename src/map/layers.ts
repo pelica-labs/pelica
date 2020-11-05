@@ -22,9 +22,10 @@ export enum MapLayer {
   RoutesOutlines = "routesOutlines",
   RoutesHover = "routesHover",
   RoutesVertices = "routesVertices",
+  RoutesVerticesInteractions = "routesVerticesInteractions",
   RoutesEdges = "routesEdges",
-  RoutesEdgesOutlines = "routesEdgesOutlines",
   RoutesEdgeCenters = "routesEdgeCenters",
+  RoutesEdgeCentersInteractions = "routesEdgeCentersInteractions",
   RoutesEdgeCenterPlus = "routesEdgeCenterPlus",
   RoutesInteractions = "routesInteractions",
   RoutesStop = "routesStop",
@@ -195,25 +196,18 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: MapLayer.RoutesVertices,
-    type: "circle",
-    source: MapSource.RouteVertex,
+    id: MapLayer.RoutesInteractions,
+    before: MapLayer.RoutesEdges,
+    type: "line",
+    source: MapSource.Routes,
     paint: {
-      "circle-radius": ["+", ["get", "width"], 3],
-      "circle-stroke-width": 1,
-      "circle-stroke-color": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        theme.colors.white,
-        ["get", "color"],
-      ],
-      "circle-color": ["case", ["boolean", ["feature-state", "hover"], false], ["get", "color"], theme.colors.white],
+      "line-width": ["+", ["get", "width"], 15],
+      "line-opacity": 0,
     },
   });
 
   addLayer(map, {
     id: MapLayer.RoutesEdges,
-    before: MapLayer.RoutesVertices,
     type: "line",
     source: MapSource.RouteEdge,
     layout: {
@@ -226,17 +220,13 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: MapLayer.RoutesEdgesOutlines,
-    before: MapLayer.RoutesVertices,
-    type: "line",
-    source: MapSource.RouteEdge,
-    layout: {
-      "line-cap": "round",
-    },
+    id: MapLayer.RoutesEdgeCentersInteractions,
+    type: "circle",
+    source: MapSource.RouteEdgeCenter,
     paint: {
-      "line-color": ["get", "color"],
-      "line-width": ["+", ["get", "width"], 3],
-      "line-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 1, 0.3],
+      "circle-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 0.3, 0],
+      "circle-radius": 15,
+      "circle-color": ["get", "color"],
     },
   });
 
@@ -269,7 +259,35 @@ export const applyLayers = (): void => {
         ["get", "color"],
       ],
       "circle-stroke-width": 1,
-      "circle-color": ["case", ["boolean", ["feature-state", "hover"], false], ["get", "color"], theme.colors.white],
+      "circle-color": ["case", ["boolean", ["feature-state", "hover"], false], theme.colors.white, ["get", "color"]],
+    },
+  });
+
+  addLayer(map, {
+    id: MapLayer.RoutesVerticesInteractions,
+    type: "circle",
+    source: MapSource.RouteVertex,
+    paint: {
+      "circle-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 0.3, 0],
+      "circle-radius": 15,
+      "circle-color": ["get", "color"],
+    },
+  });
+
+  addLayer(map, {
+    id: MapLayer.RoutesVertices,
+    type: "circle",
+    source: MapSource.RouteVertex,
+    paint: {
+      "circle-radius": ["+", ["get", "width"], 2],
+      "circle-stroke-width": ["case", ["boolean", ["feature-state", "hover"], false], 1, 0],
+      "circle-stroke-color": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        theme.colors.white,
+        ["get", "color"],
+      ],
+      "circle-color": ["get", "color"],
     },
   });
 
@@ -289,18 +307,7 @@ export const applyLayers = (): void => {
         1,
         0,
       ],
-      "text-color": ["case", ["boolean", ["feature-state", "hover"], false], theme.colors.white, ["get", "color"]],
-    },
-  });
-
-  addLayer(map, {
-    id: MapLayer.RoutesInteractions,
-    before: MapLayer.RoutesEdges,
-    type: "line",
-    source: MapSource.Routes,
-    paint: {
-      "line-width": ["+", ["get", "width"], 15],
-      "line-opacity": 0,
+      "text-color": ["case", ["boolean", ["feature-state", "hover"], false], ["get", "color"], theme.colors.white],
     },
   });
 

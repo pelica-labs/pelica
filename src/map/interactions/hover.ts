@@ -14,9 +14,9 @@ const hoverableLayers = [
   MapLayer.RoutesStop,
   MapLayer.RoutesStart,
   MapLayer.Texts,
-  MapLayer.RoutesVertices,
+  MapLayer.RoutesVerticesInteractions,
   MapLayer.RoutesEdges,
-  MapLayer.RoutesEdgeCenters,
+  MapLayer.RoutesEdgeCentersInteractions,
 ];
 
 const toggleHover = (feature: FeatureIdentifier | mapboxgl.MapboxGeoJSONFeature, value: boolean) => {
