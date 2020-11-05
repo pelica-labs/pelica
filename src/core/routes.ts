@@ -113,6 +113,10 @@ export const computeDistance = (route: Route): number => {
   return total;
 };
 
+export const computeCenter = (positionA: Position, positionB: Position) => {
+  return [positionA[0] + (positionB[0] - positionA[0]) / 2, positionA[1] + (positionB[1] - positionA[1]) / 2];
+};
+
 export const routes = ({ mutate, get }: App) => ({
   ...routesInitialState,
 

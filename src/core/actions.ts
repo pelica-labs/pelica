@@ -1,12 +1,11 @@
 import { Position } from "@turf/turf";
 import { partition } from "lodash";
-import { MercatorCoordinate } from "mapbox-gl";
 
 import { State } from "~/core/app";
 import { Entity } from "~/core/entities";
 import { ItineraryProfile, Place } from "~/core/itineraries";
 import { Pin, PinStyle } from "~/core/pins";
-import { ItineraryRoute, Route, RouteStyle, RouteVertex } from "~/core/routes";
+import { computeCenter, ItineraryRoute, Route, RouteStyle, RouteVertex } from "~/core/routes";
 import { getEntity } from "~/core/selectors";
 import { Text, TextStyle } from "~/core/texts";
 import { ID } from "~/lib/id";
@@ -542,13 +541,11 @@ const AddRouteVertexHandler: Handler<AddRouteVertexAction> = {
   apply: (state, action) => {
     const route = getEntity(action.routeId, state) as Route;
 
-    const from = MercatorCoordinate.fromLngLat(route.points[action.afterPointIndex] as [number, number]);
-    const to = MercatorCoordinate.fromLngLat(route.points[action.afterPointIndex + 1] as [number, number]);
-
-    from.x += (to.x - from.x) / 2;
-    from.y += (to.y - from.y) / 2;
-
-    route.points.splice(action.afterPointIndex + 1, 0, from.toLngLat().toArray());
+    route.points.splice(
+      action.afterPointIndex + 1,
+      0,
+      computeCenter(route.points[action.afterPointIndex], route.points[action.afterPointIndex + 1])
+    );
     route.smartMatching.enabled = false;
   },
 

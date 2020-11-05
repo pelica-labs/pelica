@@ -148,11 +148,15 @@ export const applyLayers = (): void => {
     type: "circle",
     source: MapSource.RouteVertex,
     paint: {
-      "circle-radius": ["+", ["get", "width"], 5],
-      "circle-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 1, 0.5],
-      "circle-stroke-color": ["get", "color"],
+      "circle-radius": ["+", ["get", "width"], 3],
+      "circle-stroke-color": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        theme.colors.white,
+        ["get", "color"],
+      ],
       "circle-stroke-width": 1,
-      "circle-color": ["get", "color"],
+      "circle-color": ["case", ["boolean", ["feature-state", "hover"], false], ["get", "color"], theme.colors.white],
     },
   });
 
@@ -166,7 +170,7 @@ export const applyLayers = (): void => {
     },
     paint: {
       "line-opacity": 0,
-      "line-width": ["+", ["get", "width"], 10],
+      "line-width": ["+", ["get", "width"], 20],
     },
   });
 

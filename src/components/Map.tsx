@@ -1,7 +1,6 @@
 import { featureCollection } from "@turf/turf";
 import classNames from "classnames";
-import mapboxgl, { LngLatBoundsLike, MercatorCoordinate } from "mapbox-gl";
-import { route } from "next/dist/next-server/server/router";
+import mapboxgl, { LngLatBoundsLike } from "mapbox-gl";
 import Head from "next/head";
 import React, { useEffect, useRef } from "react";
 
@@ -20,6 +19,7 @@ import {
   getWatermarkOverlay,
 } from "~/core/overlays";
 import { upscale } from "~/core/platform";
+import { computeCenter } from "~/core/routes";
 import {
   getEntityFeatures,
   getMap,
@@ -264,7 +264,7 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
 
         points.forEach((point, index) => {
           transientItems.push({
-            id: 10 ** 3 + index,
+            id: 10 ** 6 + index,
             type: "RouteVertex",
             source: MapSource.RouteVertex,
             coordinates: point,
@@ -274,20 +274,14 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
           });
 
           if (index) {
-            const edgeCenterId = 10 ** 5 + index;
-            const edgeId = 10 ** 4 + index;
-
-            const from = MercatorCoordinate.fromLngLat(points[index - 1] as [number, number]);
-            const to = MercatorCoordinate.fromLngLat(points[index] as [number, number]);
-
-            from.x += (to.x - from.x) / 2;
-            from.y += (to.y - from.y) / 2;
+            const edgeId = 10 ** 7 + index;
+            const edgeCenterId = 10 ** 8 + index;
 
             transientItems.push({
               id: edgeCenterId,
               type: "RouteEdgeCenter",
               source: MapSource.RouteEdgeCenter,
-              coordinates: from.toLngLat().toArray(),
+              coordinates: computeCenter(points[index - 1], points[index]),
               style: selectedEntity.style,
               routeId: selectedEntity.id,
               pointIndex: index,
