@@ -53,8 +53,8 @@ export const applyLayers = (): void => {
     source: MapSource.Overlays,
     interactive: false,
     paint: {
-      "fill-color": theme.colors.orange[500],
-      "fill-opacity": 0.1,
+      "fill-color": theme.colors.orange[200],
+      "fill-opacity": 0.05,
     },
   });
 
@@ -144,8 +144,107 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
+    id: "routesVertices",
+    type: "circle",
+    source: MapSource.RouteVertex,
+    paint: {
+      "circle-radius": ["+", ["get", "width"], 3],
+      "circle-stroke-color": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        theme.colors.white,
+        ["get", "color"],
+      ],
+      "circle-stroke-width": 1,
+      "circle-color": ["case", ["boolean", ["feature-state", "hover"], false], ["get", "color"], theme.colors.white],
+    },
+  });
+
+  addLayer(map, {
+    id: "routesEdges",
+    before: "routesVertices",
+    type: "line",
+    source: MapSource.RouteEdge,
+    layout: {
+      "line-cap": "round",
+    },
+    paint: {
+      "line-opacity": 0,
+      "line-width": ["+", ["get", "width"], 20],
+    },
+  });
+
+  addLayer(map, {
+    id: "routesEdgesOutlines",
+    before: "routesVertices",
+    type: "line",
+    source: MapSource.RouteEdge,
+    layout: {
+      "line-cap": "round",
+    },
+    paint: {
+      "line-color": ["get", "color"],
+      "line-width": ["+", ["get", "width"], 3],
+      "line-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 1, 0.3],
+    },
+  });
+
+  addLayer(map, {
+    id: "routesEdgeCenters",
+    type: "circle",
+    source: MapSource.RouteEdgeCenter,
+    paint: {
+      "circle-opacity": [
+        "case",
+        ["boolean", ["feature-state", "groupHover"], false],
+        1,
+        ["boolean", ["feature-state", "hover"], false],
+        1,
+        0,
+      ],
+      "circle-stroke-opacity": [
+        "case",
+        ["boolean", ["feature-state", "groupHover"], false],
+        1,
+        ["boolean", ["feature-state", "hover"], false],
+        1,
+        0,
+      ],
+      "circle-radius": 7,
+      "circle-stroke-color": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        theme.colors.white,
+        ["get", "color"],
+      ],
+      "circle-stroke-width": 1,
+      "circle-color": ["case", ["boolean", ["feature-state", "hover"], false], ["get", "color"], theme.colors.white],
+    },
+  });
+
+  addLayer(map, {
+    id: "routesEdgeCenterPlus",
+    type: "symbol",
+    source: MapSource.RouteEdgeCenter,
+    layout: {
+      "text-field": "+",
+    },
+    paint: {
+      "text-opacity": [
+        "case",
+        ["boolean", ["feature-state", "groupHover"], false],
+        1,
+        ["boolean", ["feature-state", "hover"], false],
+        1,
+        0,
+      ],
+      "text-color": ["case", ["boolean", ["feature-state", "hover"], false], theme.colors.white, ["get", "color"]],
+    },
+  });
+
+  addLayer(map, {
     id: "routesInteractions",
-    before: "routes",
+    before: "routesEdges",
     type: "line",
     source: MapSource.Routes,
     paint: {

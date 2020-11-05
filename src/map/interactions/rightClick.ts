@@ -8,16 +8,16 @@ export const applyRightClickInteractions = (): void => {
   const map = getMap();
 
   const onFeatureRightClick = (event: MapMouseEvent | MapTouchEvent) => {
-    const features = map.queryRenderedFeatures(event.point, {
+    const [feature] = map.queryRenderedFeatures(event.point, {
       layers: ["pins", "pinsInteractions", "routesInteractions", "texts"],
     });
 
-    if (!features?.length) {
+    if (!feature) {
       return;
     }
 
     app.editor.setEditorMode("select");
-    app.selection.selectEntity(features[0].id as ID);
+    app.selection.selectEntity(feature.id as ID);
   };
 
   map.on("contextmenu", onFeatureRightClick);

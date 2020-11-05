@@ -2,7 +2,7 @@ import { distance, Feature, LineString, lineString, Position, simplify } from "@
 
 import { App } from "~/core/helpers";
 import { ItineraryProfile, Place } from "~/core/itineraries";
-import { getSelectedEntity, getSelectedRoutes } from "~/core/selectors";
+import { getEntity, getSelectedEntity, getSelectedRoutes } from "~/core/selectors";
 import { ID, numericId } from "~/lib/id";
 import { smartMatch, SmartMatching, SmartMatchingProfile } from "~/lib/smartMatching";
 import { MapSource } from "~/map/sources";
@@ -34,6 +34,39 @@ export type ItineraryRoute = Route & {
     steps: Place[];
     profile: ItineraryProfile;
   };
+};
+
+export type RouteVertex = {
+  id: ID;
+  source: MapSource;
+  type: "RouteVertex";
+  coordinates: Position;
+  style: RouteStyle;
+  routeId: ID;
+  pointIndex: number;
+};
+
+export type RouteEdge = {
+  id: ID;
+  source: MapSource;
+  type: "RouteEdge";
+  from: Position;
+  to: Position;
+  style: RouteStyle;
+  routeId: ID;
+  fromIndex: number;
+  centerId: ID;
+};
+
+export type RouteEdgeCenter = {
+  id: ID;
+  source: MapSource;
+  type: "RouteEdgeCenter";
+  coordinates: Position;
+  style: RouteStyle;
+  routeId: ID;
+  pointIndex: number;
+  edgeId: ID;
 };
 
 export type RouteStyle = {
@@ -78,6 +111,10 @@ export const computeDistance = (route: Route): number => {
   }
 
   return total;
+};
+
+export const computeCenter = (positionA: Position, positionB: Position) => {
+  return [positionA[0] + (positionB[0] - positionA[0]) / 2, positionA[1] + (positionB[1] - positionA[1]) / 2];
 };
 
 export const routes = ({ mutate, get }: App) => ({
@@ -241,5 +278,27 @@ export const routes = ({ mutate, get }: App) => ({
       smartMatching,
       points,
     });
+  },
+
+  insertPoint: (edgeId: ID) => {
+    const edge = getEntity(edgeId, get()) as RouteEdge;
+
+    get().history.push({
+      name: "addRouteVertex",
+      routeId: edge.routeId,
+      afterPointIndex: edge.fromIndex,
+    });
+  },
+
+  deletePoint: (vertexId: ID) => {
+    const vertex = getEntity(vertexId, get()) as RouteVertex;
+    const route = getEntity(vertex.routeId, get()) as Route;
+
+    if (route.points.length > 2) {
+      get().history.push({
+        name: "deleteRouteVertex",
+        vertexId: vertex.id,
+      });
+    }
   },
 });

@@ -2,7 +2,7 @@ import { bbox, Feature, featureCollection, Geometry } from "@turf/turf";
 
 import { App } from "~/core/helpers";
 import { Pin } from "~/core/pins";
-import { Route } from "~/core/routes";
+import { Route, RouteEdge, RouteEdgeCenter, RouteVertex } from "~/core/routes";
 import { Text } from "~/core/texts";
 import { outlineColor } from "~/lib/color";
 import { numericId } from "~/lib/id";
@@ -11,16 +11,24 @@ import { MapSource } from "~/map/sources";
 
 export type Entities = {
   items: Entity[];
+  transientItems: Entity[];
 };
 
-export type Entity = Route | Pin | Text;
+export type Entity = Route | Pin | Text | RouteVertex | RouteEdge | RouteEdgeCenter;
 
 export const entitiesInitialState: Entities = {
   items: [],
+  transientItems: [],
 };
 
 export const entities = ({ mutate, get }: App) => ({
   ...entitiesInitialState,
+
+  updateTransientFeatures: (features: Entity[]) => {
+    mutate((state) => {
+      state.entities.transientItems = features;
+    });
+  },
 
   insertFeatures: (features: Feature<Geometry>[]) => {
     const acceptedFeatures = features.filter((feature) => {
@@ -178,6 +186,51 @@ export const entityToFeature = (entity: Entity): RawFeature | null => {
         outlineColor: outlineColor(style.color, style.outline),
         outlineWidth: style.outline === "none" ? 0 : 0.5,
         outlineBlur: style.outline === "glow" ? 1 : 0,
+      },
+    };
+  }
+
+  if (entity.type === "RouteVertex") {
+    return {
+      type: "Feature",
+      id: entity.id,
+      source: entity.source,
+      geometry: {
+        type: "Point",
+        coordinates: entity.coordinates,
+      },
+      properties: {
+        ...entity.style,
+      },
+    };
+  }
+
+  if (entity.type === "RouteEdge") {
+    return {
+      type: "Feature",
+      id: entity.id,
+      source: entity.source,
+      geometry: {
+        type: "LineString",
+        coordinates: [entity.from, entity.to],
+      },
+      properties: {
+        ...entity.style,
+      },
+    };
+  }
+
+  if (entity.type === "RouteEdgeCenter") {
+    return {
+      type: "Feature",
+      id: entity.id,
+      source: entity.source,
+      geometry: {
+        type: "Point",
+        coordinates: entity.coordinates,
+      },
+      properties: {
+        ...entity.style,
       },
     };
   }

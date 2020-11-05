@@ -3,7 +3,8 @@ import { memoize, throttle } from "lodash";
 import { MapMouseEvent, MapTouchEvent } from "mapbox-gl";
 
 import { app, getState } from "~/core/app";
-import { getMap, getSelectedItinerary } from "~/core/selectors";
+import { RouteEdgeCenter } from "~/core/routes";
+import { getEntity, getMap, getSelectedItinerary } from "~/core/selectors";
 import { ID } from "~/lib/id";
 
 type TouchEventHandler = (event: MapMouseEvent | MapTouchEvent) => void;
@@ -100,14 +101,14 @@ export const applyClickInteractions = (): void => {
 
     // handle pins drag start
     if (state.editor.mode === "select") {
-      const features = map.queryRenderedFeatures(event.point, {
-        layers: ["pins", "pinsInteractions", "texts"],
+      const [feature] = map.queryRenderedFeatures(event.point, {
+        layers: ["pins", "pinsInteractions", "texts", "routesVertices"],
       });
 
-      if (features?.length) {
+      if (feature) {
         event.preventDefault();
 
-        app.dragAndDrop.startDrag(features[0].id as ID, event.lngLat.toArray());
+        app.dragAndDrop.startDrag(feature.id as ID, event.lngLat.toArray());
         return;
       }
     }
@@ -162,14 +163,18 @@ export const applyClickInteractions = (): void => {
 
     // select the given entity
     if (state.editor.mode === "select" || state.editor.moving) {
-      const features = map.queryRenderedFeatures(event.point, {
-        layers: ["pins", "pinsInteractions", "routesInteractions", "texts"],
+      const [feature] = map.queryRenderedFeatures(event.point, {
+        layers: ["pins", "pinsInteractions", "routesInteractions", "texts", "routesEdges", "routesVertices"],
       });
 
-      if (features?.length) {
-        const featureId = features[0].id as ID;
+      if (feature) {
+        const featureId = feature.id as ID;
 
-        if (state.platform.keyboard.shiftKey) {
+        if (feature.layer.id === "routesEdges") {
+          app.routes.insertPoint(featureId);
+        } else if (feature.layer.id === "routesVertices") {
+          app.routes.deletePoint(featureId);
+        } else if (state.platform.keyboard.shiftKey) {
           app.selection.toggleEntitySelection(featureId);
         } else {
           app.editor.setEditorMode("select");
