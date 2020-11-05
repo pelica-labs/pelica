@@ -1,10 +1,20 @@
+import { Menu } from "@headlessui/react";
 import classNames from "classnames";
 import React, { useEffect, useRef } from "react";
 
 import { Button } from "~/components/Button";
 import { ColorPicker } from "~/components/ColorPicker";
 import { Distance, formatDistance } from "~/components/Distance";
-import { InformationIcon, PencilIcon, PinIcon, PlusIcon, TextIcon, TrashIcon } from "~/components/Icon";
+import {
+  DownloadIcon,
+  ExportIcon,
+  InformationIcon,
+  PencilIcon,
+  PinIcon,
+  PlusIcon,
+  TextIcon,
+  TrashIcon,
+} from "~/components/Icon";
 import { IconSelector } from "~/components/IconSelector";
 import { LabelTextareaField } from "~/components/LabelTextareaField";
 import { OutlineSelector } from "~/components/OutlineSelector";
@@ -15,10 +25,12 @@ import { SmartMatchingSelector } from "~/components/SmartMatchingSelector";
 import { Tooltip } from "~/components/Tooltip";
 import { WidthSlider } from "~/components/WidthSlider";
 import { app, getState, useStore } from "~/core/app";
+import { entityToFeature } from "~/core/entities";
 import { MAX_PIN_SIZE, Pin } from "~/core/pins";
 import { computeDistance, Route } from "~/core/routes";
-import { getSelectedEntities } from "~/core/selectors";
+import { getMapTitle, getSelectedEntities } from "~/core/selectors";
 import { MAX_TEXT_SIZE, MIN_TEXT_SIZE, Text } from "~/core/texts";
+import { exportGpx } from "~/lib/gpx";
 
 export const SelectSidebar: React.FC = () => {
   const textContainer = useRef<HTMLDivElement | null>(null);
@@ -270,9 +282,82 @@ export const SelectSidebar: React.FC = () => {
       )}
 
       {selectedEntity.type === "Route" && (
-        <SidebarSection className="md:mt-auto">
+        <SidebarSection className="relative md:mt-auto">
           <SidebarHeader>
             <SidebarHeading>Inspect</SidebarHeading>
+
+            <Menu>
+              {({ open }) => (
+                <>
+                  <span className="relative flex rounded-md shadow-sm ml-auto">
+                    <Menu.Button as="div">
+                      <Tooltip className="ml-1 block" placement="left" text="Download route">
+                        <Button className="py-px px-px">
+                          <DownloadIcon className="w-4 h-4 md:w-3 md:h-3" />
+                        </Button>
+                      </Tooltip>
+                    </Menu.Button>
+                  </span>
+                  {open && (
+                    <Menu.Items
+                      static
+                      className="absolute z-50 mb-12 mr-2 w-48 bottom-0 right-0 origin-top-right bg-white border rounded shadow outline-none py-1"
+                    >
+                      <div className="flex flex-col">
+                        <Menu.Item>
+                          {({ active }) => (
+                            <a
+                              className={classNames({
+                                "text-gray-800 text-sm px-2 py-1 hover:bg-orange-200 cursor-pointer": true,
+                                "bg-orange-200": active,
+                              })}
+                              onClick={async () => {
+                                const title = getMapTitle() || "Untitled";
+                                const gpx = exportGpx(title, selectedEntity);
+
+                                const a = document.createElement("a");
+                                a.href = `data:application/xml;base64,${btoa(gpx)}`;
+                                a.download = `${title}.gpx`;
+
+                                a.click();
+                              }}
+                            >
+                              Download as GPX
+                            </a>
+                          )}
+                        </Menu.Item>
+
+                        <Menu.Item>
+                          {({ active }) => (
+                            <a
+                              className={classNames({
+                                "text-gray-800 text-sm px-2 py-1 hover:bg-orange-200 cursor-pointer": true,
+                                "bg-orange-200": active,
+                              })}
+                              onClick={async () => {
+                                const title = getMapTitle() || "Untitled";
+                                const json = entityToFeature(selectedEntity);
+                                if (!json) {
+                                  return;
+                                }
+
+                                const a = document.createElement("a");
+                                a.href = `data:application/json;base64,${btoa(JSON.stringify(json))}`;
+                                a.download = `${title}.json`;
+
+                                a.click();
+                              }}
+                            >
+                              Download as GeoJSON
+                            </a>
+                          )}
+                        </Menu.Item>
+                      </div>
+                    </Menu.Items>
+                  )}
+                </>
+              )}
+            </Menu>
           </SidebarHeader>
 
           <div className="mt-5 md:mt-4 w-32 md:w-full">
@@ -280,7 +365,7 @@ export const SelectSidebar: React.FC = () => {
               <span className="mr-4">Distance</span>
               <Distance value={computeDistance(selectedEntity)} />
 
-              <Tooltip className="ml-auto" placement="left" text="Insert distance on map">
+              <Tooltip className="ml-1" placement="left" text="Insert distance on map">
                 <Button
                   className="ml-3 py-px px-px"
                   onClick={() => {
