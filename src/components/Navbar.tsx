@@ -26,8 +26,8 @@ export const Navbar: React.FC = () => {
     <header className="absolute pl-2 pr-4 h-16 w-full flex items-center bg-white shadow">
       <div className="mr-auto flex items-center">
         <Link passHref href="/">
-          <a>
-            <Image height={48} src="/images/icon-512.png" width={48} />
+          <a title="Pelica homepage">
+            <Image alt="Pelica logo" height={48} src="/images/icon-512.png" width={48} />
           </a>
         </Link>
       </div>
@@ -65,12 +65,14 @@ export const Navbar: React.FC = () => {
                 >
                   {session && (
                     <button
+                      aria-label="Main menu"
                       className={classNames({
                         "rounded-full focus:outline-none focus:border-orange-300 transition duration-75 transform hover:scale-105": true,
                         "scale-110 hover:scale-110": open,
                       })}
                     >
                       <Image
+                        alt="User profile picture"
                         className="w-8 h-8 md:w-6 md:h-6 rounded-full border-2 border-orange-300"
                         height={40}
                         src={session.user.image}

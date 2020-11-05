@@ -62,6 +62,7 @@ const Home: NextPage = () => {
           <AnimatePresence>
             <motion.img
               key={images[currentImage % images.length]}
+              alt="Map example"
               animate={{ x: 0, opacity: 1 }}
               className="w-full h-full object-cover object-center absolute top-0 rounded"
               exit={{ x: -300, opacity: 0 }}
@@ -75,7 +76,8 @@ const Home: NextPage = () => {
             style={{ background: `linear-gradient(rgba(0,0,0,0), rgba(28, 25, 23, 0.5))` }}
           >
             <button
-              className="h-12 mb-6 mt-12 bg-orange-600 hover:bg-orange-500 shadow transition duration-300 ease-in-out text-gray-100 px-6 py-1 rounded-full uppercase tracking-wider font-bold hover:scale-105 hover:shadow transform hover:-translate-y-1 focus:outline-none focus:shadow-outline"
+              aria-label="Start mapping"
+              className="h-12 mb-6 mt-12 bg-orange-600 hover:bg-orange-500 shadow transition duration-300 ease-in-out text-white px-6 py-1 rounded-full uppercase tracking-wider font-bold hover:scale-105 hover:shadow transform hover:-translate-y-1 focus:outline-none focus:shadow-outline"
               disabled={creating}
               onClick={() => {
                 createMap();
