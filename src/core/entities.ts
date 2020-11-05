@@ -52,6 +52,7 @@ export const entities = ({ mutate, get }: App) => ({
             id: numericId(),
             type: "Route",
             source: MapSource.Routes,
+            closed: false,
             transientPoints: [],
             rawPoints: feature.geometry.coordinates,
             points: feature.geometry.coordinates,
@@ -150,16 +151,24 @@ export const entityToFeature = (entity: Entity): RawFeature | null => {
       ...entity.transientStyle,
     };
 
+    const geometry = entity.closed
+      ? {
+          type: "Polygon",
+          coordinates: [[...points, points[0]]],
+        }
+      : {
+          type: "LineString",
+          coordinates: points,
+        };
+
     return {
       type: "Feature",
       id: entity.id,
       source: entity.source,
-      geometry: {
-        type: "LineString",
-        coordinates: points,
-      },
+      geometry,
       properties: {
         ...style,
+        closed: entity.closed,
         outlineColor: outlineColor(style.color, style.outline),
         outlineWidth: style.outline === "none" ? -1 : style.outline === "glow" ? 7 : 1,
         outlineBlur: style.outline === "glow" ? 5 : 0,

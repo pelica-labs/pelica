@@ -1,4 +1,4 @@
-import { BBox, bboxPolygon, booleanContains, booleanCrosses, Position } from "@turf/turf";
+import { BBox, bboxPolygon, booleanContains, booleanCrosses, booleanOverlap, Position } from "@turf/turf";
 import { uniq } from "lodash";
 
 import { entityToFeature } from "~/core/entities";
@@ -56,10 +56,14 @@ export const selection = ({ mutate, get }: App) => ({
           return !!feature;
         })
         .filter((feature) => {
-          const crosses = feature.geometry?.type !== "Point" && booleanCrosses(polygon, feature);
+          const crosses =
+            feature.geometry?.type !== "Point" &&
+            feature.geometry?.type !== "Polygon" &&
+            booleanCrosses(polygon, feature);
+          const overlaps = feature.geometry?.type === "Polygon" && booleanOverlap(polygon, feature);
           const contains = booleanContains(polygon, feature);
 
-          return crosses || contains;
+          return crosses || overlaps || contains;
         })
         .map((feature) => {
           return feature.id;

@@ -85,9 +85,15 @@ export const applyClickInteractions = (): void => {
       event.preventDefault();
 
       // end route if we're clicking on the routesStop target
-      const routesStops = map.queryRenderedFeatures(event.point, { layers: [MapLayer.RoutesStop] });
-      if (routesStops.length) {
+      const [routeStop] = map.queryRenderedFeatures(event.point, { layers: [MapLayer.RoutesStop] });
+      const [routeStart] = map.queryRenderedFeatures(event.point, { layers: [MapLayer.RoutesStart] });
+      if (routeStop) {
         app.routes.stopRoute();
+
+        event.preventDefault();
+        event.originalEvent.stopPropagation();
+      } else if (routeStart) {
+        app.routes.closeRoute();
 
         event.preventDefault();
         event.originalEvent.stopPropagation();

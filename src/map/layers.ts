@@ -18,6 +18,7 @@ export enum MapLayer {
   OverlaysContour = "overlaysContour",
 
   Routes = "routes",
+  RoutesFill = "routesFill",
   RoutesOutlines = "routesOutlines",
   RoutesHover = "routesHover",
   RoutesVertices = "routesVertices",
@@ -27,6 +28,7 @@ export enum MapLayer {
   RoutesEdgeCenterPlus = "routesEdgeCenterPlus",
   RoutesInteractions = "routesInteractions",
   RoutesStop = "routesStop",
+  RoutesStart = "routesStart",
   RouteNextPointLine = "routeNextPointLine",
   RouteNextPoint = "routeNextPoint",
 
@@ -149,6 +151,18 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
+    id: MapLayer.RoutesFill,
+    type: "fill",
+    source: MapSource.Routes,
+    interactive: false,
+    filter: ["boolean", ["get", "closed"], false],
+    paint: {
+      "fill-color": ["get", "color"],
+      "fill-opacity": 0.1,
+    },
+  });
+
+  addLayer(map, {
     id: MapLayer.RoutesOutlines,
     before: MapLayer.Routes,
     type: "line",
@@ -186,13 +200,13 @@ export const applyLayers = (): void => {
     source: MapSource.RouteVertex,
     paint: {
       "circle-radius": ["+", ["get", "width"], 3],
+      "circle-stroke-width": 1,
       "circle-stroke-color": [
         "case",
         ["boolean", ["feature-state", "hover"], false],
         theme.colors.white,
         ["get", "color"],
       ],
-      "circle-stroke-width": 1,
       "circle-color": ["case", ["boolean", ["feature-state", "hover"], false], ["get", "color"], theme.colors.white],
     },
   });
@@ -292,7 +306,6 @@ export const applyLayers = (): void => {
 
   addLayer(map, {
     id: MapLayer.RoutesStop,
-    before: MapLayer.WaterwayLabel,
     type: "circle",
     source: MapSource.RouteStop,
     paint: {
@@ -301,6 +314,23 @@ export const applyLayers = (): void => {
       "circle-stroke-color": ["get", "color"],
       "circle-stroke-width": 1,
       "circle-color": ["get", "color"],
+    },
+  });
+
+  addLayer(map, {
+    id: MapLayer.RoutesStart,
+    type: "circle",
+    source: MapSource.RouteStart,
+    paint: {
+      "circle-radius": 7,
+      "circle-stroke-width": 1,
+      "circle-stroke-color": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        theme.colors.white,
+        ["get", "color"],
+      ],
+      "circle-color": ["case", ["boolean", ["feature-state", "hover"], false], ["get", "color"], theme.colors.white],
     },
   });
 

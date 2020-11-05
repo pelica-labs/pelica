@@ -13,6 +13,7 @@ import {
   getNextPointOverlay,
   getPinOverlay,
   getRouteOverlay,
+  getRouteStartOverlay,
   getRouteStopOverlay,
   getSelectionAreaOverlay,
   getTextOverlay,
@@ -332,7 +333,7 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
   );
 
   /**
-   * Sync next point to map
+   * Sync route stop
    */
   useStoreSubscription(
     (store) => ({
@@ -347,14 +348,18 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
       const features: RawFeature[] = [];
       if (editorMode === "draw" && !isDrawing && selectedEntity?.type === "Route" && selectedEntity.points.length) {
         features.push(getRouteStopOverlay(selectedEntity));
+
+        if (selectedEntity.points.length > 2) {
+          features.push(getRouteStartOverlay(selectedEntity));
+        }
       }
 
-      applyFeatures(features, [MapSource.RouteStop]);
+      applyFeatures(features, [MapSource.RouteStop, MapSource.RouteStart]);
     }
   );
 
   /**
-   * Sync route stop to map
+   * Sync next point
    */
   useStoreSubscription(
     (store) => ({

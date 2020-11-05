@@ -12,6 +12,7 @@ const hoverableLayers = [
   MapLayer.Pins,
   MapLayer.RoutesInteractions,
   MapLayer.RoutesStop,
+  MapLayer.RoutesStart,
   MapLayer.Texts,
   MapLayer.RoutesVertices,
   MapLayer.RoutesEdges,
@@ -69,9 +70,9 @@ export const applyHoverInteractions = (): void => {
       return;
     }
 
-    if (state.editor.mode !== "select") {
-      return;
-    }
+    // if (state.editor.mode !== "select") {
+    //   return;
+    // }
 
     // remove previous hover if it changed
     if (

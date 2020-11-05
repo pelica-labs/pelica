@@ -23,6 +23,7 @@ export const imports = ({ get }: App) => ({
           type: "Route",
           id: numericId(),
           source: MapSource.Routes,
+          closed: false,
           smartMatching: { enabled: false, profile: null },
           transientPoints: [],
           rawPoints: [],

@@ -63,11 +63,27 @@ export const getRouteStopOverlay = (route: Route): RawFeature => {
 
   return {
     type: "Feature",
-    id: "ROUTE_STOP",
+    id: 999,
     source: MapSource.RouteStop,
     geometry: {
       type: "Point",
       coordinates: lastPoint,
+    },
+    properties: {
+      color: route.style.color,
+      width: route.style.width,
+    },
+  };
+};
+
+export const getRouteStartOverlay = (route: Route): RawFeature => {
+  return {
+    type: "Feature",
+    id: 9999,
+    source: MapSource.RouteStart,
+    geometry: {
+      type: "Point",
+      coordinates: route.points[0],
     },
     properties: {
       color: route.style.color,

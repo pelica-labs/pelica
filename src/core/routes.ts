@@ -23,6 +23,7 @@ export type Route = {
   drawingMode?: DrawingMode;
   style: RouteStyle;
   transientStyle?: RouteStyle;
+  closed: boolean;
   itinerary?: {
     steps: Place[];
     profile: ItineraryProfile;
@@ -154,6 +155,7 @@ export const routes = ({ mutate, get }: App) => ({
         points: [],
         smartMatching: state.routes.smartMatching,
         style: state.routes.style,
+        closed: false,
       });
     });
   },
@@ -227,6 +229,19 @@ export const routes = ({ mutate, get }: App) => ({
   stopRoute: () => {
     mutate((state) => {
       state.routes.isDrawing = false;
+    });
+
+    if (get().editor.mode === "draw") {
+      get().routes.startNewRoute();
+    }
+  },
+
+  closeRoute: () => {
+    mutate((state) => {
+      state.routes.isDrawing = false;
+
+      const route = getSelectedEntity(state) as Route;
+      route.closed = true;
     });
 
     if (get().editor.mode === "draw") {

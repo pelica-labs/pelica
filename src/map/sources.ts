@@ -5,16 +5,22 @@ import { getMap } from "~/core/selectors";
 export enum MapSource {
   Pins = "pins",
   PinPreview = "pinPreview",
+
   Texts = "texts",
   TextPreview = "textPreview",
+
   Routes = "routes",
   RouteStop = "routeStop",
+  RouteStart = "routeStart",
   RouteNextPoint = "routeNextPoint",
   RouteVertex = "routeVertex",
   RouteEdge = "routeEdge",
   RouteEdgeCenter = "routeEdgeCenter",
+
   Overlays = "overlays",
+
   SelectionArea = "selectionArea",
+
   Watermark = "watermark",
 }
 
@@ -31,6 +37,7 @@ export const applySources = (): void => {
 
   addSource(map, MapSource.Routes);
   addSource(map, MapSource.RouteStop);
+  addSource(map, MapSource.RouteStart);
   addSource(map, MapSource.RouteNextPoint);
   addSource(map, MapSource.RouteVertex);
   addSource(map, MapSource.RouteEdge);
