@@ -295,13 +295,13 @@ export const routes = ({ mutate, get }: App) => ({
     });
   },
 
-  insertPoint: (edgeId: ID) => {
-    const edge = getEntity(edgeId, get()) as RouteEdge;
+  insertPoint: (edgeCenterId: ID) => {
+    const edgeCenter = getEntity(edgeCenterId, get()) as RouteEdgeCenter;
 
     get().history.push({
       name: "addRouteVertex",
-      routeId: edge.routeId,
-      afterPointIndex: edge.fromIndex,
+      routeId: edgeCenter.routeId,
+      pointIndex: edgeCenter.pointIndex,
     });
   },
 
