@@ -152,7 +152,5 @@ export const itineraries = ({ mutate, get }: App) => ({
 
       state.itineraries.isLoadingRoute = false;
     });
-
-    get().map.setBounds(bbox(lineString(points)));
   },
 });
