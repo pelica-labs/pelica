@@ -6,7 +6,6 @@ export const applyMoveInteractions = (): void => {
 
   const onMoveEnd = () => {
     app.map.move(map.getCenter().toArray(), map.getZoom(), map.getBearing(), map.getPitch());
-    app.map.setBounds(map.getBounds().toArray().flat() as [number, number, number, number]);
     app.map.updateFeatures(map.getCenter().toArray());
   };
 

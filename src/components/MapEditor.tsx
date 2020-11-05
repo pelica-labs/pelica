@@ -1,9 +1,11 @@
 import { debounce } from "lodash";
 import React, { useEffect, useRef } from "react";
+import { useDropzone } from "react-dropzone";
 
 import { Alerts } from "~/components/Alerts";
 import { GeolocationButton } from "~/components/GeolocationButton";
 import { HistoryButtons } from "~/components/HistoryButtons";
+import { CloudUploadIcon } from "~/components/Icon";
 import { ItineraryInput } from "~/components/ItineraryInput";
 import { Map } from "~/components/Map";
 import { PlaceAutocomplete } from "~/components/PlaceAutocomplete";
@@ -26,7 +28,19 @@ export const MapEditor: React.FC<Props> = ({ map }) => {
   const currentLocation = useStore((store) => store.geolocation.currentLocation);
   const selectedItinerary = useStore((store) => getSelectedItinerary(store));
   const screenDimensions = useStore((store) => store.platform.screen.dimensions);
-
+  const dropzone = useDropzone({
+    noClick: true,
+    maxFiles: 1,
+    onDrop: ([file]) => {
+      app.imports.importFile(file);
+    },
+    onDropRejected: ([file]) => {
+      app.alerts.trigger({
+        message: `Could not process file\n${file.errors.map((error) => error.message).join("\n")}`,
+        color: "red",
+      });
+    },
+  });
   const showTopLeftControls = editorMode !== "export";
   const showHistoryButtons = !screenDimensions.md && editorMode !== "export";
 
@@ -63,7 +77,20 @@ export const MapEditor: React.FC<Props> = ({ map }) => {
   );
 
   return (
-    <div className="flex flex-col md:flex-row h-full justify-between bg-gray-200">
+    <div className="flex flex-col md:flex-row h-full justify-between bg-gray-200" {...dropzone.getRootProps()}>
+      <input {...dropzone.getInputProps()} />
+      {dropzone.isDragActive && (
+        <div className="absolute inset-0 bg-gray-900 bg-opacity-50 z-50 flex justify-center items-center">
+          <div className="flex flex-col items-center text-white">
+            <CloudUploadIcon className="w-24 h-24" />
+
+            <span className="text-white text-xl text-medium mt-10">
+              Import GPX or GeoJSON files by dropping them here
+            </span>
+          </div>
+        </div>
+      )}
+
       <div className="relative w-full h-full flex-1">
         <Map />
 

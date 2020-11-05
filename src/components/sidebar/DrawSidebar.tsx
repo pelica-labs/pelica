@@ -107,7 +107,7 @@ export const DrawSidebar: React.FC = () => {
               type="file"
               onChange={(event) => {
                 if (event.target.files?.length) {
-                  app.imports.importGpx(event.target.files[0]);
+                  app.imports.importFile(event.target.files[0]);
                 }
               }}
             />

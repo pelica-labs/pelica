@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
 
-import { CloudCheck, CloudUpload } from "~/components/Icon";
+import { CloudCheckIcon, CloudUploadIcon } from "~/components/Icon";
 import { useStore } from "~/core/app";
 
 export const SyncIndicator: React.FC = () => {
@@ -30,7 +30,7 @@ export const SyncIndicator: React.FC = () => {
 
   return (
     <div className="relative flex items-center">
-      <CloudUpload
+      <CloudUploadIcon
         className={classNames({
           "absolute w-4 h-4 text-orange-400 transition-opacity duration-300": true,
           "opacity-100": justSynced && syncing,
@@ -38,7 +38,7 @@ export const SyncIndicator: React.FC = () => {
         })}
       />
 
-      <CloudCheck
+      <CloudCheckIcon
         className={classNames({
           "absolute w-4 h-4 text-blue-400 transition-opacity duration-300": true,
           "opacity-100": justSynced && !syncing,

@@ -209,6 +209,16 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
   );
 
   /**
+   * Sync bounds
+   */
+  useStoreSubscription(
+    (store) => store.map.bounds,
+    (bounds) => {
+      getMap().fitBounds(bounds as LngLatBoundsLike, { padding: 10 });
+    }
+  );
+
+  /**
    * Sync place
    */
   useStoreSubscription(
@@ -584,27 +594,7 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
   };
 
   const onPaste = (text: string) => {
-    try {
-      const features = parseFeatures(text);
-
-      // @todo: validate JSON
-
-      const insertedCount = app.entities.insertFeatures(features);
-
-      if (insertedCount !== features.length) {
-        app.alerts.trigger({
-          message: `${features.length - insertedCount} features could not be displayed.`,
-          icon: WarningIcon,
-        });
-      }
-    } catch (error) {
-      app.alerts.trigger({
-        message: `Unable to import GeoJson from clipboard:\n${error.message}`,
-        color: "red",
-        icon: ErrorIcon,
-        timeout: 3000,
-      });
-    }
+    app.imports.importText(text);
   };
 
   return (

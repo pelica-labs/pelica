@@ -75,9 +75,7 @@ export const entities = ({ mutate, get }: App) => ({
       entities,
     });
 
-    mutate((state) => {
-      state.map.bounds = bbox(featureCollection(acceptedFeatures));
-    });
+    get().map.setBounds(bbox(featureCollection(acceptedFeatures)));
 
     return acceptedFeatures.length;
   },
