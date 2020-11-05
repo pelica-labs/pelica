@@ -23,6 +23,7 @@ import { upscale } from "~/core/platform";
 import { computeCenter } from "~/core/routes";
 import {
   getEntityFeatures,
+  getHoveredEntity,
   getMap,
   getSelectedEntities,
   getSelectedEntity,
@@ -256,8 +257,12 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
    * Sync transient entities
    */
   useStoreSubscription(
-    (store) => ({ editorMode: store.editor.mode, selectedEntity: getSelectedEntity(store) }),
-    ({ editorMode, selectedEntity }) => {
+    (store) => ({
+      editorMode: store.editor.mode,
+      selectedEntity: getSelectedEntity(store),
+      hoveredEntity: getHoveredEntity(store),
+    }),
+    ({ editorMode, selectedEntity, hoveredEntity }) => {
       const transientItems: Entity[] = [];
 
       if (selectedEntity?.type === "Route" && !selectedEntity.itinerary && editorMode === "select") {
@@ -302,6 +307,24 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
             });
           }
         });
+      }
+
+      if (hoveredEntity && editorMode === "draw") {
+        if (hoveredEntity.type === "Route") {
+          hoveredEntity.points.forEach((point, index) => {
+            transientItems.push({
+              id: 10 ** 6 + index,
+              type: "RouteVertex",
+              source: MapSource.RouteVertex,
+              coordinates: point,
+              style: hoveredEntity.style,
+              routeId: hoveredEntity.id,
+              pointIndex: index,
+            });
+          });
+        } else if (hoveredEntity.type === "RouteVertex") {
+          transientItems.push(hoveredEntity);
+        }
       }
 
       app.entities.updateTransientFeatures(transientItems);

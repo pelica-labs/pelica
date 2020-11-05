@@ -43,7 +43,12 @@ export const applyClickInteractions = (): void => {
     }
 
     if (state.editor.mode === "draw") {
-      app.routes.updateNextPoint(event.lngLat.toArray());
+      const [feature] = map.queryRenderedFeatures(event.point, { layers: [MapLayer.RoutesVerticesInteractions] });
+      if (feature && feature.geometry.type === "Point") {
+        app.routes.updateNextPoint(feature.geometry.coordinates);
+      } else {
+        app.routes.updateNextPoint(event.lngLat.toArray());
+      }
     } else if (state.editor.mode === "text") {
       app.texts.updateNextPoint(event.lngLat.toArray());
     } else if (state.editor.mode === "pin") {
