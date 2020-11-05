@@ -30,6 +30,7 @@ export const modeIcons = {
   itinerary: RouteIcon,
   draw: PencilIcon,
   select: MousePointerIcon,
+  edit: MousePointerIcon,
   move: HandIcon,
 };
 
