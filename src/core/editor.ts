@@ -15,12 +15,13 @@ import { defaultStyle, Style } from "~/lib/style";
 export type Editor = {
   mode: EditorMode;
   moving: boolean;
+  isRouteEditing: boolean;
   readOnly: boolean;
   style: Style;
   aspectRatio: AspectRatio;
 };
 
-export type EditorMode = "style" | "select" | "edit" | "move" | "draw" | "itinerary" | "pin" | "text" | "export";
+export type EditorMode = "style" | "select" | "move" | "draw" | "itinerary" | "pin" | "text" | "export";
 
 export const modeIcons = {
   style: StyleIcon,
@@ -37,6 +38,7 @@ export const modeIcons = {
 export const editorInitialState: Editor = {
   mode: "move",
   moving: true,
+  isRouteEditing: false,
   readOnly: false,
 
   style: defaultStyle as Style,
@@ -107,11 +109,9 @@ export const editor = ({ mutate, get }: App) => ({
     });
   },
 
-  leaveRouteEditorMode: () => {
+  toggleEditing: (editing: boolean) => {
     mutate((state) => {
-      if (state.editor.mode === "edit") {
-        state.editor.mode = "select";
-      }
+      state.editor.isRouteEditing = editing;
     });
   },
 });

@@ -265,10 +265,10 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
    * Sync transient entities
    */
   useStoreSubscription(
-    (store) => ({ editorMode: store.editor.mode, selectedEntity: getSelectedEntity(store) }),
-    ({ editorMode, selectedEntity }) => {
+    (store) => ({ isRouteEditing: store.editor.isRouteEditing, selectedEntity: getSelectedEntity(store) }),
+    ({ isRouteEditing, selectedEntity }) => {
       const transientItems: TransientEntity[] = [];
-      if (selectedEntity?.type === "Route" && !selectedEntity.itinerary && editorMode === "edit") {
+      if (selectedEntity?.type === "Route" && !selectedEntity.itinerary && isRouteEditing) {
         const points = selectedEntity.transientPoints.length ? selectedEntity.transientPoints : selectedEntity.points;
 
         points.forEach((point, index) => {

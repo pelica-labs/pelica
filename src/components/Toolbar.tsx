@@ -64,7 +64,7 @@ export const Toolbar: React.FC = () => {
         </IconButton>
 
         <IconButton
-          active={editorMode === "select" || editorMode === "edit"}
+          active={editorMode === "select"}
           id="toolbar-select"
           tooltip={{
             placement: tooltipPlacement,

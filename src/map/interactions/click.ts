@@ -106,7 +106,7 @@ export const applyClickInteractions = (): void => {
     }
 
     // handle pins drag start
-    if (state.editor.mode === "select" || state.editor.mode === "edit") {
+    if (state.editor.mode === "select") {
       const [feature] = map.queryRenderedFeatures(event.point, {
         layers: [MapLayer.Pins, MapLayer.PinsInteractions, MapLayer.Texts, MapLayer.RoutesVertices],
       });
@@ -193,7 +193,7 @@ export const applyClickInteractions = (): void => {
         return;
       } else {
         // leave route edit mode if we're in it
-        app.editor.leaveRouteEditorMode();
+        app.editor.toggleEditing(false);
       }
     }
 
@@ -226,7 +226,7 @@ export const applyClickInteractions = (): void => {
           app.routes.deletePoint(featureId);
           return;
         } else if (feature && feature.layer.id === MapLayer.RoutesInteractions) {
-          app.editor.setEditorMode("edit");
+          app.editor.toggleEditing(true);
           app.selection.selectEntity(featureId);
         }
       }

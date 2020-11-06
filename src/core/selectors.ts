@@ -114,7 +114,7 @@ export const getTransientEntityFeatures = (state: State = getState()) => {
 };
 
 export const canSelect = (state: State = getState()) => {
-  return ["select", "edit", "move", "style", "export"].includes(state.editor.mode);
+  return ["select", "move", "style", "export"].includes(state.editor.mode);
 };
 
 export const getMapTitle = (state: State = getState()) => {
