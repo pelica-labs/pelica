@@ -6,6 +6,7 @@ export const en = {
     mode: {
       style: "Style",
       select: "Select",
+      edit: "Edit route",
       move: "Move",
       draw: "Draw route",
       pin: "Pin",

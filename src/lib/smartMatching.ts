@@ -98,35 +98,40 @@ const mapMatch = async (points: Position[], profile: SmartMatchingProfile): Prom
 };
 
 const directionsMatch = async (points: Position[], profile: SmartMatchingProfile): Promise<Position[]> => {
-  const chunks = await Promise.all(
-    chunk(points, 25).map(async (points) => {
-      if (points.length < 2) {
-        return points;
-      }
+  try {
+    const chunks = await Promise.all(
+      chunk(points, 25).map(async (points) => {
+        if (points.length < 2) {
+          return points;
+        }
 
-      const res = await mapboxDirections
-        .getDirections({
-          profile,
-          waypoints: points.map((point) => {
-            return {
-              coordinates: point.map((c) => +c.toFixed(6)),
-            };
-          }),
-          overview: "full",
-        })
-        .send();
+        const res = await mapboxDirections
+          .getDirections({
+            profile,
+            waypoints: points.map((point) => {
+              return {
+                coordinates: point.map((c) => +c.toFixed(6)),
+              };
+            }),
+            overview: "full",
+          })
+          .send();
 
-      if (!res.body.routes?.length || !res.body.routes[0].geometry) {
-        console.info("Directions matching did return any routes", res.body);
+        if (!res.body.routes?.length || !res.body.routes[0].geometry) {
+          console.info("Directions matching did return any routes", res.body);
 
-        return points;
-      }
+          return points;
+        }
 
-      return polyline.toGeoJSON(res.body.routes[0].geometry as string).coordinates;
-    })
-  );
+        return polyline.toGeoJSON(res.body.routes[0].geometry as string).coordinates;
+      })
+    );
 
-  return chunks.flat();
+    return chunks.flat();
+  } catch (error) {
+    console.info("There was an error with the directions request.", error);
+    return points;
+  }
 };
 
 /**

@@ -14,9 +14,9 @@ const hoverableLayers = [
   MapLayer.RoutesStop,
   MapLayer.RoutesStart,
   MapLayer.Texts,
-  MapLayer.RoutesVertices,
+  MapLayer.RoutesVerticesInteractions,
   MapLayer.RoutesEdges,
-  MapLayer.RoutesEdgeCenters,
+  MapLayer.RoutesEdgeCentersInteractions,
 ];
 
 const selectOnlyHoverableLayers = [
@@ -72,11 +72,21 @@ export const applyHoverInteractions = (): void => {
   const onFeatureHover = (event: MapLayerMouseEvent) => {
     const state = getState();
 
+    // do not change hover state if we're still dragging
+    if (state.dragAndDrop.dragMoved) {
+      return;
+    }
+
     const [feature] = map.queryRenderedFeatures(event.point, {
       layers: hoverableLayers,
     });
 
+    // remove hover
     if (!feature) {
+      if (state.dragAndDrop.hoveredEntityId && state.dragAndDrop.hoveredEntitySource) {
+        toggleHover({ id: state.dragAndDrop.hoveredEntityId, source: state.dragAndDrop.hoveredEntitySource }, false);
+        app.dragAndDrop.endHover();
+      }
       return;
     }
 
@@ -90,9 +100,8 @@ export const applyHoverInteractions = (): void => {
       state.dragAndDrop.hoveredEntityId !== feature.id &&
       state.dragAndDrop.hoveredEntitySource
     ) {
-      const feature = { id: state.dragAndDrop.hoveredEntityId, source: state.dragAndDrop.hoveredEntitySource };
-
-      toggleHover(feature, false);
+      toggleHover({ id: state.dragAndDrop.hoveredEntityId, source: state.dragAndDrop.hoveredEntitySource }, false);
+      app.dragAndDrop.endHover();
     }
 
     if (state.selection.ids.find((id) => id === feature.id)) {
@@ -104,28 +113,7 @@ export const applyHoverInteractions = (): void => {
     toggleHover(feature, true);
   };
 
-  const onFeatureHoverEnd = (event: MapLayerMouseEvent) => {
-    const state = getState();
-
-    if (!state.dragAndDrop.hoveredEntityId || !state.dragAndDrop.hoveredEntitySource) {
-      return;
-    }
-
-    const features = map.queryRenderedFeatures(event.point);
-
-    const stillHovering = features.find((feature) => feature.state.hover);
-    if (!stillHovering) {
-      app.dragAndDrop.endHover();
-    }
-
-    const feature = { id: state.dragAndDrop.hoveredEntityId, source: state.dragAndDrop.hoveredEntitySource };
-    toggleHover(feature, false);
-  };
-
-  hoverableLayers.forEach((layer) => {
-    map.on("mousemove", layer, onFeatureHover);
-    map.on("mouseleave", layer, onFeatureHoverEnd);
-  });
+  map.on("mousemove", onFeatureHover);
 
   map.getCanvas().addEventListener("mouseleave", onMouseLeave);
 };

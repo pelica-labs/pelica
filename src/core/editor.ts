@@ -15,6 +15,7 @@ import { defaultStyle, Style } from "~/lib/style";
 export type Editor = {
   mode: EditorMode;
   moving: boolean;
+  isRouteEditing: boolean;
   readOnly: boolean;
   style: Style;
   aspectRatio: AspectRatio;
@@ -30,12 +31,14 @@ export const modeIcons = {
   itinerary: RouteIcon,
   draw: PencilIcon,
   select: MousePointerIcon,
+  edit: MousePointerIcon,
   move: HandIcon,
 };
 
 export const editorInitialState: Editor = {
   mode: "move",
   moving: true,
+  isRouteEditing: false,
   readOnly: false,
 
   style: defaultStyle as Style,
@@ -103,6 +106,12 @@ export const editor = ({ mutate, get }: App) => ({
   toggleMoving: (moving: boolean) => {
     mutate((state) => {
       state.editor.moving = moving;
+    });
+  },
+
+  toggleEditing: (editing: boolean) => {
+    mutate((state) => {
+      state.editor.isRouteEditing = editing;
     });
   },
 });

@@ -1,4 +1,4 @@
-import { bbox, lineString, Position } from "@turf/turf";
+import { Position } from "@turf/turf";
 
 import { App } from "~/core/helpers";
 import { ItineraryRoute, Route } from "~/core/routes";
@@ -152,7 +152,5 @@ export const itineraries = ({ mutate, get }: App) => ({
 
       state.itineraries.isLoadingRoute = false;
     });
-
-    get().map.setBounds(bbox(lineString(points)));
   },
 });

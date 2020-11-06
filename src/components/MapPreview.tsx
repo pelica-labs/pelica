@@ -92,7 +92,7 @@ export const MapPreview: React.FC<Props> = ({ map }) => {
     <div className="p-1 w-full md:w-1/2 lg:w-1/3 flex flex-col items-stretch h-64">
       <span className="group relative flex flex-col items-stretch h-full p-2 border border-gray-200 bg-white rounded hover:shadow">
         <div className="flex justify-between items-center pl-1">
-          <div className="flex flex-col mr-4">
+          <div className="flex flex-col mr-4 w-5/6">
             <Link passHref href={`/app/${map.id}`}>
               <a
                 className="relative flex flex-col items-stretch h-full hover:text-gray-700 border border-transparent rounded transition duration-75"

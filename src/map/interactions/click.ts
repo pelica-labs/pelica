@@ -171,22 +171,19 @@ export const applyClickInteractions = (): void => {
     if (canSelect(state) || state.editor.moving) {
       const [feature] = map.queryRenderedFeatures(event.point, {
         layers: [
+          MapLayer.RoutesEdgeCentersInteractions,
           MapLayer.Pins,
           MapLayer.PinsInteractions,
           MapLayer.RoutesInteractions,
           MapLayer.Texts,
-          MapLayer.RoutesEdges,
-          MapLayer.RoutesVertices,
         ],
       });
 
       if (feature) {
         const featureId = feature.id as ID;
 
-        if (feature.layer.id === MapLayer.RoutesEdges) {
+        if (feature.layer.id === MapLayer.RoutesEdgeCentersInteractions) {
           app.routes.insertPoint(featureId);
-        } else if (feature.layer.id === MapLayer.RoutesVertices) {
-          app.routes.deletePoint(featureId);
         } else if (state.platform.keyboard.shiftKey) {
           app.selection.toggleEntitySelection(featureId);
         } else {
@@ -194,6 +191,9 @@ export const applyClickInteractions = (): void => {
           app.selection.selectEntity(featureId);
         }
         return;
+      } else {
+        // leave route edit mode if we're in it
+        app.editor.toggleEditing(false);
       }
     }
 
@@ -210,6 +210,29 @@ export const applyClickInteractions = (): void => {
     }
   };
 
+  const onDoubleClick = (event: MapMouseEvent | MapTouchEvent) => {
+    const state = getState();
+
+    // select the given entity
+    if (state.editor.mode === "select" || state.editor.moving) {
+      const [feature] = map.queryRenderedFeatures(event.point, {
+        layers: [MapLayer.RoutesVertices, MapLayer.RoutesInteractions],
+      });
+
+      if (feature) {
+        const featureId = feature.id as ID;
+
+        if (feature.layer.id === MapLayer.RoutesVertices) {
+          app.routes.deletePoint(featureId);
+          return;
+        } else if (feature && feature.layer.id === MapLayer.RoutesInteractions) {
+          app.editor.toggleEditing(true);
+          app.selection.selectEntity(featureId);
+        }
+      }
+    }
+  };
+
   map.on("touchmove", handleSingleTouchEvent(onMouseMove));
   map.on("touchstart", handleSingleTouchEvent(onMouseDown));
   map.on("touchend", handleSingleTouchEvent(onMouseUp));
@@ -218,6 +241,7 @@ export const applyClickInteractions = (): void => {
   map.on("mousedown", onMouseDown);
   map.on("mouseup", onMouseUp);
   map.on("click", onClick);
+  map.on("dblclick", onDoubleClick);
 
   ["mousemove", "mousedown", "mouseup", "click"].forEach((event) => {
     map.on(event, onMouseEvent);

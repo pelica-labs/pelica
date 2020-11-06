@@ -569,7 +569,7 @@ const MoveRouteVertexHandler: Handler<MoveRouteVertexAction> = {
 type AddRouteVertexAction = {
   name: "addRouteVertex";
   routeId: ID;
-  afterPointIndex: number;
+  pointIndex: number;
 };
 
 const AddRouteVertexHandler: Handler<AddRouteVertexAction> = {
@@ -577,9 +577,9 @@ const AddRouteVertexHandler: Handler<AddRouteVertexAction> = {
     const route = getEntity(action.routeId, state) as Route;
 
     route.points.splice(
-      action.afterPointIndex + 1,
+      action.pointIndex,
       0,
-      computeCenter(route.points[action.afterPointIndex], route.points[action.afterPointIndex + 1])
+      computeCenter(route.points[action.pointIndex - 1], route.points[action.pointIndex])
     );
     route.smartMatching.enabled = false;
   },
@@ -587,7 +587,7 @@ const AddRouteVertexHandler: Handler<AddRouteVertexAction> = {
   undo: (state, action) => {
     const route = getEntity(action.routeId, state) as Route;
 
-    route.points.splice(action.afterPointIndex + 1, 1);
+    route.points.splice(action.pointIndex, 1);
   },
 };
 
