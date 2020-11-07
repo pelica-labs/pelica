@@ -2,7 +2,7 @@ name: Release
 
 on:
   push:
-    branches: [ devops ]
+    branches: [ master ]
 
 jobs:
   build:
@@ -30,10 +30,6 @@ jobs:
         envkey_NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
         envkey_GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
         envkey_GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-
-    - name: Setup Docker cache
-      uses: satackey/action-docker-layer-caching@v0.0.8
-      continue-on-error: true
 
     - name: Build Docker image
       run: docker build --tag pelicalabs/pelica:latest .
