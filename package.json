@@ -87,6 +87,8 @@
     "@types/uniqid": "^5.2.0",
     "@typescript-eslint/eslint-plugin": "^4.2.0",
     "@typescript-eslint/parser": "^4.2.0",
+    "cypress": "^4.5.0",
+    "cypress-plugin-snapshots": "^1.4.4",
     "eslint": "^7.10.0",
     "eslint-config-prettier": "^6.12.0",
     "eslint-plugin-prettier": "^3.1.4",
