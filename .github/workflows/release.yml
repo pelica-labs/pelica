@@ -72,9 +72,6 @@ jobs:
     - name: Install EB CLI
       run: ./eb-cli-installer/scripts/bundled_installer
 
-    - name: Add EB CLI to PATH
-      run: echo 'export PATH="/home/runner/.ebcli-virtual-env/executables:$PATH"' >> ~/.bash_profile && source ~/.bash_profile
-
     - name: Deploy to EB
       working-directory: build
-      run: eb deploy pelica-production
+      run: /home/runner/.ebcli-virtual-env/executables/eb deploy pelica-production
