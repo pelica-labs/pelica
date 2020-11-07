@@ -6,6 +6,7 @@ on:
 
 jobs:
   # build:
+  #   name: Build
   #   runs-on: ubuntu-latest
 
   #   steps:
@@ -56,6 +57,7 @@ jobs:
   #     run: docker push 623376174749.dkr.ecr.eu-west-3.amazonaws.com/pelica
 
   deploy:
+    name: Deploy
     # needs: build
     runs-on: ubuntu-latest
 
@@ -71,6 +73,13 @@ jobs:
 
     - name: Install EB CLI
       run: ./eb-cli-installer/scripts/bundled_installer
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-west-3
 
     - name: Deploy to EB
       working-directory: build
