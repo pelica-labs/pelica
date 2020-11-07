@@ -1,0 +1,19 @@
+branch-defaults:
+  default:
+    environment: pelica-production
+environment-defaults:
+  pelica-production:
+    branch: null
+    repository: null
+global:
+  application_name: pelica
+  default_ec2_keyname: aws-eb
+  default_platform: Docker running on 64bit Amazon Linux 2
+  default_region: eu-west-3
+  include_git_submodules: true
+  instance_profile: null
+  platform_name: null
+  platform_version: null
+  profile: null
+  sc: null
+  workspace_type: Application
