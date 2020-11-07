@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "tsc && eslint . --ext ts,tsx,js,json",
+    "check-ts": "tsc --noEmit",
+    "lint": "eslint . --ext ts,tsx,js,json",
     "test": "cypress run"
   },
   "dependencies": {

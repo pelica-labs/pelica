@@ -30,16 +30,16 @@ jobs:
         envkey_GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
         envkey_GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
 
-    - name: Restore Docker cache
+    - name: Setup Docker cache
       uses: satackey/action-docker-layer-caching@v0.0.8
       continue-on-error: true
 
-    - name: Build the Docker image
+    - name: Build Docker image
       run: docker build --tag pelicalabs/pelica:latest .
       env:
         NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN: pk.eyJ1IjoiYnN0bmZybXJ5IiwiYSI6ImNrZmgwNThzajBhcTEyeHA5ejRvNm0xMXUifQ.KW6oErbvKh6hLbxvt8q5og
 
-    - name: Tag the Docker image
+    - name: Tag Docker image
       run: docker tag pelicalabs/pelica 623376174749.dkr.ecr.eu-west-3.amazonaws.com/pelica
 
     - name: Configure AWS credentials
@@ -52,7 +52,7 @@ jobs:
     - name: Acquire ECR credentials
       uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Push the Docker image to ECR
+    - name: Push Docker image to ECR
       run: docker push 623376174749.dkr.ecr.eu-west-3.amazonaws.com/pelica
 
   deploy:
