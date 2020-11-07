@@ -9,7 +9,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout sources
+      uses: actions/checkout@v2
 
     - name: Configure environment
       uses: SpicyPizza/create-envfile@v1
@@ -28,6 +29,10 @@ jobs:
         envkey_NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
         envkey_GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
         envkey_GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+
+    - name: Restore Docker cache
+      uses: satackey/action-docker-layer-caching@v0.0.8
+      continue-on-error: true
 
     - name: Build the Docker image
       run: docker build --tag pelicalabs/pelica:latest .
@@ -62,7 +67,7 @@ jobs:
         token: ${{secrets.github_token}}
 
     - name: Generate deployment package
-      run: zip -r deploy.zip devops
+      run: zip -r deploy.zip ./devops
 
     - name: Deploy to EB
       uses: einaregilsson/beanstalk-deploy@v14
