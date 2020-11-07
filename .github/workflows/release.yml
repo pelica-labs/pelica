@@ -5,60 +5,60 @@ on:
     branches: [ devops ]
 
 jobs:
-  # build:
-  #   name: Build
-  #   runs-on: ubuntu-latest
+  build:
+    name: Build
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #   - name: Checkout sources
-  #     uses: actions/checkout@v2
+    steps:
+    - name: Checkout sources
+      uses: actions/checkout@v2
 
-  #   - name: Configure environment
-  #     uses: SpicyPizza/create-envfile@v1
-  #     with:
-  #       file_name: .env.production
-  #       envkey_NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN: ${{ secrets.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN }}
-  #       envkey_MAPBOX_SECRET_TOKEN: ${{ secrets.MAPBOX_SECRET_TOKEN }}
-  #       envkey_OMANYD_AWS_REGION: ${{ secrets.OMANYD_AWS_REGION }}
-  #       envkey_OMANYD_AWS_ACCESS_KEY_ID: ${{ secrets.OMANYD_AWS_ACCESS_KEY_ID }}
-  #       envkey_OMANYD_AWS_SECRET_ACCESS_KEY: ${{ secrets.OMANYD_AWS_SECRET_ACCESS_KEY }}
-  #       envkey_AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-  #       envkey_NEXT_PUBLIC_FULLSTORY_ORG_ID: ${{ secrets.NEXT_PUBLIC_FULLSTORY_ORG_ID }}
-  #       envkey_NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
-  #       envkey_NEXT_PUBLIC_GOOGLE_ANALYTICS_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID }}
-  #       envkey_COOKIE_PASSWORD: ${{ secrets.COOKIE_PASSWORD }}
-  #       envkey_NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
-  #       envkey_GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-  #       envkey_GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+    - name: Configure environment
+      uses: SpicyPizza/create-envfile@v1
+      with:
+        file_name: .env.production
+        envkey_NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN: ${{ secrets.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN }}
+        envkey_MAPBOX_SECRET_TOKEN: ${{ secrets.MAPBOX_SECRET_TOKEN }}
+        envkey_OMANYD_AWS_REGION: ${{ secrets.OMANYD_AWS_REGION }}
+        envkey_OMANYD_AWS_ACCESS_KEY_ID: ${{ secrets.OMANYD_AWS_ACCESS_KEY_ID }}
+        envkey_OMANYD_AWS_SECRET_ACCESS_KEY: ${{ secrets.OMANYD_AWS_SECRET_ACCESS_KEY }}
+        envkey_AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+        envkey_NEXT_PUBLIC_FULLSTORY_ORG_ID: ${{ secrets.NEXT_PUBLIC_FULLSTORY_ORG_ID }}
+        envkey_NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
+        envkey_NEXT_PUBLIC_GOOGLE_ANALYTICS_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID }}
+        envkey_COOKIE_PASSWORD: ${{ secrets.COOKIE_PASSWORD }}
+        envkey_NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+        envkey_GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+        envkey_GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
 
-  #   - name: Setup Docker cache
-  #     uses: satackey/action-docker-layer-caching@v0.0.8
-  #     continue-on-error: true
+    - name: Setup Docker cache
+      uses: satackey/action-docker-layer-caching@v0.0.8
+      continue-on-error: true
 
-  #   - name: Build Docker image
-  #     run: docker build --tag pelicalabs/pelica:latest .
-  #     env:
-  #       NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN: pk.eyJ1IjoiYnN0bmZybXJ5IiwiYSI6ImNrZmgwNThzajBhcTEyeHA5ejRvNm0xMXUifQ.KW6oErbvKh6hLbxvt8q5og
+    - name: Build Docker image
+      run: docker build --tag pelicalabs/pelica:latest .
+      env:
+        NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN: pk.eyJ1IjoiYnN0bmZybXJ5IiwiYSI6ImNrZmgwNThzajBhcTEyeHA5ejRvNm0xMXUifQ.KW6oErbvKh6hLbxvt8q5og
 
-  #   - name: Tag Docker image
-  #     run: docker tag pelicalabs/pelica 623376174749.dkr.ecr.eu-west-3.amazonaws.com/pelica
+    - name: Tag Docker image
+      run: docker tag pelicalabs/pelica 623376174749.dkr.ecr.eu-west-3.amazonaws.com/pelica
 
-  #   - name: Configure AWS credentials
-  #     uses: aws-actions/configure-aws-credentials@v1
-  #     with:
-  #       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #       aws-region: eu-west-3
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-west-3
 
-  #   - name: Acquire ECR credentials
-  #     uses: aws-actions/amazon-ecr-login@v1
+    - name: Acquire ECR credentials
+      uses: aws-actions/amazon-ecr-login@v1
 
-  #   - name: Push Docker image to ECR
-  #     run: docker push 623376174749.dkr.ecr.eu-west-3.amazonaws.com/pelica
+    - name: Push Docker image to ECR
+      run: docker push 623376174749.dkr.ecr.eu-west-3.amazonaws.com/pelica
 
   deploy:
     name: Deploy
-    # needs: build
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
