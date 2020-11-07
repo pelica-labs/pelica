@@ -11,6 +11,24 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Configure environment
+      uses: SpicyPizza/create-envfile@v1
+      with:
+        file_name: .env.production
+        envkey_NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN: ${{ secrets.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN }}
+        envkey_MAPBOX_SECRET_TOKEN: ${{ secrets.MAPBOX_SECRET_TOKEN }}
+        envkey_OMANYD_AWS_REGION: ${{ secrets.OMANYD_AWS_REGION }}
+        envkey_OMANYD_AWS_ACCESS_KEY_ID: ${{ secrets.OMANYD_AWS_ACCESS_KEY_ID }}
+        envkey_OMANYD_AWS_SECRET_ACCESS_KEY: ${{ secrets.OMANYD_AWS_SECRET_ACCESS_KEY }}
+        envkey_AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+        envkey_NEXT_PUBLIC_FULLSTORY_ORG_ID: ${{ secrets.NEXT_PUBLIC_FULLSTORY_ORG_ID }}
+        envkey_NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
+        envkey_NEXT_PUBLIC_GOOGLE_ANALYTICS_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID }}
+        envkey_COOKIE_PASSWORD: ${{ secrets.COOKIE_PASSWORD }}
+        envkey_NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+        envkey_GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+        envkey_GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+
     - name: Build the Docker image
       run: docker build --tag pelicalabs/pelica:latest .
       env:
