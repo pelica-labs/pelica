@@ -60,14 +60,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Checkout sources
+      uses: actions/checkout@v2
+
     - name: Generate release number
       id: buildnumber
       uses: einaregilsson/build-number@v3
       with:
-        token: ${{secrets.github_token}}
+        token: ${{ secrets.github_token }}
 
     - name: Generate deployment package
-      run: zip -r deploy.zip ./devops
+      run: zip -r deploy.zip ./build
 
     - name: Deploy to EB
       uses: einaregilsson/beanstalk-deploy@v14
