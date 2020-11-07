@@ -31,14 +31,26 @@ jobs:
       run: docker push 623376174749.dkr.ecr.eu-west-3.amazonaws.com/pelica
 
   deploy:
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
-    - name: Deploy image to EB
-      uses: hmanzur/actions-aws-eb@v1.0.0
+    - name: Generate release number
+      id: buildnumber
+      uses: einaregilsson/build-number@v3
       with:
-        command: 'deploy pelica-production'
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_DEFAULT_REGION: eu-west-3
+        token: ${{secrets.github_token}}
+
+    - name: Generate deployment package
+      run: zip -r deploy.zip devops
+
+    - name: Deploy to EB
+      uses: einaregilsson/beanstalk-deploy@v14
+      with:
+        aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        application_name: pelica
+        environment_name: pelica-production
+        version_label: ${{ steps.buildnumber.outputs.build_number }}
+        region: eu-west-3
+        deployment_package: deploy.zip
