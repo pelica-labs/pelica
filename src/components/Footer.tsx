@@ -15,8 +15,8 @@ export const Footer: React.FC = () => {
                 <span className="ml-4 text-2xl font-raleway font-bold">Pelica</span>
               </a>
             </Link>
-            <div className="flex flex-col text-sm mt-4 md:mt-16 ml-3">
-              <span className="border-l-2 border-gray-600 pl-2  leading-tight italic">
+            <div className="flex flex-col text-sm mt-4 md:mt-8 ml-3">
+              <span className="border-l-2 border-gray-600 pl-2 leading-tight italic">
                 Geographers never get lost.
                 <br />
                 They just do accidental field work.
@@ -57,12 +57,12 @@ export const Footer: React.FC = () => {
               >
                 Sign in
               </a>
-              <a className="hover:underline" href="/terms">
-                Terms of Service
-              </a>
-              <a className="hover:underline" href="/privacy">
-                Privacy Policy
-              </a>
+              <Link passHref href="/terms">
+                <a className="hover:underline">Terms of Service</a>
+              </Link>
+              <Link passHref href="/privacy">
+                <a className="hover:underline">Privacy Policy</a>
+              </Link>
             </div>
           </div>
         </div>
