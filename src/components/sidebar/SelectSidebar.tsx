@@ -5,16 +5,7 @@ import React, { useEffect, useRef } from "react";
 import { Button } from "~/components/Button";
 import { ColorPicker } from "~/components/ColorPicker";
 import { Distance, formatDistance } from "~/components/Distance";
-import {
-  DownloadIcon,
-  ExportIcon,
-  InformationIcon,
-  PencilIcon,
-  PinIcon,
-  PlusIcon,
-  TextIcon,
-  TrashIcon,
-} from "~/components/Icon";
+import { DownloadIcon, InformationIcon, PencilIcon, PinIcon, PlusIcon, TextIcon, TrashIcon } from "~/components/Icon";
 import { IconSelector } from "~/components/IconSelector";
 import { LabelTextareaField } from "~/components/LabelTextareaField";
 import { OutlineSelector } from "~/components/OutlineSelector";
