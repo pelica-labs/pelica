@@ -14,7 +14,7 @@ export const GoogleButton: React.FC<Props> = ({ className, onClick }) => {
       )}
       onClick={onClick}
     >
-      <GoogleIcon className="w-8 h-8 inline-block" /> sign in with Google
+      <GoogleIcon className="w-8 h-8 inline-block" /> Sign in with Google
     </button>
   );
 };

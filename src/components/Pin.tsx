@@ -22,6 +22,7 @@ export const pins = (): { [key: string]: PinConfiguration } => ({
   squaredClassical: { component: SquaredClassicalPin, dimensions: [56, 72], offset: 9 },
   squaredPeaky: { component: SquaredPeakyPin, dimensions: [56, 72], offset: 9 },
   squared: { component: SquaredPin, dimensions: [67.2, 72], offset: 12 },
+  diamond: { component: DiamondPin, dimensions: [72, 72], offset: 19 },
   none: { component: null, dimensions: [64, 72], offset: 12 },
 });
 
@@ -275,6 +276,36 @@ export const SquaredPin: React.FC<Props> = ({ color, ...props }) => {
           width="28"
           x="0"
           y="2"
+        >
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
+          <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" />
+          <feOffset dy="4" />
+          <feGaussianBlur stdDeviation="2" />
+          <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0" />
+          <feBlend in2="BackgroundImageFix" mode="normal" result="effect1_dropShadow" />
+          <feBlend in="SourceGraphic" in2="effect1_dropShadow" mode="normal" result="shape" />
+        </filter>
+      </defs>
+    </svg>
+  );
+};
+
+export const DiamondPin: React.FC<Props> = ({ color, ...props }) => {
+  return (
+    <svg fill="none" height="35" viewBox="0 0 36 35" width="36" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <rect fill={color} height="24" rx="2" transform="rotate(45 18 0.029438)" width="24" x="18" y="0.029438" />
+      <g filter="url(#filter0_d)">
+        <rect fill="white" height="20" rx="1" transform="rotate(45 18 2.85786)" width="20" x="18" y="2.85786" />
+      </g>
+      <defs>
+        <filter
+          colorInterpolationFilters="sRGB"
+          filterUnits="userSpaceOnUse"
+          height="36.2843"
+          id="filter0_d"
+          width="36.2843"
+          x="-0.14212"
+          y="2.85786"
         >
           <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" />
