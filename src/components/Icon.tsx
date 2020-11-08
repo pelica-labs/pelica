@@ -38,6 +38,7 @@ export const pinIcons = (): { [key: string]: Icon } => ({
   squaredClassical: SquaredClassicalPinIcon,
   squaredPeaky: SquaredPeakyPinIcon,
   squared: SquaredPinIcon,
+  diamond: DiamondPinIcon,
 });
 
 export type IconProps = SVGAttributes<SVGElement> & {
@@ -679,6 +680,11 @@ export const SquaredPeakyPinIcon = icon(
 );
 
 export const SquaredPinIcon = icon(<rect fill="currentColor" height="24" rx="2" width="24" />, 24);
+
+export const DiamondPinIcon = icon(
+  <rect fill="currentColor" height="24" rx="2" transform="rotate(45 17 0.0294371)" width="24" x="17" y="0.0294371" />,
+  36
+);
 
 export const TextIcon = icon(
   <path
