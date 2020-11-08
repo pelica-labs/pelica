@@ -72,6 +72,7 @@ export const texts = ({ mutate, get }: App) => ({
       },
     });
 
+    get().editor.setEditorMode("select");
     get().selection.selectEntity(textId);
   },
 

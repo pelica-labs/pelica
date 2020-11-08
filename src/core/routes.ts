@@ -232,7 +232,7 @@ export const routes = ({ mutate, get }: App) => ({
     });
 
     if (get().editor.mode === "draw") {
-      get().routes.startNewRoute();
+      get().editor.setEditorMode("select");
     }
   },
 
@@ -245,7 +245,7 @@ export const routes = ({ mutate, get }: App) => ({
     });
 
     if (get().editor.mode === "draw") {
-      get().routes.startNewRoute();
+      get().editor.setEditorMode("select");
     }
   },
 

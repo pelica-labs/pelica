@@ -74,6 +74,7 @@ export const pins = ({ mutate, get }: App) => ({
       },
     });
 
+    get().editor.setEditorMode("select");
     get().selection.selectEntity(pinId);
   },
 
