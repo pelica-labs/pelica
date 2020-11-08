@@ -1,9 +1,8 @@
 import { EmojiConvertor } from "emoji-js";
-import { pickBy } from "lodash";
 import React from "react";
 import { useEffect, useState } from "react";
 
-import { Icon, iconFromDangerousSvgString, iconFromImgUrl, IconProps, icons } from "../components/Icon";
+import { Icon, iconFromDangerousSvgString, iconFromImgUrl, IconProps, icons } from "~/components/Icon";
 
 export interface IconCollection {
   icons: { [key: string]: { body: string; width?: number; height?: number } | React.FC<IconProps> };
@@ -18,10 +17,10 @@ emoji.replace_mode = "img";
 emoji.img_sets.apple.path = "/emoji-data/64/";
 
 export const getCollections = async (): Promise<{ [key: string]: IconCollection }> => {
-  const maki = (await import("@iconify/json/json/maki.json")).default;
-  const map = (await import("@iconify/json/json/map.json")).default;
+  const maki = (await import("../icons/maki.json")).default;
+  const map = (await import("../icons/map.json")).default;
   return {
-    maki: { ...maki, icons: pickBy(maki.icons, (value, key) => key.endsWith("15")) },
+    maki,
     map,
     default: { icons: defaultIcons, width: 24, height: 24 },
   };

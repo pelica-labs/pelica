@@ -1218,11 +1218,6 @@
   resolved "https://registry.yarnpkg.com/@headlessui/react/-/react-0.2.0.tgz#a31f90892d736243ba91c1474f534b3256d0c538"
   integrity sha512-YV+vF+QhTRcspydPdHF3ZXe+FkOiJpRdqMjjFIIX9bSdT2O2T7GurgKQdGgamNUM+B99MZBOTRqxS8Dlh485eg==
 
-"@iconify/json@^1.1.245":
-  version "1.1.245"
-  resolved "https://registry.yarnpkg.com/@iconify/json/-/json-1.1.245.tgz#5ca8f0a729caedc75a3172d850c49063178867f3"
-  integrity sha512-xLNHLb7o3s/y2eyizY3ruz9HtR3szs71x0GrbIa/AWPQO8LTETMeoEnZp7A06JeN4hUkKTZVcyweT1NoHXXg/A==
-
 "@icons/material@^0.2.4":
   version "0.2.4"
   resolved "https://registry.yarnpkg.com/@icons/material/-/material-0.2.4.tgz#e90c9f71768b3736e76d7dd6783fc6c2afa88bc8"
