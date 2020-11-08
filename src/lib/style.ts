@@ -34,6 +34,16 @@ export const availableStyles: Style[] = [
     hash: "L03]AnozIAozogj[j@a}Mxof%Nt7",
   },
   {
+    id: "ckh91q78b3qms19qe41fjrea3",
+    owner: "bstnfrmry",
+    name: "Mineral",
+    hash: "L9FZD?NH01WBOY%1WVs.01XT~Un$",
+    overrides: {
+      textFont: ["Poppins ExtraBold"],
+      textTransform: "uppercase",
+    },
+  },
+  {
     id: "ckfgw9p0i2kzi19p8pt32p7c5",
     owner: "bstnfrmry",
     name: "Outdoors",
