@@ -24,8 +24,6 @@
     "cheap-ruler": "^3.0.1",
     "classnames": "^2.2.6",
     "date-fns": "^2.16.1",
-    "emoji-datasource": "^6.0.0",
-    "emoji-datasource-apple": "^6.0.0",
     "emoji-js": "^3.5.0",
     "emoji-mart": "^3.0.0",
     "formidable": "^1.2.2",
