@@ -9613,6 +9613,11 @@ static-extend@^0.1.1:
     define-property "^0.2.5"
     object-copy "^0.1.0"
 
+status-codes@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/status-codes/-/status-codes-0.0.1.tgz#2245d642c2e2f004ff9c9256cb4da6a8e378989a"
+  integrity sha1-IkXWQsLi8AT/nJJWy02mqON4mJo=
+
 stream-browserify@3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/stream-browserify/-/stream-browserify-3.0.0.tgz#22b0a2850cdf6503e73085da1fc7b7d0c2122f2f"
