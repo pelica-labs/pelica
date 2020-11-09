@@ -3,8 +3,8 @@ import Head from "next/head";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import { FourOhFour } from "~/components/404";
 import { LoadingScreen } from "~/components/LoadingScreen";
+import { Whoops } from "~/components/Whoops";
 import { dynamo, s3 } from "~/lib/aws";
 import { getEnv } from "~/lib/config";
 import { ImageModel } from "~/lib/db";
@@ -76,7 +76,7 @@ const ViewMap: NextPage<Props> = ({ status, currentUrl, file }) => {
   }
 
   if (!file) {
-    return <FourOhFour />;
+    return <Whoops statusCode={404} />;
   }
 
   const title = [t("pelica"), file.name].filter((text) => !!text).join(" · ");

@@ -57,6 +57,7 @@
     "react-textarea-autosize": "^8.2.0",
     "resize-observer-polyfill": "^1.5.1",
     "shortid": "^2.2.16",
+    "status-codes": "^0.0.1",
     "swr": "^0.3.5",
     "tinycolor2": "^1.4.2",
     "uniqid": "^5.2.0",

@@ -3,8 +3,8 @@ import Head from "next/head";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import { FourOhFour } from "~/components/404";
 import { MapViewer } from "~/components/MapViewer";
+import { Whoops } from "~/components/Whoops";
 import { dynamo } from "~/lib/aws";
 import { MapModel } from "~/lib/db";
 import { staticImage } from "~/lib/staticImages";
@@ -42,7 +42,7 @@ const ViewMap: NextPage<Props> = ({ currentUrl, map }) => {
   const { t } = useTranslation();
 
   if (!map) {
-    return <FourOhFour />;
+    return <Whoops statusCode={404} />;
   }
 
   const title = [t("pelica"), map.name].filter((text) => !!text).join(" · ");

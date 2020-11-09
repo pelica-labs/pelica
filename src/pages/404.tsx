@@ -1,10 +1,10 @@
 import { NextPage } from "next";
 import React from "react";
 
-import { FourOhFour } from "~/components/404";
+import { Whoops } from "~/components/Whoops";
 
 const FourOhFourPage: NextPage = () => {
-  return <FourOhFour />;
+  return <Whoops statusCode={404} />;
 };
 
 export default FourOhFourPage;
