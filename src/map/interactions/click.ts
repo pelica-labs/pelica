@@ -282,6 +282,9 @@ const snap = (map: mapboxgl.Map, event: MapMouseEvent | MapTouchEvent) => {
       const coords = getCoords(road);
 
       const proj = ruler.pointOnLine(coords as [number, number][], event.lngLat.toArray() as [number, number]);
+      if (!proj.point[0] && !proj.point[1]) {
+        throw new Error("Projected point is invalid.");
+      }
       return proj.point;
     } catch (error) {
       return event.lngLat.toArray();
