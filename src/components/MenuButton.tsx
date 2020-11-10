@@ -1,7 +1,5 @@
 import { Menu } from "@headlessui/react";
 import classNames from "classnames";
-import { signIn, signOut, useSession } from "next-auth/client";
-import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
@@ -18,7 +16,6 @@ export const MenuButton: React.FC = () => {
   const canClear = useStore((store) => store.entities.items.length > 0);
   const mapId = useStore((store) => store.sync.id);
   const screenDimensions = useStore((store) => store.platform.screen.dimensions);
-  const [session] = useSession();
 
   const UndoHotkey = useHotkey({ key: "z", meta: true }, () => {
     app.history.undo();
@@ -41,7 +38,7 @@ export const MenuButton: React.FC = () => {
                   as="div"
                   className={classNames({
                     "appearance-none inline-flex justify-center w-full text-sm font-medium leading-5 transition duration-150 ease-in-out rounded-md focus:outline-none": true,
-                    "bg-orange-200 rounded": open && !session,
+                    "bg-orange-200 rounded": open,
                     "hover:text-orange-600": !open,
                   })}
                 >
@@ -172,36 +169,6 @@ export const MenuButton: React.FC = () => {
 
                     <Menu.Item>
                       {({ active }) => (
-                        <Link href="/app">
-                          <a
-                            className={classNames({
-                              "text-gray-800 text-sm px-2 py-1 hover:bg-orange-200": true,
-                              "bg-orange-200": active,
-                            })}
-                          >
-                            New map
-                          </a>
-                        </Link>
-                      )}
-                    </Menu.Item>
-
-                    <Menu.Item>
-                      {({ active }) => (
-                        <Link href="/app">
-                          <a
-                            className={classNames({
-                              "text-gray-800 text-sm px-2 py-1 hover:bg-orange-200": true,
-                              "bg-orange-200": active,
-                            })}
-                          >
-                            Saved maps
-                          </a>
-                        </Link>
-                      )}
-                    </Menu.Item>
-
-                    <Menu.Item>
-                      {({ active }) => (
                         <Link href="/">
                           <a
                             className={classNames({
@@ -229,59 +196,6 @@ export const MenuButton: React.FC = () => {
                         </Link>
                       )}
                     </Menu.Item>
-
-                    <div className="border-t my-1" />
-
-                    {!session && (
-                      <Menu.Item>
-                        {({ active }) => (
-                          <a
-                            className={classNames({
-                              "text-gray-800 text-sm px-2 py-1 hover:bg-orange-200 cursor-pointer": true,
-                              "bg-orange-200": active,
-                            })}
-                            onClick={async () => {
-                              signIn("google");
-                            }}
-                          >
-                            Sign in
-                          </a>
-                        )}
-                      </Menu.Item>
-                    )}
-
-                    {session && (
-                      <>
-                        <div className="flex items-center my-2 px-2 space-x-3">
-                          <Image
-                            className="w-8 h-8 md:w-6 md:h-6 rounded-full border-2 border-orange-300"
-                            height={24}
-                            src={session.user.image}
-                            width={24}
-                          />
-                          <span className="text-gray-500 font-light tracking-wide leading-none uppercase text-xs">
-                            {session.user.name}
-                          </span>
-                        </div>
-
-                        <Menu.Item>
-                          {({ active }) => (
-                            <a
-                              className={classNames({
-                                "text-gray-800 text-sm px-2 py-1 hover:bg-orange-200 cursor-pointer": true,
-                                "bg-orange-200": active,
-                              })}
-                              onClick={async () => {
-                                await signOut();
-                                window.location.replace("/");
-                              }}
-                            >
-                              Sign out
-                            </a>
-                          )}
-                        </Menu.Item>
-                      </>
-                    )}
                   </div>
                 </Menu.Items>
               )}

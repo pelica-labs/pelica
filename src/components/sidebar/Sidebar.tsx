@@ -2,6 +2,8 @@ import classNames from "classnames";
 import React, { useEffect, useRef, useState } from "react";
 import { Trans } from "react-i18next";
 
+import { Button } from "~/components/Button";
+import { DownloadIcon } from "~/components/Icon";
 import { MapTitleInput } from "~/components/MapTitleInput";
 import { MenuButton } from "~/components/MenuButton";
 import { MiniToolbar } from "~/components/MiniToolbar";
@@ -15,6 +17,7 @@ import { StyleSidebar } from "~/components/sidebar/StyleSidebar";
 import { TextSidebar } from "~/components/sidebar/TextSidebar";
 import { SyncIndicator } from "~/components/SyncIndicator";
 import { Toolbar } from "~/components/Toolbar";
+import { UserMenu } from "~/components/UserMenu";
 import { useStore } from "~/core/app";
 import { useDimensions } from "~/hooks/useDimensions";
 
@@ -42,8 +45,9 @@ export const Sidebar: React.FC = () => {
       {sidebarDimensions && (
         <div
           ref={toolbarRef}
-          className="fixed z-10 bottom-0 md:bottom-auto md:top-0 md:mt-12 flex justify-between md:flex-col bg-gray-100 border border-gray-300 md:bg-white md:border-gray-100 md:m-1 p-1 md:shadow md:rounded overflow-x-auto"
+          className="fixed z-10 bottom-0 md:bottom-auto flex justify-between md:flex-col bg-gray-100 border border-white  overflow-x-auto rounded-tl rounded-bl shadow"
           style={{
+            top: 73,
             right: screenDimensions.md ? sidebarDimensions.width : 0,
             left: screenDimensions.md ? "initial" : 0,
             transform: !screenDimensions.md && !showToolbar ? "translateX(-100vw)" : "initial",
@@ -71,7 +75,7 @@ export const Sidebar: React.FC = () => {
       <div
         ref={sidebarRef}
         className={classNames({
-          "flex md:pt-0 md:pb-0 divide-x md:flex-col md:space-x-0 md:divide-y border md:border-none h-40 bg-white text-gray-800 md:w-64 md:h-full overflow-y-auto md:shadow-md min-w-full pt-3": true,
+          "flex md:pt-0 md:pb-0 divide-x md:divide-x-0 md:flex-col md:space-x-0 md:divide-y border-gray-300 md:border-none h-40 bg-white text-gray-800 md:w-64 md:h-full overflow-y-auto min-w-full pt-3 z-50": true,
         })}
         style={{
           ...(!screenDimensions.md && {
@@ -80,30 +84,40 @@ export const Sidebar: React.FC = () => {
         }}
       >
         {screenDimensions.md && (
-          <div className="relative flex justify-between items-center bg-white p-1 w-full">
-            <div className="flex-1">
-              <MapTitleInput />
-            </div>
+          <div className="flex flex-col shadow-2xl border-b border-l border-orange-300">
+            <div className="relative flex justify-between items-center bg-orange-200 px-2 w-full">
+              <div className="flex-1 flex items-center space-x-1">
+                <button className="flex items-center bg-orange-400 rounded py-1 px-2 text-white border-orange-300 border space-x-1 hover:bg-orange-500 hover:border-orange-400 focus:outline-none focus:border-orange-300">
+                  <DownloadIcon className="w-4 h-4" />
+                  <span className="text-xs">Export</span>
+                </button>
+                <button className="flex items-center bg-gray-700 rounded py-1 px-2 text-white border-orange-300 border hover:bg-gray-800 hover:border-orange-400 focus:outline-none focus:border-orange-300">
+                  <span className="text-xs">Share</span>
+                </button>
+                {/* <MapTitleInput /> */}
+              </div>
 
-            <div className="right-0 mx-3">
-              <SyncIndicator />
-            </div>
+              <div className="right-0 mx-1">
+                <SyncIndicator />
+              </div>
 
-            <div className="ml-2">
-              <MenuButton />
+              <div className="flex items-center space-x-2">
+                <MenuButton />
+                <UserMenu />
+              </div>
             </div>
           </div>
         )}
 
         {screenDimensions.md && editorMode && (
-          <div className="flex justify-between items-center px-3 h-8 py-2 bg-gray-100 border-l">
+          <div className="flex justify-between items-center px-3 h-8 py-2 bg-gray-100">
             <span className="text-xs uppercase text-gray-800 font-light tracking-wide leading-none">
               <Trans i18nKey={`editor.mode.${editorMode}`} />
             </span>
           </div>
         )}
 
-        <div className="flex divide-x md:flex-col md:space-x-0 md:divide-y bg-white text-gray-800 md:w-64 md:h-full overflow-y-auto md:shadow-md">
+        <div className="flex divide-x md:divide-x-0 md:flex-col md:space-x-0 md:divide-y bg-white text-gray-800 md:w-64 md:h-full overflow-y-auto md:shadow-md">
           {editorMode === "move" && <MoveSidebar />}
           {editorMode === "select" && <SelectSidebar />}
           {editorMode === "draw" && <DrawSidebar />}
