@@ -1,10 +1,14 @@
+import { Switch } from "@headlessui/react";
+import classNames from "classnames";
 import React from "react";
 
 import { ColorPicker } from "~/components/ColorPicker";
+import { InformationIcon } from "~/components/Icon";
 import { IconSelector } from "~/components/IconSelector";
 import { PinPreview } from "~/components/PinPreview";
 import { PinSelector } from "~/components/PinSelector";
 import { SidebarHeader, SidebarHeading, SidebarSection } from "~/components/sidebar/Sidebar";
+import { Tooltip } from "~/components/Tooltip";
 import { WidthSlider } from "~/components/WidthSlider";
 import { app, useStore } from "~/core/app";
 import { MAX_PIN_SIZE, MIN_PIN_SIZE } from "~/core/pins";
@@ -14,6 +18,7 @@ export const PinSidebar: React.FC = () => {
   const width = useStore((store) => store.pins.style.width);
   const icon = useStore((store) => store.pins.style.icon);
   const pinType = useStore((store) => store.pins.style.pinType);
+  const clusterPoints = useStore((store) => store.pins.clusterPoints);
 
   return (
     <>
@@ -87,6 +92,50 @@ export const PinSidebar: React.FC = () => {
             <PinPreview color={color} icon={icon} pinType={pinType} />
           </div>
         </div>
+      </SidebarSection>
+
+      <SidebarSection>
+        <SidebarHeader>
+          <SidebarHeading>Clusters</SidebarHeading>
+        </SidebarHeader>
+
+        <Switch.Group as="div" className="flex items-center space-x-4 mt-4">
+          <Switch.Label className="text-xs">Enabled</Switch.Label>
+          <Switch
+            as="button"
+            checked={clusterPoints}
+            className={classNames(
+              { "bg-orange-600": clusterPoints, "bg-gray-400": !clusterPoints },
+              "relative inline-flex flex-shrink-0 h-4 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer w-7 focus:outline-none focus:shadow-outline"
+            )}
+            onChange={() => {
+              app.pins.toggleCluster();
+            }}
+          >
+            {({ checked }) => (
+              <span
+                className={classNames(
+                  {
+                    "translate-x-3": checked,
+                    "translate-x-0": !checked,
+                  },
+                  "inline-block w-3 h-3 transition duration-200 ease-in-out transform bg-white rounded-full"
+                )}
+              />
+            )}
+          </Switch>
+
+          <Tooltip
+            placement="left"
+            text={
+              <span className="w-64">
+                When unzoomed, pins that are too close to each other will be regrouped to avoid cluttering the map.
+              </span>
+            }
+          >
+            <InformationIcon className="ml-2 w-3 h-3 cursor-pointer" />
+          </Tooltip>
+        </Switch.Group>
       </SidebarSection>
     </>
   );

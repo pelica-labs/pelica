@@ -10,6 +10,8 @@ import { MapSource } from "~/map/sources";
 const hoverableLayers = [
   MapLayer.PinsInteractions,
   MapLayer.Pins,
+  MapLayer.PinsClusters,
+  MapLayer.PinsClustersText,
   MapLayer.RoutesInteractions,
   MapLayer.RoutesStop,
   MapLayer.RoutesStart,
@@ -22,6 +24,8 @@ const hoverableLayers = [
 const selectOnlyHoverableLayers = [
   MapLayer.PinsInteractions,
   MapLayer.Pins,
+  MapLayer.PinsClusters,
+  MapLayer.PinsClustersText,
   MapLayer.RoutesInteractions,
   MapLayer.Texts,
   MapLayer.RoutesVertices,

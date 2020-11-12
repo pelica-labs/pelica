@@ -1,6 +1,6 @@
 import { featureCollection } from "@turf/turf";
 import classNames from "classnames";
-import mapboxgl, { LngLatBoundsLike } from "mapbox-gl";
+import mapboxgl, { GeoJSONSource, LngLatBoundsLike } from "mapbox-gl";
 import Head from "next/head";
 import React, { useEffect, useRef } from "react";
 
@@ -42,7 +42,7 @@ import { applyResizeInteractions } from "~/map/interactions/resize";
 import { applyRightClickInteractions } from "~/map/interactions/rightClick";
 import { applyScrollInteractions } from "~/map/interactions/scroll";
 import { applyLayers } from "~/map/layers";
-import { applySources, MapSource } from "~/map/sources";
+import { applySources, MapSource, setSourceCluster } from "~/map/sources";
 
 type Props = {
   readOnly?: boolean;
@@ -337,6 +337,19 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
         MapSource.RouteEdge,
         MapSource.RouteEdgeCenter,
       ]);
+    }
+  );
+
+  /**
+   * Sync cluster option
+   */
+  useStoreSubscription(
+    (store) => store.pins.clusterPoints,
+    (clusterPoints) => {
+      const source = getMap().getSource(MapSource.Pins) as GeoJSONSource;
+      setSourceCluster(source, clusterPoints);
+
+      applyFeatures(getEntityFeatures(), [MapSource.Pins]);
     }
   );
 

@@ -1,11 +1,13 @@
+import { Point } from "@turf/turf";
 import CheapRuler from "cheap-ruler";
 import { memoize, throttle } from "lodash";
-import { MapMouseEvent, MapTouchEvent } from "mapbox-gl";
+import { GeoJSONSource, MapMouseEvent, MapTouchEvent } from "mapbox-gl";
 
 import { app, getState } from "~/core/app";
 import { canSelect, getMap, getSelectedItinerary } from "~/core/selectors";
 import { ID } from "~/lib/id";
 import { MapLayer } from "~/map/layers";
+import { MapSource } from "~/map/sources";
 
 type TouchEventHandler = (event: MapMouseEvent | MapTouchEvent) => void;
 
@@ -176,10 +178,27 @@ export const applyClickInteractions = (): void => {
           MapLayer.PinsInteractions,
           MapLayer.RoutesInteractions,
           MapLayer.Texts,
+          MapLayer.PinsClusters,
         ],
       });
 
-      if (feature) {
+      if (feature && feature.layer.id === MapLayer.PinsClusters) {
+        const clusterId = feature.properties?.cluster_id;
+        const source = map.getSource(MapSource.Pins) as GeoJSONSource;
+
+        source.getClusterExpansionZoom(clusterId, (err, zoom) => {
+          if (err) {
+            return;
+          }
+
+          const point = feature.geometry as Point;
+
+          map.easeTo({
+            center: point.coordinates as [number, number],
+            zoom,
+          });
+        });
+      } else if (feature) {
         const featureId = feature.id as ID;
 
         if (feature.layer.id === MapLayer.RoutesEdgeCentersInteractions) {

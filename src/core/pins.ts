@@ -32,6 +32,7 @@ export type PinStyle = {
 
 export type Pins = {
   style: PinStyle;
+  clusterPoints: boolean;
   nextPoint: Position | null;
 };
 
@@ -42,6 +43,7 @@ export const pinsInitialState: Pins = {
     width: 4,
     color: theme.colors.yellow[500],
   },
+  clusterPoints: true,
   nextPoint: null,
 };
 
@@ -51,6 +53,12 @@ export const pins = ({ mutate, get }: App) => ({
   setStyle: (style: Partial<PinStyle>) => {
     mutate((state) => {
       Object.assign(state.pins.style, style);
+    });
+  },
+
+  toggleCluster: () => {
+    mutate((state) => {
+      state.pins.clusterPoints = !state.pins.clusterPoints;
     });
   },
 

@@ -1,5 +1,6 @@
-import { AnySourceData } from "mapbox-gl";
+import { AnySourceData, GeoJSONSource, GeoJSONSourceRaw } from "mapbox-gl";
 
+import { getState } from "~/core/app";
 import { getMap } from "~/core/selectors";
 
 export enum MapSource {
@@ -34,6 +35,9 @@ const EmptyGeoJsonSource: AnySourceData = {
 
 export const applySources = (): void => {
   const map = getMap();
+  const state = getState();
+
+  console.log(state.pins.clusterPoints);
 
   addSource(map, MapSource.Routes);
   addSource(map, MapSource.RouteStop);
@@ -42,7 +46,11 @@ export const applySources = (): void => {
   addSource(map, MapSource.RouteVertex);
   addSource(map, MapSource.RouteEdge);
   addSource(map, MapSource.RouteEdgeCenter);
-  addSource(map, MapSource.Pins);
+  addSource(map, MapSource.Pins, {
+    cluster: state.pins.clusterPoints,
+    clusterMaxZoom: 14,
+    clusterRadius: 50,
+  });
   addSource(map, MapSource.PinPreview);
   addSource(map, MapSource.Texts);
   addSource(map, MapSource.TextPreview);
@@ -51,10 +59,22 @@ export const applySources = (): void => {
   addSource(map, MapSource.Watermark);
 };
 
-const addSource = (map: mapboxgl.Map, id: MapSource) => {
+const addSource = (map: mapboxgl.Map, id: MapSource, options?: Partial<GeoJSONSourceRaw>) => {
   if (map.getSource(id)) {
-    return;
+    map.removeSource(id);
   }
 
-  map.addSource(id, EmptyGeoJsonSource);
+  map.addSource(id, {
+    ...EmptyGeoJsonSource,
+    ...options,
+  });
+};
+
+export const setSourceCluster = (source: GeoJSONSource, cluster: boolean): void => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  source.workerOptions.cluster = cluster;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  source._options.cluster = cluster;
 };

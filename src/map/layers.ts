@@ -34,6 +34,8 @@ export enum MapLayer {
   RouteNextPoint = "routeNextPoint",
 
   Pins = "pins",
+  PinsClusters = "pinsCluters",
+  PinsClustersText = "pinsClustersText",
   PinPreview = "pinPreview",
   PinsInteractions = "pinsInteractions",
   PinsHover = "pinsHover",
@@ -370,11 +372,58 @@ export const applyLayers = (): void => {
     id: MapLayer.Pins,
     type: "symbol",
     source: MapSource.Pins,
+    filter: ["!", ["has", "point_count"]],
     layout: {
       "icon-image": ["get", "image"],
       "icon-size": ["*", 1 / MAX_PIN_SIZE, ["get", "width"]],
       "icon-offset": [0, -72],
       "icon-allow-overlap": true,
+    },
+  });
+
+  addLayer(map, {
+    id: MapLayer.PinsClusters,
+    type: "circle",
+    source: MapSource.Pins,
+    filter: ["has", "point_count"],
+    paint: {
+      "circle-color": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        theme.colors.orange[500],
+        theme.colors.white,
+      ],
+
+      "circle-radius": 16,
+      "circle-stroke-color": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        theme.colors.white,
+        theme.colors.orange[500],
+      ],
+      "circle-stroke-width": 2,
+    },
+  });
+
+  addLayer(map, {
+    id: MapLayer.PinsClustersText,
+    type: "symbol",
+    source: MapSource.Pins,
+    filter: ["has", "point_count"],
+    layout: {
+      "text-field": "{point_count_abbreviated}",
+      "text-font": styles.textFont,
+      "text-offset": [0, 0.1],
+      "text-size": 18,
+      "text-allow-overlap": true,
+    },
+    paint: {
+      "text-color": [
+        "case",
+        ["boolean", ["feature-state", "hover"], false],
+        theme.colors.white,
+        theme.colors.gray[900],
+      ],
     },
   });
 
@@ -397,6 +446,7 @@ export const applyLayers = (): void => {
     id: MapLayer.PinsInteractions,
     type: "circle",
     source: MapSource.Pins,
+    filter: ["!", ["has", "point_count"]],
     paint: {
       "circle-radius": ["+", ["get", "width"], 5],
       "circle-opacity": 0,
@@ -409,6 +459,7 @@ export const applyLayers = (): void => {
     type: "circle",
     interactive: false,
     source: MapSource.Pins,
+    filter: ["!", ["has", "point_count"]],
     paint: {
       "circle-radius": 8,
       "circle-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 0.5, 0],
@@ -425,6 +476,7 @@ export const applyLayers = (): void => {
     type: "circle",
     interactive: false,
     source: MapSource.Pins,
+    filter: ["!", ["has", "point_count"]],
     paint: {
       "circle-radius": 2,
       "circle-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 1, 0],
