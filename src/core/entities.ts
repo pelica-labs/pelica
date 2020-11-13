@@ -164,6 +164,7 @@ export const entityToFeature = (entity: Entity): RawFeature | null => {
       },
       properties: {
         ...style,
+        offset: !!style.pinType,
         image: JSON.stringify({
           type: "Pin",
           pin: style.pinType,

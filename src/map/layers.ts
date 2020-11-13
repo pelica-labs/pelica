@@ -375,7 +375,7 @@ export const applyLayers = (): void => {
     layout: {
       "icon-image": ["get", "image"],
       "icon-size": ["*", 1 / MAX_PIN_SIZE, ["get", "width"]],
-      "icon-offset": [0, -72],
+      "icon-offset": ["case", ["boolean", ["get", "offset"], false], ["literal", [0, -72]], ["literal", [0, 16]]],
       "icon-allow-overlap": true,
     },
   });
@@ -433,7 +433,7 @@ export const applyLayers = (): void => {
     layout: {
       "icon-image": ["get", "image"],
       "icon-size": ["*", 1 / MAX_PIN_SIZE, ["get", "width"]],
-      "icon-offset": [0, -72],
+      "icon-offset": ["case", ["boolean", ["get", "offset"], false], ["literal", [0, -72]], ["literal", [0, 16]]],
       "icon-allow-overlap": true,
     },
     paint: {
