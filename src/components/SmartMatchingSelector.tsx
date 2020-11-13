@@ -33,8 +33,8 @@ export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange }) => {
   return (
     <div className="text-xs">
       <div className="w-full flex items-center">
-        <Switch.Group as="div" className="flex items-center space-x-4">
-          <Switch.Label>Smart matching</Switch.Label>
+        <Switch.Group as="div" className="flex flex-1 items-center space-x-4">
+          <Switch.Label className="flex-1 flex items-center">Smart matching</Switch.Label>
           <Switch
             as="button"
             checked={value.enabled}

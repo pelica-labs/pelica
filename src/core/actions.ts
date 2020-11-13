@@ -70,6 +70,8 @@ const DrawHandler: Handler<DrawAction> = {
 
     entity.points = entity.points.slice(0, action.previousLength);
     entity.rawPoints = entity.rawPoints.slice(0, action.previousLength);
+    entity.closed = false;
+    entity.filled = false;
 
     if (action.previousLength) {
       state.selection.ids = [entity.id];

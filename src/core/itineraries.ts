@@ -55,6 +55,7 @@ export const itineraries = ({ mutate, get }: App) => ({
         id,
         source: MapSource.Routes,
         closed: false,
+        filled: false,
         transientPoints: [],
         rawPoints: [],
         points: [],

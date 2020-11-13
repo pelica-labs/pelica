@@ -96,11 +96,11 @@ export const PinSidebar: React.FC = () => {
 
       <SidebarSection>
         <SidebarHeader>
-          <SidebarHeading>Clusters</SidebarHeading>
+          <SidebarHeading>Options</SidebarHeading>
         </SidebarHeader>
 
-        <Switch.Group as="div" className="flex items-center space-x-4 mt-4">
-          <Switch.Label className="text-xs">Enabled</Switch.Label>
+        <Switch.Group as="div" className="flex items-center mt-4 w-40 md:w-full">
+          <Switch.Label className="flex items-center text-xs flex-1">Cluster points</Switch.Label>
           <Switch
             as="button"
             checked={clusterPoints}

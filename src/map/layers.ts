@@ -158,7 +158,7 @@ export const applyLayers = (): void => {
     type: "fill",
     source: MapSource.Routes,
     interactive: false,
-    filter: ["boolean", ["get", "closed"], false],
+    filter: ["boolean", ["get", "filled"], false],
     paint: {
       "fill-color": ["get", "color"],
       "fill-opacity": 0.1,

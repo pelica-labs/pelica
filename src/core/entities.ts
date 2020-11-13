@@ -1,4 +1,4 @@
-import { bbox, Feature, featureCollection, Geometry } from "@turf/turf";
+import { bbox, Feature, featureCollection, Geometry, Polygon } from "@turf/turf";
 
 import { App } from "~/core/helpers";
 import { Pin } from "~/core/pins";
@@ -36,7 +36,7 @@ export const entities = ({ mutate, get }: App) => ({
 
   insertFeatures: (features: Feature<Geometry>[]) => {
     const acceptedFeatures = features.filter((feature) => {
-      return feature.geometry?.type && ["Point", "LineString"].includes(feature.geometry.type);
+      return feature.geometry?.type && ["Point", "LineString", "Polygon"].includes(feature.geometry.type);
     });
 
     const entities = acceptedFeatures
@@ -60,9 +60,34 @@ export const entities = ({ mutate, get }: App) => ({
             type: "Route",
             source: MapSource.Routes,
             closed: false,
+            filled: false,
             transientPoints: [],
             rawPoints: feature.geometry.coordinates,
             points: feature.geometry.coordinates,
+            style: {
+              ...get().routes.style,
+              ...feature.properties,
+            },
+            smartMatching: {
+              enabled: false,
+              profile: null,
+            },
+          } as Route;
+        }
+
+        if (feature.geometry?.type === "Polygon") {
+          const geometry = feature.geometry as Polygon;
+          const points = geometry.coordinates[0].slice(0, geometry.coordinates[0].length - 1);
+
+          return {
+            id: numericId(),
+            type: "Route",
+            source: MapSource.Routes,
+            closed: true,
+            filled: true,
+            transientPoints: [],
+            rawPoints: points,
+            points: points,
             style: {
               ...get().routes.style,
               ...feature.properties,
@@ -177,6 +202,7 @@ export const entityToFeature = (entity: Entity): RawFeature | null => {
       properties: {
         ...style,
         closed: entity.closed,
+        filled: entity.filled,
         outlineColor: outlineColor(style.color, style.outline),
         outlineWidth: style.outline === "none" ? -1 : style.outline === "glow" ? 7 : 1,
         outlineBlur: style.outline === "glow" ? 5 : 0,

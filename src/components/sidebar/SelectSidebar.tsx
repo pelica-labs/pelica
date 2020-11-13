@@ -1,4 +1,5 @@
 import { Menu } from "@headlessui/react";
+import { Switch } from "@headlessui/react";
 import classNames from "classnames";
 import React, { useEffect, useRef } from "react";
 
@@ -269,6 +270,42 @@ export const SelectSidebar: React.FC = () => {
               }}
             />
           </div>
+
+          {selectedEntity.closed && (
+            <Switch.Group as="div" className="flex items-center mt-2 w-40 md:w-full">
+              <Switch.Label className="text-xs flex-1">Fill area</Switch.Label>
+              <Switch
+                as="button"
+                checked={selectedEntity.filled}
+                className={classNames(
+                  { "bg-orange-600": selectedEntity.filled, "bg-gray-400": !selectedEntity.filled },
+                  "relative inline-flex flex-shrink-0 h-4 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer w-7 focus:outline-none focus:shadow-outline"
+                )}
+                onChange={() => {
+                  app.routes.toggleSelectedEntityFill();
+                }}
+              >
+                {({ checked }) => (
+                  <span
+                    className={classNames(
+                      {
+                        "translate-x-3": checked,
+                        "translate-x-0": !checked,
+                      },
+                      "inline-block w-3 h-3 transition duration-200 ease-in-out transform bg-white rounded-full"
+                    )}
+                  />
+                )}
+              </Switch>
+
+              <Tooltip
+                placement="left"
+                text={<span className="w-64">Fill the inside of the area with a light color</span>}
+              >
+                <InformationIcon className="ml-2 w-3 h-3 cursor-pointer" />
+              </Tooltip>
+            </Switch.Group>
+          )}
         </SidebarSection>
       )}
 
