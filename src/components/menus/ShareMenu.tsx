@@ -45,7 +45,7 @@ export const ShareMenu: React.FC = () => {
 
   return (
     <>
-      <div className="flex md:flex-col md:divide-y md:divide-x-0 divide-x md:h-full text-gray-100">
+      <div className="flex md:flex-col md:divide-y md:divide-x-0 divide-x md:h-full">
         <SidebarSection className="flex flex-col space-y-3 w-40 md:w-auto">
           {!screenDimensions.md && (
             <SidebarHeader>

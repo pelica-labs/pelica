@@ -68,6 +68,8 @@ export const editor = ({ mutate, get }: App) => ({
   },
 
   setEditorMode: (mode: EditorMode) => {
+    get().editor.setEditorMenuMode(null);
+
     if (mode === get().editor.mode) {
       return;
     }
@@ -95,12 +97,14 @@ export const editor = ({ mutate, get }: App) => ({
     if (mode === "draw") {
       get().routes.startNewRoute();
     }
-
-    get().editor.setEditorMenuMode(null);
   },
 
   setEditorMenuMode: (mode: EditorMenuMode | null) => {
     mutate((state) => {
+      if (state.editor.mode === "move" && !state.platform.screen.dimensions.md) {
+        state.editor.mode = "select";
+      }
+
       state.editor.menuMode = state.editor.menuMode !== mode ? mode : null;
     });
   },

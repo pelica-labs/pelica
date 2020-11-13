@@ -149,7 +149,7 @@ export const ExportMenu: React.FC = () => {
 
   return (
     <>
-      <div className="flex md:flex-col md:divide-y md:divide-x-0 divide-x md:h-full text-gray-100">
+      <div className="flex md:flex-col md:divide-y md:divide-x-0 divide-x md:h-full">
         <SidebarSection className="flex flex-col space-y-1 md:space-y-2 w-48 md:w-auto">
           <AspectRatioSelector
             value={aspectRatio}
@@ -159,7 +159,7 @@ export const ExportMenu: React.FC = () => {
           />
         </SidebarSection>
 
-        <SidebarSection className="flex flex-col space-y-3 w-40 md:w-auto">
+        <SidebarSection className="flex flex-col space-y-3 w-56 md:w-auto">
           {!screenDimensions.md && (
             <SidebarHeader>
               <Heading>Export</Heading>
@@ -217,7 +217,7 @@ export const ExportMenu: React.FC = () => {
 
         <SidebarSection className="flex flex-col space-y-3 w-64 md:w-auto">
           <SidebarHeader>
-            <Heading dark>Output format</Heading>
+            <Heading>Output format</Heading>
           </SidebarHeader>
           <div className="flex-col md:space-y-1">
             <div className="text-xs flex justify-between">
@@ -243,7 +243,7 @@ export const ExportMenu: React.FC = () => {
         {!session && !loading && (
           <SidebarSection>
             <SidebarHeader>
-              <Heading dark>Account</Heading>
+              <Heading>Account</Heading>
             </SidebarHeader>
             <div className="mt-2">
               <p className="text-xs">Create an account to access this map from anywhere.</p>
@@ -260,7 +260,7 @@ export const ExportMenu: React.FC = () => {
 
         <div className="md:mt-auto px-3 md:pt-3 md:pb-2 w-64 md:w-auto">
           <SidebarHeader>
-            <Heading dark>Copyright</Heading>
+            <Heading>Copyright</Heading>
           </SidebarHeader>
 
           <div className="flex justify-between items-center mt-2 overflow-x-hidden">

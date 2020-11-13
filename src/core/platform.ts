@@ -79,9 +79,7 @@ export const platform = ({ mutate, get }: App) => ({
   initialize: () => {
     get().platform.updateScreen(window.innerWidth, window.innerHeight);
 
-    if (get().platform.screen.dimensions.md) {
-      get().editor.setEditorMode("style");
-    }
+    get().editor.setEditorMode("style");
 
     mutate((state) => {
       state.platform.screen.pixelRatio = window.devicePixelRatio;

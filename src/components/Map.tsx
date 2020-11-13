@@ -80,7 +80,7 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
       pitch: state.map.pitch,
       doubleClickZoom: false,
       fadeDuration: 0,
-      logoPosition: state.platform.screen.dimensions.md ? "bottom-right" : "top-right",
+      logoPosition: "bottom-right",
       preserveDrawingBuffer: true,
     });
 
