@@ -12,6 +12,8 @@ import { theme } from "~/styles/tailwind";
 type Props = {
   value: SmartMatching;
   onChange: (value: SmartMatching) => void;
+
+  disabled?: boolean;
 };
 
 type ProfileConfiguration = {
@@ -26,22 +28,30 @@ const Profiles: ProfileConfiguration[] = [
   { name: "Walking", icon: WalkingIcon, profile: "walking" },
 ];
 
-export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange }) => {
+export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange, disabled = false }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const screenDimensions = useStore((store) => store.platform.screen.dimensions);
 
   return (
-    <div className="text-xs">
+    <div
+      className={classNames({
+        "text-xs": true,
+        "opacity-50 cursor-not-allowed": disabled,
+      })}
+    >
       <div className="w-full flex items-center">
         <Switch.Group as="div" className="flex flex-1 items-center space-x-4">
           <Switch.Label className="flex-1 flex items-center">Smart matching</Switch.Label>
           <Switch
             as="button"
             checked={value.enabled}
-            className={classNames(
-              { "bg-orange-600": value.enabled, "bg-gray-400": !value.enabled },
-              "relative inline-flex flex-shrink-0 h-4 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer w-7 focus:outline-none focus:shadow-outline"
-            )}
+            className={classNames({
+              "relative inline-flex flex-shrink-0 h-4 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer w-7 focus:outline-none focus:shadow-outline": true,
+              "bg-orange-600": value.enabled,
+              "bg-gray-400": !value.enabled,
+              "cursor-not-allowed": disabled,
+            })}
+            disabled={disabled}
             onChange={() => {
               onChange({
                 enabled: !value.enabled,

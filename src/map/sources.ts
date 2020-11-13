@@ -37,8 +37,6 @@ export const applySources = (): void => {
   const map = getMap();
   const state = getState();
 
-  console.log(state.pins.clusterPoints);
-
   addSource(map, MapSource.Routes);
   addSource(map, MapSource.RouteStop);
   addSource(map, MapSource.RouteStart);

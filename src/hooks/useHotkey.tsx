@@ -3,7 +3,8 @@ import React, { useCallback, useEffect } from "react";
 import { useStore } from "~/core/app";
 
 type Hotkey = HotkeyModifiers & {
-  key: string;
+  key?: string;
+  value?: string;
   global?: boolean;
 };
 
@@ -77,12 +78,14 @@ export const HotkeyView: React.FC<Hotkey> = (hotkey) => {
 
   return (
     // @todo: hotkey symbols are MacOS only for now
-    <span className="text-2xs  text-gray-500 font-light tracking-wide leading-none flex space-x-2px">
+    <span className="text-2xs  text-gray-500 font-light tracking-wide leading-none inline-flex space-x-2px">
       {meta && <span className="border border-gray-400 rounded p-1 flex justify-center">{metaSymbol}</span>}
       {ctrl && <span className="border border-gray-400 rounded p-1 flex justify-center">{ctrlSymbol}</span>}
       {shift && <span className="border border-gray-400 rounded p-1 flex justify-center">{shiftSymbol}</span>}
       {alt && <span className="border border-gray-400 rounded p-1 flex justify-center">{altSymbol}</span>}
-      <span className="border border-gray-400 rounded p-1 flex justify-center capitalize">{hotkey.key}</span>
+      <span className="border border-gray-400 rounded p-1 flex justify-center capitalize">
+        {hotkey.key || hotkey.value}
+      </span>
     </span>
   );
 };

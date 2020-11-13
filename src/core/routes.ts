@@ -1,4 +1,4 @@
-import { distance, Feature, LineString, lineString, Position, simplify } from "@turf/turf";
+import { circle, distance, Feature, LineString, lineString, Position, simplify } from "@turf/turf";
 
 import { App } from "~/core/helpers";
 import { ItineraryProfile, Place } from "~/core/itineraries";
@@ -10,7 +10,7 @@ import { theme } from "~/styles/tailwind";
 
 export type OutlineType = "dark" | "light" | "black" | "white" | "glow" | "none";
 
-export type DrawingMode = "freeDrawing" | "pointByPoint";
+export type DrawingMode = "freeDrawing" | "pointByPoint" | "circleDrawing";
 
 export type Route = {
   id: ID;
@@ -83,6 +83,9 @@ export type Routes = {
 
   style: RouteStyle;
   smartMatching: SmartMatching;
+
+  circleMode: boolean;
+  circleCenter: Position | null;
 };
 
 export const routesInitialState: Routes = {
@@ -98,6 +101,9 @@ export const routesInitialState: Routes = {
     enabled: false,
     profile: null,
   },
+
+  circleMode: false,
+  circleCenter: null,
 };
 
 export const computeDistance = (route: Route): number => {
@@ -130,6 +136,12 @@ export const routes = ({ mutate, get }: App) => ({
       if (selectedEntity?.type === "Route") {
         Object.assign(selectedEntity.style, style);
       }
+    });
+  },
+
+  toggleCircleMode: () => {
+    mutate((state) => {
+      state.routes.circleMode = !state.routes.circleMode;
     });
   },
 
@@ -178,7 +190,7 @@ export const routes = ({ mutate, get }: App) => ({
     });
   },
 
-  addRouteStep: (coordinates: Position, freeDrawing = false) => {
+  addRouteStep: (coordinates: Position) => {
     get().routes.updateNextPoint(coordinates);
 
     mutate((state) => {
@@ -187,9 +199,9 @@ export const routes = ({ mutate, get }: App) => ({
       }
 
       const selectedRoute = getSelectedEntity(state) as Route;
+      selectedRoute.drawingMode = "freeDrawing";
 
       selectedRoute.transientPoints = [...selectedRoute.transientPoints, coordinates];
-      selectedRoute.drawingMode = freeDrawing ? "freeDrawing" : "pointByPoint";
       if (selectedRoute.transientPoints.length <= 2) {
         return;
       }
@@ -205,11 +217,35 @@ export const routes = ({ mutate, get }: App) => ({
     });
   },
 
+  updateRouteCircle: (coordinates: Position) => {
+    mutate((state) => {
+      const selectedRoute = getSelectedEntity(state) as Route;
+      selectedRoute.drawingMode = "circleDrawing";
+      selectedRoute.closed = true;
+      selectedRoute.filled = true;
+
+      if (!state.routes.circleCenter) {
+        state.routes.circleCenter = coordinates;
+        return;
+      }
+
+      const options = { units: "meters" } as const;
+      const radius = distance(state.routes.circleCenter, coordinates, options);
+      const polygon = circle(state.routes.circleCenter, radius, options);
+      if (!polygon.geometry) {
+        return;
+      }
+
+      selectedRoute.transientPoints = polygon.geometry.coordinates[0];
+    });
+  },
+
   stopSegment: async () => {
     const selectedRoute = getSelectedEntity(get()) as Route;
 
     mutate((state) => {
       state.routes.isDrawing = false;
+      state.routes.circleCenter = null;
     });
 
     const points = selectedRoute.smartMatching.enabled
@@ -224,8 +260,13 @@ export const routes = ({ mutate, get }: App) => ({
       name: "draw",
       routeId: selectedRoute.id,
       points,
-      rawPoints: selectedRoute.transientPoints,
+      rawPoints: selectedRoute.transientPoints.slice(1),
     });
+
+    if (selectedRoute.drawingMode === "circleDrawing") {
+      get().editor.setEditorMode("select");
+      get().selection.selectEntity(selectedRoute.id);
+    }
   },
 
   stopRoute: () => {

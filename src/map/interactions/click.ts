@@ -63,7 +63,12 @@ export const applyClickInteractions = (): void => {
     if (state.routes.isDrawing) {
       // find the closest line feature and project to it if we're in match mode
       const point = state.routes.smartMatching.enabled ? snap(map, event) : event.lngLat.toArray();
-      app.routes.addRouteStep(point, true);
+
+      if (state.platform.keyboard.shiftKey || state.routes.circleMode) {
+        app.routes.updateRouteCircle(point);
+      } else {
+        app.routes.addRouteStep(point);
+      }
     }
 
     if (state.dragAndDrop.draggedEntityId) {
