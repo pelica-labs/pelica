@@ -2,6 +2,7 @@ import React from "react";
 
 import { HandIcon, MousePointerIcon, PencilIcon, PinIcon, RouteIcon, StyleIcon, TextIcon } from "~/components/Icon";
 import { IconButton } from "~/components/IconButton";
+import { EditorMenuButtons, MenuBar } from "~/components/MenuBar";
 import { app, useStore } from "~/core/app";
 import { useHotkey } from "~/hooks/useHotkey";
 

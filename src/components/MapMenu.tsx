@@ -4,7 +4,6 @@ import Link from "next/link";
 import React from "react";
 
 import { DoubleCheckIcon, MenuIcon, RedoIcon, TrashIcon, UndoIcon } from "~/components/Icon";
-import { IconButton } from "~/components/IconButton";
 import { MapTitleInput } from "~/components/MapTitleInput";
 import { app, useStore } from "~/core/app";
 import { useHotkey } from "~/hooks/useHotkey";
@@ -41,16 +40,16 @@ export const MapMenu: React.FC = () => {
                     "hover:text-orange-600": !open,
                   })}
                 >
-                  <IconButton dark>
-                    <MenuIcon className="w-8 h-8 md:w-6 md:h-6" id="toolbar-menu" />
-                  </IconButton>
+                  <button className="px-2 py-1 focus:outline-none focus:border-orange-300">
+                    <MenuIcon className="w-6 h-6" id="toolbar-menu" />
+                  </button>
                 </Menu.Button>
               </span>
 
               {open && (
                 <Menu.Items
                   static
-                  className="fixed bottom-0 mb-16 md:mt-1 md:mb-0 md:bottom-auto z-50 left-0 md:left-auto right-0 md:w-56 md:mr-1 origin-top-right bg-white border md:rounded md:shadow outline-none py-1"
+                  className="fixed top-0 mt-10 mb-16 md:mb-0 md:bottom-auto z-50 left-0 md:left-auto right-0 md:w-56 md:mr-1 origin-top-right bg-white border md:rounded md:shadow outline-none py-1"
                 >
                   <div className="flex flex-col">
                     {!screenDimensions.md && (

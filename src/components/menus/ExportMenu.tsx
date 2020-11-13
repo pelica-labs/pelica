@@ -159,7 +159,7 @@ export const ExportMenu: React.FC = () => {
           />
         </SidebarSection>
 
-        <SidebarSection className="flex flex-col space-y-3 w-40 md:w-auto">
+        <SidebarSection className="flex flex-col space-y-3 w-56 md:w-auto">
           {!screenDimensions.md && (
             <SidebarHeader>
               <Heading>Export</Heading>
