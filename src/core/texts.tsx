@@ -1,5 +1,7 @@
 import { bbox, bboxPolygon, centerOfMass, lineString, Position } from "@turf/turf";
 import { MercatorCoordinate } from "mapbox-gl";
+import React from "react";
+import ReactDOMServer from "react-dom/server";
 
 import { App } from "~/core/helpers";
 import { OutlineType, Route } from "~/core/routes";
@@ -31,6 +33,30 @@ export type Text = {
 type Texts = {
   nextPoint: Position | null;
   style: TextStyle;
+};
+
+export const computeTextSize = (text: Text): [number, number] => {
+  const label = text.transientStyle?.label ?? text.style.label;
+  const fontSize = text.transientStyle?.width ?? text.style.width;
+
+  const lines = label.split("\n");
+
+  const textPreview = (
+    <div className="fixed flex flex-col leading-none" style={{ fontSize: fontSize * 2 }}>
+      {lines.map((line, i) => {
+        return <span key={i}>{line}&nbsp;</span>;
+      })}
+    </div>
+  );
+
+  const wrapper = document.createElement("div");
+  wrapper.innerHTML = ReactDOMServer.renderToString(textPreview);
+  const child = wrapper.firstChild as HTMLSpanElement;
+  document.body.appendChild(child);
+  const { width, height } = child.getBoundingClientRect();
+  document.body.removeChild(child);
+
+  return [width, height + fontSize / 2];
 };
 
 export const textsInitialState: Texts = {

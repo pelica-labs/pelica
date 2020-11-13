@@ -3,10 +3,11 @@ import { bbox, Feature, featureCollection, Geometry, Polygon } from "@turf/turf"
 import { App } from "~/core/helpers";
 import { Pin } from "~/core/pins";
 import { Route, RouteEdge, RouteEdgeCenter, RouteVertex } from "~/core/routes";
-import { Text } from "~/core/texts";
+import { computeTextSize, Text } from "~/core/texts";
 import { outlineColor } from "~/lib/color";
 import { numericId } from "~/lib/id";
 import { RawFeature } from "~/map/features";
+import { PinImageStyle, TextImageStyle } from "~/map/imageMissing";
 import { MapSource } from "~/map/sources";
 
 export type Entities = {
@@ -164,10 +165,11 @@ export const entityToFeature = (entity: Entity): RawFeature | null => {
       properties: {
         ...style,
         image: JSON.stringify({
+          type: "Pin",
           pin: style.pinType,
           icon: style.icon,
           color: style.color,
-        }),
+        } as PinImageStyle),
       },
     };
   }
@@ -215,6 +217,18 @@ export const entityToFeature = (entity: Entity): RawFeature | null => {
       ...entity.style,
       ...entity.transientStyle,
     };
+    const [width, height] = computeTextSize(entity);
+    const imageStyle: TextImageStyle = {
+      type: "Text",
+      size: style.width * 2,
+      label: style.label,
+      color: style.color,
+      outlineColor: outlineColor(style.color, style.outline),
+      outlineWidth: style.outline === "none" ? 0 : 0.5,
+      outlineBlur: style.outline === "glow" ? 1 : 0,
+      width,
+      height,
+    };
 
     return {
       type: "Feature",
@@ -226,9 +240,7 @@ export const entityToFeature = (entity: Entity): RawFeature | null => {
       },
       properties: {
         ...style,
-        outlineColor: outlineColor(style.color, style.outline),
-        outlineWidth: style.outline === "none" ? 0 : 0.5,
-        outlineBlur: style.outline === "glow" ? 1 : 0,
+        image: JSON.stringify(imageStyle),
       },
     };
   }

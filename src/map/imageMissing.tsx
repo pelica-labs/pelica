@@ -15,48 +15,34 @@ const transparentPixel = {
   data: new Uint8Array([0, 0, 0, 0]),
 };
 
-type ImageComponents = {
-  pin: ReactElement | null;
-  imgSrc: string | null;
-  icon: ReactElement;
-  dimensions: [number, number];
-  offset: number;
-};
-
-type PinProps = {
+export type PinImageStyle = {
+  type: "Pin";
   pin: string | null;
   icon: PinIcon;
   color: string;
 };
 
-const idToComponents = async (eventId: string): Promise<ImageComponents | null> => {
-  let json: PinProps | null = null;
+export type TextImageStyle = {
+  type: "Text";
+  label: string;
+  color: string;
+  size: number;
+  outlineColor: string | null;
+  outlineWidth: number;
+  outlineBlur: number;
+  width: number;
+  height: number;
+};
+
+type DynamicImageStyle = PinImageStyle | TextImageStyle;
+
+const parseEventId = (eventId: string): DynamicImageStyle | null => {
   try {
-    json = JSON.parse(eventId);
+    return JSON.parse(eventId) as DynamicImageStyle;
   } catch (error) {
     console.warn("Could not parse image missing to ImageComponents", eventId, error);
-  } finally {
-    if (!json) {
-      return null;
-    }
-  }
-
-  const { pin, icon, color } = json;
-
-  const { component: Pin, dimensions, offset } = allPins[pin || "none"];
-  const Icon = await findIcon(icon.collection, icon.name);
-  const imgSrc = icon.collection === "emoji" ? imgSrcFromEmojiName(icon.name) : null;
-  if (!Icon) {
     return null;
   }
-
-  return {
-    pin: Pin ? <Pin color={color} /> : null,
-    icon: <Icon color={color} />,
-    imgSrc,
-    dimensions,
-    offset,
-  };
 };
 
 type MapImageMissingEvent = {
@@ -67,31 +53,49 @@ export const applyImageMissingHandler = (): void => {
   const map = getMap();
 
   const onImageMissing = async (event: MapImageMissingEvent) => {
-    map.addImage(event.id, transparentPixel);
-
-    const components = await idToComponents(event.id);
-
-    if (!components) {
+    const style = parseEventId(event.id);
+    if (!style) {
       return;
     }
 
-    const image = await generateImage(components);
+    if (style.type === "Text") {
+      const image = generateImageFromText(style);
 
-    map.removeImage(event.id);
-    map.addImage(event.id, image, { pixelRatio: 2 });
+      map.addImage(event.id, image, { pixelRatio: 2 });
+    }
 
-    // 💩 Manually retriggers a re-render. This is far from ideal and looks glitchy.
-    setTimeout(() => {
-      getState().entities.forceRerender();
-    });
+    if (style.type === "Pin") {
+      map.addImage(event.id, transparentPixel);
+
+      const image = await generateImage(style);
+
+      if (!image) {
+        return;
+      }
+
+      map.removeImage(event.id);
+      map.addImage(event.id, image, { pixelRatio: 2 });
+
+      // 💩 Manually retriggers a re-render. This is far from ideal and looks glitchy.
+      setTimeout(() => {
+        getState().entities.forceRerender();
+      });
+    }
   };
 
   map.on("styleimagemissing", onImageMissing);
 };
 
-export const generateImage = (components: ImageComponents): Promise<ImageData> => {
-  const pinWidth = components.dimensions[0];
-  const pinHeight = components.dimensions[1];
+export const generateImage = async (style: PinImageStyle): Promise<ImageData | null> => {
+  const { component: Pin, dimensions, offset } = allPins[style.pin || "none"];
+  const Icon = await findIcon(style.icon.collection, style.icon.name);
+  const imgSrc = style.icon.collection === "emoji" ? imgSrcFromEmojiName(style.icon.name) : null;
+  if (!Icon) {
+    return null;
+  }
+
+  const pinWidth = dimensions[0];
+  const pinHeight = dimensions[1];
   const iconWidth = 32;
   const iconHeight = 32;
   const scale = 4;
@@ -103,12 +107,12 @@ export const generateImage = (components: ImageComponents): Promise<ImageData> =
 
     const context = canvas.getContext("2d");
     if (!context) {
-      throw new Error("failed to create canvas 2d context");
+      throw new Error("Failed to create canvas 2d context");
     }
 
-    if (components.pin) {
+    if (Pin) {
       await drawImage(context, {
-        svg: components.pin,
+        svg: <Pin color={style.color} />,
         imgSrc: null,
         width: pinWidth * scale,
         height: pinHeight * scale,
@@ -118,16 +122,46 @@ export const generateImage = (components: ImageComponents): Promise<ImageData> =
     }
 
     await drawImage(context, {
-      svg: components.icon,
-      imgSrc: components.imgSrc || null,
+      svg: <Icon color={style.color} />,
+      imgSrc: imgSrc || null,
       width: iconWidth * scale,
       height: iconHeight * scale,
       offsetX: ((pinWidth - iconWidth) / 2) * scale,
-      offsetY: components.offset * scale,
+      offsetY: offset * scale,
     });
 
     resolve(context.getImageData(0, 0, pinWidth * scale, pinHeight * scale));
   });
+};
+
+export const generateImageFromText = (style: TextImageStyle): ImageData => {
+  const width = style.width || 1;
+  const height = style.height || 1;
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+
+  const context = canvas.getContext("2d");
+  if (!context) {
+    throw new Error("Failed to create canvas 2d context");
+  }
+
+  context.font = `${style.size}px "system-ui"`;
+  context.fillStyle = style.color;
+  if (style.outlineColor) {
+    context.strokeStyle = style.outlineColor;
+  }
+  context.lineWidth = style.outlineWidth;
+
+  const lines = style.label.split("\n");
+
+  lines.forEach((line, i) => {
+    context.fillText(line, 0, (i + 1) * style.size);
+    context.strokeText(line, 0, (i + 1) * style.size);
+  });
+
+  return context.getImageData(0, 0, width, height);
 };
 
 type DrawImageOptions = {
@@ -145,6 +179,7 @@ const drawImage = (context: CanvasRenderingContext2D, options: DrawImageOptions)
 
     image.onload = () => {
       context.drawImage(image, options.offsetX, options.offsetY, options.width, options.height);
+
       resolve();
     };
 

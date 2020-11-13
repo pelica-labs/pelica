@@ -1,7 +1,6 @@
 import { getState } from "~/core/app";
 import { MAX_PIN_SIZE } from "~/core/pins";
 import { getMap } from "~/core/selectors";
-import { MAX_TEXT_SIZE, MIN_TEXT_SIZE } from "~/core/texts";
 import { defaultStyles } from "~/lib/style";
 import { MapSource } from "~/map/sources";
 import { theme } from "~/styles/tailwind";
@@ -489,32 +488,10 @@ export const applyLayers = (): void => {
     type: "symbol",
     source: MapSource.Texts,
     layout: {
-      "text-field": ["get", "label"],
-      "text-font": styles.textFont,
-
-      "text-size": [
-        "interpolate",
-        ["linear"],
-        ["get", "width"],
-        MIN_TEXT_SIZE,
-        ["literal", MIN_TEXT_SIZE],
-        MAX_TEXT_SIZE,
-        ["literal", MAX_TEXT_SIZE],
-      ],
-      "text-transform": styles.textTransform,
-      "text-anchor": "bottom",
-      "text-allow-overlap": true,
-    },
-    paint: {
-      "text-color": ["get", "color"],
-      "text-halo-color": [
-        "case",
-        ["boolean", ["feature-state", "hover"], false],
-        theme.colors.orange[500],
-        ["get", "outlineColor"],
-      ],
-      "text-halo-blur": ["case", ["boolean", ["feature-state", "hover"], false], 0.5, ["get", "outlineBlur"]],
-      "text-halo-width": ["case", ["boolean", ["feature-state", "hover"], false], 0.5, ["get", "outlineWidth"]],
+      "icon-image": ["get", "image"],
+      "icon-anchor": "bottom",
+      "icon-offset": [0, -8],
+      "icon-allow-overlap": true,
     },
   });
 
@@ -523,28 +500,10 @@ export const applyLayers = (): void => {
     type: "symbol",
     source: MapSource.TextPreview,
     layout: {
-      "text-field": ["get", "label"],
-      "text-font": styles.textFont,
-
-      "text-size": [
-        "interpolate",
-        ["linear"],
-        ["get", "width"],
-        MIN_TEXT_SIZE,
-        ["literal", MIN_TEXT_SIZE],
-        MAX_TEXT_SIZE,
-        ["literal", MAX_TEXT_SIZE],
-      ],
-      "text-transform": styles.textTransform,
-      "text-anchor": "bottom",
-      "text-allow-overlap": true,
-    },
-    paint: {
-      "text-color": ["get", "color"],
-      "text-halo-color": ["get", "outlineColor"],
-      "text-halo-blur": ["get", "outlineBlur"],
-      "text-halo-width": ["get", "outlineWidth"],
-      "text-opacity": 0.5,
+      "icon-image": ["get", "image"],
+      "icon-anchor": "bottom",
+      "icon-offset": [0, -8],
+      "icon-allow-overlap": true,
     },
   });
 };
