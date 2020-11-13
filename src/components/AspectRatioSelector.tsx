@@ -2,6 +2,7 @@ import { Listbox, Transition } from "@headlessui/react";
 import classNames from "classnames";
 import React from "react";
 
+import { Heading } from "~/components/Heading";
 import { SelectorCarretIcon } from "~/components/Icon";
 import { AspectRatio, AspectRatioConfiguration, aspectRatios } from "~/lib/aspectRatio";
 
@@ -26,8 +27,8 @@ export const AspectRatioSelector: React.FC<Props> = ({ value, onChange }) => {
     >
       {({ open }) => (
         <>
-          <Listbox.Label className="text-xs uppercase text-gray-800 font-light tracking-wide leading-none flex items-center">
-            <span>Aspect Ratio</span>
+          <Listbox.Label>
+            <Heading dark>Aspect Ratio</Heading>
           </Listbox.Label>
           <div className="relative">
             <span className="inline-block w-full rounded-md shadow-sm mt-1">
@@ -85,10 +86,10 @@ export const AspectRatioOption: React.FC<{ configuration: AspectRatioConfigurati
 
   return (
     <>
-      <configuration.icon className="w-6 h-6" />
+      <configuration.icon className="w-6 h-6 text-gray-900" />
 
       <div className="flex flex-col">
-        <span className="text-xs flex-1 text-left whitespace-no-wrap">{configuration.name}</span>
+        <span className="text-xs text-gray-900 flex-1 text-left whitespace-no-wrap">{configuration.name}</span>
         <span className="text-xs text-gray-600 whitespace-no-wrap">{configurationRatio}</span>
       </div>
     </>

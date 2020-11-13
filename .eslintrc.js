@@ -1,6 +1,7 @@
 module.exports = {
   extends: ["plugin:@typescript-eslint/recommended", "plugin:react/recommended", "plugin:prettier/recommended"],
   parser: "@typescript-eslint/parser",
+  ignorePatterns: ["src/icons/*.json"],
   parserOptions: {
     ecmaVersion: 2018,
     sourceType: "module",

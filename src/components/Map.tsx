@@ -52,11 +52,10 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
   const container = useRef<HTMLDivElement>(null);
   const wrapper = useRef<HTMLDivElement>(null);
   const aspectRatio = useStore((store) => store.editor.aspectRatio);
-  const editorMode = useStore((store) => store.editor.mode);
 
   useAutoSaveAlert();
 
-  const displayHtmlWatermark = readOnly || editorMode !== "export";
+  const displayHtmlWatermark = readOnly;
 
   /**
    * Initialize map
@@ -518,10 +517,9 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
    */
   useStoreSubscription(
     (store) => ({
-      editorMode: store.editor.mode,
       exporting: store.exports.exporting,
     }),
-    ({ editorMode, exporting }) => {
+    ({ exporting }) => {
       const features: RawFeature[] = [];
       const mapboxControls = document.querySelector(".mapboxgl-control-container")?.classList;
 
@@ -529,7 +527,7 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
         features.push(getWatermarkOverlay(getMap().getBounds().getSouthWest().toArray()));
       }
 
-      if (editorMode === "export" || exporting) {
+      if (exporting) {
         mapboxControls?.add("hidden");
       } else {
         mapboxControls?.remove("hidden");

@@ -24,14 +24,14 @@ export const UserMenu: React.FC = () => {
               <Menu.Button
                 as="div"
                 className={classNames({
-                  "h-6 appearance-none inline-flex justify-center w-full text-sm font-medium leading-5 transition duration-150 ease-in-out text-gray-800 rounded-md focus:outline-none": true,
+                  "appearance-none inline-flex justify-center w-full text-sm font-medium leading-5 transition duration-150 ease-in-out text-gray-800 rounded-md focus:outline-none": true,
                 })}
               >
                 <button
                   aria-label="Main menu"
                   className={classNames({
                     "rounded-full focus:outline-none focus:border-orange-300 transition duration-75 transform hover:scale-105 w-8 h-8 bg-gray-200 border border-gray-400 flex justify-center items-center text-gray-600 box-border": true,
-                    "scale-110 hover:scale-110 border-orange-200": open,
+                    "scale-110 hover:scale-110 border-oraange-200": open,
                   })}
                 >
                   <UserIcon className="w-6 h-6" />
@@ -41,7 +41,7 @@ export const UserMenu: React.FC = () => {
               {open && (
                 <Menu.Items
                   static
-                  className="fixed bottom-0 mb-16 md:mb-0 md:mt-10 md:bottom-auto z-50 left-0 md:left-auto right-0 md:w-56 md:mr-1 origin-top-right bg-white border md:rounded md:shadow outline-none py-1"
+                  className="fixed bottom-0 mb-16 md:mt-10 md:mb-0 md:bottom-auto z-50 left-0 md:left-auto right-0 md:w-56 md:mr-1 origin-top-right bg-white border md:rounded md:shadow outline-none py-1"
                 >
                   <div className="flex flex-col">
                     <span className="my-2 px-2 text-gray-500 font-light tracking-wide leading-none uppercase text-xs">

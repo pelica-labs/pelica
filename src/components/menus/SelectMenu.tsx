@@ -6,13 +6,14 @@ import React, { useEffect, useRef } from "react";
 import { Button } from "~/components/Button";
 import { ColorPicker } from "~/components/ColorPicker";
 import { Distance, formatDistance } from "~/components/Distance";
+import { Heading } from "~/components/Heading";
 import { DownloadIcon, InformationIcon, PencilIcon, PinIcon, PlusIcon, TextIcon, TrashIcon } from "~/components/Icon";
 import { IconSelector } from "~/components/IconSelector";
 import { LabelTextareaField } from "~/components/LabelTextareaField";
 import { OutlineSelector } from "~/components/OutlineSelector";
 import { PinPreview } from "~/components/PinPreview";
 import { PinSelector } from "~/components/PinSelector";
-import { SidebarHeader, SidebarHeading, SidebarSection } from "~/components/sidebar/Sidebar";
+import { SidebarHeader, SidebarSection } from "~/components/Sidebar";
 import { SmartMatchingSelector } from "~/components/SmartMatchingSelector";
 import { Tooltip } from "~/components/Tooltip";
 import { WidthSlider } from "~/components/WidthSlider";
@@ -24,7 +25,7 @@ import { getMapTitle, getSelectedEntities } from "~/core/selectors";
 import { MAX_TEXT_SIZE, MIN_TEXT_SIZE, Text } from "~/core/texts";
 import { exportGpx } from "~/lib/gpx";
 
-export const SelectSidebar: React.FC = () => {
+export const SelectMenu: React.FC = () => {
   const textContainer = useRef<HTMLDivElement | null>(null);
   const selectedEntities = useStore((store) => getSelectedEntities(store));
   const screenDimensions = useStore((store) => store.platform.screen.dimensions);
@@ -64,7 +65,7 @@ export const SelectSidebar: React.FC = () => {
     <>
       <SidebarSection className="flex flex-col md:flex-row items-center md:justify-between px-3 md:py-2 bg-white">
         <SidebarHeader className="text-xs uppercase font-light tracking-wide leading-none">
-          <SidebarHeading>{name}</SidebarHeading>
+          <Heading>{name}</Heading>
           {selectedEntities.length > 1 && <span className="ml-1 text-gray-600">({selectedEntities.length})</span>}
         </SidebarHeader>
         <Button
@@ -79,7 +80,7 @@ export const SelectSidebar: React.FC = () => {
 
       <SidebarSection>
         <SidebarHeader>
-          <SidebarHeading>Color</SidebarHeading>
+          <Heading>Color</Heading>
           <div
             className="ml-2 w-3 h-3 rounded-full border border-gray-200"
             style={{ backgroundColor: selectedEntity.transientStyle?.color ?? selectedEntity.style.color }}
@@ -119,7 +120,7 @@ export const SelectSidebar: React.FC = () => {
           <SidebarHeader>
             {allRoutes && (
               <>
-                <SidebarHeading>Width</SidebarHeading>
+                <Heading>Width</Heading>
                 <div className="ml-2 flex justify-center items-center w-3 h-3 rounded-full">
                   <div
                     className="rounded-full"
@@ -134,7 +135,7 @@ export const SelectSidebar: React.FC = () => {
             )}
             {!allRoutes && (
               <>
-                <SidebarHeading>Size</SidebarHeading>
+                <Heading>Size</Heading>
                 <div className="ml-2 text-2xs text-gray-600 tracking-wide leading-none">
                   {selectedEntity.transientStyle?.width ?? selectedEntity.style.width}
                   {allTexts && <span className="text-gray-400 ml-px">px</span>}
@@ -175,7 +176,7 @@ export const SelectSidebar: React.FC = () => {
       {(allRoutes || allTexts) && (selectedEntity.type === "Route" || selectedEntity.type === "Text") && (
         <SidebarSection>
           <SidebarHeader>
-            <SidebarHeading>Outline</SidebarHeading>
+            <Heading>Outline</Heading>
           </SidebarHeader>
           <div className="mt-4 w-40" style={{ marginLeft: screenDimensions.md ? -4 : 0 }}>
             <OutlineSelector
@@ -195,7 +196,7 @@ export const SelectSidebar: React.FC = () => {
       {allPins && selectedEntity.type === "Pin" && (
         <SidebarSection>
           <SidebarHeader>
-            <SidebarHeading>Icon & pin</SidebarHeading>
+            <Heading>Icon & pin</Heading>
           </SidebarHeader>
 
           <div className="mt-2 flex items-center space-between w-full">
@@ -233,7 +234,7 @@ export const SelectSidebar: React.FC = () => {
       {allTexts && selectedEntity.type === "Text" && selectedEntities.length === 1 && (
         <SidebarSection>
           <SidebarHeader>
-            <SidebarHeading>Text</SidebarHeading>
+            <Heading>Text</Heading>
           </SidebarHeader>
 
           <div ref={textContainer} className="mt-3 w-56 md:w-full">
@@ -253,7 +254,7 @@ export const SelectSidebar: React.FC = () => {
       {allNonItineraryRoutes && selectedEntity.type === "Route" && (
         <SidebarSection>
           <SidebarHeader>
-            <SidebarHeading>Routes</SidebarHeading>
+            <Heading>Routes</Heading>
           </SidebarHeader>
 
           <div
@@ -312,7 +313,7 @@ export const SelectSidebar: React.FC = () => {
       {selectedEntity.type === "Route" && (
         <SidebarSection className="relative md:mt-auto">
           <SidebarHeader>
-            <SidebarHeading>Inspect</SidebarHeading>
+            <Heading>Inspect</Heading>
 
             <Menu>
               {({ open }) => (

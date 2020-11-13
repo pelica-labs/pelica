@@ -137,6 +137,12 @@ export const getMapTitle = (state: State = getState()) => {
   return feature?.place_name;
 };
 
+export const getMapUrl = (state: State = getState()) => {
+  const id = state.sync.id;
+
+  return `${window.location.origin}/map/${id}`;
+};
+
 export const getSerializableState = (state: State = getState()) => {
   return {
     ...state,

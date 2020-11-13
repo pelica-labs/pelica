@@ -10,7 +10,7 @@ import { ItineraryInput } from "~/components/ItineraryInput";
 import { Map } from "~/components/Map";
 import { PlaceAutocomplete } from "~/components/PlaceAutocomplete";
 import { ResetOrientationButton } from "~/components/ResetOrientationButton";
-import { Sidebar } from "~/components/sidebar/Sidebar";
+import { Sidebar } from "~/components/Sidebar";
 import { app, useStore, useStoreSubscription } from "~/core/app";
 import { getSelectedItinerary, getSyncableState } from "~/core/selectors";
 import { useKeyboard } from "~/hooks/useKeyboard";
@@ -41,8 +41,8 @@ export const MapEditor: React.FC<Props> = ({ map }) => {
       });
     },
   });
-  const showTopLeftControls = editorMode !== "export";
-  const showHistoryButtons = !screenDimensions.md && editorMode !== "export";
+  const showTopLeftControls = true;
+  const showHistoryButtons = !screenDimensions.md;
 
   useKeyboard();
   useScreenDimensions();

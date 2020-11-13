@@ -1,14 +1,15 @@
 import React, { useEffect, useRef } from "react";
 
 import { ColorPicker } from "~/components/ColorPicker";
+import { Heading } from "~/components/Heading";
 import { LabelTextareaField } from "~/components/LabelTextareaField";
 import { OutlineSelector } from "~/components/OutlineSelector";
-import { SidebarHeader, SidebarHeading, SidebarSection } from "~/components/sidebar/Sidebar";
+import { SidebarHeader, SidebarSection } from "~/components/Sidebar";
 import { WidthSlider } from "~/components/WidthSlider";
 import { app, useStore } from "~/core/app";
 import { MAX_TEXT_SIZE, MIN_TEXT_SIZE } from "~/core/texts";
 
-export const TextSidebar: React.FC = () => {
+export const TextMenu: React.FC = () => {
   const textContainer = useRef<HTMLDivElement | null>(null);
   const color = useStore((store) => store.texts.style.color);
   const width = useStore((store) => store.texts.style.width);
@@ -29,7 +30,7 @@ export const TextSidebar: React.FC = () => {
     <>
       <SidebarSection>
         <SidebarHeader>
-          <SidebarHeading>Color</SidebarHeading>
+          <Heading>Color</Heading>
           <div className="ml-2 w-3 h-3 rounded-full border border-gray-200" style={{ backgroundColor: color }} />
         </SidebarHeader>
         <div className="mt-4">
@@ -47,7 +48,7 @@ export const TextSidebar: React.FC = () => {
 
       <SidebarSection>
         <SidebarHeader>
-          <SidebarHeading>Size</SidebarHeading>
+          <Heading>Size</Heading>
           <div className="ml-2 text-2xs text-gray-600 tracking-wide leading-none">
             {width}
             <span className="text-gray-400 ml-px">px</span>
@@ -72,7 +73,7 @@ export const TextSidebar: React.FC = () => {
 
       <SidebarSection>
         <SidebarHeader>
-          <SidebarHeading>Outline</SidebarHeading>
+          <Heading>Outline</Heading>
         </SidebarHeader>
         <div className="mt-4 w-40" style={{ marginLeft: screenDimensions.md ? -4 : 0 }}>
           <OutlineSelector
@@ -86,7 +87,7 @@ export const TextSidebar: React.FC = () => {
 
       <SidebarSection>
         <SidebarHeader>
-          <SidebarHeading>Text</SidebarHeading>
+          <Heading>Text</Heading>
         </SidebarHeader>
 
         <div ref={textContainer} className="mt-3 w-56 md:w-full">

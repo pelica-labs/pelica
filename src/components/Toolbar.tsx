@@ -1,18 +1,7 @@
 import React from "react";
 
-import {
-  ExportIcon,
-  HandIcon,
-  MousePointerIcon,
-  PencilIcon,
-  PinIcon,
-  RouteIcon,
-  StyleIcon,
-  TextIcon,
-} from "~/components/Icon";
+import { HandIcon, MousePointerIcon, PencilIcon, PinIcon, RouteIcon, StyleIcon, TextIcon } from "~/components/Icon";
 import { IconButton } from "~/components/IconButton";
-import { MenuButton } from "~/components/MenuButton";
-import { UserMenu } from "~/components/UserMenu";
 import { app, useStore } from "~/core/app";
 import { useHotkey } from "~/hooks/useHotkey";
 
@@ -43,7 +32,7 @@ export const Toolbar: React.FC = () => {
 
   return (
     <>
-      <div className="flex md:flex-col md:space-y-1">
+      <div className="flex md:flex-col md:space-y-1 p-1">
         <IconButton
           active={editorMode === "move"}
           className="ml-1 md:ml-0"
@@ -61,7 +50,7 @@ export const Toolbar: React.FC = () => {
             app.editor.setEditorMode("move");
           }}
         >
-          <HandIcon className="w-8 h-8 md:w-7 md:h-7" />
+          <HandIcon className="w-8 h-8 md:w-6 md:h-6" />
         </IconButton>
 
         <IconButton
@@ -80,11 +69,11 @@ export const Toolbar: React.FC = () => {
             app.editor.setEditorMode("select");
           }}
         >
-          <MousePointerIcon className="w-8 h-8 md:w-7 md:h-7" />
+          <MousePointerIcon className="w-8 h-8 md:w-6 md:h-6" />
         </IconButton>
       </div>
 
-      <div className="flex md:flex-col md:space-y-1 md:mt-6">
+      <div className="flex md:flex-col md:space-y-1 md:mt-6 p-1">
         <IconButton
           active={editorMode === "draw"}
           id="toolbar-draw"
@@ -101,7 +90,7 @@ export const Toolbar: React.FC = () => {
             app.editor.setEditorMode("draw");
           }}
         >
-          <PencilIcon className="w-8 h-8 md:w-7 md:h-7" />
+          <PencilIcon className="w-8 h-8 md:w-6 md:h-6" />
         </IconButton>
 
         <IconButton
@@ -120,7 +109,7 @@ export const Toolbar: React.FC = () => {
             app.editor.setEditorMode("itinerary");
           }}
         >
-          <RouteIcon className="w-8 h-8 md:w-7 md:h-7" />
+          <RouteIcon className="w-8 h-8 md:w-6 md:h-6" />
         </IconButton>
 
         <IconButton
@@ -139,7 +128,7 @@ export const Toolbar: React.FC = () => {
             app.editor.setEditorMode("pin");
           }}
         >
-          <PinIcon className="w-8 h-8 md:w-7 md:h-7" />
+          <PinIcon className="w-8 h-8 md:w-6 md:h-6" />
         </IconButton>
 
         <IconButton
@@ -158,7 +147,7 @@ export const Toolbar: React.FC = () => {
             app.editor.setEditorMode("text");
           }}
         >
-          <TextIcon className="w-8 h-8 md:w-7 md:h-7" />
+          <TextIcon className="w-8 h-8 md:w-6 md:h-6" />
         </IconButton>
 
         <IconButton
@@ -172,32 +161,9 @@ export const Toolbar: React.FC = () => {
             app.editor.setEditorMode("style");
           }}
         >
-          <StyleIcon className="w-8 h-8 md:w-7 md:h-7" />
+          <StyleIcon className="w-8 h-8 md:w-6 md:h-6" />
         </IconButton>
       </div>
-      {/*
-      <div className="flex md:flex-col md:space-y-1 md:mt-6">
-        <IconButton
-          active={editorMode === "export"}
-          id="toolbar-export"
-          tooltip={{
-            placement: tooltipPlacement,
-            text: "Export",
-          }}
-          onClick={() => {
-            app.editor.setEditorMode("export");
-          }}
-        >
-          <ExportIcon className="w-8 h-8 md:w-7 md:h-7" />
-        </IconButton>
-
-        {!screenDimensions.md && (
-          <div className="mx-2 flex items-center space-x-2">
-            <MenuButton />
-            <UserMenu />
-          </div>
-        )}
-      </div> */}
     </>
   );
 };

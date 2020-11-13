@@ -14,6 +14,7 @@ import { defaultStyle, Style } from "~/lib/style";
 
 export type Editor = {
   mode: EditorMode;
+  menuMode: EditorMenuMode | null;
   moving: boolean;
   isRouteEditing: boolean;
   readOnly: boolean;
@@ -21,7 +22,9 @@ export type Editor = {
   aspectRatio: AspectRatio;
 };
 
-export type EditorMode = "style" | "select" | "move" | "draw" | "itinerary" | "pin" | "text" | "export";
+export type EditorMode = "style" | "select" | "move" | "draw" | "itinerary" | "pin" | "text";
+
+export type EditorMenuMode = "export" | "share";
 
 export const modeIcons = {
   style: StyleIcon,
@@ -37,6 +40,7 @@ export const modeIcons = {
 
 export const editorInitialState: Editor = {
   mode: "move",
+  menuMode: null,
   moving: true,
   isRouteEditing: false,
   readOnly: false,
@@ -91,6 +95,14 @@ export const editor = ({ mutate, get }: App) => ({
     if (mode === "draw") {
       get().routes.startNewRoute();
     }
+
+    get().editor.setEditorMenuMode(null);
+  },
+
+  setEditorMenuMode: (mode: EditorMenuMode | null) => {
+    mutate((state) => {
+      state.editor.menuMode = state.editor.menuMode !== mode ? mode : null;
+    });
   },
 
   setReadOnly: (readOnly: boolean) => {

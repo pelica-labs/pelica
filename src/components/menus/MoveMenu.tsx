@@ -2,10 +2,10 @@ import React from "react";
 
 import { Button } from "~/components/Button";
 import { InformationIcon, PencilIcon, PinIcon, TextIcon } from "~/components/Icon";
-import { SidebarSection } from "~/components/sidebar/Sidebar";
+import { SidebarSection } from "~/components/Sidebar";
 import { app } from "~/core/app";
 
-export const MoveSidebar: React.FC = () => {
+export const MoveMenu: React.FC = () => {
   return (
     <SidebarSection>
       <div className="flex items-start text-sm md:text-xs">

@@ -5,9 +5,10 @@ import React, { useRef } from "react";
 import { Button } from "~/components/Button";
 import { ColorPicker } from "~/components/ColorPicker";
 import { Distance } from "~/components/Distance";
+import { Heading } from "~/components/Heading";
 import { InformationIcon } from "~/components/Icon";
 import { OutlineSelector } from "~/components/OutlineSelector";
-import { SidebarHeader, SidebarHeading, SidebarSection } from "~/components/sidebar/Sidebar";
+import { SidebarHeader, SidebarSection } from "~/components/Sidebar";
 import { SmartMatchingSelector } from "~/components/SmartMatchingSelector";
 import { Tooltip } from "~/components/Tooltip";
 import { WidthSlider } from "~/components/WidthSlider";
@@ -16,7 +17,7 @@ import { computeDistance, Route } from "~/core/routes";
 import { getSelectedEntity } from "~/core/selectors";
 import { HotkeyView } from "~/hooks/useHotkey";
 
-export const DrawSidebar: React.FC = () => {
+export const RouteMenu: React.FC = () => {
   const fileInput = useRef<HTMLInputElement>(null);
   const color = useStore((store) => store.routes.style.color);
   const width = useStore((store) => store.routes.style.width);
@@ -31,7 +32,7 @@ export const DrawSidebar: React.FC = () => {
     <>
       <SidebarSection>
         <SidebarHeader className="px-1">
-          <SidebarHeading>Color</SidebarHeading>
+          <Heading>Color</Heading>
           <div className="ml-2 w-3 h-3 rounded-full border border-gray-200" style={{ backgroundColor: color }} />
         </SidebarHeader>
         <div className="mt-4">
@@ -49,7 +50,7 @@ export const DrawSidebar: React.FC = () => {
 
       <SidebarSection>
         <SidebarHeader>
-          <SidebarHeading>Width</SidebarHeading>
+          <Heading>Width</Heading>
           <div className="ml-2 flex justify-center items-center w-3 h-3 rounded-full">
             <div className="rounded-full" style={{ width: width, height: width, backgroundColor: color }} />
           </div>
@@ -72,7 +73,7 @@ export const DrawSidebar: React.FC = () => {
 
       <SidebarSection>
         <SidebarHeader>
-          <SidebarHeading>Outline</SidebarHeading>
+          <Heading>Outline</Heading>
         </SidebarHeader>
         <div className="mt-4 w-40" style={{ marginLeft: screenDimensions.md ? -4 : 0 }}>
           <OutlineSelector
@@ -86,7 +87,7 @@ export const DrawSidebar: React.FC = () => {
 
       <SidebarSection>
         <SidebarHeader>
-          <SidebarHeading>Routes</SidebarHeading>
+          <Heading>Routes</Heading>
         </SidebarHeader>
 
         <div className="w-40 md:w-full">
@@ -147,7 +148,7 @@ export const DrawSidebar: React.FC = () => {
 
       <SidebarSection>
         <SidebarHeader className="flex flex-col items-start space-y-4 md:space-y-0 md:flex-row md:items-center md:justify-between md:w-full">
-          <SidebarHeading>Import</SidebarHeading>
+          <Heading>Import</Heading>
           <Button
             className="bg-gray-300 text-gray-800"
             onClick={() => {
@@ -172,7 +173,7 @@ export const DrawSidebar: React.FC = () => {
       {route && (
         <SidebarSection className="md:mt-auto">
           <SidebarHeader>
-            <SidebarHeading>Inspect</SidebarHeading>
+            <Heading>Inspect</Heading>
           </SidebarHeader>
 
           <div className="mt-5 md:mt-4">

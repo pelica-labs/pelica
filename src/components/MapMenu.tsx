@@ -9,12 +9,11 @@ import { MapTitleInput } from "~/components/MapTitleInput";
 import { app, useStore } from "~/core/app";
 import { useHotkey } from "~/hooks/useHotkey";
 
-export const MenuButton: React.FC = () => {
+export const MapMenu: React.FC = () => {
   const canSelectAll = useStore((store) => store.entities.items.length > 0);
   const canUndo = useStore((store) => store.history.actions.length > 0);
   const canRedo = useStore((store) => store.history.redoStack.length > 0);
   const canClear = useStore((store) => store.entities.items.length > 0);
-  const mapId = useStore((store) => store.sync.id);
   const screenDimensions = useStore((store) => store.platform.screen.dimensions);
 
   const UndoHotkey = useHotkey({ key: "z", meta: true }, () => {
@@ -42,7 +41,7 @@ export const MenuButton: React.FC = () => {
                     "hover:text-orange-600": !open,
                   })}
                 >
-                  <IconButton>
+                  <IconButton dark>
                     <MenuIcon className="w-8 h-8 md:w-6 md:h-6" id="toolbar-menu" />
                   </IconButton>
                 </Menu.Button>
@@ -51,7 +50,7 @@ export const MenuButton: React.FC = () => {
               {open && (
                 <Menu.Items
                   static
-                  className="fixed bottom-0 mb-16 md:mb-0 md:bottom-auto z-50 left-0 md:left-auto right-0 md:w-56 md:mr-1 origin-top-right bg-white border md:rounded md:shadow outline-none py-1"
+                  className="fixed bottom-0 mb-16 md:mt-1 md:mb-0 md:bottom-auto z-50 left-0 md:left-auto right-0 md:w-56 md:mr-1 origin-top-right bg-white border md:rounded md:shadow outline-none py-1"
                 >
                   <div className="flex flex-col">
                     {!screenDimensions.md && (
@@ -151,21 +150,6 @@ export const MenuButton: React.FC = () => {
                     </Menu.Item>
 
                     <div className="border-t my-1" />
-
-                    <Menu.Item>
-                      {({ active }) => (
-                        <Link href={`/map/${mapId}`}>
-                          <a
-                            className={classNames({
-                              "text-gray-800 text-sm px-2 py-1 hover:bg-orange-200": true,
-                              "bg-orange-200": active,
-                            })}
-                          >
-                            Preview
-                          </a>
-                        </Link>
-                      )}
-                    </Menu.Item>
 
                     <Menu.Item>
                       {({ active }) => (

@@ -2,28 +2,28 @@ import classNames from "classnames";
 import React, { useEffect, useRef, useState } from "react";
 import { Trans } from "react-i18next";
 
-import { Button } from "~/components/Button";
 import { DownloadIcon } from "~/components/Icon";
-import { MapTitleInput } from "~/components/MapTitleInput";
-import { MenuButton } from "~/components/MenuButton";
+import { MapMenu } from "~/components/MapMenu";
+import { ExportMenu } from "~/components/menus/ExportMenu";
+import { ItineraryMenu } from "~/components/menus/ItineraryMenu";
+import { MoveMenu } from "~/components/menus/MoveMenu";
+import { PinMenu } from "~/components/menus/PinMenu";
+import { RouteMenu } from "~/components/menus/RouteMenu";
+import { SelectMenu } from "~/components/menus/SelectMenu";
+import { ShareMenu } from "~/components/menus/ShareMenu";
+import { StyleMenu } from "~/components/menus/StyleMenu";
+import { TextMenu } from "~/components/menus/TextMenu";
 import { MiniToolbar } from "~/components/MiniToolbar";
-import { DrawSidebar } from "~/components/sidebar/DrawSidebar";
-import { ExportSidebar } from "~/components/sidebar/ExportSidebar";
-import { ItinerarySidebar } from "~/components/sidebar/ItinerarySidebar";
-import { MoveSidebar } from "~/components/sidebar/MoveSidebar";
-import { PinSidebar } from "~/components/sidebar/PinSidebar";
-import { SelectSidebar } from "~/components/sidebar/SelectSidebar";
-import { StyleSidebar } from "~/components/sidebar/StyleSidebar";
-import { TextSidebar } from "~/components/sidebar/TextSidebar";
 import { SyncIndicator } from "~/components/SyncIndicator";
 import { Toolbar } from "~/components/Toolbar";
 import { UserMenu } from "~/components/UserMenu";
-import { useStore } from "~/core/app";
+import { app, useStore } from "~/core/app";
 import { useDimensions } from "~/hooks/useDimensions";
 
 export const Sidebar: React.FC = () => {
   const [showToolbar, setShowToolbar] = useState(true);
   const editorMode = useStore((store) => store.editor.mode);
+  const editorMenuMode = useStore((store) => store.editor.menuMode);
   const screenDimensions = useStore((store) => store.platform.screen.dimensions);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const sidebarDimensions = useDimensions(sidebarRef);
@@ -45,9 +45,9 @@ export const Sidebar: React.FC = () => {
       {sidebarDimensions && (
         <div
           ref={toolbarRef}
-          className="fixed z-10 bottom-0 md:bottom-auto flex justify-between md:flex-col bg-gray-100 border border-white  overflow-x-auto rounded-tl rounded-bl shadow"
+          className="fixed z-10 bottom-0 md:bottom-auto flex justify-between md:flex-col bg-gray-100 border border-gray-300  overflow-x-auto rounded-tl rounded-bl shadow"
           style={{
-            top: 73,
+            top: screenDimensions.md ? 73 : "initial",
             right: screenDimensions.md ? sidebarDimensions.width : 0,
             left: screenDimensions.md ? "initial" : 0,
             transform: !screenDimensions.md && !showToolbar ? "translateX(-100vw)" : "initial",
@@ -84,25 +84,56 @@ export const Sidebar: React.FC = () => {
         }}
       >
         {screenDimensions.md && (
-          <div className="flex flex-col shadow-2xl border-b border-l border-orange-300">
-            <div className="relative flex justify-between items-center bg-orange-200 px-2 w-full">
-              <div className="flex-1 flex items-center space-x-1">
-                <button className="flex items-center bg-orange-400 rounded py-1 px-2 text-white border-orange-300 border space-x-1 hover:bg-orange-500 hover:border-orange-400 focus:outline-none focus:border-orange-300">
+          <div className="flex flex-col shadow-2xl">
+            <div className="relative flex justify-between items-center bg-gray-900 px-2 w-full">
+              <div className="flex-1 flex items-center space-x-1 relative">
+                <button
+                  className={classNames({
+                    "flex items-center rounded py-1 px-2 text-white border  focus:outline-none focus:border-orange-300 space-x-1 mr-px": true,
+                    "bg-blue-700 hover:bg-blue-600 border-blue-600 hover:border-blue-600": !editorMenuMode,
+                    "bg-gray-800 hover:bg-gray-700 border-gray-600 hover:border-gray-600": editorMenuMode === "share",
+                    "bg-orange-400 hover:bg-orange-500 border-orange-300 hover:border-orange-400":
+                      editorMenuMode === "export",
+                  })}
+                  onClick={() => {
+                    app.editor.setEditorMenuMode("export");
+                  }}
+                >
                   <DownloadIcon className="w-4 h-4" />
                   <span className="text-xs">Export</span>
                 </button>
-                <button className="flex items-center bg-gray-700 rounded py-1 px-2 text-white border-orange-300 border hover:bg-gray-800 hover:border-orange-400 focus:outline-none focus:border-orange-300">
+                {editorMenuMode === "export" && (
+                  <div className="fixed top-0 bottom-0 right-0 mt-10 w-64 z-50 outline-none bg-gray-900 bg-opacity-95">
+                    <ExportMenu />
+                  </div>
+                )}
+
+                <button
+                  className={classNames({
+                    "flex items-center rounded py-1 px-2 text-white border focus:outline-none": true,
+                    "bg-gray-800 hover:bg-gray-700 border-gray-600 hover:border-gray-600": editorMenuMode !== "share",
+                    "bg-orange-400 hover:bg-orange-500 border-orange-300 hover:border-orange-400":
+                      editorMenuMode === "share",
+                  })}
+                  onClick={() => {
+                    app.editor.setEditorMenuMode("share");
+                  }}
+                >
                   <span className="text-xs">Share</span>
                 </button>
-                {/* <MapTitleInput /> */}
+                {editorMenuMode === "share" && (
+                  <div className="fixed top-0 bottom-0 right-0 mt-10 w-64 z-50 outline-none bg-gray-900 bg-opacity-95">
+                    <ShareMenu />
+                  </div>
+                )}
               </div>
 
-              <div className="right-0 mx-1">
+              <div className="right-0 mr-4">
                 <SyncIndicator />
               </div>
 
-              <div className="flex items-center space-x-2">
-                <MenuButton />
+              <div className="flex items-center space-x-1">
+                <MapMenu />
                 <UserMenu />
               </div>
             </div>
@@ -118,25 +149,16 @@ export const Sidebar: React.FC = () => {
         )}
 
         <div className="flex divide-x md:divide-x-0 md:flex-col md:space-x-0 md:divide-y bg-white text-gray-800 md:w-64 md:h-full overflow-y-auto md:shadow-md">
-          {editorMode === "move" && <MoveSidebar />}
-          {editorMode === "select" && <SelectSidebar />}
-          {editorMode === "draw" && <DrawSidebar />}
-          {editorMode === "pin" && <PinSidebar />}
-          {editorMode === "text" && <TextSidebar />}
-          {editorMode === "itinerary" && <ItinerarySidebar />}
-          {editorMode === "style" && <StyleSidebar />}
-          {editorMode === "export" && <ExportSidebar />}
+          {editorMode === "move" && <MoveMenu />}
+          {editorMode === "select" && <SelectMenu />}
+          {editorMode === "draw" && <RouteMenu />}
+          {editorMode === "pin" && <PinMenu />}
+          {editorMode === "text" && <TextMenu />}
+          {editorMode === "itinerary" && <ItineraryMenu />}
+          {editorMode === "style" && <StyleMenu />}
         </div>
       </div>
     </div>
-  );
-};
-
-export const SidebarHeading: React.FC = ({ children }) => {
-  return (
-    <span className="text-sm md:text-xs uppercase text-gray-800 font-light tracking-wide leading-none transition-all duration-75 ease-in-out">
-      {children}
-    </span>
   );
 };
 

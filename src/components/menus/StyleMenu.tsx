@@ -3,7 +3,7 @@ import React from "react";
 import { StyleSelector } from "~/components/StyleSelector";
 import { app, useStore } from "~/core/app";
 
-export const StyleSidebar: React.FC = () => {
+export const StyleMenu: React.FC = () => {
   const style = useStore((store) => store.editor.style);
 
   return (
