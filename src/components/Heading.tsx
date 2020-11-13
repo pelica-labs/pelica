@@ -11,7 +11,7 @@ export const Heading: React.FC<Props> = ({ as: Component = "h2", children, class
   return (
     <Component
       className={classNames(className, {
-        "text-sm md:text-xs uppercase font-light tracking-wide leading-none": true,
+        "text-sm md:text-xs tracking-wide leading-none font-semibold": true,
         "text-gray-800": !dark,
         "text-gray-100": dark,
       })}

@@ -37,7 +37,7 @@ export const MapMenu: React.FC = () => {
                   as="div"
                   className={classNames({
                     "appearance-none inline-flex justify-center w-full text-sm font-medium leading-5 transition duration-150 ease-in-out rounded-md focus:outline-none": true,
-                    "bg-orange-200 rounded": open,
+                    "text-orange-500": open,
                     "hover:text-orange-600": !open,
                   })}
                 >

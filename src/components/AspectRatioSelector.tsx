@@ -28,7 +28,7 @@ export const AspectRatioSelector: React.FC<Props> = ({ value, onChange }) => {
       {({ open }) => (
         <>
           <Listbox.Label>
-            <Heading dark>Aspect Ratio</Heading>
+            <Heading>Aspect Ratio</Heading>
           </Listbox.Label>
           <div className="relative">
             <span className="inline-block w-full rounded-md shadow-sm mt-1">
