@@ -43,7 +43,7 @@ export const pinsInitialState: Pins = {
     width: 4,
     color: theme.colors.yellow[500],
   },
-  clusterPoints: true,
+  clusterPoints: false,
   nextPoint: null,
 };
 
