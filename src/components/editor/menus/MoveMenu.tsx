@@ -1,13 +1,13 @@
 import React from "react";
 
-import { SidebarSection } from "~/components/editor/Sidebar";
+import { MenuSection } from "~/components/editor/menus/MenuSection";
 import { Button } from "~/components/ui/Button";
 import { InformationIcon, PencilIcon, PinIcon, TextIcon } from "~/components/ui/Icon";
 import { app } from "~/core/app";
 
 export const MoveMenu: React.FC = () => {
   return (
-    <SidebarSection>
+    <MenuSection>
       <div className="flex items-start text-sm md:text-xs">
         <InformationIcon className="w-4 h-4 md:hidden mr-3 md:mr-0 mt-1" />
         <div className="flex flex-col md:space-y-4">
@@ -44,6 +44,6 @@ export const MoveMenu: React.FC = () => {
           </div>
         </div>
       </div>
-    </SidebarSection>
+    </MenuSection>
   );
 };

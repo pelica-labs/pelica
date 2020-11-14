@@ -91,7 +91,6 @@ export const Sidebar: React.FC = () => {
         {screenDimensions.md && <MenuBar />}
         <div className="flex divide-x md:divide-x-0 md:flex-col md:space-x-0 md:divide-y bg-white text-gray-800 md:w-64 md:h-full overflow-y-auto md:shadow-md">
           {editorMenuMode === "export" && <ExportMenu />}
-
           {editorMenuMode === "share" && <ShareMenu />}
           {!editorMenuMode && (
             <>
@@ -106,32 +105,6 @@ export const Sidebar: React.FC = () => {
           )}
         </div>
       </div>
-    </div>
-  );
-};
-
-export const SidebarHeader: React.FC<React.HTMLProps<HTMLDivElement>> = (props) => {
-  return (
-    <div
-      className={classNames({
-        "flex items-center": true,
-        [`${props.className}`]: !!props.className,
-      })}
-    >
-      {props.children}
-    </div>
-  );
-};
-
-export const SidebarSection: React.FC<React.HTMLProps<HTMLDivElement>> = (props) => {
-  return (
-    <div
-      className={classNames({
-        "flex flex-col px-3 md:py-4 expanded": true,
-        [`${props.className}`]: !!props.className,
-      })}
-    >
-      {props.children}
     </div>
   );
 };

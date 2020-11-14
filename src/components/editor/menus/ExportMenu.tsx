@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import BounceLoader from "react-spinners/BounceLoader";
 
 import { AspectRatioSelector } from "~/components/editor/controls/AspectRatioSelector";
-import { SidebarHeader, SidebarSection } from "~/components/editor/Sidebar";
+import { MenuSection, MenuSectionHeader } from "~/components/editor/menus/MenuSection";
 import { Button } from "~/components/ui/Button";
 import { Heading } from "~/components/ui/Heading";
 import { CopyIcon } from "~/components/ui/Icon";
@@ -150,20 +150,20 @@ export const ExportMenu: React.FC = () => {
   return (
     <>
       <div className="flex md:flex-col md:divide-y md:divide-x-0 divide-x md:h-full text-gray-800">
-        <SidebarSection className="flex flex-col space-y-1 md:space-y-2 w-48 md:w-auto">
+        <MenuSection className="flex flex-col space-y-1 md:space-y-2 w-48 md:w-auto">
           <AspectRatioSelector
             value={aspectRatio}
             onChange={(aspectRatio) => {
               app.editor.setAspectRatio(aspectRatio);
             }}
           />
-        </SidebarSection>
+        </MenuSection>
 
-        <SidebarSection className="flex flex-col space-y-3 w-56 md:w-auto">
+        <MenuSection className="flex flex-col space-y-3 w-56 md:w-auto">
           {!screenDimensions.md && (
-            <SidebarHeader>
+            <MenuSectionHeader>
               <Heading>Export</Heading>
-            </SidebarHeader>
+            </MenuSectionHeader>
           )}
 
           <Button
@@ -213,12 +213,12 @@ export const ExportMenu: React.FC = () => {
               )}
             </Button>
           )}
-        </SidebarSection>
+        </MenuSection>
 
-        <SidebarSection className="flex flex-col space-y-3 w-64 md:w-auto">
-          <SidebarHeader>
+        <MenuSection className="flex flex-col space-y-3 w-64 md:w-auto">
+          <MenuSectionHeader>
             <Heading>Output format</Heading>
-          </SidebarHeader>
+          </MenuSectionHeader>
           <div className="flex-col md:space-y-1">
             <div className="text-xs flex justify-between">
               <span className="flex-1 mr-4">Format</span>
@@ -238,13 +238,13 @@ export const ExportMenu: React.FC = () => {
               </>
             )}
           </div>
-        </SidebarSection>
+        </MenuSection>
 
         {!session && !loading && (
-          <SidebarSection>
-            <SidebarHeader>
+          <MenuSection>
+            <MenuSectionHeader>
               <Heading>Account</Heading>
-            </SidebarHeader>
+            </MenuSectionHeader>
             <div className="mt-2">
               <p className="text-xs">Create an account to access this map from anywhere.</p>
 
@@ -255,13 +255,13 @@ export const ExportMenu: React.FC = () => {
                 }}
               />
             </div>
-          </SidebarSection>
+          </MenuSection>
         )}
 
         <div className="md:mt-auto px-3 md:pt-3 md:pb-2 w-64 md:w-auto">
-          <SidebarHeader>
+          <MenuSectionHeader>
             <Heading>Copyright</Heading>
-          </SidebarHeader>
+          </MenuSectionHeader>
 
           <div className="flex justify-between items-center mt-2 overflow-x-hidden">
             <span className="text-2xs leading-tight">

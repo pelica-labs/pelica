@@ -4,7 +4,7 @@ import { ColorPicker } from "~/components/editor/controls/ColorPicker";
 import { LabelTextareaField } from "~/components/editor/controls/LabelTextareaField";
 import { OutlineSelector } from "~/components/editor/controls/OutlineSelector";
 import { WidthSlider } from "~/components/editor/controls/WidthSlider";
-import { SidebarHeader, SidebarSection } from "~/components/editor/Sidebar";
+import { MenuSection, MenuSectionHeader } from "~/components/editor/menus/MenuSection";
 import { Heading } from "~/components/ui/Heading";
 import { app, useStore } from "~/core/app";
 import { MAX_TEXT_SIZE, MIN_TEXT_SIZE } from "~/core/texts";
@@ -28,11 +28,11 @@ export const TextMenu: React.FC = () => {
 
   return (
     <>
-      <SidebarSection>
-        <SidebarHeader>
+      <MenuSection>
+        <MenuSectionHeader>
           <Heading>Color</Heading>
           <div className="ml-2 w-3 h-3 rounded-full border border-gray-200" style={{ backgroundColor: color }} />
-        </SidebarHeader>
+        </MenuSectionHeader>
         <div className="mt-4">
           <ColorPicker
             value={color}
@@ -44,16 +44,16 @@ export const TextMenu: React.FC = () => {
             }}
           />
         </div>
-      </SidebarSection>
+      </MenuSection>
 
-      <SidebarSection>
-        <SidebarHeader>
+      <MenuSection>
+        <MenuSectionHeader>
           <Heading>Size</Heading>
           <div className="ml-2 text-2xs text-gray-600 tracking-wide leading-none">
             {width}
             <span className="text-gray-400 ml-px">px</span>
           </div>
-        </SidebarHeader>
+        </MenuSectionHeader>
 
         <div className="mt-5 md:mt-4 px-1 md:w-full flex-1 flex justify-center mb-5 md:mb-0">
           <WidthSlider
@@ -69,12 +69,12 @@ export const TextMenu: React.FC = () => {
             }}
           />
         </div>
-      </SidebarSection>
+      </MenuSection>
 
-      <SidebarSection>
-        <SidebarHeader>
+      <MenuSection>
+        <MenuSectionHeader>
           <Heading>Outline</Heading>
-        </SidebarHeader>
+        </MenuSectionHeader>
         <div className="mt-4 w-40" style={{ marginLeft: screenDimensions.md ? -4 : 0 }}>
           <OutlineSelector
             value={outline}
@@ -83,12 +83,12 @@ export const TextMenu: React.FC = () => {
             }}
           />
         </div>
-      </SidebarSection>
+      </MenuSection>
 
-      <SidebarSection>
-        <SidebarHeader>
+      <MenuSection>
+        <MenuSectionHeader>
           <Heading>Text</Heading>
-        </SidebarHeader>
+        </MenuSectionHeader>
 
         <div ref={textContainer} className="mt-3 w-56 md:w-full">
           <LabelTextareaField
@@ -101,7 +101,7 @@ export const TextMenu: React.FC = () => {
             }}
           />
         </div>
-      </SidebarSection>
+      </MenuSection>
     </>
   );
 };

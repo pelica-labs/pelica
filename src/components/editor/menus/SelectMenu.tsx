@@ -10,8 +10,8 @@ import { OutlineSelector } from "~/components/editor/controls/OutlineSelector";
 import { PinSelector } from "~/components/editor/controls/PinSelector";
 import { SmartMatchingSelector } from "~/components/editor/controls/SmartMatchingSelector";
 import { WidthSlider } from "~/components/editor/controls/WidthSlider";
+import { MenuSection, MenuSectionHeader } from "~/components/editor/menus/MenuSection";
 import { PinPreview } from "~/components/editor/PinPreview";
-import { SidebarHeader, SidebarSection } from "~/components/editor/Sidebar";
 import { Button } from "~/components/ui/Button";
 import { Distance, formatDistance } from "~/components/ui/Distance";
 import { Heading } from "~/components/ui/Heading";
@@ -71,11 +71,11 @@ export const SelectMenu: React.FC = () => {
 
   return (
     <>
-      <SidebarSection className="flex flex-col md:flex-row items-center md:justify-between px-3 md:py-2 bg-white">
-        <SidebarHeader className="text-xs uppercase font-light tracking-wide leading-none">
+      <MenuSection className="flex flex-col md:flex-row items-center md:justify-between px-3 md:py-2 bg-white">
+        <MenuSectionHeader className="text-xs uppercase font-light tracking-wide leading-none">
           <Heading>{name}</Heading>
           {selectedEntities.length > 1 && <span className="ml-1 text-gray-600">({selectedEntities.length})</span>}
-        </SidebarHeader>
+        </MenuSectionHeader>
         <Button
           className="bg-gray-300 text-gray-800 mt-4 md:mt-0"
           onClick={() => {
@@ -84,16 +84,16 @@ export const SelectMenu: React.FC = () => {
         >
           <TrashIcon className="w-2 h-2 md:w-3 md:h-3" />
         </Button>
-      </SidebarSection>
+      </MenuSection>
 
-      <SidebarSection>
-        <SidebarHeader>
+      <MenuSection>
+        <MenuSectionHeader>
           <Heading>Color</Heading>
           <div
             className="ml-2 w-3 h-3 rounded-full border border-gray-200"
             style={{ backgroundColor: selectedEntity.transientStyle?.color ?? selectedEntity.style.color }}
           />
-        </SidebarHeader>
+        </MenuSectionHeader>
         <div className="mt-4">
           <ColorPicker
             value={selectedEntity.style.color}
@@ -121,11 +121,11 @@ export const SelectMenu: React.FC = () => {
             }}
           />
         </div>
-      </SidebarSection>
+      </MenuSection>
 
       {allSame && (
-        <SidebarSection>
-          <SidebarHeader>
+        <MenuSection>
+          <MenuSectionHeader>
             {allRoutes && (
               <>
                 <Heading>Width</Heading>
@@ -150,7 +150,7 @@ export const SelectMenu: React.FC = () => {
                 </div>
               </>
             )}
-          </SidebarHeader>
+          </MenuSectionHeader>
 
           <div className="mt-5 md:mt-4 px-1 md:w-full flex-1 flex justify-center mb-5 md:mb-0">
             <WidthSlider
@@ -178,14 +178,14 @@ export const SelectMenu: React.FC = () => {
               }}
             />
           </div>
-        </SidebarSection>
+        </MenuSection>
       )}
 
       {(allRoutes || allTexts) && (selectedEntity.type === "Route" || selectedEntity.type === "Text") && (
-        <SidebarSection>
-          <SidebarHeader>
+        <MenuSection>
+          <MenuSectionHeader>
             <Heading>Outline</Heading>
-          </SidebarHeader>
+          </MenuSectionHeader>
           <div className="mt-4 w-40" style={{ marginLeft: screenDimensions.md ? -4 : 0 }}>
             <OutlineSelector
               value={selectedEntity.style.outline}
@@ -198,14 +198,14 @@ export const SelectMenu: React.FC = () => {
               }}
             />
           </div>
-        </SidebarSection>
+        </MenuSection>
       )}
 
       {allPins && selectedEntity.type === "Pin" && (
-        <SidebarSection>
-          <SidebarHeader>
+        <MenuSection>
+          <MenuSectionHeader>
             <Heading>Icon & pin</Heading>
-          </SidebarHeader>
+          </MenuSectionHeader>
 
           <div className="mt-2 flex items-center space-between w-full">
             <div className="flex flex-col w-full">
@@ -236,14 +236,14 @@ export const SelectMenu: React.FC = () => {
               />
             </div>
           </div>
-        </SidebarSection>
+        </MenuSection>
       )}
 
       {allTexts && selectedEntity.type === "Text" && selectedEntities.length === 1 && (
-        <SidebarSection>
-          <SidebarHeader>
+        <MenuSection>
+          <MenuSectionHeader>
             <Heading>Text</Heading>
-          </SidebarHeader>
+          </MenuSectionHeader>
 
           <div ref={textContainer} className="mt-3 w-56 md:w-full">
             <LabelTextareaField
@@ -256,14 +256,14 @@ export const SelectMenu: React.FC = () => {
               }}
             />
           </div>
-        </SidebarSection>
+        </MenuSection>
       )}
 
       {allNonItineraryRoutes && selectedEntity.type === "Route" && (
-        <SidebarSection>
-          <SidebarHeader>
+        <MenuSection>
+          <MenuSectionHeader>
             <Heading>Routes</Heading>
-          </SidebarHeader>
+          </MenuSectionHeader>
 
           <div
             className={classNames({
@@ -315,12 +315,12 @@ export const SelectMenu: React.FC = () => {
               </Tooltip>
             </Switch.Group>
           )}
-        </SidebarSection>
+        </MenuSection>
       )}
 
       {selectedEntity.type === "Route" && (
-        <SidebarSection className="relative md:mt-auto">
-          <SidebarHeader>
+        <MenuSection className="relative md:mt-auto">
+          <MenuSectionHeader>
             <Heading>Inspect</Heading>
 
             <Menu>
@@ -395,7 +395,7 @@ export const SelectMenu: React.FC = () => {
                 </>
               )}
             </Menu>
-          </SidebarHeader>
+          </MenuSectionHeader>
 
           <div className="mt-5 md:mt-4 w-32 md:w-full">
             <div className="flex items-center text-xs w-full">
@@ -416,7 +416,7 @@ export const SelectMenu: React.FC = () => {
               </Tooltip>
             </div>
           </div>
-        </SidebarSection>
+        </MenuSection>
       )}
     </>
   );
@@ -424,7 +424,7 @@ export const SelectMenu: React.FC = () => {
 
 const EmptySelectSection: React.FC = () => {
   return (
-    <SidebarSection>
+    <MenuSection>
       <div className="flex items-start text-sm md:text-xs">
         <InformationIcon className="w-4 h-4 md:hidden mr-3 md:mr-0 mt-1" />
         <div className="flex flex-col md:space-y-4">
@@ -462,6 +462,6 @@ const EmptySelectSection: React.FC = () => {
           </div>
         </div>
       </div>
-    </SidebarSection>
+    </MenuSection>
   );
 };

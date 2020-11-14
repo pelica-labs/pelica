@@ -2,7 +2,7 @@ import { signIn, useSession } from "next-auth/client";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import { SidebarHeader, SidebarSection } from "~/components/editor/Sidebar";
+import { MenuSection, MenuSectionHeader } from "~/components/editor/menus/MenuSection";
 import { Button } from "~/components/ui/Button";
 import { Heading } from "~/components/ui/Heading";
 import { CopyIcon } from "~/components/ui/Icon";
@@ -46,11 +46,11 @@ export const ShareMenu: React.FC = () => {
   return (
     <>
       <div className="flex md:flex-col md:divide-y md:divide-x-0 divide-x md:h-full text-gray-800">
-        <SidebarSection className="flex flex-col space-y-3 w-40 md:w-auto">
+        <MenuSection className="flex flex-col space-y-3 w-40 md:w-auto">
           {!screenDimensions.md && (
-            <SidebarHeader>
+            <MenuSectionHeader>
               <Heading>Share</Heading>
-            </SidebarHeader>
+            </MenuSectionHeader>
           )}
 
           <Button
@@ -82,13 +82,13 @@ export const ShareMenu: React.FC = () => {
               Copy Map URL
             </Button>
           )}
-        </SidebarSection>
+        </MenuSection>
 
         {!session && !loading && (
-          <SidebarSection>
-            <SidebarHeader>
+          <MenuSection>
+            <MenuSectionHeader>
               <Heading>Account</Heading>
-            </SidebarHeader>
+            </MenuSectionHeader>
             <div className="mt-2">
               <p className="text-xs">Create an account to access this map from anywhere.</p>
 
@@ -99,13 +99,13 @@ export const ShareMenu: React.FC = () => {
                 }}
               />
             </div>
-          </SidebarSection>
+          </MenuSection>
         )}
 
         <div className="md:mt-auto px-3 md:pt-3 md:pb-2 w-64 md:w-auto">
-          <SidebarHeader>
+          <MenuSectionHeader>
             <Heading>Copyright</Heading>
-          </SidebarHeader>
+          </MenuSectionHeader>
 
           <div className="flex justify-between items-center mt-2 overflow-x-hidden">
             <span className="text-2xs leading-tight">

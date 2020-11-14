@@ -6,7 +6,7 @@ import { ColorPicker } from "~/components/editor/controls/ColorPicker";
 import { OutlineSelector } from "~/components/editor/controls/OutlineSelector";
 import { SmartMatchingSelector } from "~/components/editor/controls/SmartMatchingSelector";
 import { WidthSlider } from "~/components/editor/controls/WidthSlider";
-import { SidebarHeader, SidebarSection } from "~/components/editor/Sidebar";
+import { MenuSection, MenuSectionHeader } from "~/components/editor/menus/MenuSection";
 import { Button } from "~/components/ui/Button";
 import { Distance } from "~/components/ui/Distance";
 import { Heading } from "~/components/ui/Heading";
@@ -30,11 +30,11 @@ export const RouteMenu: React.FC = () => {
 
   return (
     <>
-      <SidebarSection>
-        <SidebarHeader>
+      <MenuSection>
+        <MenuSectionHeader>
           <Heading>Color</Heading>
           <div className="ml-2 w-3 h-3 rounded-full border border-gray-200" style={{ backgroundColor: color }} />
-        </SidebarHeader>
+        </MenuSectionHeader>
         <div className="mt-4">
           <ColorPicker
             value={color}
@@ -46,15 +46,15 @@ export const RouteMenu: React.FC = () => {
             }}
           />
         </div>
-      </SidebarSection>
+      </MenuSection>
 
-      <SidebarSection>
-        <SidebarHeader>
+      <MenuSection>
+        <MenuSectionHeader>
           <Heading>Width</Heading>
           <div className="ml-2 flex justify-center items-center w-3 h-3 rounded-full">
             <div className="rounded-full" style={{ width: width, height: width, backgroundColor: color }} />
           </div>
-        </SidebarHeader>
+        </MenuSectionHeader>
         <div className="mt-5 md:mt-4 px-1 md:w-full flex-1 flex justify-center mb-5 md:mb-0">
           <WidthSlider
             color={color}
@@ -69,12 +69,12 @@ export const RouteMenu: React.FC = () => {
             }}
           />
         </div>
-      </SidebarSection>
+      </MenuSection>
 
-      <SidebarSection>
-        <SidebarHeader>
+      <MenuSection>
+        <MenuSectionHeader>
           <Heading>Outline</Heading>
-        </SidebarHeader>
+        </MenuSectionHeader>
         <div className="mt-4 w-40" style={{ marginLeft: screenDimensions.md ? -4 : 0 }}>
           <OutlineSelector
             value={outline}
@@ -83,12 +83,12 @@ export const RouteMenu: React.FC = () => {
             }}
           />
         </div>
-      </SidebarSection>
+      </MenuSection>
 
-      <SidebarSection>
-        <SidebarHeader>
+      <MenuSection>
+        <MenuSectionHeader>
           <Heading>Routes</Heading>
-        </SidebarHeader>
+        </MenuSectionHeader>
 
         <div className="w-40 md:w-full">
           <Switch.Group as="div" className="flex items-center mt-4 w-40 md:w-full">
@@ -144,10 +144,10 @@ export const RouteMenu: React.FC = () => {
             }}
           />
         </div>
-      </SidebarSection>
+      </MenuSection>
 
-      <SidebarSection>
-        <SidebarHeader className="flex flex-col items-start space-y-4 md:space-y-0 md:flex-row md:items-center md:justify-between md:w-full">
+      <MenuSection>
+        <MenuSectionHeader className="flex flex-col items-start space-y-4 md:space-y-0 md:flex-row md:items-center md:justify-between md:w-full">
           <Heading>Import</Heading>
           <Button
             className="bg-gray-300 text-gray-800"
@@ -167,14 +167,14 @@ export const RouteMenu: React.FC = () => {
             />
             <span className="text-xs">GPX</span>
           </Button>
-        </SidebarHeader>
-      </SidebarSection>
+        </MenuSectionHeader>
+      </MenuSection>
 
       {route && (
-        <SidebarSection className="md:mt-auto">
-          <SidebarHeader>
+        <MenuSection className="md:mt-auto">
+          <MenuSectionHeader>
             <Heading>Inspect</Heading>
-          </SidebarHeader>
+          </MenuSectionHeader>
 
           <div className="mt-5 md:mt-4">
             <div className="flex items-center text-xs">
@@ -182,7 +182,7 @@ export const RouteMenu: React.FC = () => {
               <Distance value={computeDistance(route)} />
             </div>
           </div>
-        </SidebarSection>
+        </MenuSection>
       )}
     </>
   );
