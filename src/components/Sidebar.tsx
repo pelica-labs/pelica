@@ -1,7 +1,6 @@
 import classNames from "classnames";
 import React, { useEffect, useRef, useState } from "react";
 
-import { DownloadIcon } from "~/components/Icon";
 import { MapMenu } from "~/components/MapMenu";
 import { MenuBar } from "~/components/MenuBar";
 import { ExportMenu } from "~/components/menus/ExportMenu";
@@ -14,10 +13,9 @@ import { ShareMenu } from "~/components/menus/ShareMenu";
 import { StyleMenu } from "~/components/menus/StyleMenu";
 import { TextMenu } from "~/components/menus/TextMenu";
 import { MiniToolbar } from "~/components/MiniToolbar";
-import { SyncIndicator } from "~/components/SyncIndicator";
 import { Toolbar } from "~/components/Toolbar";
 import { UserMenu } from "~/components/UserMenu";
-import { app, useStore } from "~/core/app";
+import { useStore } from "~/core/app";
 import { useDimensions } from "~/hooks/useDimensions";
 
 export const Sidebar: React.FC = () => {
@@ -71,7 +69,7 @@ export const Sidebar: React.FC = () => {
           >
             <MiniToolbar />
           </div>
-          <div className="fixed z-10 top-0 right-0 flex bg-opacity-95 bg-white py-1 pl-1 pr-2 space-x-1 rounded-bl shadow-2xl">
+          <div className="fixed z-10 top-0 right-0 flex bg-opacity-50 bg-gray-700 py-1 pl-1 pr-2 space-x-1 rounded-bl shadow-2xl">
             <MapMenu />
             <UserMenu />
           </div>

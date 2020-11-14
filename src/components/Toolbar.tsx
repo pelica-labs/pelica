@@ -50,7 +50,7 @@ export const Toolbar: React.FC = () => {
         }}
       >
         <HandIcon className="w-8 h-8 md:w-6 md:h-6" />
-        <span className="text-2xs">Move</span>
+        <span className="text-2xs hidden md:inline-block">Move</span>
       </IconButton>
 
       <IconButton
@@ -71,7 +71,7 @@ export const Toolbar: React.FC = () => {
         }}
       >
         <MousePointerIcon className="w-8 h-8 md:w-6 md:h-6" />
-        <span className="text-2xs">Select</span>
+        <span className="text-2xs hidden md:inline-block">Select</span>
       </IconButton>
 
       {/* spacer */}
@@ -95,7 +95,7 @@ export const Toolbar: React.FC = () => {
         }}
       >
         <PencilIcon className="w-8 h-8 md:w-6 md:h-6" />
-        <span className="text-2xs">Line</span>
+        <span className="text-2xs hidden md:inline-block">Line</span>
       </IconButton>
 
       <IconButton
@@ -116,7 +116,7 @@ export const Toolbar: React.FC = () => {
         }}
       >
         <RouteIcon className="w-8 h-8 md:w-6 md:h-6" />
-        <span className="text-2xs">Route</span>
+        <span className="text-2xs hidden md:inline-block">Route</span>
       </IconButton>
 
       <IconButton
@@ -137,7 +137,7 @@ export const Toolbar: React.FC = () => {
         }}
       >
         <PinIcon className="w-8 h-8 md:w-6 md:h-6" />
-        <span className="text-2xs">Pin</span>
+        <span className="text-2xs hidden md:inline-block">Pin</span>
       </IconButton>
 
       <IconButton
@@ -158,7 +158,7 @@ export const Toolbar: React.FC = () => {
         }}
       >
         <TextIcon className="w-8 h-8 md:w-6 md:h-6" />
-        <span className="text-2xs">Text</span>
+        <span className="text-2xs hidden md:inline-block">Text</span>
       </IconButton>
 
       {/* spacer */}
@@ -177,7 +177,7 @@ export const Toolbar: React.FC = () => {
         }}
       >
         <StyleIcon className="w-8 h-8 md:w-6 md:h-6" />
-        <span className="text-2xs">Style</span>
+        <span className="text-2xs hidden md:inline-block">Style</span>
       </IconButton>
     </div>
   );

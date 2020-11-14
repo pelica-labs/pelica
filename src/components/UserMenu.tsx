@@ -48,8 +48,9 @@ export const UserMenu: React.FC = () => {
                       Account
                     </span>
 
-                    <div className="px-2">
+                    <div className="px-2 w-full">
                       <GoogleButton
+                        className="w-full"
                         onClick={() => {
                           signIn("google");
                         }}

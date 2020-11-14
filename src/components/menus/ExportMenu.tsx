@@ -167,7 +167,7 @@ export const ExportMenu: React.FC = () => {
           )}
 
           <Button
-            className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-100 text-xs uppercase py-2 justify-center w-full"
+            className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-300 hover:bg-orange-200 text-xs uppercase py-2 justify-center w-full"
             disabled={downloading}
             onClick={() => {
               onDownload();
@@ -183,7 +183,7 @@ export const ExportMenu: React.FC = () => {
 
           {shareFeature && (
             <Button
-              className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-100 text-xs uppercase py-2 justify-center w-full"
+              className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-300 hover:bg-orange-200 text-xs uppercase py-2 justify-center w-full"
               disabled={sharing}
               onClick={() => {
                 onShare();
@@ -199,7 +199,7 @@ export const ExportMenu: React.FC = () => {
           )}
           {!shareFeature && (
             <Button
-              className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-100 text-xs uppercase py-2 justify-center w-full"
+              className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-300 hover:bg-orange-200 text-xs uppercase py-2 justify-center w-full"
               disabled={copying}
               onClick={() => {
                 onCopy();
