@@ -31,7 +31,7 @@ export const RouteMenu: React.FC = () => {
   return (
     <>
       <SidebarSection>
-        <SidebarHeader className="px-1">
+        <SidebarHeader>
           <Heading>Color</Heading>
           <div className="ml-2 w-3 h-3 rounded-full border border-gray-200" style={{ backgroundColor: color }} />
         </SidebarHeader>
