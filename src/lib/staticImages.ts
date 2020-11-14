@@ -1,7 +1,7 @@
 import { Position } from "@turf/turf";
 
 import { accessToken } from "~/lib/mapbox";
-import { Style } from "~/lib/style";
+import { Style } from "~/map/style";
 
 type StaticImageOptions = {
   coordinates: Position;

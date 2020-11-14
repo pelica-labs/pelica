@@ -3,9 +3,10 @@ import { MercatorCoordinate } from "mapbox-gl";
 import React from "react";
 import ReactDOMServer from "react-dom/server";
 
-import { App } from "~/core/helpers";
-import { OutlineType, Route } from "~/core/routes";
+import { OutlineType } from "~/core/outlines";
+import { Route } from "~/core/routes";
 import { getSelectedEntity, getSelectedTexts } from "~/core/selectors";
+import { App } from "~/core/zustand";
 import { ID, numericId } from "~/lib/id";
 import { MapSource } from "~/map/sources";
 
@@ -69,6 +70,7 @@ export const textsInitialState: Texts = {
   },
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const texts = ({ mutate, get }: App) => ({
   ...textsInitialState,
 
@@ -92,7 +94,7 @@ export const texts = ({ mutate, get }: App) => ({
       text: {
         type: "Text",
         id: textId,
-        source: MapSource.Texts,
+        source: MapSource.Text,
         coordinates,
         style: get().texts.style,
       },
@@ -115,7 +117,7 @@ export const texts = ({ mutate, get }: App) => ({
       text: {
         type: "Text",
         id: textId,
-        source: MapSource.Texts,
+        source: MapSource.Text,
         coordinates: center.geometry.coordinates,
         style: {
           color: route.style.color,

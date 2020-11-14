@@ -1,47 +1,45 @@
-import { getState } from "~/core/app";
 import { MAX_PIN_SIZE } from "~/core/pins";
 import { getMap } from "~/core/selectors";
-import { defaultStyles } from "~/lib/style";
 import { MapSource } from "~/map/sources";
 import { theme } from "~/styles/tailwind";
 
 export enum MapLayer {
   Watermark = "watermark",
 
-  SelectionAreaFill = "selectionAreaFill",
-  SelectionAreaContour = "selectionAreaContour",
+  SelectionAreaFill = "selection-area-fill",
+  SelectionAreaContour = "selection-area-contour",
 
-  OverlaysBackground = "overlaysBackground",
-  OverlaysPoint = "overlaysPoint",
-  OverlaysUnderline = "overlaysUnderline",
-  OverlaysContour = "overlaysContour",
+  OverlayFill = "overlay-fill",
+  OverlayPoint = "overlay-point",
+  OverlayUnderline = "overlay-underline",
+  OverlayContour = "overlay-contour",
 
-  Routes = "routes",
-  RoutesFill = "routesFill",
-  RoutesOutlines = "routesOutlines",
-  RoutesHover = "routesHover",
-  RoutesVertices = "routesVertices",
-  RoutesVerticesInteractions = "routesVerticesInteractions",
-  RoutesEdges = "routesEdges",
-  RoutesEdgeCenters = "routesEdgeCenters",
-  RoutesEdgeCentersInteractions = "routesEdgeCentersInteractions",
-  RoutesEdgeCenterPlus = "routesEdgeCenterPlus",
-  RoutesInteractions = "routesInteractions",
-  RoutesStop = "routesStop",
-  RoutesStart = "routesStart",
-  RouteNextPointLine = "routeNextPointLine",
-  RouteNextPoint = "routeNextPoint",
+  Route = "route",
+  RouteFill = "route-fill",
+  RouteOutline = "route-outline",
+  RouteHover = "route-hover",
+  RouteVertex = "route-vertex",
+  RouteVertexInteraction = "route-vertex-interaction",
+  RouteEdge = "route-edge",
+  RouteEdgeCenter = "route-edge-center",
+  RouteEdgeCenterInteraction = "route-edge-center-interaction",
+  RouteEdgeCenterPlus = "route-edge-center-plus",
+  RouteInteraction = "route-interaction",
+  RouteStop = "route-stop",
+  RouteStart = "route-start",
+  RouteNextPointLine = "route-next-point-line",
+  RouteNextPoint = "route-next-point",
 
-  Pins = "pins",
-  PinsClusters = "pinsCluters",
-  PinsClustersText = "pinsClustersText",
-  PinPreview = "pinPreview",
-  PinsInteractions = "pinsInteractions",
-  PinsHover = "pinsHover",
-  PinsHoverCenter = "pinsHoverCenter",
+  Pin = "pin",
+  PinCluster = "pin-cluster",
+  PinClusterText = "pin-cluster-text",
+  PinPreview = "pin-preview",
+  PinInteraction = "pin-interaction",
+  PinHover = "pin-hover",
+  PinHoverCenter = "pin-hover-center",
 
-  Texts = "texts",
-  TextPreview = "textPreview",
+  Text = "text",
+  TextPreview = "text-preview",
 
   // Mapbox
   WaterwayLabel = "waterway-label",
@@ -49,9 +47,6 @@ export enum MapLayer {
 
 export const applyLayers = (): void => {
   const map = getMap();
-
-  const style = getState().editor.style;
-  const styles = Object.assign({}, defaultStyles, style.overrides);
 
   addLayer(map, {
     id: MapLayer.Watermark,
@@ -89,9 +84,9 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: MapLayer.OverlaysBackground,
+    id: MapLayer.OverlayFill,
     type: "fill",
-    source: MapSource.Overlays,
+    source: MapSource.Overlay,
     interactive: false,
     paint: {
       "fill-color": theme.colors.orange[200],
@@ -100,9 +95,9 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: MapLayer.OverlaysPoint,
+    id: MapLayer.OverlayPoint,
     type: "circle",
-    source: MapSource.Overlays,
+    source: MapSource.Overlay,
     interactive: false,
     filter: ["==", ["get", "target"], "Pin"],
     paint: {
@@ -115,9 +110,9 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: MapLayer.OverlaysUnderline,
+    id: MapLayer.OverlayUnderline,
     type: "line",
-    source: MapSource.Overlays,
+    source: MapSource.Overlay,
     interactive: false,
     filter: ["==", ["get", "target"], "Text"],
     paint: {
@@ -127,9 +122,9 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: MapLayer.OverlaysContour,
+    id: MapLayer.OverlayContour,
     type: "line",
-    source: MapSource.Overlays,
+    source: MapSource.Overlay,
     interactive: false,
     paint: {
       "line-color": theme.colors.orange[500],
@@ -138,10 +133,10 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: MapLayer.Routes,
+    id: MapLayer.Route,
     before: MapLayer.WaterwayLabel,
     type: "line",
-    source: MapSource.Routes,
+    source: MapSource.Route,
     layout: {
       "line-cap": "round",
     },
@@ -153,9 +148,9 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: MapLayer.RoutesFill,
+    id: MapLayer.RouteFill,
     type: "fill",
-    source: MapSource.Routes,
+    source: MapSource.Route,
     interactive: false,
     filter: ["boolean", ["get", "filled"], false],
     paint: {
@@ -165,10 +160,10 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: MapLayer.RoutesOutlines,
-    before: MapLayer.Routes,
+    id: MapLayer.RouteOutline,
+    before: MapLayer.Route,
     type: "line",
-    source: MapSource.Routes,
+    source: MapSource.Route,
     layout: {
       "line-cap": "round",
     },
@@ -181,11 +176,11 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: MapLayer.RoutesHover,
-    before: MapLayer.Routes,
+    id: MapLayer.RouteHover,
+    before: MapLayer.Route,
     type: "line",
     interactive: false,
-    source: MapSource.Routes,
+    source: MapSource.Route,
     layout: {
       "line-cap": "round",
     },
@@ -197,10 +192,10 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: MapLayer.RoutesInteractions,
-    before: MapLayer.RoutesEdges,
+    id: MapLayer.RouteInteraction,
+    before: MapLayer.RouteEdge,
     type: "line",
-    source: MapSource.Routes,
+    source: MapSource.Route,
     paint: {
       "line-width": ["+", ["get", "width"], 15],
       "line-opacity": 0,
@@ -208,7 +203,7 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: MapLayer.RoutesEdges,
+    id: MapLayer.RouteEdge,
     type: "line",
     source: MapSource.RouteEdge,
     layout: {
@@ -221,7 +216,7 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: MapLayer.RoutesEdgeCentersInteractions,
+    id: MapLayer.RouteEdgeCenterInteraction,
     type: "circle",
     source: MapSource.RouteEdgeCenter,
     paint: {
@@ -232,7 +227,7 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: MapLayer.RoutesEdgeCenters,
+    id: MapLayer.RouteEdgeCenter,
     type: "circle",
     source: MapSource.RouteEdgeCenter,
     paint: {
@@ -265,7 +260,7 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: MapLayer.RoutesVerticesInteractions,
+    id: MapLayer.RouteVertexInteraction,
     type: "circle",
     source: MapSource.RouteVertex,
     paint: {
@@ -276,7 +271,7 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: MapLayer.RoutesVertices,
+    id: MapLayer.RouteVertex,
     type: "circle",
     source: MapSource.RouteVertex,
     paint: {
@@ -293,7 +288,7 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: MapLayer.RoutesEdgeCenterPlus,
+    id: MapLayer.RouteEdgeCenterPlus,
     type: "symbol",
     source: MapSource.RouteEdgeCenter,
     layout: {
@@ -313,7 +308,7 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: MapLayer.RoutesStop,
+    id: MapLayer.RouteStop,
     type: "circle",
     source: MapSource.RouteStop,
     paint: {
@@ -326,7 +321,7 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: MapLayer.RoutesStart,
+    id: MapLayer.RouteStart,
     type: "circle",
     source: MapSource.RouteStart,
     paint: {
@@ -368,9 +363,9 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: MapLayer.Pins,
+    id: MapLayer.Pin,
     type: "symbol",
-    source: MapSource.Pins,
+    source: MapSource.Pin,
     filter: ["!", ["has", "point_count"]],
     layout: {
       "icon-image": ["get", "image"],
@@ -381,9 +376,9 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: MapLayer.PinsClusters,
+    id: MapLayer.PinCluster,
     type: "circle",
-    source: MapSource.Pins,
+    source: MapSource.Pin,
     filter: ["has", "point_count"],
     paint: {
       "circle-color": [
@@ -405,13 +400,13 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: MapLayer.PinsClustersText,
+    id: MapLayer.PinClusterText,
     type: "symbol",
-    source: MapSource.Pins,
+    source: MapSource.Pin,
     filter: ["has", "point_count"],
     layout: {
       "text-field": "{point_count_abbreviated}",
-      "text-font": styles.textFont,
+      "text-font": ["Roboto Regular"],
       "text-offset": [0, 0.1],
       "text-size": 18,
       "text-allow-overlap": true,
@@ -442,9 +437,9 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: MapLayer.PinsInteractions,
+    id: MapLayer.PinInteraction,
     type: "circle",
-    source: MapSource.Pins,
+    source: MapSource.Pin,
     filter: ["!", ["has", "point_count"]],
     paint: {
       "circle-radius": ["+", ["get", "width"], 5],
@@ -453,11 +448,11 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: MapLayer.PinsHover,
-    before: MapLayer.Pins,
+    id: MapLayer.PinHover,
+    before: MapLayer.Pin,
     type: "circle",
     interactive: false,
-    source: MapSource.Pins,
+    source: MapSource.Pin,
     filter: ["!", ["has", "point_count"]],
     paint: {
       "circle-radius": 8,
@@ -470,11 +465,11 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: MapLayer.PinsHoverCenter,
-    before: MapLayer.Pins,
+    id: MapLayer.PinHoverCenter,
+    before: MapLayer.Pin,
     type: "circle",
     interactive: false,
-    source: MapSource.Pins,
+    source: MapSource.Pin,
     filter: ["!", ["has", "point_count"]],
     paint: {
       "circle-radius": 2,
@@ -484,9 +479,9 @@ export const applyLayers = (): void => {
   });
 
   addLayer(map, {
-    id: MapLayer.Texts,
+    id: MapLayer.Text,
     type: "symbol",
-    source: MapSource.Texts,
+    source: MapSource.Text,
     layout: {
       "icon-image": ["get", "image"],
       "icon-anchor": "bottom",

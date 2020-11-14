@@ -7,10 +7,10 @@ import { ItineraryProfile, Place } from "~/core/itineraries";
 import { Pin, PinStyle } from "~/core/pins";
 import { computeCenter, ItineraryRoute, Route, RouteStyle, RouteVertex } from "~/core/routes";
 import { getEntity } from "~/core/selectors";
+import { SmartMatching } from "~/core/smartMatching";
 import { Text, TextStyle } from "~/core/texts";
 import { ID } from "~/lib/id";
-import { SmartMatching } from "~/lib/smartMatching";
-import { Style } from "~/lib/style";
+import { Style } from "~/map/style";
 
 export type Handler<T extends Action> = {
   apply: (state: State, action: T) => void;

@@ -1,9 +1,9 @@
 import HttpStatus from "http-status-codes";
 import { NextApiHandler } from "next";
 
+import { MapModel } from "~/core/db";
+import { getUserId, withApiSession } from "~/core/session";
 import { dynamo } from "~/lib/aws";
-import { MapModel } from "~/lib/db";
-import { getUserId, withApiSession } from "~/lib/session";
 
 const SyncMap: NextApiHandler = withApiSession(async (req, res) => {
   if (req.method !== "POST") {

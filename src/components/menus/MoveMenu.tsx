@@ -2,10 +2,10 @@ import React from "react";
 
 import { Button } from "~/components/Button";
 import { InformationIcon, PencilIcon, PinIcon, TextIcon } from "~/components/Icon";
-import { SidebarSection } from "~/components/sidebar/Sidebar";
+import { SidebarSection } from "~/components/Sidebar";
 import { app } from "~/core/app";
 
-export const MoveSidebar: React.FC = () => {
+export const MoveMenu: React.FC = () => {
   return (
     <SidebarSection>
       <div className="flex items-start text-sm md:text-xs">
@@ -17,7 +17,7 @@ export const MoveSidebar: React.FC = () => {
             <Button
               className="text-center space-x-2"
               onClick={() => {
-                app.editor.setEditorMode("draw");
+                app.editor.setEditorMode("route");
               }}
             >
               <PencilIcon className="w-4 h-4" />

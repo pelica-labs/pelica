@@ -6,17 +6,18 @@ import BounceLoader from "react-spinners/BounceLoader";
 
 import { AspectRatioSelector } from "~/components/AspectRatioSelector";
 import { Button } from "~/components/Button";
+import { Heading } from "~/components/Heading";
 import { CopyIcon } from "~/components/Icon";
-import { SidebarHeader, SidebarHeading, SidebarSection } from "~/components/sidebar/Sidebar";
+import { SidebarHeader, SidebarSection } from "~/components/Sidebar";
 import { GoogleButton } from "~/components/SocialButtons";
 import { app, getState, useStore } from "~/core/app";
+import { aspectRatios } from "~/core/aspectRatio";
 import { getMapTitle } from "~/core/selectors";
 import { useBrowserFeatures } from "~/hooks/useBrowserFeatures";
-import { aspectRatios } from "~/lib/aspectRatio";
 import { dataUrlToBlob } from "~/lib/fileConversion";
 import { theme } from "~/styles/tailwind";
 
-export const ExportSidebar: React.FC = () => {
+export const ExportMenu: React.FC = () => {
   const { t } = useTranslation();
   const [session, loading] = useSession();
   const [imageId, setImageId] = useState<string | null>(null);
@@ -148,7 +149,7 @@ export const ExportSidebar: React.FC = () => {
 
   return (
     <>
-      <div className="flex md:flex-col md:divide-y md:divide-x-0 divide-x md:h-full">
+      <div className="flex md:flex-col md:divide-y md:divide-x-0 divide-x md:h-full text-gray-800">
         <SidebarSection className="flex flex-col space-y-1 md:space-y-2 w-48 md:w-auto">
           <AspectRatioSelector
             value={aspectRatio}
@@ -158,15 +159,15 @@ export const ExportSidebar: React.FC = () => {
           />
         </SidebarSection>
 
-        <SidebarSection className="flex flex-col space-y-3 w-40 md:w-auto">
+        <SidebarSection className="flex flex-col space-y-3 w-56 md:w-auto">
           {!screenDimensions.md && (
             <SidebarHeader>
-              <SidebarHeading>Export</SidebarHeading>
+              <Heading>Export</Heading>
             </SidebarHeader>
           )}
 
           <Button
-            className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-100 text-xs uppercase py-2 justify-center w-full"
+            className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-300 hover:bg-orange-200 text-xs uppercase py-2 justify-center w-full"
             disabled={downloading}
             onClick={() => {
               onDownload();
@@ -182,7 +183,7 @@ export const ExportSidebar: React.FC = () => {
 
           {shareFeature && (
             <Button
-              className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-100 text-xs uppercase py-2 justify-center w-full"
+              className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-300 hover:bg-orange-200 text-xs uppercase py-2 justify-center w-full"
               disabled={sharing}
               onClick={() => {
                 onShare();
@@ -198,13 +199,13 @@ export const ExportSidebar: React.FC = () => {
           )}
           {!shareFeature && (
             <Button
-              className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-100 text-xs uppercase py-2 justify-center w-full"
+              className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-300 hover:bg-orange-200 text-xs uppercase py-2 justify-center w-full"
               disabled={copying}
               onClick={() => {
                 onCopy();
               }}
             >
-              Copy URL
+              Copy Image URL
               {copying && (
                 <div className="ml-4">
                   <BounceLoader color={theme.colors.orange[500]} size={10} />
@@ -216,7 +217,7 @@ export const ExportSidebar: React.FC = () => {
 
         <SidebarSection className="flex flex-col space-y-3 w-64 md:w-auto">
           <SidebarHeader>
-            <SidebarHeading>Output format</SidebarHeading>
+            <Heading>Output format</Heading>
           </SidebarHeader>
           <div className="flex-col md:space-y-1">
             <div className="text-xs flex justify-between">
@@ -242,7 +243,7 @@ export const ExportSidebar: React.FC = () => {
         {!session && !loading && (
           <SidebarSection>
             <SidebarHeader>
-              <SidebarHeading>Account</SidebarHeading>
+              <Heading>Account</Heading>
             </SidebarHeader>
             <div className="mt-2">
               <p className="text-xs">Create an account to access this map from anywhere.</p>
@@ -259,7 +260,7 @@ export const ExportSidebar: React.FC = () => {
 
         <div className="md:mt-auto px-3 md:pt-3 md:pb-2 w-64 md:w-auto">
           <SidebarHeader>
-            <SidebarHeading>Copyright</SidebarHeading>
+            <Heading>Copyright</Heading>
           </SidebarHeader>
 
           <div className="flex justify-between items-center mt-2 overflow-x-hidden">

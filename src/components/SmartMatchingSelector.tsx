@@ -6,7 +6,7 @@ import Popover from "react-popover";
 import { BicycleIcon, CarIcon, Icon, InformationIcon, WalkingIcon } from "~/components/Icon";
 import { IconButton } from "~/components/IconButton";
 import { useStore } from "~/core/app";
-import { SmartMatching, SmartMatchingProfile } from "~/lib/smartMatching";
+import { SmartMatching, SmartMatchingProfile } from "~/core/smartMatching";
 import { theme } from "~/styles/tailwind";
 
 type Props = {

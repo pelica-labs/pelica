@@ -1,10 +1,10 @@
 import { bbox, Feature, featureCollection, Geometry, Polygon } from "@turf/turf";
 
-import { App } from "~/core/helpers";
+import { outlineColor } from "~/core/outlines";
 import { Pin } from "~/core/pins";
 import { Route, RouteEdge, RouteEdgeCenter, RouteVertex } from "~/core/routes";
 import { computeTextSize, Text } from "~/core/texts";
-import { outlineColor } from "~/lib/color";
+import { App } from "~/core/zustand";
 import { numericId } from "~/lib/id";
 import { RawFeature } from "~/map/features";
 import { PinImageStyle, TextImageStyle } from "~/map/imageMissing";
@@ -26,6 +26,7 @@ export const entitiesInitialState: Entities = {
   transientItems: [],
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const entities = ({ mutate, get }: App) => ({
   ...entitiesInitialState,
 
@@ -46,7 +47,7 @@ export const entities = ({ mutate, get }: App) => ({
           return {
             id: numericId(),
             type: "Pin",
-            source: MapSource.Pins,
+            source: MapSource.Pin,
             coordinates: feature.geometry.coordinates,
             style: {
               ...get().pins.style,
@@ -59,7 +60,7 @@ export const entities = ({ mutate, get }: App) => ({
           return {
             id: numericId(),
             type: "Route",
-            source: MapSource.Routes,
+            source: MapSource.Route,
             closed: false,
             filled: false,
             transientPoints: [],
@@ -83,7 +84,7 @@ export const entities = ({ mutate, get }: App) => ({
           return {
             id: numericId(),
             type: "Route",
-            source: MapSource.Routes,
+            source: MapSource.Route,
             closed: true,
             filled: true,
             transientPoints: [],
@@ -122,7 +123,7 @@ export const entities = ({ mutate, get }: App) => ({
       state.entities.items.push({
         type: "Pin",
         id: "RERENDER",
-        source: MapSource.Pins,
+        source: MapSource.Pin,
         coordinates: [0, 0],
         style: {
           color: "black",

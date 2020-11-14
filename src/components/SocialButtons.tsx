@@ -10,7 +10,7 @@ export const GoogleButton: React.FC<Props> = ({ className, onClick }) => {
     <button
       className={classNames(
         className,
-        "border pr-2 py-1 text-xs rounded focus:outline-none focus:shadow-outline text-gray-700"
+        "border pr-2 py-1 text-xs rounded focus:outline-none focus:shadow-outline text-gray-700 hover:bg-gray-200 hover:bg-opacity-25"
       )}
       onClick={onClick}
     >

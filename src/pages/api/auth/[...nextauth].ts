@@ -3,9 +3,9 @@ import NextAuth from "next-auth";
 import DynamoDbAdapter from "next-auth-dynamodb";
 import Providers from "next-auth/providers";
 
-import { mergeAnonymousAccount } from "~/lib/auth";
+import { mergeAnonymousAccount } from "~/core/auth";
+import { withApiSession } from "~/core/session";
 import { getEnv } from "~/lib/config";
-import { withApiSession } from "~/lib/session";
 
 const Handler: NextApiHandler = withApiSession((req, res) =>
   NextAuth(req, res, {

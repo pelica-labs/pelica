@@ -9,9 +9,9 @@ import BounceLoader from "react-spinners/BounceLoader";
 import { CopyIcon, EditIcon, ExternalIcon, TrashIcon, VerticalDotsIcon } from "~/components/Icon";
 import { IconButton } from "~/components/IconButton";
 import { StylePreview } from "~/components/StylePreview";
-import { MapModel } from "~/lib/db";
+import { MapModel } from "~/core/db";
 import { staticImage } from "~/lib/staticImages";
-import { defaultStyle } from "~/lib/style";
+import { defaultStyle } from "~/map/style";
 import { theme } from "~/styles/tailwind";
 
 type Props = {

@@ -1,10 +1,10 @@
-import { App } from "~/core/helpers";
+import { App } from "~/core/zustand";
 import { theme } from "~/styles/tailwind";
 
 export type Platform = {
   screen: Screen;
   keyboard: Keyboard;
-  os: OS;
+  system: System;
 };
 
 export type Screen = {
@@ -24,7 +24,7 @@ export type Keyboard = {
   metaKey: boolean;
 };
 
-export type OS = {
+export type System = {
   appleLike: boolean;
 };
 
@@ -62,26 +62,23 @@ export const platformInitialState: Platform = {
     metaKey: false,
   },
 
-  os: {
+  system: {
     appleLike: false,
   },
 };
 
-export const upscale = (pixelRatio: number) => {
+export const upscale = (pixelRatio: number): void => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   window.devicePixelRatio = pixelRatio;
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const platform = ({ mutate, get }: App) => ({
   ...platformInitialState,
 
   initialize: () => {
     get().platform.updateScreen(window.innerWidth, window.innerHeight);
-
-    if (get().platform.screen.dimensions.md) {
-      get().editor.setEditorMode("style");
-    }
 
     mutate((state) => {
       state.platform.screen.pixelRatio = window.devicePixelRatio;
@@ -89,7 +86,7 @@ export const platform = ({ mutate, get }: App) => ({
       // @todo: this doesn't work for touch screens with keyboards (e.g: Surface)
       state.platform.keyboard.available = !("ontouchstart" in document.documentElement);
 
-      state.platform.os.appleLike = /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform);
+      state.platform.system.appleLike = /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform);
     });
   },
 

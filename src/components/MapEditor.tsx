@@ -10,12 +10,13 @@ import { ItineraryInput } from "~/components/ItineraryInput";
 import { Map } from "~/components/Map";
 import { PlaceAutocomplete } from "~/components/PlaceAutocomplete";
 import { ResetOrientationButton } from "~/components/ResetOrientationButton";
-import { Sidebar } from "~/components/sidebar/Sidebar";
+import { Sidebar } from "~/components/Sidebar";
 import { app, useStore, useStoreSubscription } from "~/core/app";
+import { MapModel } from "~/core/db";
 import { getSelectedItinerary, getSyncableState } from "~/core/selectors";
+import { useHotkey } from "~/hooks/useHotkey";
 import { useKeyboard } from "~/hooks/useKeyboard";
 import { useScreenDimensions } from "~/hooks/useScreenDimensions";
-import { MapModel } from "~/lib/db";
 
 type Props = {
   map: MapModel;
@@ -41,11 +42,19 @@ export const MapEditor: React.FC<Props> = ({ map }) => {
       });
     },
   });
-  const showTopLeftControls = editorMode !== "export";
-  const showHistoryButtons = !screenDimensions.md && editorMode !== "export";
+  const showTopLeftControls = true;
+  const showHistoryButtons = !screenDimensions.md;
 
   useKeyboard();
   useScreenDimensions();
+
+  useHotkey({ key: "s", meta: true }, () => {
+    app.alerts.trigger({
+      message: "Pelica auto-saves your work 😉",
+      color: "green",
+      timeout: 3000,
+    });
+  });
 
   useEffect(() => {
     app.sync.mergeState(map);

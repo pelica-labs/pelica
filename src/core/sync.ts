@@ -1,5 +1,5 @@
-import { App } from "~/core/helpers";
-import { MapModel } from "~/lib/db";
+import { MapModel } from "~/core/db";
+import { App } from "~/core/zustand";
 import { ID } from "~/lib/id";
 
 type Sync = {
@@ -20,6 +20,7 @@ export const syncInitialState: Sync = {
   updatedAt: null,
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const sync = ({ mutate }: App) => ({
   ...syncInitialState,
 

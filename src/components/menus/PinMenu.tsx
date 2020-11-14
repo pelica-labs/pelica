@@ -3,17 +3,18 @@ import classNames from "classnames";
 import React from "react";
 
 import { ColorPicker } from "~/components/ColorPicker";
+import { Heading } from "~/components/Heading";
 import { InformationIcon } from "~/components/Icon";
 import { IconSelector } from "~/components/IconSelector";
 import { PinPreview } from "~/components/PinPreview";
 import { PinSelector } from "~/components/PinSelector";
-import { SidebarHeader, SidebarHeading, SidebarSection } from "~/components/sidebar/Sidebar";
+import { SidebarHeader, SidebarSection } from "~/components/Sidebar";
 import { Tooltip } from "~/components/Tooltip";
 import { WidthSlider } from "~/components/WidthSlider";
 import { app, useStore } from "~/core/app";
 import { MAX_PIN_SIZE, MIN_PIN_SIZE } from "~/core/pins";
 
-export const PinSidebar: React.FC = () => {
+export const PinMenu: React.FC = () => {
   const color = useStore((store) => store.pins.style.color);
   const width = useStore((store) => store.pins.style.width);
   const icon = useStore((store) => store.pins.style.icon);
@@ -24,7 +25,7 @@ export const PinSidebar: React.FC = () => {
     <>
       <SidebarSection>
         <SidebarHeader>
-          <SidebarHeading>Color</SidebarHeading>
+          <Heading>Color</Heading>
           <div className="ml-2 w-3 h-3 rounded-full border border-gray-200" style={{ backgroundColor: color }} />
         </SidebarHeader>
         <div className="mt-4">
@@ -42,7 +43,7 @@ export const PinSidebar: React.FC = () => {
 
       <SidebarSection>
         <SidebarHeader>
-          <SidebarHeading>Size</SidebarHeading>
+          <Heading>Size</Heading>
           <div className="ml-2 text-2xs text-gray-600 tracking-wide leading-none">{width}</div>
         </SidebarHeader>
 
@@ -64,7 +65,7 @@ export const PinSidebar: React.FC = () => {
 
       <SidebarSection>
         <SidebarHeader>
-          <SidebarHeading>Icon & pin</SidebarHeading>
+          <Heading>Icon & pin</Heading>
         </SidebarHeader>
 
         <div className="mt-2 flex items-center space-between w-full">
@@ -96,7 +97,7 @@ export const PinSidebar: React.FC = () => {
 
       <SidebarSection>
         <SidebarHeader>
-          <SidebarHeading>Options</SidebarHeading>
+          <Heading>Options</Heading>
         </SidebarHeader>
 
         <Switch.Group as="div" className="flex items-center mt-4 w-40 md:w-full">

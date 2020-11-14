@@ -2,14 +2,15 @@ import React from "react";
 
 import { ColorPicker } from "~/components/ColorPicker";
 import { Distance } from "~/components/Distance";
+import { Heading } from "~/components/Heading";
 import { OutlineSelector } from "~/components/OutlineSelector";
-import { SidebarHeader, SidebarHeading, SidebarSection } from "~/components/sidebar/Sidebar";
+import { SidebarHeader, SidebarSection } from "~/components/Sidebar";
 import { WidthSlider } from "~/components/WidthSlider";
 import { app, useStore } from "~/core/app";
 import { computeDistance, Route } from "~/core/routes";
 import { getSelectedEntity } from "~/core/selectors";
 
-export const ItinerarySidebar: React.FC = () => {
+export const ItineraryMenu: React.FC = () => {
   const color = useStore((store) => store.routes.style.color);
   const width = useStore((store) => store.routes.style.width);
   const outline = useStore((store) => store.routes.style.outline);
@@ -20,7 +21,7 @@ export const ItinerarySidebar: React.FC = () => {
     <>
       <SidebarSection>
         <SidebarHeader>
-          <SidebarHeading>Color</SidebarHeading>
+          <Heading>Color</Heading>
           <div className="ml-2 w-3 h-3 rounded-full border border-gray-200" style={{ backgroundColor: color }} />
         </SidebarHeader>
 
@@ -39,7 +40,7 @@ export const ItinerarySidebar: React.FC = () => {
 
       <SidebarSection>
         <SidebarHeader>
-          <SidebarHeading>Width</SidebarHeading>
+          <Heading>Width</Heading>
           <div className="ml-2 flex justify-center items-center w-3 h-3 rounded-full">
             <div className="rounded-full" style={{ width: width, height: width, backgroundColor: color }} />
           </div>
@@ -63,7 +64,7 @@ export const ItinerarySidebar: React.FC = () => {
 
       <SidebarSection>
         <SidebarHeader>
-          <SidebarHeading>Outline</SidebarHeading>
+          <Heading>Outline</Heading>
         </SidebarHeader>
 
         <div className="mt-4 w-40" style={{ marginLeft: screenDimensions.md ? -4 : 0 }}>
@@ -79,7 +80,7 @@ export const ItinerarySidebar: React.FC = () => {
       {route && (
         <SidebarSection className="md:mt-auto">
           <SidebarHeader>
-            <SidebarHeading>Inspect</SidebarHeading>
+            <Heading>Inspect</Heading>
           </SidebarHeader>
           <div className="mt-5 md:mt-4">
             <div className="flex items-center text-xs">
