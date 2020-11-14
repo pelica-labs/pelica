@@ -76,27 +76,9 @@ export const Toolbar: React.FC = () => {
 
       {/* spacer */}
       <div className="h-6" />
-      <IconButton
-        active={editorMode === "route"}
-        id="toolbar-draw"
-        tooltip={{
-          placement: tooltipPlacement,
-          text: (
-            <div className="flex items-center">
-              <span className="mr-4 leading-none">Draw</span>
-              <DrawHotkey />
-            </div>
-          ),
-        }}
-        onClick={() => {
-          app.editor.setEditorMode("route");
-        }}
-      >
-        <PencilIcon className="w-8 h-8 md:w-6 md:h-6" />
-      </IconButton>
 
       <IconButton
-        active={editorMode === "draw"}
+        active={editorMode === "route"}
         className="flex flex-col w-full"
         id="toolbar-draw"
         tooltip={{
@@ -109,7 +91,7 @@ export const Toolbar: React.FC = () => {
           ),
         }}
         onClick={() => {
-          app.editor.setEditorMode("draw");
+          app.editor.setEditorMode("route");
         }}
       >
         <PencilIcon className="w-8 h-8 md:w-6 md:h-6" />
