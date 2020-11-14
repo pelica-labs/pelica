@@ -1,4 +1,4 @@
-import { App } from "~/core/helpers";
+import { App } from "~/core/zustand";
 import { isServer } from "~/lib/ssr";
 
 export type Units = {
@@ -10,6 +10,7 @@ export const unitsInitialState: Units = {
   distance: isServer ? "metric" : window.navigator.language === "en-US" ? "imperial" : "metric",
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const units = ({ mutate }: App) => ({
   ...unitsInitialState,
 

@@ -1,9 +1,9 @@
 import { Position } from "@turf/turf";
 
 import { Entity } from "~/core/entities";
-import { App } from "~/core/helpers";
 import { Route } from "~/core/routes";
 import { getEntity } from "~/core/selectors";
+import { App } from "~/core/zustand";
 import { ID } from "~/lib/id";
 
 export type DraggableEntity = Entity & {
@@ -29,6 +29,7 @@ export const dragAndDropInitialState: DragAndDrop = {
   hoveredEntitySource: null,
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const dragAndDrop = ({ mutate, get }: App) => ({
   ...dragAndDropInitialState,
 

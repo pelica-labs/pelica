@@ -8,29 +8,29 @@ import { MapLayer } from "~/map/layers";
 import { MapSource } from "~/map/sources";
 
 const hoverableLayers = [
-  MapLayer.PinsInteractions,
-  MapLayer.Pins,
-  MapLayer.PinsClusters,
-  MapLayer.PinsClustersText,
-  MapLayer.RoutesInteractions,
-  MapLayer.RoutesStop,
-  MapLayer.RoutesStart,
-  MapLayer.Texts,
-  MapLayer.RoutesVerticesInteractions,
-  MapLayer.RoutesEdges,
-  MapLayer.RoutesEdgeCentersInteractions,
+  MapLayer.PinInteraction,
+  MapLayer.Pin,
+  MapLayer.PinCluster,
+  MapLayer.PinClusterText,
+  MapLayer.RouteInteraction,
+  MapLayer.RouteStop,
+  MapLayer.RouteStart,
+  MapLayer.Text,
+  MapLayer.RouteVertexInteraction,
+  MapLayer.RouteEdge,
+  MapLayer.RouteEdgeCenterInteraction,
 ];
 
 const selectOnlyHoverableLayers = [
-  MapLayer.PinsInteractions,
-  MapLayer.Pins,
-  MapLayer.PinsClusters,
-  MapLayer.PinsClustersText,
-  MapLayer.RoutesInteractions,
-  MapLayer.Texts,
-  MapLayer.RoutesVertices,
-  MapLayer.RoutesEdges,
-  MapLayer.RoutesEdgeCenters,
+  MapLayer.PinInteraction,
+  MapLayer.Pin,
+  MapLayer.PinCluster,
+  MapLayer.PinClusterText,
+  MapLayer.RouteInteraction,
+  MapLayer.Text,
+  MapLayer.RouteVertex,
+  MapLayer.RouteEdge,
+  MapLayer.RouteEdgeCenter,
 ];
 
 const toggleHover = (feature: FeatureIdentifier | mapboxgl.MapboxGeoJSONFeature, value: boolean) => {
@@ -63,7 +63,7 @@ export const applyHoverInteractions = (): void => {
   const onMouseLeave = () => {
     setTimeout(() => {
       const state = getState();
-      if (state.editor.mode === "draw") {
+      if (state.editor.mode === "route") {
         app.routes.updateNextPoint(null);
       } else if (state.editor.mode === "text") {
         app.texts.updateNextPoint(null);

@@ -18,7 +18,7 @@ type HotkeyModifiers = {
 type Callback = (event: KeyboardEvent) => void | false | Promise<void | false>;
 
 export const useHotkey = (hotkey: Hotkey, callback: Callback): (() => ReturnType<typeof HotkeyView>) => {
-  const appleLike = useStore((store) => store.platform.os.appleLike);
+  const appleLike = useStore((store) => store.platform.system.appleLike);
 
   const onKey = useCallback(
     (event: KeyboardEvent) => {
@@ -63,7 +63,7 @@ export const useHotkey = (hotkey: Hotkey, callback: Callback): (() => ReturnType
 
 export const HotkeyView: React.FC<Hotkey> = (hotkey) => {
   const keyboardAvailable = useStore((store) => store.platform.keyboard.available);
-  const appleLike = useStore((store) => store.platform.os.appleLike);
+  const appleLike = useStore((store) => store.platform.system.appleLike);
 
   if (!keyboardAvailable) {
     return null;

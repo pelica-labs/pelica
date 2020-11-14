@@ -98,7 +98,7 @@ export const getRouteOverlay = (route: Route): RawFeature => {
   return {
     type: "Feature",
     id: "ROUTE_OVERLAY",
-    source: MapSource.Overlays,
+    source: MapSource.Overlay,
 
     geometry: polygon.geometry,
     properties: {},
@@ -109,7 +109,7 @@ export const getPinOverlay = (pin: Pin): RawFeature => {
   return {
     type: "Feature",
     id: "PIN_OVERLAY",
-    source: MapSource.Overlays,
+    source: MapSource.Overlay,
     geometry: {
       type: "Point",
       coordinates: pin.coordinates,
@@ -132,7 +132,7 @@ export const getTextOverlay = (text: Text, zoom: number): RawFeature => {
   return {
     type: "Feature",
     id: "TEXT_OVERLAY",
-    source: MapSource.Overlays,
+    source: MapSource.Overlay,
     geometry: {
       type: "LineString",
       coordinates: [left.toLngLat().toArray(), right.toLngLat().toArray()],

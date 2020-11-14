@@ -1,12 +1,13 @@
 import { bbox, lineString } from "@turf/turf";
 
 import { ErrorIcon, WarningIcon } from "~/components/Icon";
-import { App } from "~/core/helpers";
+import { App } from "~/core/zustand";
 import { parseGpx } from "~/lib/gpx";
 import { numericId } from "~/lib/id";
 import { parseFeatures } from "~/map/features";
 import { MapSource } from "~/map/sources";
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const imports = ({ get }: App) => ({
   importFile: (file: File) => {
     const reader = new FileReader();
@@ -74,7 +75,7 @@ export const imports = ({ get }: App) => ({
       route: {
         type: "Route",
         id: numericId(),
-        source: MapSource.Routes,
+        source: MapSource.Route,
         closed: false,
         filled: false,
         smartMatching: { enabled: false, profile: null },

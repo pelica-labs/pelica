@@ -1,9 +1,9 @@
 import { IncomingMessage } from "http";
 import { User } from "next-auth";
 
+import { MapModel } from "~/core/db";
+import { clearAnonymousSession, getAnonymousUserId } from "~/core/session";
 import { dynamo } from "~/lib/aws";
-import { MapModel } from "~/lib/db";
-import { clearAnonymousSession, getAnonymousUserId } from "~/lib/session";
 
 /**
  * Called after a session check is performed (e.g: after sign-up / sign-in).

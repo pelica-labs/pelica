@@ -1,5 +1,5 @@
-import { App } from "~/core/helpers";
 import { getMap } from "~/core/selectors";
+import { App } from "~/core/zustand";
 
 type Exports = {
   exporting: boolean;
@@ -11,6 +11,7 @@ export const exportsInitialState: Exports = {
   imageData: null,
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const exports = ({ mutate, get }: App) => ({
   ...exportsInitialState,
 

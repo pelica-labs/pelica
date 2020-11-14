@@ -10,7 +10,7 @@ import { MapPlusIcon } from "~/components/Icon";
 import { MapPreview, MapPreviewLoading } from "~/components/MapPreview";
 import { Navbar } from "~/components/Navbar";
 import { GoogleButton } from "~/components/SocialButtons";
-import { MapModel } from "~/lib/db";
+import { MapModel } from "~/core/db";
 import { theme } from "~/styles/tailwind";
 
 type Props = {

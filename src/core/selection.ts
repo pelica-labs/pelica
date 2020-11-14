@@ -2,11 +2,11 @@ import { BBox, bboxPolygon, booleanContains, booleanCrosses, booleanOverlap, Pos
 import { uniq } from "lodash";
 
 import { entityToFeature } from "~/core/entities";
-import { App } from "~/core/helpers";
 import { PinStyle } from "~/core/pins";
 import { RouteStyle } from "~/core/routes";
 import { getSelectedEntities } from "~/core/selectors";
 import { TextStyle } from "~/core/texts";
+import { App } from "~/core/zustand";
 import { ID } from "~/lib/id";
 import { RawFeature } from "~/map/features";
 
@@ -24,6 +24,7 @@ export const selectionInitialState: Selection = {
   preservedIds: [],
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const selection = ({ mutate, get }: App) => ({
   ...selectionInitialState,
 

@@ -9,7 +9,7 @@ import { Map } from "~/components/Map";
 import { PlaceAutocomplete } from "~/components/PlaceAutocomplete";
 import { ResetOrientationButton } from "~/components/ResetOrientationButton";
 import { app, useStore } from "~/core/app";
-import { MapModel } from "~/lib/db";
+import { MapModel } from "~/core/db";
 
 type Props = {
   map: MapModel;

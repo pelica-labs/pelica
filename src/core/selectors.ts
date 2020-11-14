@@ -1,13 +1,12 @@
 import { BBox, bboxPolygon, booleanWithin } from "@turf/turf";
 
 import { getState, State } from "~/core/app";
+import { MapModel } from "~/core/db";
 import { CoreEntity, Entity, entityToFeature } from "~/core/entities";
 import { Pin } from "~/core/pins";
 import { Route } from "~/core/routes";
 import { Text } from "~/core/texts";
-import { MapModel } from "~/lib/db";
 import { ID } from "~/lib/id";
-import { defaultStyles } from "~/lib/style";
 import { RawFeature } from "~/map/features";
 
 export const getMap = (state: State = getState()): mapboxgl.Map => {
@@ -19,11 +18,11 @@ export const getMap = (state: State = getState()): mapboxgl.Map => {
   return state.map.current;
 };
 
-export const getAllEntities = (state: State = getState()) => {
+export const getAllEntities = (state: State = getState()): Entity[] => {
   return [...state.entities.items, ...state.entities.transientItems];
 };
 
-export const getEntity = (id: ID, state: State = getState()) => {
+export const getEntity = (id: ID, state: State = getState()): Entity | undefined => {
   return getAllEntities(state).find((entity) => {
     return entity.id === id;
   });
@@ -45,7 +44,7 @@ export const getSelectedEntity = (state: State = getState()): CoreEntity | null 
   return entities[0];
 };
 
-export const getSelectedItinerary = (state: State = getState()) => {
+export const getSelectedItinerary = (state: State = getState()): Route["itinerary"] | null => {
   const entity = getSelectedEntity(state);
 
   if (entity?.type !== "Route") {
@@ -55,25 +54,25 @@ export const getSelectedItinerary = (state: State = getState()) => {
   return entity.itinerary ?? null;
 };
 
-export const getSelectedRoutes = (state: State = getState()) => {
+export const getSelectedRoutes = (state: State = getState()): Route[] => {
   return getSelectedEntities(state).filter((entity: Entity): entity is Route => {
     return entity.type === "Route";
   });
 };
 
-export const getSelectedPins = (state: State = getState()) => {
+export const getSelectedPins = (state: State = getState()): Pin[] => {
   return getSelectedEntities(state).filter((entity: Entity): entity is Pin => {
     return entity.type === "Pin";
   });
 };
 
-export const getSelectedTexts = (state: State = getState()) => {
+export const getSelectedTexts = (state: State = getState()): Text[] => {
   return getSelectedEntities(state).filter((entity: Entity): entity is Text => {
     return entity.type === "Text";
   });
 };
 
-export const getHoveredEntity = (state: State = getState()) => {
+export const getHoveredEntity = (state: State = getState()): Entity | null | undefined => {
   if (!state.dragAndDrop.hoveredEntityId) {
     return null;
   }
@@ -83,41 +82,31 @@ export const getHoveredEntity = (state: State = getState()) => {
   });
 };
 
-export const getEntityFeatures = (state: State = getState()) => {
+export const getEntityFeatures = (state: State = getState()): RawFeature[] => {
   return state.entities.items
     .map((entity) => {
       return entityToFeature(entity);
     })
     .filter((entity): entity is RawFeature => {
       return !!entity;
-    })
-    .map((feature) => {
-      Object.assign(feature.properties, defaultStyles, state.editor.style.overrides);
-
-      return feature;
     });
 };
 
-export const getTransientEntityFeatures = (state: State = getState()) => {
+export const getTransientEntityFeatures = (state: State = getState()): RawFeature[] => {
   return state.entities.transientItems
     .map((entity) => {
       return entityToFeature(entity);
     })
     .filter((entity): entity is RawFeature => {
       return !!entity;
-    })
-    .map((feature) => {
-      Object.assign(feature.properties, defaultStyles, state.editor.style.overrides);
-
-      return feature;
     });
 };
 
-export const canSelect = (state: State = getState()) => {
+export const canSelect = (state: State = getState()): boolean => {
   return ["select", "move", "style", "export"].includes(state.editor.mode);
 };
 
-export const getMapTitle = (state: State = getState()) => {
+export const getMapTitle = (state: State = getState()): string | undefined => {
   if (state.sync.name) {
     return state.sync.name;
   }
@@ -137,18 +126,18 @@ export const getMapTitle = (state: State = getState()) => {
   return feature?.place_name;
 };
 
-export const getMapUrl = (state: State = getState()) => {
+export const getMapUrl = (state: State = getState()): string => {
   const id = state.sync.id;
 
   return `${window.location.origin}/map/${id}`;
 };
 
-export const getSerializableState = (state: State = getState()) => {
+export const getSerializableState = (state: State = getState()): State => {
   return {
     ...state,
     map: {
       ...state.map,
-      current: undefined,
+      current: null,
     },
   };
 };

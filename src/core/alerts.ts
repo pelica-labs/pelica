@@ -1,19 +1,18 @@
 import { Icon, InformationIcon } from "~/components/Icon";
-import { App } from "~/core/helpers";
-import { Color } from "~/lib/color";
+import { App } from "~/core/zustand";
 
 type Alert = {
   id: number;
   message: string;
   timeout: number;
-  color: Color;
+  color: string;
   icon: Icon;
 };
 
 type AlertInput = {
   message: string;
   timeout?: number;
-  color?: Color;
+  color?: string;
   icon?: Icon;
 };
 
@@ -25,6 +24,7 @@ export const alertsInitialState: Alerts = {
   messages: [],
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const alerts = ({ mutate, get }: App) => ({
   ...alertsInitialState,
 

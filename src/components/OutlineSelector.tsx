@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Button } from "~/components/Button";
-import { OutlineType } from "~/core/routes";
+import { OutlineType } from "~/core/outlines";
 
 type OutlineConfiguration = {
   name: string;

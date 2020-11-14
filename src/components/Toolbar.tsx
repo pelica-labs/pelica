@@ -2,7 +2,7 @@ import React from "react";
 
 import { HandIcon, MousePointerIcon, PencilIcon, PinIcon, RouteIcon, StyleIcon, TextIcon } from "~/components/Icon";
 import { IconButton } from "~/components/IconButton";
-import { EditorMenuButtons, MenuBar } from "~/components/MenuBar";
+import { EditorMenuButtons } from "~/components/MenuBar";
 import { app, useStore } from "~/core/app";
 import { useHotkey } from "~/hooks/useHotkey";
 
@@ -17,7 +17,7 @@ export const Toolbar: React.FC = () => {
     app.editor.setEditorMode("select");
   });
   const DrawHotkey = useHotkey({ key: "3", meta: true }, () => {
-    app.editor.setEditorMode("draw");
+    app.editor.setEditorMode("route");
   });
   const ItineraryHotkey = useHotkey({ key: "4", meta: true }, () => {
     app.editor.setEditorMode("itinerary");
@@ -78,7 +78,7 @@ export const Toolbar: React.FC = () => {
 
       <div className="flex md:flex-col md:space-y-1 md:mt-6 p-1/2">
         <IconButton
-          active={editorMode === "draw"}
+          active={editorMode === "route"}
           id="toolbar-draw"
           tooltip={{
             placement: tooltipPlacement,
@@ -90,7 +90,7 @@ export const Toolbar: React.FC = () => {
             ),
           }}
           onClick={() => {
-            app.editor.setEditorMode("draw");
+            app.editor.setEditorMode("route");
           }}
         >
           <PencilIcon className="w-8 h-8 md:w-6 md:h-6" />

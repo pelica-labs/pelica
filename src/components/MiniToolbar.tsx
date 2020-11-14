@@ -9,7 +9,7 @@ import { getSelectedEntity } from "~/core/selectors";
 
 export const MiniToolbar: React.FC = () => {
   const editorMode = useStore((store) => store.editor.mode);
-  const moving = useStore((store) => store.editor.moving);
+  const moving = useStore((store) => store.editor.isMoving);
   const selectedEntity = useStore((store) => getSelectedEntity(store));
 
   const ModeIcon = modeIcons[editorMode];
@@ -21,7 +21,7 @@ export const MiniToolbar: React.FC = () => {
       : selectedEntity?.type === "Route" && selectedEntity.itinerary
       ? "itinerary"
       : selectedEntity?.type === "Route"
-      ? "draw"
+      ? "route"
       : null;
   const RootModeIcon = rootMode ? modeIcons[rootMode] : null;
 

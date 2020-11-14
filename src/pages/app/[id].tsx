@@ -2,10 +2,10 @@ import { GetServerSideProps, NextPage } from "next";
 import React from "react";
 
 import { MapEditor } from "~/components/MapEditor";
+import { MapModel } from "~/core/db";
+import { getUserId, withSession } from "~/core/session";
 import { dynamo } from "~/lib/aws";
-import { MapModel } from "~/lib/db";
 import { EmptyProps, redirect } from "~/lib/redirect";
-import { getUserId, withSession } from "~/lib/session";
 
 type Props = {
   map: MapModel;

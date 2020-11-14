@@ -2,7 +2,6 @@ import classNames from "classnames";
 import React, { useEffect, useRef, useState } from "react";
 import { Trans } from "react-i18next";
 
-import { DownloadIcon } from "~/components/Icon";
 import { MapMenu } from "~/components/MapMenu";
 import { MenuBar } from "~/components/MenuBar";
 import { ExportMenu } from "~/components/menus/ExportMenu";
@@ -15,10 +14,9 @@ import { ShareMenu } from "~/components/menus/ShareMenu";
 import { StyleMenu } from "~/components/menus/StyleMenu";
 import { TextMenu } from "~/components/menus/TextMenu";
 import { MiniToolbar } from "~/components/MiniToolbar";
-import { SyncIndicator } from "~/components/SyncIndicator";
 import { Toolbar } from "~/components/Toolbar";
 import { UserMenu } from "~/components/UserMenu";
-import { app, useStore } from "~/core/app";
+import { useStore } from "~/core/app";
 import { useDimensions } from "~/hooks/useDimensions";
 
 export const Sidebar: React.FC = () => {
@@ -104,7 +102,7 @@ export const Sidebar: React.FC = () => {
         <div className="flex divide-x md:divide-x-0 md:flex-col md:space-x-0 md:divide-y bg-white text-gray-800 md:w-64 md:h-full overflow-y-auto md:shadow-md">
           {editorMode === "move" && <MoveMenu />}
           {editorMode === "select" && <SelectMenu />}
-          {editorMode === "draw" && <RouteMenu />}
+          {editorMode === "route" && <RouteMenu />}
           {editorMode === "pin" && <PinMenu />}
           {editorMode === "text" && <TextMenu />}
           {editorMode === "itinerary" && <ItineraryMenu />}

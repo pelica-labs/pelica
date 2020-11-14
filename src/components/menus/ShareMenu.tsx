@@ -49,7 +49,7 @@ export const ShareMenu: React.FC = () => {
         <SidebarSection className="flex flex-col space-y-3 w-40 md:w-auto">
           {!screenDimensions.md && (
             <SidebarHeader>
-              <Heading dark>Share</Heading>
+              <Heading>Share</Heading>
             </SidebarHeader>
           )}
 
@@ -87,7 +87,7 @@ export const ShareMenu: React.FC = () => {
         {!session && !loading && (
           <SidebarSection>
             <SidebarHeader>
-              <Heading dark>Account</Heading>
+              <Heading>Account</Heading>
             </SidebarHeader>
             <div className="mt-2">
               <p className="text-xs">Create an account to access this map from anywhere.</p>
@@ -104,7 +104,7 @@ export const ShareMenu: React.FC = () => {
 
         <div className="md:mt-auto px-3 md:pt-3 md:pb-2 w-64 md:w-auto">
           <SidebarHeader>
-            <Heading dark>Copyright</Heading>
+            <Heading>Copyright</Heading>
           </SidebarHeader>
 
           <div className="flex justify-between items-center mt-2 overflow-x-hidden">
