@@ -5,10 +5,10 @@ import { useTranslation } from "react-i18next";
 
 import { MapViewer } from "~/components/MapViewer";
 import { Whoops } from "~/components/Whoops";
+import { MapModel } from "~/core/db";
 import { dynamo } from "~/lib/aws";
-import { MapModel } from "~/lib/db";
 import { staticImage } from "~/lib/staticImages";
-import { defaultStyle } from "~/lib/style";
+import { defaultStyle } from "~/map/style";
 
 type Props = {
   currentUrl: string;

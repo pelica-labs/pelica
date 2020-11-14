@@ -97,7 +97,7 @@ export const Sidebar: React.FC = () => {
             <>
               {editorMode === "move" && <MoveMenu />}
               {editorMode === "select" && <SelectMenu />}
-              {editorMode === "draw" && <RouteMenu />}
+              {editorMode === "route" && <RouteMenu />}
               {editorMode === "pin" && <PinMenu />}
               {editorMode === "text" && <TextMenu />}
               {editorMode === "itinerary" && <ItineraryMenu />}

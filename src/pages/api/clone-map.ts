@@ -1,9 +1,9 @@
 import HttpStatus from "http-status-codes";
 import { NextApiHandler } from "next";
 
+import { getUserId, withApiSession } from "~/core/session";
 import { dynamo } from "~/lib/aws";
 import { stringId } from "~/lib/id";
-import { getUserId, withApiSession } from "~/lib/session";
 
 const CloneMap: NextApiHandler = withApiSession(async (req, res) => {
   if (req.method !== "POST") {

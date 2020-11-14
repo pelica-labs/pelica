@@ -1,10 +1,10 @@
 import HttpStatus from "http-status-codes";
 import { NextApiHandler } from "next";
 
+import { MapModel } from "~/core/db";
+import { initializeAnonymousSession, withApiSession } from "~/core/session";
 import { dynamo } from "~/lib/aws";
-import { MapModel } from "~/lib/db";
 import { stringId } from "~/lib/id";
-import { initializeAnonymousSession, withApiSession } from "~/lib/session";
 
 const CreateMap: NextApiHandler = withApiSession(async (req, res) => {
   if (req.method !== "POST") {

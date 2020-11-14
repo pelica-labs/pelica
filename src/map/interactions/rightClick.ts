@@ -10,7 +10,7 @@ export const applyRightClickInteractions = (): void => {
 
   const onFeatureRightClick = (event: MapMouseEvent | MapTouchEvent) => {
     const [feature] = map.queryRenderedFeatures(event.point, {
-      layers: [MapLayer.Pins, MapLayer.PinsInteractions, MapLayer.RoutesInteractions, MapLayer.Texts],
+      layers: [MapLayer.Pin, MapLayer.PinInteraction, MapLayer.RouteInteraction, MapLayer.Text],
     });
 
     if (!feature) {

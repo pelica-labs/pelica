@@ -1,8 +1,8 @@
 import { Position } from "@turf/turf";
 
-import { App } from "~/core/helpers";
 import { ItineraryRoute, Route } from "~/core/routes";
 import { getSelectedEntity } from "~/core/selectors";
+import { App } from "~/core/zustand";
 import { numericId } from "~/lib/id";
 import { MapSource } from "~/map/sources";
 
@@ -24,6 +24,7 @@ export const itinerariesInitialState: Itineraries = {
   isLoadingRoute: false,
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const itineraries = ({ mutate, get }: App) => ({
   ...itinerariesInitialState,
 
@@ -53,7 +54,7 @@ export const itineraries = ({ mutate, get }: App) => ({
       state.entities.items.push({
         type: "Route",
         id,
-        source: MapSource.Routes,
+        source: MapSource.Route,
         closed: false,
         filled: false,
         transientPoints: [],

@@ -1,54 +1,44 @@
-import {
-  ExportIcon,
-  HandIcon,
-  MousePointerIcon,
-  PencilIcon,
-  PinIcon,
-  RouteIcon,
-  StyleIcon,
-  TextIcon,
-} from "~/components/Icon";
-import { App } from "~/core/helpers";
-import { AspectRatio } from "~/lib/aspectRatio";
-import { defaultStyle, Style } from "~/lib/style";
+import { HandIcon, MousePointerIcon, PencilIcon, PinIcon, RouteIcon, StyleIcon, TextIcon } from "~/components/Icon";
+import { AspectRatio } from "~/core/aspectRatio";
+import { App } from "~/core/zustand";
+import { defaultStyle, Style } from "~/map/style";
 
 export type Editor = {
   mode: EditorMode;
   menuMode: EditorMenuMode | null;
-  moving: boolean;
+  isMoving: boolean;
   isRouteEditing: boolean;
-  readOnly: boolean;
+  isReadOnly: boolean;
   style: Style;
   aspectRatio: AspectRatio;
 };
 
-export type EditorMode = "style" | "select" | "move" | "draw" | "itinerary" | "pin" | "text";
+export type EditorMode = "select" | "move" | "route" | "itinerary" | "pin" | "text" | "style";
 
 export type EditorMenuMode = "export" | "share";
 
 export const modeIcons = {
-  style: StyleIcon,
-  export: ExportIcon,
-  text: TextIcon,
-  pin: PinIcon,
-  itinerary: RouteIcon,
-  draw: PencilIcon,
   select: MousePointerIcon,
-  edit: MousePointerIcon,
   move: HandIcon,
+  route: PencilIcon,
+  itinerary: RouteIcon,
+  pin: PinIcon,
+  text: TextIcon,
+  style: StyleIcon,
 };
 
 export const editorInitialState: Editor = {
-  mode: "move",
+  mode: "style",
   menuMode: null,
-  moving: true,
+  isMoving: true,
   isRouteEditing: false,
-  readOnly: false,
+  isReadOnly: false,
 
   style: defaultStyle as Style,
   aspectRatio: "fill",
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const editor = ({ mutate, get }: App) => ({
   ...editorInitialState,
 
@@ -76,13 +66,13 @@ export const editor = ({ mutate, get }: App) => ({
 
     mutate((state) => {
       state.editor.mode = mode;
-      state.editor.moving = mode === "move";
+      state.editor.isMoving = mode === "move";
     });
 
     get().selection.endArea();
     get().selection.clear();
 
-    if (mode !== "draw") {
+    if (mode !== "route") {
       get().routes.stopRoute();
     }
 
@@ -94,7 +84,7 @@ export const editor = ({ mutate, get }: App) => ({
       get().itineraries.startNewItininerary();
     }
 
-    if (mode === "draw") {
+    if (mode === "route") {
       get().routes.startNewRoute();
     }
   },
@@ -109,25 +99,25 @@ export const editor = ({ mutate, get }: App) => ({
     });
   },
 
-  setReadOnly: (readOnly: boolean) => {
+  setReadOnly: (isReadOnly: boolean) => {
     mutate((state) => {
-      state.editor.readOnly = readOnly;
+      state.editor.isReadOnly = isReadOnly;
     });
 
-    if (readOnly) {
+    if (isReadOnly) {
       get().editor.setEditorMode("move");
     }
   },
 
-  toggleMoving: (moving: boolean) => {
+  toggleMoving: (isMoving: boolean) => {
     mutate((state) => {
-      state.editor.moving = moving;
+      state.editor.isMoving = isMoving;
     });
   },
 
-  toggleEditing: (editing: boolean) => {
+  toggleEditing: (isRouteEditing: boolean) => {
     mutate((state) => {
-      state.editor.isRouteEditing = editing;
+      state.editor.isRouteEditing = isRouteEditing;
     });
   },
 });

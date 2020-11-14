@@ -40,11 +40,11 @@ export const applyClickInteractions = (): void => {
   const onMouseEvent = throttle((event: MapMouseEvent) => {
     const state = getState();
 
-    if (state.editor.moving) {
+    if (state.editor.isMoving) {
       return;
     }
 
-    if (state.editor.mode === "draw") {
+    if (state.editor.mode === "route") {
       app.routes.updateNextPoint(event.lngLat.toArray());
     } else if (state.editor.mode === "text") {
       app.texts.updateNextPoint(event.lngLat.toArray());
@@ -56,7 +56,7 @@ export const applyClickInteractions = (): void => {
   const onMouseMove = throttle((event: MapMouseEvent | MapTouchEvent) => {
     const state = getState();
 
-    if (state.editor.moving) {
+    if (state.editor.isMoving) {
       return;
     }
 
@@ -83,17 +83,17 @@ export const applyClickInteractions = (): void => {
   const onMouseDown = (event: MapMouseEvent | MapTouchEvent) => {
     const state = getState();
 
-    if (state.editor.moving) {
+    if (state.editor.isMoving) {
       return;
     }
 
     // handle draw mode
-    if (state.editor.mode === "draw") {
+    if (state.editor.mode === "route") {
       event.preventDefault();
 
       // end route if we're clicking on the routesStop target
-      const [routeStop] = map.queryRenderedFeatures(event.point, { layers: [MapLayer.RoutesStop] });
-      const [routeStart] = map.queryRenderedFeatures(event.point, { layers: [MapLayer.RoutesStart] });
+      const [routeStop] = map.queryRenderedFeatures(event.point, { layers: [MapLayer.RouteStop] });
+      const [routeStart] = map.queryRenderedFeatures(event.point, { layers: [MapLayer.RouteStart] });
       if (routeStop) {
         app.routes.stopRoute();
 
@@ -115,7 +115,7 @@ export const applyClickInteractions = (): void => {
     // handle pins drag start
     if (state.editor.mode === "select") {
       const [feature] = map.queryRenderedFeatures(event.point, {
-        layers: [MapLayer.Pins, MapLayer.PinsInteractions, MapLayer.Texts, MapLayer.RoutesVertices],
+        layers: [MapLayer.Pin, MapLayer.PinInteraction, MapLayer.Text, MapLayer.RouteVertex],
       });
 
       if (feature) {
@@ -142,11 +142,11 @@ export const applyClickInteractions = (): void => {
   const onMouseUp = (event: MapMouseEvent | MapTouchEvent) => {
     const state = getState();
 
-    if (state.editor.moving) {
+    if (state.editor.isMoving) {
       return;
     }
 
-    if (state.editor.mode === "draw") {
+    if (state.editor.mode === "route") {
       app.routes.stopSegment();
     }
 
@@ -163,33 +163,33 @@ export const applyClickInteractions = (): void => {
     const state = getState();
 
     // place a pin
-    if (state.editor.mode === "pin" && !state.editor.moving) {
+    if (state.editor.mode === "pin" && !state.editor.isMoving) {
       app.pins.place(event.lngLat.toArray());
       return;
     }
 
     // place text
-    if (state.editor.mode === "text" && !state.editor.moving) {
+    if (state.editor.mode === "text" && !state.editor.isMoving) {
       app.texts.place(event.lngLat.toArray());
       return;
     }
 
     // select the given entity
-    if (canSelect(state) || state.editor.moving) {
+    if (canSelect(state) || state.editor.isMoving) {
       const [feature] = map.queryRenderedFeatures(event.point, {
         layers: [
-          MapLayer.RoutesEdgeCentersInteractions,
-          MapLayer.Pins,
-          MapLayer.PinsInteractions,
-          MapLayer.RoutesInteractions,
-          MapLayer.Texts,
-          MapLayer.PinsClusters,
+          MapLayer.RouteEdgeCenterInteraction,
+          MapLayer.Pin,
+          MapLayer.PinInteraction,
+          MapLayer.RouteInteraction,
+          MapLayer.Text,
+          MapLayer.PinCluster,
         ],
       });
 
-      if (feature && feature.layer.id === MapLayer.PinsClusters) {
+      if (feature && feature.layer.id === MapLayer.PinCluster) {
         const clusterId = feature.properties?.cluster_id;
-        const source = map.getSource(MapSource.Pins) as GeoJSONSource;
+        const source = map.getSource(MapSource.Pin) as GeoJSONSource;
 
         source.getClusterExpansionZoom(clusterId, (err, zoom) => {
           if (err) {
@@ -206,7 +206,7 @@ export const applyClickInteractions = (): void => {
       } else if (feature) {
         const featureId = feature.id as ID;
 
-        if (feature.layer.id === MapLayer.RoutesEdgeCentersInteractions) {
+        if (feature.layer.id === MapLayer.RouteEdgeCenterInteraction) {
           app.routes.insertPoint(featureId);
         } else if (state.platform.keyboard.shiftKey) {
           app.selection.toggleEntitySelection(featureId);
@@ -238,18 +238,18 @@ export const applyClickInteractions = (): void => {
     const state = getState();
 
     // select the given entity
-    if (state.editor.mode === "select" || state.editor.moving) {
+    if (state.editor.mode === "select" || state.editor.isMoving) {
       const [feature] = map.queryRenderedFeatures(event.point, {
-        layers: [MapLayer.RoutesVertices, MapLayer.RoutesInteractions],
+        layers: [MapLayer.RouteVertex, MapLayer.RouteInteraction],
       });
 
       if (feature) {
         const featureId = feature.id as ID;
 
-        if (feature.layer.id === MapLayer.RoutesVertices) {
+        if (feature.layer.id === MapLayer.RouteVertex) {
           app.routes.deletePoint(featureId);
           return;
-        } else if (feature && feature.layer.id === MapLayer.RoutesInteractions) {
+        } else if (feature && feature.layer.id === MapLayer.RouteInteraction) {
           app.editor.toggleEditing(true);
           app.selection.selectEntity(featureId);
         }

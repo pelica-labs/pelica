@@ -1,8 +1,8 @@
 import HttpStatus from "http-status-codes";
 import { NextApiHandler } from "next";
 
+import { ImageModel } from "~/core/db";
 import { dynamo } from "~/lib/aws";
-import { ImageModel } from "~/lib/db";
 import { stringId } from "~/lib/id";
 
 const CreateImage: NextApiHandler = async (req, res) => {

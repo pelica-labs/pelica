@@ -1,6 +1,7 @@
+export type OutlineType = "dark" | "light" | "black" | "white" | "glow" | "none";
+
 import tinycolor from "tinycolor2";
 
-import { OutlineType } from "~/core/routes";
 import { theme } from "~/styles/tailwind";
 
 export type Color = keyof typeof theme.colors;

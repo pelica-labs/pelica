@@ -3,7 +3,7 @@ import { intersectionBy } from "lodash";
 import { NextApiHandler } from "next";
 
 import { getEnv } from "~/lib/config";
-import { availableStyles, Style } from "~/lib/style";
+import { availableStyles, Style } from "~/map/style";
 
 const accessToken = getEnv("MAPBOX_SECRET_TOKEN", process.env.MAPBOX_SECRET_TOKEN);
 
@@ -18,7 +18,6 @@ export const fetchStyles = async (): Promise<Style[]> => {
       owner: style.owner,
       name: style.name,
       hash: style.hash || null,
-      overrides: style.overrides || {},
     };
   });
 };

@@ -427,7 +427,7 @@ const EmptySelectSection: React.FC = () => {
             <Button
               className="text-center space-x-2"
               onClick={() => {
-                app.editor.setEditorMode("draw");
+                app.editor.setEditorMode("route");
               }}
             >
               <PencilIcon className="w-4 h-4" />

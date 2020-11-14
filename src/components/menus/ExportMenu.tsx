@@ -11,9 +11,9 @@ import { CopyIcon } from "~/components/Icon";
 import { SidebarHeader, SidebarSection } from "~/components/Sidebar";
 import { GoogleButton } from "~/components/SocialButtons";
 import { app, getState, useStore } from "~/core/app";
+import { aspectRatios } from "~/core/aspectRatio";
 import { getMapTitle } from "~/core/selectors";
 import { useBrowserFeatures } from "~/hooks/useBrowserFeatures";
-import { aspectRatios } from "~/lib/aspectRatio";
 import { dataUrlToBlob } from "~/lib/fileConversion";
 import { theme } from "~/styles/tailwind";
 

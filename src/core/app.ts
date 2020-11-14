@@ -9,7 +9,6 @@ import { editor, editorInitialState } from "~/core/editor";
 import { entities, entitiesInitialState } from "~/core/entities";
 import { exports, exportsInitialState } from "~/core/export";
 import { geolocation, geolocationInitialState } from "~/core/geolocation";
-import { App, immer } from "~/core/helpers";
 import { history, historyInitialState } from "~/core/history";
 import { imports } from "~/core/import";
 import { itineraries, itinerariesInitialState } from "~/core/itineraries";
@@ -21,6 +20,7 @@ import { selection, selectionInitialState } from "~/core/selection";
 import { sync, syncInitialState } from "~/core/sync";
 import { texts, textsInitialState } from "~/core/texts";
 import { units, unitsInitialState } from "~/core/units";
+import { App, immer } from "~/core/zustand";
 import { logEvent } from "~/lib/analytics";
 
 export type State = {
@@ -106,6 +106,7 @@ export const useStoreSubscription = <T extends State, StateSlice>(
   }, []);
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const subscribe = <T extends State, StateSlice>(
   selector: StateSelector<T, StateSlice>,
   listener: (state: StateSlice) => void

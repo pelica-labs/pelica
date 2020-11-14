@@ -4,7 +4,7 @@ import React from "react";
 
 import { Heading } from "~/components/Heading";
 import { SelectorCarretIcon } from "~/components/Icon";
-import { AspectRatio, AspectRatioConfiguration, aspectRatios } from "~/lib/aspectRatio";
+import { AspectRatio, AspectRatioConfiguration, aspectRatios } from "~/core/aspectRatio";
 
 type Props = {
   value: AspectRatio;

@@ -6,7 +6,7 @@ import useSWR from "swr";
 import { StylePreview } from "~/components/StylePreview";
 import { getState } from "~/core/app";
 import { staticImage } from "~/lib/staticImages";
-import { Style } from "~/lib/style";
+import { Style } from "~/map/style";
 
 type StylesResponse = {
   styles: Style[];

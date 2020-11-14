@@ -2,7 +2,7 @@ import { Position } from "@turf/turf";
 
 import { CoreEntity } from "~/core/entities";
 import { ID } from "~/lib/id";
-import { Style } from "~/lib/style";
+import { Style } from "~/map/style";
 
 export type MapModel = {
   id: ID;

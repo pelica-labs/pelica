@@ -2,9 +2,9 @@ import { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geocoding";
 import { BBox, Position } from "@turf/turf";
 import { throttle } from "lodash";
 
-import { App } from "~/core/helpers";
 import { Place } from "~/core/itineraries";
 import { getMap } from "~/core/selectors";
+import { App } from "~/core/zustand";
 import { mapboxGeocoding } from "~/lib/mapbox";
 
 export type Map = {
@@ -49,6 +49,7 @@ export const mapInitialState: Map = {
   },
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const map = ({ mutate, get }: App) => ({
   ...mapInitialState,
 

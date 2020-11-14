@@ -3,17 +3,6 @@ export type Style = {
   owner: string;
   name: string;
   hash?: string | null;
-  overrides?: Partial<StyleOverrides>;
-};
-
-export type StyleOverrides = {
-  textFont: string[];
-  textTransform: "none" | "uppercase" | "lowercase";
-};
-
-export const defaultStyles: StyleOverrides = {
-  textFont: ["Roboto Regular"],
-  textTransform: "none",
 };
 
 /**
@@ -38,10 +27,6 @@ export const availableStyles: Style[] = [
     owner: "bstnfrmry",
     name: "Mineral",
     hash: "L9FZD?NH01WBOY%1WVs.01XT~Un$",
-    overrides: {
-      textFont: ["Poppins ExtraBold"],
-      textTransform: "uppercase",
-    },
   },
   {
     id: "ckfgw9p0i2kzi19p8pt32p7c5",
@@ -84,10 +69,6 @@ export const availableStyles: Style[] = [
     id: "ckfs2x9kt1qk619t8fy34voej",
     owner: "bstnfrmry",
     name: "Cali Terrain",
-    overrides: {
-      textFont: ["Overpass Bold"],
-      textTransform: "uppercase",
-    },
   },
   {
     id: "ckfs2tqt33lgm1arh4yqkqbql",
@@ -98,9 +79,6 @@ export const availableStyles: Style[] = [
     id: "ckgz0ard77h9v19pa5otqzbig",
     owner: "bstnfrmry",
     name: "Le Shine",
-    overrides: {
-      textFont: ["League Spartan Bold"],
-    },
   },
   {
     id: "ckfs2skk31k2519pm37a42aeo",

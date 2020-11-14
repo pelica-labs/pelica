@@ -1,8 +1,8 @@
 import { Position } from "@turf/turf";
 import { MercatorCoordinate } from "mapbox-gl";
 
-import { App } from "~/core/helpers";
 import { getSelectedEntity, getSelectedPins } from "~/core/selectors";
+import { App } from "~/core/zustand";
 import { ID, numericId } from "~/lib/id";
 import { MapSource } from "~/map/sources";
 import { theme } from "~/styles/tailwind";
@@ -47,6 +47,7 @@ export const pinsInitialState: Pins = {
   nextPoint: null,
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const pins = ({ mutate, get }: App) => ({
   ...pinsInitialState,
 
@@ -76,7 +77,7 @@ export const pins = ({ mutate, get }: App) => ({
       point: {
         type: "Pin",
         id: pinId,
-        source: MapSource.Pins,
+        source: MapSource.Pin,
         coordinates,
         style: get().pins.style,
       },

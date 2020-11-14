@@ -1,14 +1,13 @@
 import { circle, distance, Feature, LineString, lineString, Position, simplify } from "@turf/turf";
 
-import { App } from "~/core/helpers";
 import { ItineraryProfile, Place } from "~/core/itineraries";
+import { OutlineType } from "~/core/outlines";
 import { getEntity, getSelectedEntity, getSelectedRoutes } from "~/core/selectors";
+import { smartMatch, SmartMatching, SmartMatchingProfile } from "~/core/smartMatching";
+import { App } from "~/core/zustand";
 import { ID, numericId } from "~/lib/id";
-import { smartMatch, SmartMatching, SmartMatchingProfile } from "~/lib/smartMatching";
 import { MapSource } from "~/map/sources";
 import { theme } from "~/styles/tailwind";
-
-export type OutlineType = "dark" | "light" | "black" | "white" | "glow" | "none";
 
 export type DrawingMode = "freeDrawing" | "pointByPoint" | "circleDrawing";
 
@@ -121,10 +120,11 @@ export const computeDistance = (route: Route): number => {
   return total;
 };
 
-export const computeCenter = (positionA: Position, positionB: Position) => {
+export const computeCenter = (positionA: Position, positionB: Position): Position => {
   return [(positionA[0] + positionB[0]) / 2, (positionA[1] + positionB[1]) / 2];
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const routes = ({ mutate, get }: App) => ({
   ...routesInitialState,
 
@@ -161,7 +161,7 @@ export const routes = ({ mutate, get }: App) => ({
       state.entities.items.push({
         type: "Route",
         id,
-        source: MapSource.Routes,
+        source: MapSource.Route,
         drawingMode: "pointByPoint",
         transientPoints: [],
         rawPoints: [],
@@ -274,7 +274,7 @@ export const routes = ({ mutate, get }: App) => ({
       state.routes.isDrawing = false;
     });
 
-    if (get().editor.mode === "draw") {
+    if (get().editor.mode === "route") {
       get().editor.setEditorMode("select");
     }
   },
@@ -288,7 +288,7 @@ export const routes = ({ mutate, get }: App) => ({
       route.filled = true;
     });
 
-    if (get().editor.mode === "draw") {
+    if (get().editor.mode === "route") {
       get().editor.setEditorMode("select");
     }
   },

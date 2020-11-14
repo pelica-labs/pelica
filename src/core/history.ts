@@ -1,5 +1,5 @@
 import { Action, Handler, handlers } from "~/core/actions";
-import { App } from "~/core/helpers";
+import { App } from "~/core/zustand";
 
 export type History = {
   actions: Action[];
@@ -11,6 +11,7 @@ export const historyInitialState: History = {
   redoStack: [],
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const history = ({ mutate }: App) => ({
   ...historyInitialState,
 

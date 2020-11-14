@@ -7,6 +7,7 @@ import React, { useEffect, useRef } from "react";
 import { Clipboard } from "~/components/Clipboard";
 import { DocumentTitle } from "~/components/DocumentTitle";
 import { app, getState, useStore, useStoreSubscription } from "~/core/app";
+import { computeMapDimensions, computeResizingRatio } from "~/core/aspectRatio";
 import { entityToFeature, TransientEntity } from "~/core/entities";
 import {
   getNextPointOverlay,
@@ -27,10 +28,7 @@ import {
   getSelectedEntity,
   getTransientEntityFeatures,
 } from "~/core/selectors";
-import { useAutoSaveAlert } from "~/hooks/useAutoSaveAlert";
-import { computeMapDimensions, computeResizingRatio } from "~/lib/aspectRatio";
 import { getEnv } from "~/lib/config";
-import { styleToUrl } from "~/lib/style";
 import { applyFeatures, RawFeature } from "~/map/features";
 import { applyImageMissingHandler } from "~/map/imageMissing";
 import { applyClickInteractions } from "~/map/interactions/click";
@@ -43,6 +41,7 @@ import { applyRightClickInteractions } from "~/map/interactions/rightClick";
 import { applyScrollInteractions } from "~/map/interactions/scroll";
 import { applyLayers } from "~/map/layers";
 import { applySources, MapSource, setSourceCluster } from "~/map/sources";
+import { styleToUrl } from "~/map/style";
 
 type Props = {
   readOnly?: boolean;
@@ -52,8 +51,6 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
   const container = useRef<HTMLDivElement>(null);
   const wrapper = useRef<HTMLDivElement>(null);
   const aspectRatio = useStore((store) => store.editor.aspectRatio);
-
-  useAutoSaveAlert();
 
   const displayHtmlWatermark = readOnly;
 
@@ -103,7 +100,7 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
 
       applySources();
       applyLayers();
-      applyFeatures(getEntityFeatures(), [MapSource.Routes, MapSource.Pins, MapSource.Texts]);
+      applyFeatures(getEntityFeatures(), [MapSource.Route, MapSource.Pin, MapSource.Text]);
 
       if (!readOnly) {
         applyScrollInteractions();
@@ -255,7 +252,7 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
         applySources();
         applyLayers();
 
-        applyFeatures(getEntityFeatures(), [MapSource.Routes, MapSource.Pins, MapSource.Texts]);
+        applyFeatures(getEntityFeatures(), [MapSource.Route, MapSource.Pin, MapSource.Text]);
       });
     }
   );
@@ -321,7 +318,7 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
   useStoreSubscription(
     (store) => ({ entities: store.entities.items }),
     () => {
-      applyFeatures(getEntityFeatures(), [MapSource.Routes, MapSource.Pins, MapSource.Texts]);
+      applyFeatures(getEntityFeatures(), [MapSource.Route, MapSource.Pin, MapSource.Text]);
     }
   );
 
@@ -345,10 +342,10 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
   useStoreSubscription(
     (store) => store.pins.clusterPoints,
     (clusterPoints) => {
-      const source = getMap().getSource(MapSource.Pins) as GeoJSONSource;
+      const source = getMap().getSource(MapSource.Pin) as GeoJSONSource;
       setSourceCluster(source, clusterPoints);
 
-      applyFeatures(getEntityFeatures(), [MapSource.Pins]);
+      applyFeatures(getEntityFeatures(), [MapSource.Pin]);
     }
   );
 
@@ -366,7 +363,7 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
       const selectedEntity = getSelectedEntity();
 
       const features: RawFeature[] = [];
-      if (editorMode === "draw" && !isDrawing && selectedEntity?.type === "Route" && selectedEntity.points.length) {
+      if (editorMode === "route" && !isDrawing && selectedEntity?.type === "Route" && selectedEntity.points.length) {
         features.push(getRouteStopOverlay(selectedEntity));
 
         if (selectedEntity.points.length > 2) {
@@ -393,7 +390,7 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
       const selectedEntity = getSelectedEntity();
 
       const features: RawFeature[] = [];
-      if (editorMode === "draw" && !isDrawing && selectedEntity?.type === "Route") {
+      if (editorMode === "route" && !isDrawing && selectedEntity?.type === "Route") {
         if (selectedEntity.points.length) {
           features.push(getRouteStopOverlay(selectedEntity));
         }
@@ -491,7 +488,7 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
         });
       }
 
-      applyFeatures(features, [MapSource.Overlays]);
+      applyFeatures(features, [MapSource.Overlay]);
     }
   );
 
@@ -543,7 +540,7 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
   useStoreSubscription(
     (store) => ({
       editorMode: store.editor.mode,
-      moving: store.editor.moving,
+      moving: store.editor.isMoving,
       hoveredEntityId: store.dragAndDrop.hoveredEntityId,
     }),
     ({ editorMode, hoveredEntityId, moving }) => {
@@ -557,7 +554,7 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
         containerClasses.add("move");
       } else if (editorMode === "pin" || editorMode === "text") {
         containerClasses.add("place");
-      } else if (editorMode === "draw" && hoveredEntityId !== "ROUTE_STOP") {
+      } else if (editorMode === "route" && hoveredEntityId !== "ROUTE_STOP") {
         containerClasses.add("draw");
       }
     }
@@ -567,7 +564,7 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
    * Sync events
    */
   useStoreSubscription(
-    (store) => ({ editorMode: store.editor.mode, moving: store.editor.moving }),
+    (store) => ({ editorMode: store.editor.mode, moving: store.editor.isMoving }),
     ({ editorMode, moving }) => {
       const setMinDragTouches = (min: number) => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -575,7 +572,7 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
         getMap().dragPan._touchPan._minTouches = min;
       };
 
-      if ((editorMode === "draw" || editorMode === "select") && !moving) {
+      if ((editorMode === "route" || editorMode === "select") && !moving) {
         setMinDragTouches(2);
       } else {
         setMinDragTouches(1);

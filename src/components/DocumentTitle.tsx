@@ -13,7 +13,7 @@ export const DocumentTitle: React.FC = () => {
 
   return (
     <Head>
-      <title>{title}</title>
+      <title key="title">{title}</title>
     </Head>
   );
 };
