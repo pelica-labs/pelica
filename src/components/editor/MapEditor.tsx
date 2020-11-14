@@ -16,6 +16,7 @@ import { MapModel } from "~/core/db";
 import { getSelectedItinerary, getSyncableState } from "~/core/selectors";
 import { useHotkey } from "~/hooks/useHotkey";
 import { useKeyboard } from "~/hooks/useKeyboard";
+import { useLayout } from "~/hooks/useLayout";
 import { useScreenDimensions } from "~/hooks/useScreenDimensions";
 
 type Props = {
@@ -28,7 +29,7 @@ export const MapEditor: React.FC<Props> = ({ map }) => {
   const editorMode = useStore((store) => store.editor.mode);
   const currentLocation = useStore((store) => store.geolocation.currentLocation);
   const selectedItinerary = useStore((store) => getSelectedItinerary(store));
-  const screenDimensions = useStore((store) => store.platform.screen.dimensions);
+  const layout = useLayout();
   const dropzone = useDropzone({
     noClick: true,
     maxFiles: 1,
@@ -43,7 +44,7 @@ export const MapEditor: React.FC<Props> = ({ map }) => {
     },
   });
   const showTopLeftControls = true;
-  const showHistoryButtons = !screenDimensions.md;
+  const showHistoryButtons = layout.vertical;
 
   useKeyboard();
   useScreenDimensions();

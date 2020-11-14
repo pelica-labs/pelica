@@ -17,12 +17,13 @@ import { Toolbar } from "~/components/editor/Toolbar";
 import { UserMenu } from "~/components/editor/UserMenu";
 import { useStore } from "~/core/app";
 import { useDimensions } from "~/hooks/useDimensions";
+import { useLayout } from "~/hooks/useLayout";
 
 export const Sidebar: React.FC = () => {
   const [showToolbar, setShowToolbar] = useState(true);
   const editorMode = useStore((store) => store.editor.mode);
   const editorMenuMode = useStore((store) => store.editor.menuMode);
-  const screenDimensions = useStore((store) => store.platform.screen.dimensions);
+  const layout = useLayout();
   const sidebarRef = useRef<HTMLDivElement>(null);
   const sidebarDimensions = useDimensions(sidebarRef);
   const toolbarRef = useRef<HTMLDivElement>(null);
@@ -31,12 +32,12 @@ export const Sidebar: React.FC = () => {
     sidebarRef.current?.scrollTo({ left: 0 });
     toolbarRef.current?.scrollTo({ left: 0 });
 
-    if (screenDimensions.md) {
+    if (layout.horizontal) {
       return;
     }
 
     setShowToolbar(editorMode === "move");
-  }, [editorMode, screenDimensions.md]);
+  }, [editorMode, layout.horizontal]);
 
   return (
     <div className="relative flex items-end">
@@ -45,17 +46,17 @@ export const Sidebar: React.FC = () => {
           ref={toolbarRef}
           className="fixed z-50 bottom-0 md:bottom-auto flex justify-between md:flex-col bg-white border border-gray-300 overflow-x-auto md:rounded md:shadow"
           style={{
-            top: screenDimensions.md ? 48 : "initial",
-            right: screenDimensions.md ? sidebarDimensions.width + 6 : 0,
-            left: screenDimensions.md ? "initial" : 0,
-            transform: !screenDimensions.md && !showToolbar ? "translateX(-100vw)" : "initial",
+            top: layout.horizontal ? 48 : "initial",
+            right: layout.horizontal ? sidebarDimensions.width + 6 : 0,
+            left: layout.horizontal ? "initial" : 0,
+            transform: layout.vertical && !showToolbar ? "translateX(-100vw)" : "initial",
           }}
         >
           <Toolbar />
         </div>
       )}
 
-      {!screenDimensions.md && sidebarDimensions && (
+      {layout.vertical && sidebarDimensions && (
         <>
           <div
             className={classNames({
@@ -80,15 +81,15 @@ export const Sidebar: React.FC = () => {
         ref={sidebarRef}
         className={classNames({
           "relative flex md:pt-0 md:pb-0 divide-x md:divide-x-0 md:flex-col md:space-x-0 md:divide-y border-gray-300 md:border-none h-40 bg-white text-gray-800 md:w-64 md:h-full overflow-y-auto min-w-full pt-3 z-50": true,
-          "hidden": !screenDimensions.md && editorMode === "move",
+          "hidden": layout.vertical && editorMode === "move",
         })}
         style={{
-          ...(!screenDimensions.md && {
+          ...(layout.vertical && {
             marginBottom: !showToolbar ? 0 : -100,
           }),
         }}
       >
-        {screenDimensions.md && <MenuBar />}
+        {layout.horizontal && <MenuBar />}
         <div className="flex divide-x md:divide-x-0 md:flex-col md:space-x-0 md:divide-y bg-white text-gray-800 md:w-64 md:h-full overflow-y-auto md:shadow-md">
           {editorMenuMode === "export" && <ExportMenu />}
           {editorMenuMode === "share" && <ShareMenu />}

@@ -7,14 +7,15 @@ import { Button } from "~/components/ui/Button";
 import { Heading } from "~/components/ui/Heading";
 import { CopyIcon } from "~/components/ui/Icon";
 import { GoogleButton } from "~/components/ui/SocialButtons";
-import { app, useStore } from "~/core/app";
+import { app } from "~/core/app";
 import { getMapTitle, getMapUrl } from "~/core/selectors";
 import { useBrowserFeatures } from "~/hooks/useBrowserFeatures";
+import { useLayout } from "~/hooks/useLayout";
 
 export const ShareMenu: React.FC = () => {
   const { t } = useTranslation();
   const [session, loading] = useSession();
-  const screenDimensions = useStore((store) => store.platform.screen.dimensions);
+  const layout = useLayout();
 
   const { shareFeature } = useBrowserFeatures();
 
@@ -47,7 +48,7 @@ export const ShareMenu: React.FC = () => {
     <>
       <div className="flex md:flex-col md:divide-y md:divide-x-0 divide-x md:h-full text-gray-800">
         <MenuSection className="flex flex-col space-y-3 w-40 md:w-auto">
-          {!screenDimensions.md && (
+          {layout.vertical && (
             <MenuSectionHeader>
               <Heading>Share</Heading>
             </MenuSectionHeader>

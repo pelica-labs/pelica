@@ -31,12 +31,13 @@ import { MAX_PIN_SIZE, Pin } from "~/core/pins";
 import { computeDistance, Route } from "~/core/routes";
 import { getMapTitle, getSelectedEntities } from "~/core/selectors";
 import { MAX_TEXT_SIZE, MIN_TEXT_SIZE, Text } from "~/core/texts";
+import { useLayout } from "~/hooks/useLayout";
 import { exportGpx } from "~/lib/gpx";
 
 export const SelectMenu: React.FC = () => {
   const textContainer = useRef<HTMLDivElement | null>(null);
   const selectedEntities = useStore((store) => getSelectedEntities(store));
-  const screenDimensions = useStore((store) => store.platform.screen.dimensions);
+  const layout = useLayout();
 
   useEffect(() => {
     textContainer.current?.querySelector("textarea")?.select();
@@ -186,7 +187,7 @@ export const SelectMenu: React.FC = () => {
           <MenuSectionHeader>
             <Heading>Outline</Heading>
           </MenuSectionHeader>
-          <div className="mt-4 w-40" style={{ marginLeft: screenDimensions.md ? -4 : 0 }}>
+          <div className="mt-4 w-40" style={{ marginLeft: layout.horizontal ? -4 : 0 }}>
             <OutlineSelector
               value={selectedEntity.style.outline}
               onChange={(outline) => {

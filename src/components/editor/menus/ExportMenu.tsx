@@ -14,6 +14,7 @@ import { app, getState, useStore } from "~/core/app";
 import { aspectRatios } from "~/core/aspectRatio";
 import { getMapTitle } from "~/core/selectors";
 import { useBrowserFeatures } from "~/hooks/useBrowserFeatures";
+import { useLayout } from "~/hooks/useLayout";
 import { dataUrlToBlob } from "~/lib/fileConversion";
 import { theme } from "~/styles/tailwind";
 
@@ -26,7 +27,7 @@ export const ExportMenu: React.FC = () => {
   const [copying, setCopying] = useState(false);
   const imageData = useStore((store) => store.exports.imageData);
   const aspectRatio = useStore((store) => store.editor.aspectRatio);
-  const screenDimensions = useStore((store) => store.platform.screen.dimensions);
+  const layout = useLayout();
   const canvasDimensions = useStore((store) => store.map.dimensions);
   const ratio = aspectRatios[aspectRatio].ratio || [canvasDimensions.width, canvasDimensions.height];
 
@@ -160,7 +161,7 @@ export const ExportMenu: React.FC = () => {
         </MenuSection>
 
         <MenuSection className="flex flex-col space-y-3 w-56 md:w-auto">
-          {!screenDimensions.md && (
+          {layout.vertical && (
             <MenuSectionHeader>
               <Heading>Export</Heading>
             </MenuSectionHeader>

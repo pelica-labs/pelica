@@ -9,13 +9,14 @@ import { Heading } from "~/components/ui/Heading";
 import { app, useStore } from "~/core/app";
 import { computeDistance, Route } from "~/core/routes";
 import { getSelectedEntity } from "~/core/selectors";
+import { useLayout } from "~/hooks/useLayout";
 
 export const ItineraryMenu: React.FC = () => {
   const color = useStore((store) => store.routes.style.color);
   const width = useStore((store) => store.routes.style.width);
   const outline = useStore((store) => store.routes.style.outline);
   const route = useStore((store) => getSelectedEntity(store) as Route);
-  const screenDimensions = useStore((store) => store.platform.screen.dimensions);
+  const layout = useLayout();
 
   return (
     <>
@@ -67,7 +68,7 @@ export const ItineraryMenu: React.FC = () => {
           <Heading>Outline</Heading>
         </MenuSectionHeader>
 
-        <div className="mt-4 w-40" style={{ marginLeft: screenDimensions.md ? -4 : 0 }}>
+        <div className="mt-4 w-40" style={{ marginLeft: layout.horizontal ? -4 : 0 }}>
           <OutlineSelector
             value={outline}
             onChange={(outline) => {

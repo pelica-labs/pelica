@@ -7,13 +7,14 @@ import { MapTitleInput } from "~/components/editor/controls/MapTitleInput";
 import { DoubleCheckIcon, MenuIcon, RedoIcon, TrashIcon, UndoIcon } from "~/components/ui/Icon";
 import { app, useStore } from "~/core/app";
 import { useHotkey } from "~/hooks/useHotkey";
+import { useLayout } from "~/hooks/useLayout";
 
 export const MapMenu: React.FC = () => {
   const canSelectAll = useStore((store) => store.entities.items.length > 0);
   const canUndo = useStore((store) => store.history.actions.length > 0);
   const canRedo = useStore((store) => store.history.redoStack.length > 0);
   const canClear = useStore((store) => store.entities.items.length > 0);
-  const screenDimensions = useStore((store) => store.platform.screen.dimensions);
+  const layout = useLayout();
 
   const UndoHotkey = useHotkey({ key: "z", meta: true }, () => {
     app.history.undo();
@@ -52,7 +53,7 @@ export const MapMenu: React.FC = () => {
                   className="fixed top-0 mt-10 mb-16 md:mb-0 md:bottom-auto z-50 left-0 md:left-auto right-0 md:w-56 md:mr-1 origin-top-right bg-white border md:rounded md:shadow outline-none py-1"
                 >
                   <div className="flex flex-col">
-                    {!screenDimensions.md && (
+                    {layout.vertical && (
                       <>
                         <div className="px-1">
                           <MapTitleInput />

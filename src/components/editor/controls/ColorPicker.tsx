@@ -6,9 +6,9 @@ import tinycolor from "tinycolor2";
 import { Button } from "~/components/ui/Button";
 import { PlusIcon, TrashIcon } from "~/components/ui/Icon";
 import { Tooltip } from "~/components/ui/Tooltip";
-import { useStore } from "~/core/app";
 import { useAsyncStorage } from "~/hooks/useAsyncStorage";
 import { useClickOutside } from "~/hooks/useClickOutside";
+import { useLayout } from "~/hooks/useLayout";
 import { theme } from "~/styles/tailwind";
 
 const MAX_COLORS = 21;
@@ -39,10 +39,10 @@ type Props = {
 export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete }) => {
   const [color, setColor] = useState(value);
   const [showExtendedPicker, setShowExtendedPicker] = useState(false);
-  const screenDimensions = useStore((store) => store.platform.screen.dimensions);
+  const layout = useLayout();
   const [recentColors, setRecentColors] = useAsyncStorage<string[]>(`recentColors`, []);
 
-  const size = screenDimensions.lg ? 18 : 26;
+  const size = layout.horizontal ? 18 : 26;
 
   const extendedPickerRef = useClickOutside<HTMLDivElement>(() => {
     if (showExtendedPicker) {

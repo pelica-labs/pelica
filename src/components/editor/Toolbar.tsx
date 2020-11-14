@@ -4,10 +4,11 @@ import { HandIcon, MousePointerIcon, PencilIcon, PinIcon, RouteIcon, StyleIcon, 
 import { IconButton } from "~/components/ui/IconButton";
 import { app, useStore } from "~/core/app";
 import { useHotkey } from "~/hooks/useHotkey";
+import { useLayout } from "~/hooks/useLayout";
 
 export const Toolbar: React.FC = () => {
   const editorMode = useStore((store) => store.editor.mode);
-  const screenDimensions = useStore((store) => store.platform.screen.dimensions);
+  const layout = useLayout();
 
   const MoveHotkey = useHotkey({ key: "1", meta: true }, () => {
     app.editor.setEditorMode("move");
@@ -28,7 +29,7 @@ export const Toolbar: React.FC = () => {
     app.editor.setEditorMode("text");
   });
 
-  const tooltipPlacement = screenDimensions.md ? "left" : "above";
+  const tooltipPlacement = layout.horizontal ? "left" : "above";
 
   return (
     <div className="flex md:flex-col md:space-y-1 p-1">

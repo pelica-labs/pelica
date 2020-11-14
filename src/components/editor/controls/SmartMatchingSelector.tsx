@@ -5,8 +5,8 @@ import Popover from "react-popover";
 
 import { BicycleIcon, CarIcon, Icon, InformationIcon, WalkingIcon } from "~/components/ui/Icon";
 import { IconButton } from "~/components/ui/IconButton";
-import { useStore } from "~/core/app";
 import { SmartMatching, SmartMatchingProfile } from "~/core/smartMatching";
+import { useLayout } from "~/hooks/useLayout";
 import { theme } from "~/styles/tailwind";
 
 type Props = {
@@ -30,7 +30,7 @@ const Profiles: ProfileConfiguration[] = [
 
 export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange, disabled = false }) => {
   const [showTooltip, setShowTooltip] = useState(false);
-  const screenDimensions = useStore((store) => store.platform.screen.dimensions);
+  const layout = useLayout();
 
   return (
     <div
@@ -87,7 +87,7 @@ export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange, disabl
           className="z-50"
           enterExitTransitionDurationMs={200}
           isOpen={showTooltip}
-          place={screenDimensions.md ? "left" : "above"}
+          place={layout.horizontal ? "left" : "above"}
           style={{ fill: theme.colors.orange[500] }}
           tipSize={4}
           onOuterAction={() => setShowTooltip(false)}

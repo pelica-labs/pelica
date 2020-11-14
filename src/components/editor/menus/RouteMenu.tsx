@@ -16,6 +16,7 @@ import { app, useStore } from "~/core/app";
 import { computeDistance, Route } from "~/core/routes";
 import { getSelectedEntity } from "~/core/selectors";
 import { HotkeyView } from "~/hooks/useHotkey";
+import { useLayout } from "~/hooks/useLayout";
 
 export const RouteMenu: React.FC = () => {
   const fileInput = useRef<HTMLInputElement>(null);
@@ -24,7 +25,7 @@ export const RouteMenu: React.FC = () => {
   const outline = useStore((store) => store.routes.style.outline);
   const smartMatching = useStore((store) => store.routes.smartMatching);
   const route = useStore((store) => getSelectedEntity(store) as Route);
-  const screenDimensions = useStore((store) => store.platform.screen.dimensions);
+  const layout = useLayout();
   const circleMode = useStore((store) => store.routes.circleMode);
   const keyboardAvailable = useStore((store) => store.platform.keyboard.available);
 
@@ -75,7 +76,7 @@ export const RouteMenu: React.FC = () => {
         <MenuSectionHeader>
           <Heading>Outline</Heading>
         </MenuSectionHeader>
-        <div className="mt-4 w-40" style={{ marginLeft: screenDimensions.md ? -4 : 0 }}>
+        <div className="mt-4 w-40" style={{ marginLeft: layout.horizontal ? -4 : 0 }}>
           <OutlineSelector
             value={outline}
             onChange={(outline) => {

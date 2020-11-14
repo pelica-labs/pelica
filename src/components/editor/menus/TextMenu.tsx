@@ -8,6 +8,7 @@ import { MenuSection, MenuSectionHeader } from "~/components/editor/menus/MenuSe
 import { Heading } from "~/components/ui/Heading";
 import { app, useStore } from "~/core/app";
 import { MAX_TEXT_SIZE, MIN_TEXT_SIZE } from "~/core/texts";
+import { useLayout } from "~/hooks/useLayout";
 
 export const TextMenu: React.FC = () => {
   const textContainer = useRef<HTMLDivElement | null>(null);
@@ -15,7 +16,7 @@ export const TextMenu: React.FC = () => {
   const width = useStore((store) => store.texts.style.width);
   const outline = useStore((store) => store.texts.style.outline);
   const label = useStore((store) => store.texts.style.label);
-  const screenDimensions = useStore((store) => store.platform.screen.dimensions);
+  const layout = useLayout();
 
   useEffect(() => {
     const textArea = textContainer.current?.querySelector("textarea");
@@ -75,7 +76,7 @@ export const TextMenu: React.FC = () => {
         <MenuSectionHeader>
           <Heading>Outline</Heading>
         </MenuSectionHeader>
-        <div className="mt-4 w-40" style={{ marginLeft: screenDimensions.md ? -4 : 0 }}>
+        <div className="mt-4 w-40" style={{ marginLeft: layout.horizontal ? -4 : 0 }}>
           <OutlineSelector
             value={outline}
             onChange={(outline) => {
