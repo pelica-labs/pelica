@@ -9,7 +9,7 @@ export const Heading: React.FC<Props> = ({ as: Component = "h2", children, class
   return (
     <Component
       className={classNames(className, {
-        "text-sm md:text-xs uppercase font-light tracking-wide leading-none text-gray-800": true,
+        "text-sm md:text-xs font-semibold tracking-wide leading-none text-gray-800": true,
       })}
       {...props}
     >

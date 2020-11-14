@@ -1,6 +1,5 @@
 import classNames from "classnames";
 import React, { useEffect, useRef, useState } from "react";
-import { Trans } from "react-i18next";
 
 import { MapMenu } from "~/components/MapMenu";
 import { MenuBar } from "~/components/MenuBar";
@@ -44,10 +43,10 @@ export const Sidebar: React.FC = () => {
       {sidebarDimensions && (
         <div
           ref={toolbarRef}
-          className="fixed z-10 bottom-0 md:bottom-auto flex justify-between md:flex-col bg-white border border-gray-300 overflow-x-auto md:rounded md:shadow"
+          className="fixed z-50 bottom-0 md:bottom-auto flex justify-between md:flex-col bg-white border border-gray-300 overflow-x-auto md:rounded md:shadow"
           style={{
-            top: screenDimensions.md ? 73 : "initial",
-            right: screenDimensions.md ? sidebarDimensions.width + 2 : 0,
+            top: screenDimensions.md ? 48 : "initial",
+            right: screenDimensions.md ? sidebarDimensions.width + 6 : 0,
             left: screenDimensions.md ? "initial" : 0,
             transform: !screenDimensions.md && !showToolbar ? "translateX(-100vw)" : "initial",
           }}
@@ -70,7 +69,7 @@ export const Sidebar: React.FC = () => {
           >
             <MiniToolbar />
           </div>
-          <div className="fixed z-10 top-0 right-0 flex bg-opacity-95 bg-white py-1 pl-1 pr-2 space-x-1 rounded-bl shadow-2xl">
+          <div className="fixed z-10 top-0 right-0 flex bg-opacity-50 bg-gray-700 py-1 pl-1 pr-2 space-x-1 rounded-bl shadow-2xl">
             <MapMenu />
             <UserMenu />
           </div>
@@ -90,31 +89,20 @@ export const Sidebar: React.FC = () => {
         }}
       >
         {screenDimensions.md && <MenuBar />}
-
-        {screenDimensions.md && editorMode && (
-          <div className="flex justify-between items-center px-3 h-8 py-2 bg-gray-100">
-            <span className="text-xs uppercase text-gray-800 font-light tracking-wide leading-none">
-              <Trans i18nKey={`editor.mode.${editorMode}`} />
-            </span>
-          </div>
-        )}
-
         <div className="flex divide-x md:divide-x-0 md:flex-col md:space-x-0 md:divide-y bg-white text-gray-800 md:w-64 md:h-full overflow-y-auto md:shadow-md">
-          {editorMode === "move" && <MoveMenu />}
-          {editorMode === "select" && <SelectMenu />}
-          {editorMode === "route" && <RouteMenu />}
-          {editorMode === "pin" && <PinMenu />}
-          {editorMode === "text" && <TextMenu />}
-          {editorMode === "itinerary" && <ItineraryMenu />}
-          {editorMode === "style" && <StyleMenu />}
-          {editorMenuMode && (
-            <div
-              className="absolute md:fixed top-0 h-full py-3 md:py-0 bottom-0 right-0 left-0 md:left-auto w-full md:w-64 z-50 outline-none bg-white overflow-x-auto"
-              style={{ top: screenDimensions.md ? 42 : "initial" }}
-            >
-              {editorMenuMode === "export" && <ExportMenu />}
-              {editorMenuMode === "share" && <ShareMenu />}
-            </div>
+          {editorMenuMode === "export" && <ExportMenu />}
+
+          {editorMenuMode === "share" && <ShareMenu />}
+          {!editorMenuMode && (
+            <>
+              {editorMode === "move" && <MoveMenu />}
+              {editorMode === "select" && <SelectMenu />}
+              {editorMode === "route" && <RouteMenu />}
+              {editorMode === "pin" && <PinMenu />}
+              {editorMode === "text" && <TextMenu />}
+              {editorMode === "itinerary" && <ItineraryMenu />}
+              {editorMode === "style" && <StyleMenu />}
+            </>
           )}
         </div>
       </div>

@@ -35,9 +35,9 @@ export const MapMenu: React.FC = () => {
                 <Menu.Button
                   as="div"
                   className={classNames({
-                    "appearance-none inline-flex justify-center w-full text-sm font-medium leading-5 transition duration-150 ease-in-out rounded-md focus:outline-none": true,
-                    "bg-orange-200 rounded": open,
-                    "hover:text-orange-600": !open,
+                    "appearance-none inline-flex justify-center w-full text-sm font-medium leading-5 transition duration-150 ease-in-out rounded-md focus:outline-none hover:text-orange-600": true,
+                    "text-orange-500": open,
+                    "text-gray-200": !open,
                   })}
                 >
                   <button className="px-2 py-1 focus:outline-none focus:border-orange-300">

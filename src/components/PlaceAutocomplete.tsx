@@ -219,7 +219,7 @@ export const PlaceAutocomplete: React.FC<Props> = ({
         "group relative bg-white border text-gray-800 shadow flex flex-col transition-all duration-100 ease-in-out cursor-pointer": true,
         ...(collapsesWhenEmpty && {
           "w-56 rounded-lg": isFocused || search,
-          "w-12 rounded-full hover:bg-orange-200 hover:border-orange-300": !(isFocused || search),
+          "w-12 rounded-full hover:bg-orange-100 hover:border-orange-300": !(isFocused || search),
         }),
         ...(!collapsesWhenEmpty && {
           "w-56 rounded": true,
@@ -286,8 +286,8 @@ export const PlaceAutocomplete: React.FC<Props> = ({
               <li key={place.id}>
                 <a
                   className={classNames({
-                    "w-full text-left block px-2 py-2 cursor-pointer border-b hover:bg-orange-200 text-xs": true,
-                    "bg-orange-200": isKeyboardSelected,
+                    "w-full text-left block px-2 py-2 cursor-pointer border-b hover:bg-orange-100 text-xs": true,
+                    "bg-orange-100": isKeyboardSelected,
                   })}
                   onClick={(event) => onPlaceSelection(event, place)}
                   onMouseEnter={() => onPlaceHover(index)}
