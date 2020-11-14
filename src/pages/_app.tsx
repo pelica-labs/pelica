@@ -10,7 +10,7 @@ import React, { ErrorInfo } from "react";
 import FullStory from "react-fullstory";
 import { I18nextProvider } from "react-i18next";
 
-import { Meta } from "~/components/Meta";
+import { Meta } from "~/components/layout/Meta";
 import { getState } from "~/core/app";
 import { getSerializableState } from "~/core/selectors";
 import { initAnalytics, logEvent, logPageView } from "~/lib/analytics";

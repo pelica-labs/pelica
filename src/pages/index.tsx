@@ -4,10 +4,10 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { Container } from "~/components/Container";
-import { Footer } from "~/components/Footer";
-import { DownloadIcon, ExportIcon, PinIcon, StyleIcon } from "~/components/Icon";
-import { Navbar } from "~/components/Navbar";
+import { Footer } from "~/components/layout/Footer";
+import { Navbar } from "~/components/layout/Navbar";
+import { Container } from "~/components/ui/Container";
+import { DownloadIcon, ExportIcon, PinIcon, StyleIcon } from "~/components/ui/Icon";
 
 const Home: NextPage = () => {
   const { t } = useTranslation();

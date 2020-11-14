@@ -1,6 +1,6 @@
 import { CSSProperties } from "react";
 
-import { ExpandIcon, FacebookIcon, FileIcon, Icon, InstagramIcon, SquareIcon, YouTubeIcon } from "~/components/Icon";
+import { ExpandIcon, FacebookIcon, FileIcon, Icon, InstagramIcon, SquareIcon, YouTubeIcon } from "~/components/ui/Icon";
 
 export type AspectRatio = keyof typeof aspectRatios;
 

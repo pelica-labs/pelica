@@ -1,6 +1,6 @@
 import { bbox, lineString } from "@turf/turf";
 
-import { ErrorIcon, WarningIcon } from "~/components/Icon";
+import { ErrorIcon, WarningIcon } from "~/components/ui/Icon";
 import { App } from "~/core/zustand";
 import { parseGpx } from "~/lib/gpx";
 import { numericId } from "~/lib/id";

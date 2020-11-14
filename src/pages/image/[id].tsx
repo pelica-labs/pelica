@@ -3,8 +3,8 @@ import Head from "next/head";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import { LoadingScreen } from "~/components/LoadingScreen";
-import { Whoops } from "~/components/Whoops";
+import { LoadingScreen } from "~/components/layout/LoadingScreen";
+import { Whoops } from "~/components/layout/Whoops";
 import { ImageModel } from "~/core/db";
 import { dynamo, s3 } from "~/lib/aws";
 import { getEnv } from "~/lib/config";

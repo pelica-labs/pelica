@@ -1,7 +1,7 @@
 import { GetServerSideProps, NextPage } from "next";
 import React from "react";
 
-import { MapEditor } from "~/components/MapEditor";
+import { MapEditor } from "~/components/editor/MapEditor";
 import { MapModel } from "~/core/db";
 import { getUserId, withSession } from "~/core/session";
 import { dynamo } from "~/lib/aws";

@@ -5,11 +5,11 @@ import React, { useState } from "react";
 import { BounceLoader } from "react-spinners";
 import useSWR from "swr";
 
-import { Container } from "~/components/Container";
-import { MapPlusIcon } from "~/components/Icon";
-import { MapPreview, MapPreviewLoading } from "~/components/MapPreview";
-import { Navbar } from "~/components/Navbar";
-import { GoogleButton } from "~/components/SocialButtons";
+import { Navbar } from "~/components/layout/Navbar";
+import { MapPreview, MapPreviewLoading } from "~/components/saved-maps/MapPreview";
+import { Container } from "~/components/ui/Container";
+import { MapPlusIcon } from "~/components/ui/Icon";
+import { GoogleButton } from "~/components/ui/SocialButtons";
 import { MapModel } from "~/core/db";
 import { theme } from "~/styles/tailwind";
 

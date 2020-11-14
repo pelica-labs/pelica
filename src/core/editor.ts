@@ -1,4 +1,4 @@
-import { HandIcon, MousePointerIcon, PencilIcon, PinIcon, RouteIcon, StyleIcon, TextIcon } from "~/components/Icon";
+import { HandIcon, MousePointerIcon, PencilIcon, PinIcon, RouteIcon, StyleIcon, TextIcon } from "~/components/ui/Icon";
 import { AspectRatio } from "~/core/aspectRatio";
 import { App } from "~/core/zustand";
 import { defaultStyle, Style } from "~/map/style";

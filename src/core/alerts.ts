@@ -1,4 +1,4 @@
-import { Icon, InformationIcon } from "~/components/Icon";
+import { Icon, InformationIcon } from "~/components/ui/Icon";
 import { App } from "~/core/zustand";
 
 type Alert = {

@@ -2,15 +2,14 @@ import { EmojiConvertor } from "emoji-js";
 import React from "react";
 import { useEffect, useState } from "react";
 
-import { Icon, iconFromDangerousSvgString, iconFromImgUrl, IconProps, icons } from "~/components/Icon";
+import { defaultIcons } from "~/components/editor/controls/IconSelector";
+import { Icon, iconFromDangerousSvgString, iconFromImgUrl, IconProps } from "~/components/ui/Icon";
 
 export interface IconCollection {
   icons: { [key: string]: { body: string; width?: number; height?: number } | React.FC<IconProps> };
   width: number;
   height: number;
 }
-
-const defaultIcons = icons();
 
 export const emoji = new EmojiConvertor();
 emoji.replace_mode = "img";

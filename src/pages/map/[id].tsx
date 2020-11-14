@@ -3,8 +3,8 @@ import Head from "next/head";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import { MapViewer } from "~/components/MapViewer";
-import { Whoops } from "~/components/Whoops";
+import { Whoops } from "~/components/layout/Whoops";
+import { MapViewer } from "~/components/map/MapViewer";
 import { MapModel } from "~/core/db";
 import { dynamo } from "~/lib/aws";
 import { staticImage } from "~/lib/staticImages";

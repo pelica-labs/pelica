@@ -1,9 +1,9 @@
 import { NextPage } from "next";
 import React from "react";
 
-import { Container } from "~/components/Container";
-import { Footer } from "~/components/Footer";
-import { Navbar } from "~/components/Navbar";
+import { Footer } from "~/components/layout/Footer";
+import { Navbar } from "~/components/layout/Navbar";
+import { Container } from "~/components/ui/Container";
 
 const Terms: NextPage = () => {
   return (

@@ -1,7 +1,7 @@
 import React, { ReactElement } from "react";
 import ReactDOMServer from "react-dom/server";
 
-import { pins } from "~/components/Pin";
+import { pins } from "~/components/editor/Pin";
 import { getState } from "~/core/app";
 import { PinIcon } from "~/core/pins";
 import { getMap } from "~/core/selectors";
