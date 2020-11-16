@@ -22,6 +22,13 @@ export const HotkeysModal: React.FC<Props> = (props) => {
       <h1 className="text-center font-semibold tracking-wide leading-none text-gray-800">Pelica hotkeys</h1>
       <div className="flex mt-10 justify-around flex-wrap gap-4">
         <div className="flex flex-col">
+          <HotkeyDescription hotkey={{ value: "←" }} label="Move left" />
+          <HotkeyDescription hotkey={{ value: "→" }} label="Move right" />
+          <HotkeyDescription hotkey={{ value: "↑" }} label="Move up" />
+          <HotkeyDescription hotkey={{ value: "↓" }} label="Move down" />
+          <HotkeyDescription hotkey={{ value: "+" }} label="Zoom in" />
+          <HotkeyDescription hotkey={{ value: "-" }} label="Zoom out" />
+          <div className="border-t border-gray-200 w-64 mt-2 pt-2" />
           <HotkeyDescription hotkey={{ value: "a", meta: true }} label="Select all" />
           <HotkeyDescription hotkey={{ value: "c", meta: true }} label="Copy selection" />
           <HotkeyDescription hotkey={{ value: "x", meta: true }} label="Cut selection" />
