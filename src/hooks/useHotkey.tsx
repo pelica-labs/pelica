@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from "react";
 
 import { useStore } from "~/core/app";
 
-type Hotkey = HotkeyModifiers & {
+export type Hotkey = HotkeyModifiers & {
   key?: string;
   value?: string;
   global?: boolean;

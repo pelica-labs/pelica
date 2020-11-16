@@ -15,6 +15,7 @@ import { getState } from "~/core/app";
 import { getSerializableState } from "~/core/selectors";
 import { initAnalytics, logEvent, logPageView } from "~/lib/analytics";
 import { i18n } from "~/lib/i18n";
+import { setupModals } from "~/lib/modals";
 
 Sentry.init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
@@ -49,6 +50,8 @@ Router.events.on("routeChangeError", () => {
   }
   NProgress.done();
 });
+
+setupModals();
 
 class App extends NextApp {
   componentDidMount(): void {

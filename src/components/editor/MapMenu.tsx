@@ -1,19 +1,24 @@
 import { Menu } from "@headlessui/react";
 import classNames from "classnames";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 
 import { MapTitleInput } from "~/components/editor/controls/MapTitleInput";
+import { HotkeysModal } from "~/components/editor/HotkeysModal";
+import { NavigationModal } from "~/components/editor/NavigationModal";
 import { DoubleCheckIcon, MenuIcon, RedoIcon, TrashIcon, UndoIcon } from "~/components/ui/Icon";
 import { app, useStore } from "~/core/app";
 import { useHotkey } from "~/hooks/useHotkey";
 import { useLayout } from "~/hooks/useLayout";
 
 export const MapMenu: React.FC = () => {
+  const [showHotkeysModal, setShowHotkeysModal] = useState(false);
+  const [showNavigationModal, setShowNavigationModal] = useState(false);
   const canSelectAll = useStore((store) => store.entities.items.length > 0);
   const canUndo = useStore((store) => store.history.actions.length > 0);
   const canRedo = useStore((store) => store.history.redoStack.length > 0);
   const canClear = useStore((store) => store.entities.items.length > 0);
+  const isKeyboardAvailable = useStore((store) => store.platform.keyboard.available);
   const layout = useLayout();
 
   const UndoHotkey = useHotkey({ key: "z", meta: true }, () => {
@@ -28,6 +33,20 @@ export const MapMenu: React.FC = () => {
 
   return (
     <div className="flex items-center justify-center">
+      <HotkeysModal
+        isOpen={showHotkeysModal}
+        onRequestClose={() => {
+          setShowHotkeysModal(false);
+        }}
+      />
+
+      <NavigationModal
+        isOpen={showNavigationModal}
+        onRequestClose={() => {
+          setShowNavigationModal(false);
+        }}
+      />
+
       <div className="md:relative inline-block text-left">
         <Menu>
           {({ open }) => (
@@ -145,6 +164,42 @@ export const MapMenu: React.FC = () => {
                             <span className="text-sm">Clear canvas</span>
                             <TrashIcon className="w-3 h-3 text-gray-600" />
                           </span>
+                        </a>
+                      )}
+                    </Menu.Item>
+
+                    <div className="border-t my-1" />
+
+                    {isKeyboardAvailable && (
+                      <Menu.Item>
+                        {({ active }) => (
+                          <a
+                            className={classNames({
+                              "text-gray-800 text-sm px-2 py-1 hover:bg-orange-200": true,
+                              "bg-orange-200": active,
+                            })}
+                            onClick={() => {
+                              setShowHotkeysModal(true);
+                            }}
+                          >
+                            Hotkeys
+                          </a>
+                        )}
+                      </Menu.Item>
+                    )}
+
+                    <Menu.Item>
+                      {({ active }) => (
+                        <a
+                          className={classNames({
+                            "text-gray-800 text-sm px-2 py-1 hover:bg-orange-200": true,
+                            "bg-orange-200": active,
+                          })}
+                          onClick={() => {
+                            setShowNavigationModal(true);
+                          }}
+                        >
+                          Navigation help
                         </a>
                       )}
                     </Menu.Item>
