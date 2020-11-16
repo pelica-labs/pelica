@@ -56,7 +56,7 @@ export const applyLayers = (): void => {
     layout: {
       "icon-image": "watermark",
       "icon-anchor": "bottom-left",
-      "icon-offset": [8, -6],
+      "icon-offset": [30, -12],
       "icon-size": 0.25,
     },
   });

@@ -57,14 +57,6 @@ export const MapEditor: React.FC<Props> = ({ map }) => {
     });
   });
 
-  useEffect(() => {
-    app.sync.mergeState(map);
-
-    setTimeout(() => {
-      app.entities.forceRerender();
-    });
-  }, [map]);
-
   useStoreSubscription(
     (store) => getSyncableState(store),
     debounce((map) => {
@@ -102,7 +94,7 @@ export const MapEditor: React.FC<Props> = ({ map }) => {
       )}
 
       <div className="relative w-full h-full flex-1">
-        <Map />
+        <Map map={map} />
 
         <div className="absolute bottom-0 mb-2 flex justify-center w-full z-10 pointer-events-none">
           <Alerts />

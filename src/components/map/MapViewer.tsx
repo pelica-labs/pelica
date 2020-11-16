@@ -20,19 +20,10 @@ export const MapViewer: React.FC<Props> = ({ map }) => {
   const currentLocation = useStore((store) => store.geolocation.currentLocation);
   const [session] = useSession();
 
-  useEffect(() => {
-    app.sync.mergeState(map);
-    app.editor.setReadOnly(true);
-
-    setTimeout(() => {
-      app.entities.forceRerender();
-    });
-  }, [map]);
-
   return (
     <div className="flex flex-col md:flex-row h-full justify-between bg-gray-200">
       <div className="relative w-full h-full flex-1">
-        <Map readOnly />
+        <Map readOnly map={map} />
       </div>
 
       <div className="absolute top-0 left-0 flex flex-col space-y-2 mt-2 ml-2">

@@ -8,6 +8,7 @@ import { Clipboard } from "~/components/editor/Clipboard";
 import { MapTitle } from "~/components/map/MapTitle";
 import { app, getState, useStore, useStoreSubscription } from "~/core/app";
 import { computeMapDimensions, computeResizingRatio } from "~/core/aspectRatio";
+import { MapModel } from "~/core/db";
 import { entityToFeature, TransientEntity } from "~/core/entities";
 import {
   getNextPointOverlay,
@@ -42,17 +43,18 @@ import { applyScrollInteractions } from "~/map/interactions/scroll";
 import { applyLayers } from "~/map/layers";
 import { applySources, MapSource, setSourceCluster } from "~/map/sources";
 import { styleToUrl } from "~/map/style";
+import { applyWatermark } from "~/map/watermark";
 
 type Props = {
+  map: MapModel;
+
   readOnly?: boolean;
 };
 
-export const Map: React.FC<Props> = ({ readOnly = false }) => {
+export const Map: React.FC<Props> = ({ map: mapModel, readOnly = false }) => {
   const container = useRef<HTMLDivElement>(null);
   const wrapper = useRef<HTMLDivElement>(null);
   const aspectRatio = useStore((store) => store.editor.aspectRatio);
-
-  const displayHtmlWatermark = readOnly;
 
   /**
    * Initialize map
@@ -63,6 +65,7 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
     }
 
     app.platform.initialize();
+    app.sync.mergeState(mapModel);
 
     const state = getState();
     const accessToken = getEnv("NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN", process.env.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN);
@@ -98,6 +101,7 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
 
       map.resize();
 
+      applyWatermark();
       applySources();
       applyLayers();
       applyFeatures(getEntityFeatures(), [MapSource.Route, MapSource.Pin, MapSource.Text]);
@@ -127,18 +131,9 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
     (coordinates) => {
       getMap().flyTo({
         center: coordinates as [number, number],
-        duration: 500,
+        zoom: getState().map.zoom,
+        animate: false,
       });
-    }
-  );
-
-  /**
-   * Sync zoom
-   */
-  useStoreSubscription(
-    (store) => store.map.zoom,
-    (zoom) => {
-      getMap().zoomTo(zoom);
     }
   );
 
@@ -196,8 +191,16 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
 
         if (exporting) {
           setTimeout(() => {
-            app.exports.generateImage();
-          }, 500);
+            document.querySelector("#watermark")?.classList.toggle("hidden");
+            applyFeatures([getWatermarkOverlay(getMap().getBounds().getSouthWest().toArray())], [MapSource.Watermark]);
+
+            getMap().once("idle", () => {
+              app.exports.generateImage();
+
+              applyFeatures([], [MapSource.Watermark]);
+              document.querySelector("#watermark")?.classList.toggle("hidden");
+            });
+          });
         }
       });
     }
@@ -510,31 +513,6 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
   );
 
   /**
-   * Sync watermark
-   */
-  useStoreSubscription(
-    (store) => ({
-      exporting: store.exports.exporting,
-    }),
-    ({ exporting }) => {
-      const features: RawFeature[] = [];
-      const mapboxControls = document.querySelector(".mapboxgl-control-container")?.classList;
-
-      if (exporting) {
-        features.push(getWatermarkOverlay(getMap().getBounds().getSouthWest().toArray()));
-      }
-
-      if (exporting) {
-        mapboxControls?.add("hidden");
-      } else {
-        mapboxControls?.remove("hidden");
-      }
-
-      applyFeatures(features, [MapSource.Watermark]);
-    }
-  );
-
-  /**
    * Sync cursor
    */
   useStoreSubscription(
@@ -631,13 +609,7 @@ export const Map: React.FC<Props> = ({ readOnly = false }) => {
               "border border-gray-400": aspectRatio !== "fill",
             })}
             id="map"
-          >
-            {displayHtmlWatermark && (
-              <div className="absolute bottom-0 left-0 flex mb-1 ml-1">
-                <img alt="Watermark" className="w-24" src="/images/watermark.png" />
-              </div>
-            )}
-          </div>
+          />
         </div>
       </div>
     </>
