@@ -3,6 +3,7 @@ import Head from "next/head";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
+import { OverlayedLogo } from "~/components/layout/OverlayedLogo";
 import { Whoops } from "~/components/layout/Whoops";
 import { MapViewer } from "~/components/map/MapViewer";
 import { MapModel } from "~/core/db";
@@ -73,6 +74,8 @@ const ViewMap: NextPage<Props> = ({ currentUrl, map }) => {
       </Head>
 
       <MapViewer map={map} />
+
+      <OverlayedLogo />
     </>
   );
 };

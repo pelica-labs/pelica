@@ -4,6 +4,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import { LoadingScreen } from "~/components/layout/LoadingScreen";
+import { OverlayedLogo } from "~/components/layout/OverlayedLogo";
 import { Whoops } from "~/components/layout/Whoops";
 import { ImageModel } from "~/core/db";
 import { dynamo, s3 } from "~/lib/aws";
@@ -82,7 +83,7 @@ const ViewMap: NextPage<Props> = ({ status, currentUrl, file }) => {
   const title = [t("pelica"), file.name].filter((text) => !!text).join(" · ");
 
   return (
-    <div className="bg-gray-900 h-screen p-4">
+    <div className="bg-gray-900 h-screen p-1">
       <Head>
         <meta key="title" content={title} property="og:title" />
         <meta key="ogDescription" content={t("tagline")} property="og:description" />
@@ -98,6 +99,8 @@ const ViewMap: NextPage<Props> = ({ status, currentUrl, file }) => {
       </Head>
 
       <img className="object-contain m-auto w-full h-full" src={file.url} />
+
+      <OverlayedLogo />
     </div>
   );
 };
