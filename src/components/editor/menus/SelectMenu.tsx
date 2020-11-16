@@ -253,7 +253,11 @@ export const SelectMenu: React.FC = () => {
                 app.texts.transientUpdateSelectedText({ label });
               }}
               onChangeComplete={(label) => {
-                app.texts.updateSelectedText({ label });
+                if (!label) {
+                  app.selection.deleteSelectedEntities();
+                } else {
+                  app.texts.updateSelectedText({ label });
+                }
               }}
             />
           </div>

@@ -1,14 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 
 type Props = {
   value: string;
 
   onChange: (value: string) => void;
-  onChangeComplete: (value: string) => void;
+  onChangeComplete: (value: string | null) => void;
 };
 
 export const LabelTextareaField: React.FC<Props> = ({ value, onChange, onChangeComplete }) => {
+  useEffect(() => {
+    return () => {
+      if (!value) {
+        onChangeComplete(null);
+      }
+    };
+  }, []);
+
   return (
     <div>
       <TextareaAutosize

@@ -98,7 +98,7 @@ export const TextMenu: React.FC = () => {
               app.texts.setStyle({ label });
             }}
             onChangeComplete={(label) => {
-              app.texts.setStyle({ label });
+              app.texts.setStyle({ label: label || "" });
             }}
           />
         </div>
