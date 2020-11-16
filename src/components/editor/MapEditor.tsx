@@ -1,5 +1,5 @@
 import { debounce } from "lodash";
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import { useDropzone } from "react-dropzone";
 
 import { ItineraryInput } from "~/components/editor/controls/ItineraryInput";
@@ -55,6 +55,10 @@ export const MapEditor: React.FC<Props> = ({ map }) => {
       color: "green",
       timeout: 3000,
     });
+  });
+
+  useHotkey({ key: " " }, () => {
+    app.map.fitSelectedEntities();
   });
 
   useStoreSubscription(

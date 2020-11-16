@@ -1,11 +1,13 @@
 import { GeocodeFeature } from "@mapbox/mapbox-sdk/services/geocoding";
-import { BBox, Position } from "@turf/turf";
+import { BBox, bbox, featureCollection, Position } from "@turf/turf";
 import { throttle } from "lodash";
 
+import { entityToFeature } from "~/core/entities";
 import { Place } from "~/core/itineraries";
-import { getMap } from "~/core/selectors";
+import { getMap, getSelectedEntities } from "~/core/selectors";
 import { App } from "~/core/zustand";
 import { mapboxGeocoding } from "~/lib/mapbox";
+import { RawFeature } from "~/map/features";
 
 export type Map = {
   current: mapboxgl.Map | null;
@@ -70,10 +72,28 @@ export const map = ({ mutate, get }: App) => ({
     });
   },
 
-  setBounds(bounds: BBox) {
+  setBounds: (bounds: BBox) => {
     mutate((state) => {
       state.map.bounds = bounds;
     });
+  },
+
+  fitSelectedEntities: () => {
+    const selectedEntities = getSelectedEntities(get());
+
+    const bounds = bbox(
+      featureCollection(
+        selectedEntities
+          .map((entity) => {
+            return entityToFeature(entity);
+          })
+          .filter((feature): feature is RawFeature => {
+            return !!feature;
+          })
+      )
+    );
+
+    get().map.setBounds(bounds);
   },
 
   updateFeatures: throttle(async (coordinates: Position) => {
