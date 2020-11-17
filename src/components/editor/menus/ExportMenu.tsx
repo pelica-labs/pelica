@@ -7,6 +7,7 @@ import BounceLoader from "react-spinners/BounceLoader";
 import { AspectRatioSelector } from "~/components/editor/controls/AspectRatioSelector";
 import { MenuSection, MenuSectionHeader } from "~/components/editor/menus/MenuSection";
 import { Button } from "~/components/ui/Button";
+import { BuyMeACoffeeButton } from "~/components/ui/BuyMeACoffeeButton";
 import { Heading } from "~/components/ui/Heading";
 import { CopyIcon } from "~/components/ui/Icon";
 import { GoogleButton } from "~/components/ui/SocialButtons";
@@ -259,7 +260,14 @@ export const ExportMenu: React.FC = () => {
           </MenuSection>
         )}
 
-        <div className="md:mt-auto px-3 md:pt-3 md:pb-2 w-64 md:w-auto">
+        <MenuSection className="md:mt-auto">
+          <MenuSectionHeader>
+            <Heading>Support us</Heading>
+          </MenuSectionHeader>
+          <BuyMeACoffeeButton className="mt-2" />
+        </MenuSection>
+
+        <div className="px-3 md:pt-3 md:pb-2 w-64 md:w-auto">
           <MenuSectionHeader>
             <Heading>Copyright</Heading>
           </MenuSectionHeader>

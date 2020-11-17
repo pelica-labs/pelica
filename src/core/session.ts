@@ -63,8 +63,3 @@ export const clearAnonymousSession = async (req: IncomingMessage): Promise<void>
 
   await req.session.save();
 };
-
-export const impersonate = async (req: IncomingMessage, userId: ID): Promise<void> => {
-  req.session.set(SESSION_KEY, userId);
-  await req.session.save();
-};
