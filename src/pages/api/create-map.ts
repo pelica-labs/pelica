@@ -2,7 +2,7 @@ import HttpStatus from "http-status-codes";
 import { NextApiHandler } from "next";
 
 import { MapModel } from "~/core/db";
-import { initializeAnonymousSession, withApiSession } from "~/core/session";
+import { getUserId, withApiSession } from "~/core/session";
 import { dynamo } from "~/lib/aws";
 import { stringId } from "~/lib/id";
 
@@ -14,7 +14,7 @@ const CreateMap: NextApiHandler = withApiSession(async (req, res) => {
   }
 
   const id = stringId();
-  const userId = await initializeAnonymousSession(req);
+  const userId = await getUserId(req);
 
   const map: MapModel = {
     id,

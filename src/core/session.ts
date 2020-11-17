@@ -39,7 +39,7 @@ export const getUserId = async (req: IncomingMessage): Promise<ID> => {
     return session.user.id;
   }
 
-  return getAnonymousUserId(req);
+  return initializeAnonymousSession(req);
 };
 
 export const getAnonymousUserId = (req: IncomingMessage): ID => {
