@@ -60,7 +60,7 @@ const Maps: NextPage<Props> = () => {
           <div className="flex items-center justify-between px-1">
             <h1 className="px-2 text-2xl">Saved maps</h1>
             <button
-              className="w-12 h-12 flex items-center justify-center bg-orange-600 hover:bg-orange-500 shadow transition duration-300 ease-in-out text-gray-100 px-3 py-1 rounded-full uppercase tracking-wider font-medium hover:scale-105 hover:shadow focus:outline-none focus:shadow-outline text-sm"
+              className="w-12 h-12 flex items-center justify-center bg-orange-600 hover:bg-orange-500 shadow transition duration-300 ease-in-out text-gray-100 px-3 py-1 rounded-full uppercase tracking-wider font-medium hover:scale-105 hover:shadow focus:outline-none focus:ring text-sm"
               disabled={creating}
               onClick={() => {
                 createMap();

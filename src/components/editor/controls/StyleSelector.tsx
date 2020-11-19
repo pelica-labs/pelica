@@ -62,14 +62,14 @@ export const StyleSelector: React.FC<Props> = ({ value, onChange }) => {
           <button
             key={style.id}
             className={classnames({
-              "flex flex-col items-stretch p-2 rounded font-medium cursor-pointer hover:bg-orange-100 h-full md:w-full md:h-40 focus:outline-none focus:shadow-outline overflow-hidden": true,
-              "bg-orange-100 shadow-outline": isSelectedStyle,
+              "flex flex-col items-stretch p-2 rounded font-medium cursor-pointer hover:bg-orange-100 h-full md:w-full md:h-40 focus:outline-none focus:ring overflow-hidden": true,
+              "bg-orange-100 ring": isSelectedStyle,
             })}
             onClick={() => {
               onChange(style);
             }}
           >
-            <span className="block text-left text-xs uppercase text-gray-800 whitespace-no-wrap w-40 md:w-full mb-2 md:mb-0">
+            <span className="block text-left text-xs uppercase text-gray-800 whitespace-nowrap w-40 md:w-full mb-2 md:mb-0">
               {style.name}
             </span>
             <StylePreview hash={style.hash || null} src={previews[style.id]} />

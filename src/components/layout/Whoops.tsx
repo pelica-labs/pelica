@@ -35,7 +35,7 @@ export const Whoops: React.FC<{ statusCode?: number }> = ({ statusCode }) => {
           <img src="/images/404.svg" />
         </div>
         <Link passHref href="/app">
-          <button className="h-12 mb-6 mt-12 bg-orange-600 hover:bg-orange-500 shadow transition duration-300 ease-in-out text-gray-100 px-6 py-1 rounded-full uppercase tracking-wider font-bold hover:scale-105 hover:shadow transform hover:-translate-y-1 focus:outline-none focus:shadow-outline">
+          <button className="h-12 mb-6 mt-12 bg-orange-600 hover:bg-orange-500 shadow transition duration-300 ease-in-out text-gray-100 px-6 py-1 rounded-full uppercase tracking-wider font-bold hover:scale-105 hover:shadow transform hover:-translate-y-1 focus:outline-none focus:ring">
             Start mapping
           </button>
         </Link>

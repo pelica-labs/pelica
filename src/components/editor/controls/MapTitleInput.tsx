@@ -13,7 +13,7 @@ export const MapTitleInput: React.FC = () => {
   return (
     <div>
       <input
-        className="py-1 px-2 truncate w-full font-medium placeholder-gray-700 focus:placeholder-gray-400 focus:outline-none focus:shadow-outline border border-transparent rounded hover:border-gray-300"
+        className="py-1 px-2 truncate w-full font-medium placeholder-gray-700 focus:placeholder-gray-400 focus:outline-none focus:ring border border-transparent rounded hover:border-gray-300"
         placeholder="Untitled Map"
         value={title}
         onBlur={() => {

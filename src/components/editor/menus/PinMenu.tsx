@@ -107,7 +107,7 @@ export const PinMenu: React.FC = () => {
             checked={clusterPoints}
             className={classNames(
               { "bg-orange-600": clusterPoints, "bg-gray-400": !clusterPoints },
-              "relative inline-flex flex-shrink-0 h-4 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer w-7 focus:outline-none focus:shadow-outline"
+              "relative inline-flex flex-shrink-0 h-4 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer w-7 focus:outline-none focus:ring"
             )}
             onChange={() => {
               app.pins.toggleCluster();

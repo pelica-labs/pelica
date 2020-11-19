@@ -116,13 +116,13 @@ export const IconSelector: React.FC<Props> = ({ value, onChange, onChangeComplet
       </div>
 
       {showMenu && (
-        <div className="fixed bottom-0 md:bottom-auto md:absolute left-0 right-0 md:right-auto md:top-0 mt-8 bg-white text-gray-800 md:rounded border flex flex-wrap pl-1 pb-1 shadow z-50 w-full md:w-40 xl:w-48">
+        <div className="fixed bottom-0 md:bottom-auto md:absolute left-0 right-0 md:right-auto md:top-0 mt-8 bg-white text-gray-800 md:rounded border flex flex-wrap pl-1 pb-1 shadow z-50 w-full md:w-56">
           <div className="relative w-full my-1 mr-1">
             <SearchIcon className="absolute text-gray-400 top-0 left-0 w-3 h-3 ml-2 mt-2" />
 
             <input
               autoFocus
-              className="shadow appearance-none p-1 text-xs border rounded w-full pl-6 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none p-1 text-xs border rounded w-full pl-6 text-gray-700 leading-tight focus:outline-none focus:ring"
               placeholder="Search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}

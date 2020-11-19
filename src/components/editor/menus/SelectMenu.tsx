@@ -293,7 +293,7 @@ export const SelectMenu: React.FC = () => {
                 checked={selectedEntity.filled}
                 className={classNames(
                   { "bg-orange-600": selectedEntity.filled, "bg-gray-400": !selectedEntity.filled },
-                  "relative inline-flex flex-shrink-0 h-4 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer w-7 focus:outline-none focus:shadow-outline"
+                  "relative inline-flex flex-shrink-0 h-4 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer w-7 focus:outline-none focus:ring"
                 )}
                 onChange={() => {
                   app.routes.toggleSelectedEntityFill();

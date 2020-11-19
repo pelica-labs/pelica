@@ -32,7 +32,7 @@ export const AspectRatioSelector: React.FC<Props> = ({ value, onChange }) => {
           </Listbox.Label>
           <div className="relative">
             <span className="inline-block w-full rounded-md shadow-sm mt-1">
-              <Listbox.Button className="relative w-full rounded-md border border-gray-300 bg-white py-1 text-left focus:outline-none focus:shadow-outline rounded transition ease-in-out duration-150 sm:text-sm sm:leading-5">
+              <Listbox.Button className="relative w-full rounded-md border border-gray-300 bg-white py-1 text-left focus:outline-none focus:ring rounded transition ease-in-out duration-150 sm:text-sm sm:leading-5">
                 <div className="flex items-center gap-3 px-2 w-full h-full md:h-10">
                   <AspectRatioOption configuration={configuration} />
 
@@ -52,7 +52,7 @@ export const AspectRatioSelector: React.FC<Props> = ({ value, onChange }) => {
             >
               <Listbox.Options
                 static
-                className="max-h-60 rounded-md text-base leading-6 shadow-xs overflow-auto focus:outline-none sm:text-sm sm:leading-5"
+                className="max-h-60 rounded-md text-base leading-6 ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm sm:leading-5"
               >
                 {Object.entries(aspectRatios).map(([ratio, configuration]) => {
                   return (
@@ -89,8 +89,8 @@ export const AspectRatioOption: React.FC<{ configuration: AspectRatioConfigurati
       <configuration.icon className="w-6 h-6 text-gray-900" />
 
       <div className="flex flex-col">
-        <span className="text-xs text-gray-900 flex-1 text-left whitespace-no-wrap">{configuration.name}</span>
-        <span className="text-xs text-gray-600 whitespace-no-wrap">{configurationRatio}</span>
+        <span className="text-xs text-gray-900 flex-1 text-left whitespace-nowrap">{configuration.name}</span>
+        <span className="text-xs text-gray-600 whitespace-nowrap">{configurationRatio}</span>
       </div>
     </>
   );

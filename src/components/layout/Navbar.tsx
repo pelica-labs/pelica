@@ -34,7 +34,7 @@ export const Navbar: React.FC = () => {
 
       {router.pathname === "/app" ? (
         <button
-          className="mx-4 bg-gray-700 hover:bg-gray-600 transition-colors duration-150 ease-in-out text-gray-100 px-6 py-1 rounded-full font-light focus:outline-none focus:shadow-outline"
+          className="mx-4 bg-gray-700 hover:bg-gray-600 transition-colors duration-150 ease-in-out text-gray-100 px-6 py-1 rounded-full font-light focus:outline-none focus:ring"
           disabled={creating}
           onClick={() => {
             createMap();
@@ -44,7 +44,7 @@ export const Navbar: React.FC = () => {
         </button>
       ) : (
         <Link href="/app">
-          <button className="mx-4 bg-gray-700 hover:bg-gray-600 transition-colors duration-150 ease-in-out text-gray-100 px-6 py-1 rounded-full font-light focus:outline-none focus:shadow-outline">
+          <button className="mx-4 bg-gray-700 hover:bg-gray-600 transition-colors duration-150 ease-in-out text-gray-100 px-6 py-1 rounded-full font-light focus:outline-none focus:ring">
             <span className="block">my maps</span>
           </button>
         </Link>
