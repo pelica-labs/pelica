@@ -10,11 +10,12 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 export const IconButton: React.FC<Props> = ({ active = false, className, tooltip, ...attributes }) => {
   const buttonClasses = classNames({
-    "w-12 h-12 flex-1 justify-center flex items-center md:px-2 md:py-1 p-3 focus:outline-none text-gray-800 border border-transparent focus:shadow-outline rounded": true,
+    "w-12 h-12 flex-1 justify-center flex items-center md:px-2 md:py-1 p-3 focus:outline-none border border-transparent focus:ring rounded": true,
     ...(className && {
       [className]: true,
     }),
     [`hover:text-orange-500`]: !active && !attributes.disabled,
+    [`text-gray-800`]: !active,
     [`text-orange-600 bg-orange-100`]: active,
   });
 

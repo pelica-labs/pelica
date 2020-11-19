@@ -16,7 +16,7 @@ export const CookieConsent: React.FC = () => {
           We use third-party analytics cookies to understand how you use Pelica.co so we can build better products.
         </span>
         <div className="flex items-center justify-between w-full sm:w-auto space-x-4">
-          <a className="underline text-orange-600 whitespace-no-wrap" href="/privacy">
+          <a className="underline text-orange-600 whitespace-nowrap" href="/privacy">
             Learn more
           </a>
           <a

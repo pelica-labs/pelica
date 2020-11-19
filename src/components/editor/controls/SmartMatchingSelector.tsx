@@ -46,7 +46,7 @@ export const SmartMatchingSelector: React.FC<Props> = ({ value, onChange, disabl
             as="button"
             checked={value.enabled}
             className={classNames({
-              "relative inline-flex flex-shrink-0 h-4 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer w-7 focus:outline-none focus:shadow-outline": true,
+              "relative inline-flex flex-shrink-0 h-4 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer w-7 focus:outline-none focus:ring": true,
               "bg-orange-600": value.enabled,
               "bg-gray-400": !value.enabled,
               "cursor-not-allowed": disabled,
