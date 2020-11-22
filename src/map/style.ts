@@ -3,6 +3,10 @@ export type Style = {
   owner: string;
   name: string;
   hash?: string | null;
+  author?: {
+    name: string;
+    twitter: string;
+  } | null;
 };
 
 /**
@@ -27,6 +31,10 @@ export const availableStyles: Style[] = [
     owner: "bstnfrmry",
     name: "Mineral",
     hash: "L9FZD?NH01WBOY%1WVs.01XT~Un$",
+    author: {
+      name: "Madison Draper",
+      twitter: "mzdraper",
+    },
   },
   {
     id: "ckfgw9p0i2kzi19p8pt32p7c5",
@@ -37,8 +45,12 @@ export const availableStyles: Style[] = [
   {
     id: "ckht5xjig0kf219rmehk064f5",
     owner: "bstnfrmry",
-    name: "Retro (SamanBB)",
+    name: "Retro",
     hash: "LBQc9cofpfWBxtWAj?WCcHt7eRV@",
+    author: {
+      name: "Saman Bemel Benrud",
+      twitter: "samanbb",
+    },
   },
   {
     id: "ckfgvw2oq2m6b19mrlz2bei4l",
@@ -107,8 +119,12 @@ export const availableStyles: Style[] = [
   {
     id: "ckht65lu40kq619mr5dxz1zie",
     owner: "bstnfrmry",
-    name: "Frank (Clare Trainor)",
+    name: "Frank",
     hash: "L2RypS%M?wt7?bayWBoL?wWCDiM{",
+    author: {
+      name: "Clare Trainor",
+      twitter: "claremtrainor",
+    },
   },
   {
     id: "ckfs2skk31k2519pm37a42aeo",
@@ -127,16 +143,14 @@ export const availableStyles: Style[] = [
     hash: "L1Ss50-;~qt7~qj[Rjof_3WB9EM{",
   },
   {
-    id: "ckht65lu40kq619mr5dxz1zie",
-    owner: "bstnfrmry",
-    name: "Frank (Clare Trainor)",
-    hash: "L2RypS%M?wt7?bayWBoL?wWCDiM{",
-  },
-  {
     id: "ckht6c5bc39s319ozi0cleeq0",
     owner: "bstnfrmry",
     name: "Bubble",
     hash: "L0IF=D#ro~.m?JaKZ$njVsk=kqjF",
+    author: {
+      name: "Madison Draper",
+      twitter: "mzdraper",
+    },
   },
 ];
 
