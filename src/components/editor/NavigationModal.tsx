@@ -27,7 +27,7 @@ const SmallText: React.FC = ({ children }) => {
 const InteractionImage: React.FC<{ alt: string; src: string }> = ({ alt, src }) => {
   return (
     <td className="align-bottom">
-      <div className="pb-6 w-full">
+      <div className="pb-6 pt-2 w-full">
         <div className="h-16 w-full relative">
           <Image alt={alt} layout="fill" objectFit="contain" src={src} />
         </div>
@@ -50,7 +50,7 @@ export const NavigationModal: React.FC<Props> = ({ ...props }) => {
       <h1 className="text-center font-semibold tracking-wide leading-none text-gray-800 mb-10">Navigating the map</h1>
       <table className="text-center table-fixed">
         <thead>
-          <tr className="h-12">
+          <tr className="h-12 bg-orange-100 border-t border-b border-orange-300">
             <Th className="w-40"></Th>
             <Th className="w-64">Move the map</Th>
             <Th className="w-64">Zoom in and out</Th>
@@ -71,7 +71,8 @@ export const NavigationModal: React.FC<Props> = ({ ...props }) => {
               </SmallText>
             </Td>
             <Td className="align-top">
-              Hold <kbd>CTRL</kbd> and drag the map
+              Hold <kbd>CTRL</kbd> and
+              <br /> drag the map
             </Td>
           </tr>
           <tr>
@@ -88,18 +89,20 @@ export const NavigationModal: React.FC<Props> = ({ ...props }) => {
               src="/images/interactions/touchpad-tilt.svg"
             />
           </tr>
-          <tr>
+          <tr className="border-t border-gray-300">
             <Td className="font-bold" rowSpan={2}>
               Mouse
             </Td>
             <Td className="align-top">
-              Scroll to move vertically <br /> or horizontally with <kbd>SHIFT</kbd>
+              Scroll to move vertically, <br /> or with <kbd>SHIFT</kbd> to move horizontally
             </Td>
             <Td className="align-top">
-              Hold <kbd>CTRL</kbd> and scroll
+              Hold <kbd>CTRL</kbd> and <br />
+              scroll to zoom
             </Td>
             <Td className="align-top">
-              Hold <kbd>CTRL</kbd> and drag the map
+              Hold <kbd>CTRL</kbd> and
+              <br /> drag the map
             </Td>
           </tr>
           <tr>
