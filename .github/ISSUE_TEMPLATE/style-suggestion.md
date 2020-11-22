@@ -7,4 +7,4 @@ assignees: sarahmamy
 
 ---
 
-Please inclure here the style URL so we can review it 🚀
+Please include the style URL here so we can review it 🚀
