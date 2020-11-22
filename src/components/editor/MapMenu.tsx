@@ -178,6 +178,7 @@ export const MapMenu: React.FC = () => {
                               "text-gray-800 text-sm px-2 py-1 hover:bg-orange-200": true,
                               "bg-orange-200": active,
                             })}
+                            href="#"
                             onClick={() => {
                               setShowHotkeysModal(true);
                             }}
@@ -195,6 +196,7 @@ export const MapMenu: React.FC = () => {
                             "text-gray-800 text-sm px-2 py-1 hover:bg-orange-200": true,
                             "bg-orange-200": active,
                           })}
+                          href="#"
                           onClick={() => {
                             setShowNavigationModal(true);
                           }}

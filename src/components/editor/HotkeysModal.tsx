@@ -9,7 +9,7 @@ type Props = Modal.Props;
 
 export const HotkeysModal: React.FC<Props> = (props) => {
   return (
-    <Modal {...props}>
+    <Modal {...props} style={{ content: { width: 800 } }}>
       <IconButton
         className="absolute top-0 right-0 m-px"
         onClick={(event) => {
