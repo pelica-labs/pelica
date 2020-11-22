@@ -10,9 +10,28 @@ const accessToken = getEnv("MAPBOX_SECRET_TOKEN", process.env.MAPBOX_SECRET_TOKE
 const mapboxStyles = MapboxStyles({ accessToken });
 
 export const fetchStyles = async (): Promise<Style[]> => {
-  const styles = await mapboxStyles.listStyles({}).send();
+  const styles = await new Promise<MapboxStyle[]>((resolve, reject) => {
+    let tempStyles: MapboxStyle[] = [];
 
-  return intersectionBy(availableStyles, styles.body as MapboxStyle[], (style) => style.id).map((style) => {
+    // the mapbox sdk types are all messed up.
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    const pageCallback: any = (error: any, response: any, next: any) => {
+      if (error) {
+        return reject(error);
+      }
+
+      tempStyles = tempStyles.concat(response.body);
+
+      if (!response.hasNextPage()) {
+        resolve(tempStyles);
+      } else {
+        next();
+      }
+    };
+    mapboxStyles.listStyles({}).eachPage(pageCallback);
+  });
+
+  return intersectionBy(availableStyles, styles as Style[], (style) => style.id).map((style) => {
     return {
       id: style.id,
       owner: style.owner,
