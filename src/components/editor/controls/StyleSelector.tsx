@@ -93,7 +93,7 @@ export const StyleSelector: React.FC<Props> = ({ value, onChange }) => {
         );
       })}
 
-      <div className="py-8 w-full flex items-center justify-center">
+      <div className="py-8 md:w-full flex items-center justify-center px-4 md:px-0">
         <a
           href="https://github.com/pelica-labs/pelica/issues/new?assignees=sarahmamy&labels=feature&template=style-suggestion.md&title=%5BStyle+suggestion%5D"
           rel="noreferrer"
