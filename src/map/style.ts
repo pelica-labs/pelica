@@ -3,6 +3,10 @@ export type Style = {
   owner: string;
   name: string;
   hash?: string | null;
+  author?: {
+    name: string;
+    twitter: string;
+  } | null;
 };
 
 /**
@@ -19,7 +23,7 @@ export const availableStyles: Style[] = [
   {
     id: "ckfh6lvnu2wg619mh4kga4vc0",
     owner: "bstnfrmry",
-    name: "Basic",
+    name: "Dark",
     hash: "L03]AnozIAozogj[j@a}Mxof%Nt7",
   },
   {
@@ -27,6 +31,10 @@ export const availableStyles: Style[] = [
     owner: "bstnfrmry",
     name: "Mineral",
     hash: "L9FZD?NH01WBOY%1WVs.01XT~Un$",
+    author: {
+      name: "Madison Draper",
+      twitter: "mzdraper",
+    },
   },
   {
     id: "ckfgw9p0i2kzi19p8pt32p7c5",
@@ -35,20 +43,25 @@ export const availableStyles: Style[] = [
     hash: "L1P?{qxp0vR$?vkXNHWA0cxK^TNG",
   },
   {
+    id: "ckht5xjig0kf219rmehk064f5",
+    owner: "bstnfrmry",
+    name: "Retro",
+    hash: "LBQc9cofpfWBxtWAj?WCcHt7eRV@",
+    author: {
+      name: "Saman Bemel Benrud",
+      twitter: "samanbb",
+    },
+  },
+  {
     id: "ckfgvw2oq2m6b19mrlz2bei4l",
     owner: "bstnfrmry",
-    name: "Satellite Streets",
+    name: "Satellite",
     hash: "L2BDQ49bJ4WE~nIqtQNH0exp?Hah",
   },
   {
     id: "ckee9ewyn0p3b19ntk1blm5wc",
     owner: "bstnfrmry",
     name: "Navigation",
-  },
-  {
-    id: "ckgcic5yl0sfu1ap3d89uu5jm",
-    owner: "bstnfrmry",
-    name: "Decimal",
   },
   {
     id: "ckgchqgiiafj51as4cvslzvkx",
@@ -81,6 +94,39 @@ export const availableStyles: Style[] = [
     name: "Le Shine",
   },
   {
+    id: "ckht4trv31rup19o8sl2eyvh3",
+    owner: "bstnfrmry",
+    name: "Golden",
+    hash: "L1SE~N-.ws-i~SfkWBoJw@WAR:WC",
+  },
+  {
+    id: "ckht4x7ic0jiu19mrpit6lvbl",
+    owner: "bstnfrmry",
+    name: "Glacial",
+    hash: "L1R3p5-;-roy_Nj]Rjof-rWBITNF",
+  },
+  {
+    id: "ckhtc1jj92a8x19p3bu6ma9kf",
+    owner: "bstnfrmry",
+    name: "Slopes",
+    hash: "L3SPb4%L~qM{?bRkNGof?HRjD$M|",
+  },
+  {
+    id: "ckgcic5yl0sfu1ap3d89uu5jm",
+    owner: "bstnfrmry",
+    name: "Decimal",
+  },
+  {
+    id: "ckht65lu40kq619mr5dxz1zie",
+    owner: "bstnfrmry",
+    name: "Frank",
+    hash: "L2RypS%M?wt7?bayWBoL?wWCDiM{",
+    author: {
+      name: "Clare Trainor",
+      twitter: "claremtrainor",
+    },
+  },
+  {
     id: "ckfs2skk31k2519pm37a42aeo",
     owner: "bstnfrmry",
     name: "Too blue",
@@ -89,6 +135,22 @@ export const availableStyles: Style[] = [
     id: "ckfs2r5rk1qip1amm368nqet0",
     owner: "bstnfrmry",
     name: "Bubblegum",
+  },
+  {
+    id: "ckht5azzc3gyp19qtlovfydsc",
+    owner: "bstnfrmry",
+    name: "Anodyne",
+    hash: "L1Ss50-;~qt7~qj[Rjof_3WB9EM{",
+  },
+  {
+    id: "ckht6c5bc39s319ozi0cleeq0",
+    owner: "bstnfrmry",
+    name: "Bubble",
+    hash: "L0IF=D#ro~.m?JaKZ$njVsk=kqjF",
+    author: {
+      name: "Madison Draper",
+      twitter: "mzdraper",
+    },
   },
 ];
 

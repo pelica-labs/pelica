@@ -1,3 +1,5 @@
+import { MapiError } from "@mapbox/mapbox-sdk/lib/classes/mapi-error";
+import { MapiResponse } from "@mapbox/mapbox-sdk/lib/classes/mapi-response";
 import MapboxStyles, { Style as MapboxStyle } from "@mapbox/mapbox-sdk/services/styles";
 import { intersectionBy } from "lodash";
 import { NextApiHandler } from "next";
@@ -10,14 +12,35 @@ const accessToken = getEnv("MAPBOX_SECRET_TOKEN", process.env.MAPBOX_SECRET_TOKE
 const mapboxStyles = MapboxStyles({ accessToken });
 
 export const fetchStyles = async (): Promise<Style[]> => {
-  const styles = await mapboxStyles.listStyles({}).send();
+  const styles = await new Promise<MapboxStyle[]>((resolve, reject) => {
+    const styles: MapboxStyle[] = [];
 
-  return intersectionBy(availableStyles, styles.body as MapboxStyle[], (style) => style.id).map((style) => {
+    // the mapbox sdk types are all messed up.
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    const pageCallback: any = (error: MapiError, response: MapiResponse, next: () => void) => {
+      if (error) {
+        return reject(error);
+      }
+
+      styles.push(...response.body);
+
+      if (!response.hasNextPage()) {
+        return resolve(styles);
+      }
+
+      next();
+    };
+
+    mapboxStyles.listStyles({}).eachPage(pageCallback);
+  });
+
+  return intersectionBy(availableStyles, styles as Style[], (style) => style.id).map((style) => {
     return {
       id: style.id,
       owner: style.owner,
       name: style.name,
       hash: style.hash || null,
+      author: style.author || null,
     };
   });
 };

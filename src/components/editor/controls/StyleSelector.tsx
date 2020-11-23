@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import useSWR from "swr";
 
 import { StylePreview } from "~/components/saved-maps/StylePreview";
+import { Button } from "~/components/ui/Button";
+import { PlusIcon } from "~/components/ui/Icon";
 import { getState } from "~/core/app";
 import { staticImage } from "~/lib/staticImages";
 import { Style } from "~/map/style";
@@ -69,13 +71,40 @@ export const StyleSelector: React.FC<Props> = ({ value, onChange }) => {
               onChange(style);
             }}
           >
-            <span className="block text-left text-xs uppercase text-gray-800 whitespace-nowrap w-40 md:w-full mb-2 md:mb-0">
-              {style.name}
+            <span className="text-left text-xs  text-gray-800 whitespace-nowrap w-40 md:w-full mb-2 md:mb-0 truncate inline-flex items-baseline">
+              <span className="uppercase">{style.name}</span>
+
+              {style.author && (
+                <span className="text-gray-500 font-light ml-1 md:ml-auto truncate text-2xs">
+                  by{" "}
+                  <a
+                    className="hover:underline"
+                    href={`https://twitter.com/${style.author.twitter}`}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    {style.author.name}
+                  </a>
+                </span>
+              )}
             </span>
             <StylePreview hash={style.hash || null} src={previews[style.id]} />
           </button>
         );
       })}
+
+      <div className="py-8 w-full flex items-center justify-center">
+        <a
+          href="https://github.com/pelica-labs/pelica/issues/new?assignees=sarahmamy&labels=feature&template=style-suggestion.md&title=%5BStyle+suggestion%5D"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <Button className="text-xs space-x-1 text-gray-700">
+            <PlusIcon className="w-4 h-4" />
+            <span>Suggest a style</span>
+          </Button>
+        </a>
+      </div>
     </div>
   );
 };

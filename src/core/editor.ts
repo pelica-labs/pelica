@@ -95,6 +95,7 @@ export const editor = ({ mutate, get }: App) => ({
         state.editor.mode = "select";
       }
 
+      state.editor.mode = "move";
       state.editor.menuMode = state.editor.menuMode !== mode ? mode : null;
     });
   },
