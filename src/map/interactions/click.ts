@@ -178,6 +178,7 @@ export const applyClickInteractions = (): void => {
     if (canSelect(state) || state.editor.isMoving) {
       const [feature] = map.queryRenderedFeatures(event.point, {
         layers: [
+          MapLayer.RouteVertexInteraction, // this is here to prevent adding a vertex on the first click of a double click.
           MapLayer.RouteEdgeCenterInteraction,
           MapLayer.Pin,
           MapLayer.PinInteraction,
