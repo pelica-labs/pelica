@@ -27,7 +27,8 @@ export const MapEditor: React.FC<Props> = ({ map }) => {
   const itineraryContainer = useRef<HTMLDivElement>(null);
   const place = useStore((store) => store.map.place);
   const editorMode = useStore((store) => store.editor.mode);
-  const currentLocation = useStore((store) => store.geolocation.currentLocation);
+  const currentCoordinates = useStore((store) => store.map.coordinates);
+  const currentZoom = useStore((store) => store.map.zoom);
   const selectedItinerary = useStore((store) => getSelectedItinerary(store));
   const layout = useLayout();
   const dropzone = useDropzone({
@@ -118,7 +119,7 @@ export const MapEditor: React.FC<Props> = ({ map }) => {
           {selectedItinerary && (
             <div ref={itineraryContainer}>
               <ItineraryInput
-                bias={currentLocation ?? undefined}
+                bias={currentZoom > 10 && currentCoordinates ? currentCoordinates : undefined}
                 canClose={editorMode === "select"}
                 profile={selectedItinerary.profile}
                 value={selectedItinerary.steps}
@@ -154,7 +155,7 @@ export const MapEditor: React.FC<Props> = ({ map }) => {
             <>
               <PlaceAutocomplete
                 collapsesWhenEmpty
-                bias={currentLocation ?? undefined}
+                bias={currentZoom > 10 && currentCoordinates ? currentCoordinates : undefined}
                 value={place}
                 onChange={(place) => {
                   app.map.setPlace(place);
