@@ -32,13 +32,8 @@ export const applyPinchInteractions = (): void => {
 
     const zoom = initialZoom * scale;
 
+    // @todo find a way to recenter the map
     map.setZoom(zoom);
-    map.setCenter([
-      initialCenter[0] +
-        (Math.log(zoom / initialZoom) / Math.log(23 / initialZoom)) * (cursorPosition[0] - initialCenter[0]),
-      initialCenter[1] +
-        (Math.log(zoom / initialZoom) / Math.log(23 / initialZoom)) * (cursorPosition[1] - initialCenter[1]),
-    ]);
   };
 
   const onGestureEnd = (event: Event) => {
