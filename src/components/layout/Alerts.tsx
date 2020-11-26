@@ -24,7 +24,9 @@ export const Alerts: React.FC = () => {
             key={alert.id}
             className={classNames({
               "flex justify-between items-center bg-white text-gray-800 rounded-lg shadow pl-2 pr-3 py-2 border border-l-4 pointer-events-auto text-xs focus:outline-none focus:ring": true,
-              [`border-${alert.color}-400`]: true, // @todo: this breaks PurgeCSS
+              "border-green-400": alert.color === "green",
+              "border-orange-400": alert.color === "orange",
+              "border-red-400": alert.color === "red",
             })}
             onClick={() => {
               app.alerts.dismiss(alert.id);
@@ -33,7 +35,9 @@ export const Alerts: React.FC = () => {
             <alert.icon
               className={classNames({
                 "w-4 h-4": true,
-                [`text-${alert.color}-600`]: true,
+                "text-green-600": alert.color === "green",
+                "text-orange-600": alert.color === "orange",
+                "text-red-600": alert.color === "red",
               })}
             />
             <span className="ml-2 whitespace-pre-line">{alert.message}</span>

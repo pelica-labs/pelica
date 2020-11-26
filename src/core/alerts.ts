@@ -5,14 +5,14 @@ type Alert = {
   id: number;
   message: string;
   timeout: number;
-  color: string;
+  color: "orange" | "red" | "green";
   icon: Icon;
 };
 
 type AlertInput = {
   message: string;
   timeout?: number;
-  color?: string;
+  color?: "orange" | "red" | "green";
   icon?: Icon;
 };
 
