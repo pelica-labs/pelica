@@ -18,7 +18,8 @@ type Props = {
 
 export const MapViewer: React.FC<Props> = ({ map }) => {
   const place = useStore((store) => store.map.place);
-  const currentLocation = useStore((store) => store.geolocation.currentLocation);
+  const currentCoordinates = useStore((store) => store.map.coordinates);
+  const currentZoom = useStore((store) => store.map.zoom);
   const [session] = useSession();
 
   return (
@@ -30,7 +31,7 @@ export const MapViewer: React.FC<Props> = ({ map }) => {
       <div className="absolute top-0 left-0 flex flex-col space-y-2 mt-2 ml-2">
         <PlaceAutocomplete
           collapsesWhenEmpty
-          bias={currentLocation ?? undefined}
+          bias={currentZoom > 10 && currentCoordinates ? currentCoordinates : undefined}
           value={place}
           onChange={(place) => {
             app.map.setPlace(place);
