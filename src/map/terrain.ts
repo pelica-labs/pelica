@@ -58,8 +58,12 @@ export const applyTerrain = (): void => {
 
   map.addLayer({
     id: MapLayer.Sky,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     type: "sky",
     paint: {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       "sky-type": "atmosphere",
       "sky-atmosphere-color": state.threeD.skyColor,
       "sky-atmosphere-sun": sunConfiguration.position,

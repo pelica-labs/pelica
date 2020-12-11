@@ -11,7 +11,7 @@ export type ThreeD = {
   skyboxMode: SkyboxMode;
 };
 
-export const threeDInitialState = {
+export const threeDInitialState: ThreeD = {
   enabled: false,
   exageration: 150,
 
@@ -19,7 +19,8 @@ export const threeDInitialState = {
   skyboxMode: "day",
 };
 
-export const threeD = ({ mutate, get }: App) => ({
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export const threeD = ({ mutate }: App) => ({
   ...threeDInitialState,
 
   toggle: () => {

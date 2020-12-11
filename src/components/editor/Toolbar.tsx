@@ -10,7 +10,6 @@ import {
   RouteIcon,
   StyleIcon,
   TextIcon,
-  ThreeDIcon,
 } from "~/components/ui/Icon";
 import { IconButton } from "~/components/ui/IconButton";
 import { app, useStore } from "~/core/app";

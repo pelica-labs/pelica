@@ -504,7 +504,7 @@ export const applyLayers = (): void => {
   });
 };
 
-export const addLayer = (map: mapboxgl.Map, layer: mapboxgl.Layer & { id: MapLayer; before?: MapLayer }): void => {
+export const addLayer = (map: mapboxgl.Map, layer: mapboxgl.AnyLayer & { id: MapLayer; before?: MapLayer }): void => {
   if (map.getLayer(layer.id)) {
     map.removeLayer(layer.id);
   }
