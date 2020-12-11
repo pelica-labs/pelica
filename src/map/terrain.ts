@@ -6,7 +6,7 @@ export const applyTerrain = (): void => {
   map.addSource("mapbox-dem", {
     type: "raster-dem",
     url: "mapbox://mapbox.mapbox-terrain-dem-v1",
-    tileSize: 128,
+    tileSize: 512,
     maxzoom: 14,
   });
 
