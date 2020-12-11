@@ -23,6 +23,9 @@ export enum MapSource {
   SelectionArea = "selection-area",
 
   Watermark = "watermark",
+
+  // Mapbox
+  MapboxDem = "mapbox-dem",
 }
 
 const EmptyGeoJsonSource: AnySourceData = {
@@ -57,7 +60,7 @@ export const applySources = (): void => {
   addSource(map, MapSource.Watermark);
 };
 
-const addSource = (map: mapboxgl.Map, id: MapSource, options?: Partial<GeoJSONSourceRaw>) => {
+export const addSource = (map: mapboxgl.Map, id: MapSource, options?: Partial<GeoJSONSourceRaw>): void => {
   if (map.getSource(id)) {
     map.removeSource(id);
   }

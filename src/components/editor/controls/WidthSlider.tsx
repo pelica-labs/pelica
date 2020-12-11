@@ -1,5 +1,6 @@
 import Slider from "rc-slider";
 import React, { useEffect, useState } from "react";
+import tinycolor from "tinycolor2";
 
 import { useLayout } from "~/hooks/useLayout";
 import { theme } from "~/styles/tailwind";
@@ -11,9 +12,22 @@ type Props = {
   min: number;
   max: number;
   color: string;
+  disabled?: boolean;
 };
 
-export const WidthSlider: React.FC<Props> = ({ value, onChange, onChangeComplete, min, max, color }) => {
+const disableColor = (color: string): string => {
+  return tinycolor(color).saturate(50).lighten(50).greyscale().toHexString();
+};
+
+export const WidthSlider: React.FC<Props> = ({
+  value,
+  onChange,
+  onChangeComplete,
+  min,
+  max,
+  color,
+  disabled = false,
+}) => {
   const [width, setWidth] = useState(value);
   const layout = useLayout();
 
@@ -23,8 +37,9 @@ export const WidthSlider: React.FC<Props> = ({ value, onChange, onChangeComplete
 
   return (
     <Slider
+      disabled={disabled}
       handleStyle={{
-        backgroundColor: color,
+        backgroundColor: disabled ? disableColor(color) : color,
         borderColor: theme.colors.gray[200],
         height: layout.horizontal ? 14 : 18,
         width: layout.horizontal ? 14 : 18,
@@ -36,8 +51,11 @@ export const WidthSlider: React.FC<Props> = ({ value, onChange, onChangeComplete
         width: layout.horizontal ? "100%" : 8,
         backgroundColor: theme.colors.gray[400],
       }}
+      style={{
+        backgroundColor: "transparent",
+      }}
       trackStyle={{
-        backgroundColor: color,
+        backgroundColor: disabled ? disableColor(color) : color,
         height: layout.horizontal ? 4 : 0,
         width: layout.horizontal ? "100%" : 8,
       }}

@@ -43,6 +43,7 @@ export enum MapLayer {
 
   // Mapbox
   WaterwayLabel = "waterway-label",
+  Sky = "sky",
 }
 
 export const applyLayers = (): void => {
@@ -503,9 +504,9 @@ export const applyLayers = (): void => {
   });
 };
 
-const addLayer = (map: mapboxgl.Map, layer: mapboxgl.Layer & { id: MapLayer; before?: MapLayer }) => {
+export const addLayer = (map: mapboxgl.Map, layer: mapboxgl.Layer & { id: MapLayer; before?: MapLayer }): void => {
   if (map.getLayer(layer.id)) {
-    return;
+    map.removeLayer(layer.id);
   }
 
   map.addLayer(layer, layer.before && map.getLayer(layer.before) ? layer.before : undefined);
