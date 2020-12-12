@@ -159,5 +159,7 @@ export const getSyncableState = (state: State = getState()): MapModel => {
     language: state.editor.language,
     style: state.editor.style,
     entities: state.entities.items,
+
+    breakpoints: state.scenes.breakpoints,
   };
 };
