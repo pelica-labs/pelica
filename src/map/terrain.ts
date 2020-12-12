@@ -35,7 +35,7 @@ export const applyTerrain = (): void => {
   if (!map.getSource(MapSource.MapboxDem)) {
     map.addSource(MapSource.MapboxDem, {
       type: "raster-dem",
-      url: "mapbox://mapbox.mapbox-terrain-dem-v1",
+      url: "mapbox://mapbox.terrain-rgb",
       tileSize: 512,
       maxzoom: 14,
     });
