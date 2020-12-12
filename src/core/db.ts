@@ -1,6 +1,7 @@
 import { Position } from "@turf/turf";
 
 import { CoreEntity } from "~/core/entities";
+import { Breakpoint } from "~/core/scenes";
 import { ID } from "~/lib/id";
 import { Style } from "~/map/style";
 
@@ -20,6 +21,8 @@ export type MapModel = {
 
   style?: Style;
   entities?: CoreEntity[];
+
+  breakpoints?: Breakpoint[];
 };
 
 export type ImageModel = {

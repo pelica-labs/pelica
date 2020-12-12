@@ -17,6 +17,7 @@ import { map, mapInitialState } from "~/core/map";
 import { pins, pinsInitialState } from "~/core/pins";
 import { platform, platformInitialState } from "~/core/platform";
 import { routes, routesInitialState } from "~/core/routes";
+import { scenes, scenesInitialState } from "~/core/scenes";
 import { selection, selectionInitialState } from "~/core/selection";
 import { sync, syncInitialState } from "~/core/sync";
 import { texts, textsInitialState } from "~/core/texts";
@@ -43,6 +44,7 @@ export type State = {
   sync: ReturnType<typeof sync>;
   units: ReturnType<typeof units>;
   threeD: ReturnType<typeof threeD>;
+  scenes: ReturnType<typeof scenes>;
 };
 
 export type Actions = {
@@ -64,6 +66,7 @@ export type Actions = {
   sync: Omit<State["sync"], keyof typeof syncInitialState>;
   units: Omit<State["units"], keyof typeof unitsInitialState>;
   threeD: Omit<State["threeD"], keyof typeof threeDInitialState>;
+  scenes: Omit<State["scenes"], keyof typeof scenesInitialState>;
 };
 
 const unloggedActions = [
@@ -92,6 +95,7 @@ const state = (app: App) => {
     sync: sync(app),
     units: units(app),
     threeD: threeD(app),
+    scenes: scenes(app),
   };
 };
 

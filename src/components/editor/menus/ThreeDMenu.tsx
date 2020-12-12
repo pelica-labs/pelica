@@ -86,18 +86,17 @@ export const ThreeDMenu: React.FC = () => {
               app.threeD.setSkybox(skyboxMode);
             }}
           />
-
-          <div className="mt-4 px-1">
-            <ColorPicker
-              value={skyColor}
-              onChange={(color) => {
-                app.threeD.setSkyColor(color);
-              }}
-              onChangeComplete={(color) => {
-                app.threeD.setSkyColor(color);
-              }}
-            />
-          </div>
+        </div>
+        <div className="mt-4">
+          <ColorPicker
+            value={skyColor}
+            onChange={(color) => {
+              app.threeD.setSkyColor(color);
+            }}
+            onChangeComplete={(color) => {
+              app.threeD.setSkyColor(color);
+            }}
+          />
         </div>
       </MenuSection>
     </>

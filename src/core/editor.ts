@@ -1,4 +1,5 @@
 import {
+  FilmIcon,
   HandIcon,
   MousePointerIcon,
   PencilIcon,
@@ -22,7 +23,7 @@ export type Editor = {
   aspectRatio: AspectRatio;
 };
 
-export type EditorMode = "select" | "move" | "route" | "itinerary" | "pin" | "text" | "style" | "3d";
+export type EditorMode = "select" | "move" | "route" | "itinerary" | "pin" | "text" | "style" | "3d" | "scenes";
 
 export type EditorMenuMode = "export" | "share";
 
@@ -35,6 +36,7 @@ export const modeIcons = {
   "text": TextIcon,
   "style": StyleIcon,
   "3d": ThreeDIcon,
+  "scenes": FilmIcon,
 };
 
 export const editorInitialState: Editor = {

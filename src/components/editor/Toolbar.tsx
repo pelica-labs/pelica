@@ -2,6 +2,7 @@ import React from "react";
 
 import { ButtonLabel } from "~/components/ui/ButtonLabel";
 import {
+  FilmIcon,
   HandIcon,
   MountainIcon,
   MousePointerIcon,
@@ -43,6 +44,9 @@ export const Toolbar: React.FC = () => {
   });
   const ThreeDHotkey = useHotkey({ key: "d" }, () => {
     app.editor.setEditorMode("3d");
+  });
+  const ScenesHotkey = useHotkey({ key: "c" }, () => {
+    app.editor.setEditorMode("scenes");
   });
 
   const tooltipPlacement = layout.horizontal ? "left" : "above";
@@ -221,6 +225,27 @@ export const Toolbar: React.FC = () => {
       >
         <MountainIcon className="w-8 h-8 md:w-6 md:h-6" />
         <ButtonLabel className="text-2xs hidden md:inline-block" hotkey="d" label="3D" />
+      </IconButton>
+
+      <IconButton
+        active={editorMode === "scenes"}
+        className="flex flex-col w-full group"
+        id="toolbar-scenes"
+        tooltip={{
+          placement: tooltipPlacement,
+          text: (
+            <div className="flex items-center">
+              <span className="mr-4 leading-none">Scenes</span>
+              <ScenesHotkey />
+            </div>
+          ),
+        }}
+        onClick={() => {
+          app.editor.setEditorMode("scenes");
+        }}
+      >
+        <FilmIcon className="w-8 h-8 md:w-6 md:h-6" />
+        <ButtonLabel className="text-2xs hidden md:inline-block" hotkey="c" label="Scenes" />
       </IconButton>
     </div>
   );

@@ -8,6 +8,7 @@ import { ItineraryMenu } from "~/components/editor/menus/ItineraryMenu";
 import { MoveMenu } from "~/components/editor/menus/MoveMenu";
 import { PinMenu } from "~/components/editor/menus/PinMenu";
 import { RouteMenu } from "~/components/editor/menus/RouteMenu";
+import { ScenesMenu } from "~/components/editor/menus/ScenesMenu";
 import { SelectMenu } from "~/components/editor/menus/SelectMenu";
 import { ShareMenu } from "~/components/editor/menus/ShareMenu";
 import { StyleMenu } from "~/components/editor/menus/StyleMenu";
@@ -104,6 +105,7 @@ export const Sidebar: React.FC = () => {
               {editorMode === "itinerary" && <ItineraryMenu />}
               {editorMode === "style" && <StyleMenu />}
               {editorMode === "3d" && <ThreeDMenu />}
+              {editorMode === "scenes" && <ScenesMenu />}
             </>
           )}
         </div>
