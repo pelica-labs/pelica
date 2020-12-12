@@ -1,7 +1,16 @@
 import React from "react";
 
 import { ButtonLabel } from "~/components/ui/ButtonLabel";
-import { HandIcon, MousePointerIcon, PencilIcon, PinIcon, RouteIcon, StyleIcon, TextIcon } from "~/components/ui/Icon";
+import {
+  HandIcon,
+  MountainIcon,
+  MousePointerIcon,
+  PencilIcon,
+  PinIcon,
+  RouteIcon,
+  StyleIcon,
+  TextIcon,
+} from "~/components/ui/Icon";
 import { IconButton } from "~/components/ui/IconButton";
 import { app, useStore } from "~/core/app";
 import { useHotkey } from "~/hooks/useHotkey";
@@ -31,6 +40,9 @@ export const Toolbar: React.FC = () => {
   });
   const StyleHotkey = useHotkey({ key: "y" }, () => {
     app.editor.setEditorMode("style");
+  });
+  const ThreeDHotkey = useHotkey({ key: "d" }, () => {
+    app.editor.setEditorMode("3d");
   });
 
   const tooltipPlacement = layout.horizontal ? "left" : "above";
@@ -188,6 +200,27 @@ export const Toolbar: React.FC = () => {
       >
         <StyleIcon className="w-8 h-8 md:w-6 md:h-6" />
         <ButtonLabel className="text-2xs hidden md:inline-block" hotkey="y" label="Style" />
+      </IconButton>
+
+      <IconButton
+        active={editorMode === "3d"}
+        className="flex flex-col w-full group"
+        id="toolbar-3d"
+        tooltip={{
+          placement: tooltipPlacement,
+          text: (
+            <div className="flex items-center">
+              <span className="mr-4 leading-none">3D</span>
+              <ThreeDHotkey />
+            </div>
+          ),
+        }}
+        onClick={() => {
+          app.editor.setEditorMode("3d");
+        }}
+      >
+        <MountainIcon className="w-8 h-8 md:w-6 md:h-6" />
+        <ButtonLabel className="text-2xs hidden md:inline-block" hotkey="d" label="3D" />
       </IconButton>
     </div>
   );

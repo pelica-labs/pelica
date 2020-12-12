@@ -43,6 +43,7 @@ import { applyScrollInteractions } from "~/map/interactions/scroll";
 import { applyLayers } from "~/map/layers";
 import { applySources, MapSource, setSourceCluster } from "~/map/sources";
 import { styleToUrl } from "~/map/style";
+import { applyTerrain } from "~/map/terrain";
 import { applyWatermark } from "~/map/watermark";
 
 type Props = {
@@ -104,6 +105,7 @@ export const Map: React.FC<Props> = ({ map: mapModel, readOnly = false }) => {
       applyWatermark();
       applySources();
       applyLayers();
+      applyTerrain();
       applyFeatures(getEntityFeatures(), [MapSource.Route, MapSource.Pin, MapSource.Text]);
 
       if (!readOnly) {
@@ -254,6 +256,7 @@ export const Map: React.FC<Props> = ({ map: mapModel, readOnly = false }) => {
       map.once("styledata", () => {
         applySources();
         applyLayers();
+        applyTerrain();
 
         applyFeatures(getEntityFeatures(), [MapSource.Route, MapSource.Pin, MapSource.Text]);
       });
@@ -509,6 +512,16 @@ export const Map: React.FC<Props> = ({ map: mapModel, readOnly = false }) => {
       }
 
       applyFeatures(features, [MapSource.SelectionArea]);
+    }
+  );
+
+  /**
+   * Sync 3D
+   */
+  useStoreSubscription(
+    (store) => store.threeD,
+    () => {
+      applyTerrain();
     }
   );
 

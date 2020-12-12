@@ -1,4 +1,13 @@
-import { HandIcon, MousePointerIcon, PencilIcon, PinIcon, RouteIcon, StyleIcon, TextIcon } from "~/components/ui/Icon";
+import {
+  HandIcon,
+  MousePointerIcon,
+  PencilIcon,
+  PinIcon,
+  RouteIcon,
+  StyleIcon,
+  TextIcon,
+  ThreeDIcon,
+} from "~/components/ui/Icon";
 import { AspectRatio } from "~/core/aspectRatio";
 import { App } from "~/core/zustand";
 import { defaultStyle, Style } from "~/map/style";
@@ -13,18 +22,19 @@ export type Editor = {
   aspectRatio: AspectRatio;
 };
 
-export type EditorMode = "select" | "move" | "route" | "itinerary" | "pin" | "text" | "style";
+export type EditorMode = "select" | "move" | "route" | "itinerary" | "pin" | "text" | "style" | "3d";
 
 export type EditorMenuMode = "export" | "share";
 
 export const modeIcons = {
-  select: MousePointerIcon,
-  move: HandIcon,
-  route: PencilIcon,
-  itinerary: RouteIcon,
-  pin: PinIcon,
-  text: TextIcon,
-  style: StyleIcon,
+  "select": MousePointerIcon,
+  "move": HandIcon,
+  "route": PencilIcon,
+  "itinerary": RouteIcon,
+  "pin": PinIcon,
+  "text": TextIcon,
+  "style": StyleIcon,
+  "3d": ThreeDIcon,
 };
 
 export const editorInitialState: Editor = {

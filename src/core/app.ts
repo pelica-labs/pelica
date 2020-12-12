@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import create, { StateSelector } from "zustand";
 import shallow from "zustand/shallow";
 
+import { threeD, threeDInitialState } from "~/core/3d";
 import { alerts, alertsInitialState } from "~/core/alerts";
 import { dragAndDrop, dragAndDropInitialState } from "~/core/dragAndDrop";
 import { editor, editorInitialState } from "~/core/editor";
@@ -41,6 +42,7 @@ export type State = {
   imports: ReturnType<typeof imports>;
   sync: ReturnType<typeof sync>;
   units: ReturnType<typeof units>;
+  threeD: ReturnType<typeof threeD>;
 };
 
 export type Actions = {
@@ -61,6 +63,7 @@ export type Actions = {
   imports: State["imports"];
   sync: Omit<State["sync"], keyof typeof syncInitialState>;
   units: Omit<State["units"], keyof typeof unitsInitialState>;
+  threeD: Omit<State["threeD"], keyof typeof threeDInitialState>;
 };
 
 const unloggedActions = [
@@ -88,6 +91,7 @@ const state = (app: App) => {
     imports: imports(app),
     sync: sync(app),
     units: units(app),
+    threeD: threeD(app),
   };
 };
 
