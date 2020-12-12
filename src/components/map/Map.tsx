@@ -131,11 +131,7 @@ export const Map: React.FC<Props> = ({ map: mapModel, readOnly = false }) => {
   useStoreSubscription(
     (store) => store.map.coordinates,
     (coordinates) => {
-      getMap().flyTo({
-        center: coordinates as [number, number],
-        zoom: getState().map.zoom,
-        animate: false,
-      });
+      getMap().setCenter(coordinates as [number, number]);
     }
   );
 
