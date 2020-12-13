@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import create, { StateSelector } from "zustand";
 import shallow from "zustand/shallow";
 
-import { threeD, threeDInitialState } from "~/core/3d";
 import { alerts, alertsInitialState } from "~/core/alerts";
 import { dragAndDrop, dragAndDropInitialState } from "~/core/dragAndDrop";
 import { editor, editorInitialState } from "~/core/editor";
@@ -20,6 +19,7 @@ import { routes, routesInitialState } from "~/core/routes";
 import { scenes, scenesInitialState } from "~/core/scenes";
 import { selection, selectionInitialState } from "~/core/selection";
 import { sync, syncInitialState } from "~/core/sync";
+import { terrain, terrainInitialState } from "~/core/terrain";
 import { texts, textsInitialState } from "~/core/texts";
 import { units, unitsInitialState } from "~/core/units";
 import { App, immer } from "~/core/zustand";
@@ -43,7 +43,7 @@ export type State = {
   imports: ReturnType<typeof imports>;
   sync: ReturnType<typeof sync>;
   units: ReturnType<typeof units>;
-  threeD: ReturnType<typeof threeD>;
+  terrain: ReturnType<typeof terrain>;
   scenes: ReturnType<typeof scenes>;
 };
 
@@ -65,7 +65,7 @@ export type Actions = {
   imports: State["imports"];
   sync: Omit<State["sync"], keyof typeof syncInitialState>;
   units: Omit<State["units"], keyof typeof unitsInitialState>;
-  threeD: Omit<State["threeD"], keyof typeof threeDInitialState>;
+  terrain: Omit<State["terrain"], keyof typeof terrainInitialState>;
   scenes: Omit<State["scenes"], keyof typeof scenesInitialState>;
 };
 
@@ -94,7 +94,7 @@ const state = (app: App) => {
     imports: imports(app),
     sync: sync(app),
     units: units(app),
-    threeD: threeD(app),
+    terrain: terrain(app),
     scenes: scenes(app),
   };
 };

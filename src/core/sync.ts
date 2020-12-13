@@ -66,6 +66,10 @@ export const sync = ({ mutate }: App) => ({
       if (map.breakpoints) {
         state.scenes.breakpoints = map.breakpoints;
       }
+
+      if (map.terrain) {
+        Object.assign(state.terrain, map.terrain);
+      }
     });
   },
 

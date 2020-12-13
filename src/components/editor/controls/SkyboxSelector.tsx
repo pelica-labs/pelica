@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Button } from "~/components/ui/Button";
-import { SkyboxMode } from "~/core/3d";
+import { SkyboxMode } from "~/core/terrain";
 
 type SkyboxConfiguration = {
   name: string;

@@ -1,13 +1,13 @@
 import {
   FilmIcon,
   HandIcon,
+  MountainIcon,
   MousePointerIcon,
   PencilIcon,
   PinIcon,
   RouteIcon,
   StyleIcon,
   TextIcon,
-  ThreeDIcon,
 } from "~/components/ui/Icon";
 import { AspectRatio } from "~/core/aspectRatio";
 import { App } from "~/core/zustand";
@@ -35,7 +35,7 @@ export const modeIcons = {
   "pin": PinIcon,
   "text": TextIcon,
   "style": StyleIcon,
-  "3d": ThreeDIcon,
+  "3d": MountainIcon,
   "scenes": FilmIcon,
 };
 
