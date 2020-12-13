@@ -103,7 +103,7 @@ export const getTransientEntityFeatures = (state: State = getState()): RawFeatur
 };
 
 export const canSelect = (state: State = getState()): boolean => {
-  return ["select", "move", "style", "export"].includes(state.editor.mode);
+  return ["select", "move", "style", "export", "3d", "scenes"].includes(state.editor.mode);
 };
 
 export const getMapTitle = (state: State = getState()): string | undefined => {
@@ -161,5 +161,12 @@ export const getSyncableState = (state: State = getState()): MapModel => {
     entities: state.entities.items,
 
     breakpoints: state.scenes.breakpoints,
+
+    terrain: {
+      enabled: state.terrain.enabled,
+      exageration: state.terrain.exageration,
+      skyColor: state.terrain.skyColor,
+      skyboxMode: state.terrain.skyboxMode,
+    },
   };
 };

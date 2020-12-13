@@ -527,7 +527,7 @@ export const Map: React.FC<Props> = ({ map: mapModel, readOnly = false }) => {
    * Sync 3D
    */
   useStoreSubscription(
-    (store) => store.threeD,
+    (store) => store.terrain,
     () => {
       applyTerrain();
     }
