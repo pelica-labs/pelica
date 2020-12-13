@@ -792,13 +792,6 @@ export const CrosshairQuestionIcon = icon(
   />
 );
 
-export const ThreeDIcon = icon(
-  <path
-    d="M5 7h4a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5v-2h4v-2H6v-2h3V9H5V7m8 0h3a3 3 0 0 1 3 3v4a3 3 0 0 1-3 3h-3V7m3 8a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1h-1v6h1z"
-    fill="currentColor"
-  />
-);
-
 export const FilmIcon = icon(
   <path
     d="M4 4h1v2h2V4h9v2h2V4h1v17h-1v-2h-2v2H7v-2H5v2H4V4zm3 3H5v3h2V7zm0 4H5v3h2v-3zm0 4H5v3h2v-3zm9 3h2v-3h-2v3zm0-4h2v-3h-2v3zm0-4h2V7h-2v3zM8 5v7h7V5H8zm0 8v7h7v-7H8z"
@@ -816,6 +809,13 @@ export const CameraIcon = icon(
 export const PlayIcon = icon(
   <path
     d="M12 20c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8m0-18A10 10 0 0 0 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m-2 14.5l6-4.5l-6-4.5v9z"
+    fill="currentColor"
+  />
+);
+
+export const EyeIcon = icon(
+  <path
+    d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0z"
     fill="currentColor"
   />
 );

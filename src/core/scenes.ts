@@ -35,4 +35,12 @@ export const scenes = ({ mutate }: App) => ({
       state.scenes.breakpoints.splice(to, 0, breakpoint);
     });
   },
+
+  deleteBreakpoint: (breakpoint: Breakpoint) => {
+    mutate((state) => {
+      const index = state.scenes.breakpoints.findIndex((item) => item.id === breakpoint.id);
+
+      state.scenes.breakpoints.splice(index, 1);
+    });
+  },
 });

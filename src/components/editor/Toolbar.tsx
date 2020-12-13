@@ -42,7 +42,7 @@ export const Toolbar: React.FC = () => {
   const StyleHotkey = useHotkey({ key: "y" }, () => {
     app.editor.setEditorMode("style");
   });
-  const ThreeDHotkey = useHotkey({ key: "d" }, () => {
+  const TerrainHotkey = useHotkey({ key: "d" }, () => {
     app.editor.setEditorMode("3d");
   });
   const ScenesHotkey = useHotkey({ key: "c" }, () => {
@@ -215,7 +215,7 @@ export const Toolbar: React.FC = () => {
           text: (
             <div className="flex items-center">
               <span className="mr-4 leading-none">3D</span>
-              <ThreeDHotkey />
+              <TerrainHotkey />
             </div>
           ),
         }}
