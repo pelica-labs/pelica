@@ -1,9 +1,5 @@
 import { Menu } from "@headlessui/react";
-import { distance } from "@turf/turf";
-import BezierEasing from "bezier-easing";
-import { map, Promise } from "bluebird";
 import classNames from "classnames";
-import Link from "next/link";
 import React, { useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
@@ -11,29 +7,17 @@ import { MenuSection, MenuSectionHeader } from "~/components/editor/menus/MenuSe
 import { StylePreview } from "~/components/saved-maps/StylePreview";
 import { Button } from "~/components/ui/Button";
 import { Heading } from "~/components/ui/Heading";
-import {
-  CameraIcon,
-  CopyIcon,
-  EditIcon,
-  ExternalIcon,
-  EyeIcon,
-  PlayIcon,
-  TrashIcon,
-  VerticalDotsIcon,
-} from "~/components/ui/Icon";
-import { IconButton } from "~/components/ui/IconButton";
+import { CameraIcon, EyeIcon, PlayIcon, TrashIcon, VerticalDotsIcon } from "~/components/ui/Icon";
 import { app, getState, useStore } from "~/core/app";
 import { Breakpoint } from "~/core/scenes";
 import { getMap } from "~/core/selectors";
 import { stringId } from "~/lib/id";
 import { mapboxGeocoding } from "~/lib/mapbox";
-import { sleep } from "~/lib/promise";
 import { staticImage } from "~/lib/staticImages";
 
 export const ScenesMenu: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const breakpoints = useStore((store) => store.scenes.breakpoints);
-  const style = useStore((store) => store.editor.style);
 
   const onCaptureBreakpoint = async () => {
     const state = getState();
@@ -61,46 +45,7 @@ export const ScenesMenu: React.FC = () => {
   const onPlay = async () => {
     setIsPlaying(true);
 
-    const map = getMap();
-    const [start] = breakpoints;
-
-    if (!start) {
-      return;
-    }
-
-    map.setCenter(start.coordinates as [number, number]);
-    map.setZoom(start.zoom);
-    map.setBearing(start.bearing);
-    map.setPitch(start.pitch);
-
-    await sleep(1000);
-
-    await Promise.each(breakpoints, async (breakpoint, index) => {
-      if (index === 0) {
-        return;
-      }
-
-      const distanceToBreakpoint = distance(breakpoints[index - 1].coordinates, breakpoint.coordinates, {
-        units: "kilometers",
-      });
-
-      map.flyTo({
-        center: breakpoint.coordinates as [number, number],
-        zoom: breakpoint.zoom,
-        bearing: breakpoint.bearing,
-        pitch: breakpoint.pitch,
-        animate: true,
-        essential: true,
-        duration: Math.max(4000, distanceToBreakpoint * 40),
-        easing: BezierEasing(0.42, 0.0, 0.58, 1.0), // ease-in-out
-      });
-
-      await new Promise((resolve) => {
-        map.once("moveend", () => {
-          resolve();
-        });
-      });
-    });
+    await app.scenes.play();
 
     setIsPlaying(false);
   };
@@ -108,7 +53,7 @@ export const ScenesMenu: React.FC = () => {
   return (
     <MenuSection>
       <MenuSectionHeader className="justify-between">
-        <Heading>Breakpoints</Heading>
+        <Heading>Scenes</Heading>
         <Button
           className="text-sm md:text-xs space-x-2"
           disabled={!breakpoints.length || isPlaying}
@@ -185,7 +130,7 @@ export const ScenesMenu: React.FC = () => {
         }}
       >
         <CameraIcon className="w-4 h-4" />
-        <span className="flex-1 text-center">Capture breakpoint</span>
+        <span className="flex-1 text-center">Capture scene</span>
       </Button>
     </MenuSection>
   );
