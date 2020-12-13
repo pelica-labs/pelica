@@ -55,6 +55,12 @@ export const availableStyles: Style[] = [
   {
     id: "ckfgvw2oq2m6b19mrlz2bei4l",
     owner: "bstnfrmry",
+    name: "Satellite Streets",
+    hash: "L2BDQ49bJ4WE~nIqtQNH0exp?Hah",
+  },
+  {
+    id: "ckin5kzjo1x0818seek7beq3l",
+    owner: "bstnfrmry",
     name: "Satellite",
     hash: "L2BDQ49bJ4WE~nIqtQNH0exp?Hah",
   },
