@@ -68,7 +68,7 @@ export const ScenesMenu: React.FC = () => {
         <Heading>Scenes</Heading>
         <Button
           className="text-sm md:text-xs space-x-2"
-          disabled={!breakpoints.length || isPlaying}
+          disabled={breakpoints.length < 2 || isPlaying}
           onClick={() => {
             onPlay();
           }}
@@ -77,6 +77,12 @@ export const ScenesMenu: React.FC = () => {
           <span>{isPlaying ? "Playing" : "Play"}</span>
         </Button>
       </MenuSectionHeader>
+
+      {!breakpoints.length && (
+        <div className="flex flex-col my-2 md:space-y-4 text-sm md:text-xs">
+          <span>Capture multiple map views (or scenes) to create an animated video.</span>
+        </div>
+      )}
 
       <div
         className={classNames({
