@@ -597,7 +597,7 @@ export const Map: React.FC<Props> = ({ map: mapModel, readOnly = false }) => {
   return (
     <>
       <Head>
-        <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
+        <link href="https://api.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.css" rel="stylesheet" />
       </Head>
 
       <MapTitle />
