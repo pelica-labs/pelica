@@ -132,7 +132,7 @@ export const StyleSelector: React.FC<Props> = ({ value, onChange }) => {
         </a>
       </div>
 
-      <div className="py-8 md:w-full px-2 p-2">
+      <div className="hidden md:block py-8 md:w-full px-2 p-2">
         <span className="text-left text-xs uppercase text-gray-800 whitespace-nowrap w-40 md:w-full mb-2 md:mb-0 truncate inline-flex items-baseline pb-2">
           Custom style
         </span>
