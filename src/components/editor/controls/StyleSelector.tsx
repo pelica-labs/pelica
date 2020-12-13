@@ -1,14 +1,14 @@
 import classnames from "classnames";
 import { keyBy, mapValues } from "lodash";
 import React, { useEffect, useState } from "react";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 
 import { StylePreview } from "~/components/saved-maps/StylePreview";
 import { Button } from "~/components/ui/Button";
 import { PlusIcon } from "~/components/ui/Icon";
 import { getState } from "~/core/app";
 import { staticImage } from "~/lib/staticImages";
-import { Style } from "~/map/style";
+import { Style, styleFromUrl } from "~/map/style";
 
 type StylesResponse = {
   styles: Style[];
@@ -25,6 +25,26 @@ export const StyleSelector: React.FC<Props> = ({ value, onChange }) => {
   const [previews, setPreviews] = useState<Record<string, string>>({});
   const { data } = useSWR<StylesResponse>("/api/styles");
 
+  const [customStyleUrl, setCustomStyleUrl] = useState<string>("");
+  const [customStyleError, setCustomStyleError] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      if (!customStyleUrl) {
+        setCustomStyleError(null);
+        return;
+      }
+
+      const style = styleFromUrl(customStyleUrl);
+      if (!style || !style.id || !style.owner) {
+        throw new Error("This style is invalid");
+      }
+      onChange(style);
+    } catch (error) {
+      setCustomStyleError("Please enter a valid style.");
+    }
+  }, [customStyleUrl]);
+
   useEffect(() => {
     if (!data) {
       return;
@@ -34,7 +54,13 @@ export const StyleSelector: React.FC<Props> = ({ value, onChange }) => {
       map: { coordinates, zoom, bearing, pitch },
     } = getState();
 
-    const stylesById = keyBy(data.styles, (style) => style.id);
+    const styles = data.styles;
+    if (value && !styles.find((style) => style.id === value.id)) {
+      styles.push(value);
+      mutate("/api/styles", { styles }, false);
+    }
+
+    const stylesById = keyBy(styles, (style) => style.id);
     const previews = mapValues(stylesById, (style) => {
       return staticImage({
         coordinates,
@@ -48,7 +74,7 @@ export const StyleSelector: React.FC<Props> = ({ value, onChange }) => {
     });
 
     setPreviews(previews);
-  }, [data]);
+  }, [data, value]);
 
   if (!data) {
     // This won't happen since we provide initial data
@@ -104,6 +130,20 @@ export const StyleSelector: React.FC<Props> = ({ value, onChange }) => {
             <span>Suggest a style</span>
           </Button>
         </a>
+      </div>
+
+      <div className="py-8 md:w-full px-2 p-2">
+        <span className="text-left text-xs uppercase text-gray-800 whitespace-nowrap w-40 md:w-full mb-2 md:mb-0 truncate inline-flex items-baseline pb-2">
+          Custom style
+        </span>
+        <span className="text-left text-xs">Paste a public mapbox style url.</span>
+        <input
+          className="border rounded text-sm py-1 px-2 md:w-full w-48"
+          placeholder="mapbox://styles/user/id123"
+          value={customStyleUrl}
+          onChange={(e) => setCustomStyleUrl(e.target.value)}
+        ></input>
+        <span className="text-left text-sm text-orange-700 inline-block">{customStyleError}</span>
       </div>
     </div>
   );

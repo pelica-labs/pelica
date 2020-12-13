@@ -159,3 +159,8 @@ export const defaultStyle = availableStyles[0];
 export const styleToUrl = (style: Style): string => {
   return `mapbox://styles/${style.owner}/${style.id}`;
 };
+
+export const styleFromUrl = (s: string): Style => {
+  const parts = s.split("/");
+  return { id: parts[parts.length - 1], owner: parts[parts.length - 2], name: "Custom Style" };
+};
