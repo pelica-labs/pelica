@@ -13,6 +13,7 @@ type Props = {
   max: number;
   color: string;
   disabled?: boolean;
+  step?: number;
 };
 
 const disableColor = (color: string): string => {
@@ -26,6 +27,7 @@ export const WidthSlider: React.FC<Props> = ({
   min,
   max,
   color,
+  step = 1,
   disabled = false,
 }) => {
   const [width, setWidth] = useState(value);
@@ -51,6 +53,7 @@ export const WidthSlider: React.FC<Props> = ({
         width: layout.horizontal ? "100%" : 8,
         backgroundColor: theme.colors.gray[400],
       }}
+      step={step}
       style={{
         backgroundColor: "transparent",
       }}

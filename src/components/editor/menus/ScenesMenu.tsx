@@ -3,17 +3,19 @@ import classNames from "classnames";
 import React, { useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
+import { WidthSlider } from "~/components/editor/controls/WidthSlider";
 import { MenuSection, MenuSectionHeader } from "~/components/editor/menus/MenuSection";
 import { StylePreview } from "~/components/saved-maps/StylePreview";
 import { Button } from "~/components/ui/Button";
 import { Heading } from "~/components/ui/Heading";
-import { CameraIcon, EyeIcon, PlayIcon, TrashIcon, VerticalDotsIcon } from "~/components/ui/Icon";
+import { CameraIcon, EyeIcon, PlayIcon, TimerIcon, TrashIcon, VerticalDotsIcon } from "~/components/ui/Icon";
 import { app, getState, useStore } from "~/core/app";
 import { Breakpoint } from "~/core/scenes";
 import { getMap } from "~/core/selectors";
 import { stringId } from "~/lib/id";
 import { mapboxGeocoding } from "~/lib/mapbox";
 import { staticImage } from "~/lib/staticImages";
+import { theme } from "~/styles/tailwind";
 
 export const ScenesMenu: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -39,6 +41,7 @@ export const ScenesMenu: React.FC = () => {
       zoom: state.map.zoom,
       bearing: state.map.bearing,
       pitch: state.map.pitch,
+      duration: null,
     });
   };
 
@@ -94,26 +97,32 @@ export const ScenesMenu: React.FC = () => {
               >
                 {breakpoints.map((breakpoint, index) => {
                   return (
-                    <Draggable key={breakpoint.id} draggableId={breakpoint.id} index={index}>
-                      {(provided, snapshot) => (
-                        <div
-                          ref={provided.innerRef}
-                          className={classNames({
-                            "relative group flex flex-col items-stretch rounded mb-1": true,
-                            "bg-orange-100": snapshot.isDragging,
-                          })}
-                          {...provided.draggableProps}
-                        >
-                          <div
-                            key={index}
-                            className="h-20 flex flex-col items-stretch relative"
-                            {...provided.dragHandleProps}
-                          >
-                            <SceneBreakpoint breakpoint={breakpoint} />
-                          </div>
-                        </div>
-                      )}
-                    </Draggable>
+                    <div key={breakpoint.id}>
+                      <Draggable draggableId={breakpoint.id} index={index}>
+                        {(provided, snapshot) => {
+                          return (
+                            <div
+                              ref={provided.innerRef}
+                              className={classNames({
+                                "relative group flex flex-col items-stretch rounded mb-1": true,
+                              })}
+                              {...provided.draggableProps}
+                            >
+                              {index !== 0 && (
+                                <BreakpointDurationInput breakpoint={breakpoint} isDragging={snapshot.isDragging} />
+                              )}
+                              <div
+                                key={index}
+                                className="h-20 flex flex-col items-stretch relative"
+                                {...provided.dragHandleProps}
+                              >
+                                <SceneBreakpoint breakpoint={breakpoint} />
+                              </div>
+                            </div>
+                          );
+                        }}
+                      </Draggable>
+                    </div>
                   );
                 })}
                 {provided.placeholder}
@@ -124,7 +133,7 @@ export const ScenesMenu: React.FC = () => {
       </div>
 
       <Button
-        className="mt-2 text-center space-x-2 text-sm md:text-xs"
+        className="mt-6 py-2 text-center space-x-2 text-sm md:text-xs"
         onClick={() => {
           onCaptureBreakpoint();
         }}
@@ -169,13 +178,11 @@ const SceneBreakpoint: React.FC<SceneBreakpointProps> = ({ breakpoint }) => {
   return (
     <div className="flex flex-col items-stretch h-full">
       <StylePreview hash={style.hash || null} src={url} />
-
       <div className="absolute bottom-0 left-0 right-0 m-1 truncate text-white rounded leading-tight">
         <span className="text-xs font-medium tracking-wide bg-gray-800 bg-opacity-50 rounded text-white py-px px-1 truncate max-w-full">
           {breakpoint.name}
         </span>
       </div>
-
       <Menu>
         {({ open }) => (
           <>
@@ -233,6 +240,56 @@ const SceneBreakpoint: React.FC<SceneBreakpointProps> = ({ breakpoint }) => {
           </>
         )}
       </Menu>
+    </div>
+  );
+};
+
+const BreakpointDurationInput: React.FC<{ breakpoint: Breakpoint; isDragging: boolean }> = ({
+  breakpoint,
+  isDragging,
+}) => {
+  const [showInput, setShowInput] = useState<boolean>(!!breakpoint.duration);
+
+  return (
+    <div
+      className={classNames("my-1 h-12 border-gray-500 border-r p-2 justify-end items-center", {
+        hidden: isDragging,
+        flex: !isDragging,
+      })}
+    >
+      {showInput && (
+        <div className="w-full flex items-center">
+          <span className="w-16 text-xs mr-2">{(breakpoint.duration || 4000) / 1000} s</span>
+          <WidthSlider
+            color={theme.colors.orange[400]}
+            max={10000}
+            min={100}
+            step={100}
+            value={breakpoint.duration || 4000}
+            onChange={(value) => app.scenes.setBreakpointDuration(breakpoint.id, value)}
+            onChangeComplete={(value) => app.scenes.setBreakpointDuration(breakpoint.id, value)}
+          />
+          <button
+            className="text-xs uppercase tracked text-gray-500 mx-2"
+            onClick={() => {
+              app.scenes.setBreakpointDuration(breakpoint.id, null);
+              setShowInput(false);
+            }}
+          >
+            reset
+          </button>
+        </div>
+      )}
+      <button
+        onClick={() => {
+          if (!showInput) {
+            app.scenes.setBreakpointDuration(breakpoint.id, 4000);
+            setShowInput(true);
+          }
+        }}
+      >
+        <TimerIcon className="w-4 h-4 text-gray-500" />
+      </button>
     </div>
   );
 };

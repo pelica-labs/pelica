@@ -13,6 +13,7 @@ export type Breakpoint = {
   zoom: number;
   bearing: number;
   pitch: number;
+  duration: number | null;
 };
 
 export type Scenes = {
@@ -37,6 +38,16 @@ export const scenes = ({ mutate, get }: App) => ({
     mutate((state) => {
       const [breakpoint] = state.scenes.breakpoints.splice(from, 1);
       state.scenes.breakpoints.splice(to, 0, breakpoint);
+    });
+  },
+
+  setBreakpointDuration: (id: string, duration: number | null) => {
+    mutate((state) => {
+      const breakpoint = state.scenes.breakpoints.find((b) => b.id === id);
+      if (!breakpoint) {
+        return;
+      }
+      breakpoint.duration = duration;
     });
   },
 
@@ -80,7 +91,7 @@ export const scenes = ({ mutate, get }: App) => ({
         pitch: breakpoint.pitch,
         animate: true,
         essential: true,
-        duration: Math.max(4000, distanceToBreakpoint * 40),
+        duration: breakpoint.duration || Math.max(4000, distanceToBreakpoint * 40),
         easing: BezierEasing(0.42, 0.0, 0.58, 1.0), // ease-in-out
       });
 
