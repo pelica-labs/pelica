@@ -17,7 +17,7 @@ export const Button: React.FC<Props> = ({
   ...attributes
 }) => {
   const buttonClasses = classnames({
-    "flex items-center py-1 px-2 focus:outline-none focus:border-orange-300": true,
+    "flex items-center py-1 px-2 focus:outline-none focus:border-orange-300 border": true,
     ...(className && {
       [className]: true,
     }),

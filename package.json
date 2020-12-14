@@ -46,7 +46,7 @@
     "next-iron-session": "^4.1.9",
     "nprogress": "^0.2.0",
     "postcss": "^8.1.7",
-    "rc-slider": "^9.5.1",
+    "rc-slider": "^9.6.5",
     "react": "16.13.1",
     "react-beautiful-dnd": "^13.0.0",
     "react-blurhash": "https://github.com/zeroxme/react-blurhash",
