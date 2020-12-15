@@ -17,7 +17,7 @@ export type Breakpoint = {
   zoom: number;
   bearing: number;
   pitch: number;
-  duration: number;
+  duration: number | null;
 };
 
 export type Scenes = {
@@ -51,7 +51,7 @@ export const scenes = ({ mutate, get }: App) => ({
       if (!breakpoint) {
         return;
       }
-      breakpoint.duration = duration || 4000;
+      breakpoint.duration = duration;
     });
   },
 
@@ -114,12 +114,14 @@ export const scenes = ({ mutate, get }: App) => ({
       const interpolateO2 = interpolateBasis("orientation[2]");
       const interpolateO3 = interpolateBasis("orientation[3]");
 
+      const getDuration = (bp: Breakpoint) => bp.duration || 4000;
+
       const bezierStrength = 0.5;
       const interpolateTime = bezier(
         bezierStrength,
-        index > 1 ? (bezierStrength * to.duration) / from.duration : 0,
+        index > 1 ? (bezierStrength * getDuration(to)) / getDuration(from) : 0,
         bezierStrength,
-        index < breakpoints.length - 1 ? (bezierStrength * breakpoints[index + 1].duration) / to.duration : 1
+        index < breakpoints.length - 1 ? (bezierStrength * getDuration(breakpoints[index + 1])) / getDuration(to) : 1
       );
 
       await new Promise((resolve) => {
@@ -127,8 +129,8 @@ export const scenes = ({ mutate, get }: App) => ({
         let animationTime = 0;
 
         const frame = (time: number) => {
-          if (animationTime < to.duration) {
-            const phase = interpolateTime(animationTime / to.duration);
+          if (animationTime < getDuration(to)) {
+            const phase = interpolateTime(animationTime / getDuration(to));
             const x = interpolateX(phase);
             const y = interpolateY(phase);
             const z = interpolateZ(phase);
