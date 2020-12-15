@@ -1,4 +1,5 @@
-import { distance, Position } from "@turf/turf";
+import { Position } from "@turf/turf";
+import bezier from "bezier-easing";
 import { Promise } from "bluebird";
 import { get as lodashGet } from "lodash";
 import { FreeCameraOptions, MercatorCoordinate } from "mapbox-gl";
@@ -16,7 +17,7 @@ export type Breakpoint = {
   zoom: number;
   bearing: number;
   pitch: number;
-  duration: number | null;
+  duration: number;
 };
 
 export type Scenes = {
@@ -50,7 +51,7 @@ export const scenes = ({ mutate, get }: App) => ({
       if (!breakpoint) {
         return;
       }
-      breakpoint.duration = duration;
+      breakpoint.duration = duration || 4000;
     });
   },
 
@@ -94,11 +95,6 @@ export const scenes = ({ mutate, get }: App) => ({
       const from = breakpoints[index - 1];
       const to = breakpoint;
 
-      const distanceToBreakpoint = distance(from.coordinates, to.coordinates, {
-        units: "kilometers",
-      });
-      const duration = to.duration || Math.max(4000, distanceToBreakpoint * 40);
-
       function interpolateBasis(accessor: string) {
         const n = breakpoints.length - 1;
         const v1 = lodashGet(breakpoints[index - 1], accessor),
@@ -118,13 +114,21 @@ export const scenes = ({ mutate, get }: App) => ({
       const interpolateO2 = interpolateBasis("orientation[2]");
       const interpolateO3 = interpolateBasis("orientation[3]");
 
+      const bezierStrength = 0.5;
+      const interpolateTime = bezier(
+        bezierStrength,
+        index > 1 ? (bezierStrength * to.duration) / from.duration : 0,
+        bezierStrength,
+        index < breakpoints.length - 1 ? (bezierStrength * breakpoints[index + 1].duration) / to.duration : 1
+      );
+
       await new Promise((resolve) => {
         let lastTime = 0.0;
         let animationTime = 0;
 
         const frame = (time: number) => {
-          if (animationTime < duration) {
-            const phase = animationTime / duration;
+          if (animationTime < to.duration) {
+            const phase = interpolateTime(animationTime / to.duration);
             const x = interpolateX(phase);
             const y = interpolateY(phase);
             const z = interpolateZ(phase);

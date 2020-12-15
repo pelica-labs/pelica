@@ -50,7 +50,7 @@ export const ScenesMenu: React.FC = () => {
       pitch: state.map.pitch,
       position,
       orientation,
-      duration: null,
+      duration: 4000,
     });
   };
 
