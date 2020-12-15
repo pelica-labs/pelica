@@ -1,6 +1,7 @@
 import { distance, Position } from "@turf/turf";
-import BezierEasing from "bezier-easing";
 import { Promise } from "bluebird";
+import { get as lodashGet } from "lodash";
+import { FreeCameraOptions, MercatorCoordinate } from "mapbox-gl";
 
 import { getMap } from "~/core/selectors";
 import { App } from "~/core/zustand";
@@ -10,6 +11,8 @@ export type Breakpoint = {
   id: string;
   name: string;
   coordinates: Position;
+  position: { x: number; y: number; z: number }; // x, y, z in mercator coordinates
+  orientation: number[]; // orientation quaternion
   zoom: number;
   bearing: number;
   pitch: number;
@@ -64,6 +67,14 @@ export const scenes = ({ mutate, get }: App) => ({
     const breakpoints = get().scenes.breakpoints;
     const [start] = breakpoints;
 
+    const basis = (v0: number, v1: number, v2: number, v3: number, t: number) => {
+      const t2 = t * t,
+        t3 = t2 * t;
+      return (
+        ((1 - 3 * t + 3 * t2 - t3) * v0 + (4 - 6 * t2 + 3 * t3) * v1 + (1 + 3 * t + 3 * t2 - 3 * t3) * v2 + t3 * v3) / 6
+      );
+    };
+
     if (!start) {
       return;
     }
@@ -80,25 +91,62 @@ export const scenes = ({ mutate, get }: App) => ({
         return;
       }
 
-      const distanceToBreakpoint = distance(breakpoints[index - 1].coordinates, breakpoint.coordinates, {
+      const from = breakpoints[index - 1];
+      const to = breakpoint;
+
+      const distanceToBreakpoint = distance(from.coordinates, to.coordinates, {
         units: "kilometers",
       });
+      const duration = to.duration || Math.max(4000, distanceToBreakpoint * 40);
 
-      map.flyTo({
-        center: breakpoint.coordinates as [number, number],
-        zoom: breakpoint.zoom,
-        bearing: breakpoint.bearing,
-        pitch: breakpoint.pitch,
-        animate: true,
-        essential: true,
-        duration: breakpoint.duration || Math.max(4000, distanceToBreakpoint * 40),
-        easing: BezierEasing(0.42, 0.0, 0.58, 1.0), // ease-in-out
-      });
+      function interpolateBasis(accessor: string) {
+        const n = breakpoints.length - 1;
+        const v1 = lodashGet(breakpoints[index - 1], accessor),
+          v2 = lodashGet(breakpoints[index], accessor),
+          v0 = index > 1 ? lodashGet(breakpoints[index - 2], accessor) : 2 * v1 - v2,
+          v3 = index < n ? lodashGet(breakpoints[index + 1], accessor) : 2 * v2 - v1;
+        return function (t: number) {
+          return basis(v0, v1, v2, v3, t);
+        };
+      }
+
+      const interpolateX = interpolateBasis("position.x");
+      const interpolateY = interpolateBasis("position.y");
+      const interpolateZ = interpolateBasis("position.z");
+      const interpolateO0 = interpolateBasis("orientation[0]");
+      const interpolateO1 = interpolateBasis("orientation[1]");
+      const interpolateO2 = interpolateBasis("orientation[2]");
+      const interpolateO3 = interpolateBasis("orientation[3]");
 
       await new Promise((resolve) => {
-        map.once("moveend", () => {
-          resolve();
-        });
+        let lastTime = 0.0;
+        let animationTime = 0;
+
+        const frame = (time: number) => {
+          if (animationTime < duration) {
+            const phase = animationTime / duration;
+            const x = interpolateX(phase);
+            const y = interpolateY(phase);
+            const z = interpolateZ(phase);
+            const orientation = [
+              interpolateO0(phase),
+              interpolateO1(phase),
+              interpolateO2(phase),
+              interpolateO3(phase),
+            ];
+            const position = new MercatorCoordinate(x, y, z);
+
+            // mapbox types are broken
+            map.setFreeCameraOptions(({ position, orientation } as unknown) as FreeCameraOptions);
+            animationTime += 1000 / (time - lastTime);
+            lastTime = time;
+            window.requestAnimationFrame(frame);
+          } else {
+            return resolve();
+          }
+        };
+
+        window.requestAnimationFrame(frame);
       });
     });
   },
