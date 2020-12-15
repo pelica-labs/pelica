@@ -24,6 +24,8 @@ export const ScenesMenu: React.FC = () => {
   const onCaptureBreakpoint = async () => {
     const state = getState();
 
+    if (!state.map.current) return;
+
     const res = await mapboxGeocoding
       .reverseGeocode({
         query: state.map.coordinates as [number, number],
@@ -33,6 +35,11 @@ export const ScenesMenu: React.FC = () => {
       .send();
 
     const sceneName = res.body.features[0]?.text ?? `Scene #${breakpoints.length + 1}`;
+    // the mapbox types are not great..
+    const { position, orientation } = (state.map.current.getFreeCameraOptions() as unknown) as {
+      position: { x: number; y: number; z: number };
+      orientation: number[];
+    };
 
     app.scenes.addBreakpoint({
       id: stringId() as string,
@@ -41,6 +48,8 @@ export const ScenesMenu: React.FC = () => {
       zoom: state.map.zoom,
       bearing: state.map.bearing,
       pitch: state.map.pitch,
+      position,
+      orientation,
       duration: null,
     });
   };
