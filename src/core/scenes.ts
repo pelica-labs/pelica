@@ -95,16 +95,17 @@ export const scenes = ({ mutate, get }: App) => ({
       const from = breakpoints[index - 1];
       const to = breakpoint;
 
-      function interpolateBasis(accessor: string) {
+      const interpolateBasis = (accessor: string) => {
         const n = breakpoints.length - 1;
         const v1 = lodashGet(breakpoints[index - 1], accessor),
           v2 = lodashGet(breakpoints[index], accessor),
           v0 = index > 1 ? lodashGet(breakpoints[index - 2], accessor) : 2 * v1 - v2,
           v3 = index < n ? lodashGet(breakpoints[index + 1], accessor) : 2 * v2 - v1;
-        return function (t: number) {
+
+        return (t: number) => {
           return basis(v0, v1, v2, v3, t);
         };
-      }
+      };
 
       const interpolateX = interpolateBasis("position.x");
       const interpolateY = interpolateBasis("position.y");
@@ -129,27 +130,22 @@ export const scenes = ({ mutate, get }: App) => ({
         let animationTime = 0;
 
         const frame = (time: number) => {
-          if (animationTime < getDuration(to)) {
-            const phase = interpolateTime(animationTime / getDuration(to));
-            const x = interpolateX(phase);
-            const y = interpolateY(phase);
-            const z = interpolateZ(phase);
-            const orientation = [
-              interpolateO0(phase),
-              interpolateO1(phase),
-              interpolateO2(phase),
-              interpolateO3(phase),
-            ];
-            const position = new MercatorCoordinate(x, y, z);
-
-            // mapbox types are broken
-            map.setFreeCameraOptions(({ position, orientation } as unknown) as FreeCameraOptions);
-            animationTime += 1000 / (time - lastTime);
-            lastTime = time;
-            window.requestAnimationFrame(frame);
-          } else {
+          if (animationTime >= getDuration(to)) {
             return resolve();
           }
+
+          const phase = interpolateTime(animationTime / getDuration(to));
+          const x = interpolateX(phase);
+          const y = interpolateY(phase);
+          const z = interpolateZ(phase);
+          const orientation = [interpolateO0(phase), interpolateO1(phase), interpolateO2(phase), interpolateO3(phase)];
+          const position = new MercatorCoordinate(x, y, z);
+
+          // mapbox types are broken
+          map.setFreeCameraOptions(({ position, orientation } as unknown) as FreeCameraOptions);
+          animationTime += 1000 / (time - lastTime);
+          lastTime = time;
+          window.requestAnimationFrame(frame);
         };
 
         window.requestAnimationFrame(frame);
