@@ -1,7 +1,6 @@
-import { createH264MP4Encoder } from "h264-mp4-encoder";
-
 import { getMap } from "~/core/selectors";
 import { App } from "~/core/zustand";
+import { loadExt } from "~/lib/ext";
 
 type Exports = {
   exporting: boolean;
@@ -42,26 +41,32 @@ export const exports = ({ mutate, get }: App) => ({
   },
 
   downloadVideo: async (fileName: string) => {
+    const { simd, loadEncoder } = await loadExt();
     const map = getMap();
-    const gl = map.painter.context.gl as WebGLRenderingContext;
+    const gl = map.getCanvas().getContext("webgl") as WebGLRenderingContext;
     const width: number = gl.drawingBufferWidth;
     const height: number = gl.drawingBufferHeight;
 
-    const encoder = await createH264MP4Encoder();
+    const supportsSIMD = await simd();
 
-    encoder.width = width;
-    encoder.height = height;
-    encoder.frameRate = 60;
-    encoder.kbps = 64000;
-    encoder.speed = 10;
-    encoder.debug = true;
-    encoder.initialize();
+    const Encoder = await loadEncoder({ simd: supportsSIMD });
+
+    const encoder = Encoder.create({
+      width,
+      height,
+      fps: 60,
+      kbps: 64000,
+      rgbFlipY: true,
+    });
+
+    const ptr = encoder.getRGBPointer();
 
     const onFrame = () => {
-      const frame = new Uint8Array(width * height);
+      const pixels = encoder.memory().subarray(ptr);
 
-      gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, frame);
-      encoder.addFrameRgba(frame);
+      gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+
+      encoder.encodeRGBPointer();
     };
 
     map.on("render", onFrame);
@@ -70,9 +75,9 @@ export const exports = ({ mutate, get }: App) => ({
 
     map.off("render", onFrame);
 
-    encoder.finalize();
+    const mp4 = encoder.end();
 
-    const blob = new Blob([encoder.FS.readFile(encoder.outputFilename)], { type: "video/mp4" });
+    const blob = new Blob([mp4], { type: "video/mp4" });
 
     const anchor = document.createElement("a");
     anchor.href = URL.createObjectURL(blob);
