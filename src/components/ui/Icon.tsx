@@ -10,6 +10,7 @@ export type IconProps = SVGAttributes<SVGElement> & {
 export type Icon = React.FC<IconProps>;
 
 const icon = (path: JSX.Element, size = 24): Icon => {
+  /* eslint-disable-next-line prefer-arrow/prefer-arrow-functions */
   return function Icon({ ...props }) {
     return (
       <svg {...props} viewBox={`0 0 ${size}, ${size}`} xmlns="http://www.w3.org/2000/svg">
@@ -20,6 +21,7 @@ const icon = (path: JSX.Element, size = 24): Icon => {
 };
 
 export const iconFromDangerousSvgString = (svgString: string, width: number, height: number): Icon => {
+  /* eslint-disable-next-line prefer-arrow/prefer-arrow-functions */
   return function Icon({ ...props }) {
     return (
       <svg
@@ -33,6 +35,7 @@ export const iconFromDangerousSvgString = (svgString: string, width: number, hei
 };
 
 export const iconFromImgUrl = (src: string, width: number, height: number): Icon => {
+  /* eslint-disable-next-line prefer-arrow/prefer-arrow-functions */
   return function Icon({ ...props }) {
     return (
       <svg {...props} viewBox={`0 0 ${width} ${height}`} xmlns="http://www.w3.org/2000/svg">

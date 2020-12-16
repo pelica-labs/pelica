@@ -1,5 +1,6 @@
 import { format } from "date-fns";
 import { signIn, useSession } from "next-auth/client";
+import Head from "next/head";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import BounceLoader from "react-spinners/BounceLoader";
@@ -151,6 +152,9 @@ export const ExportMenu: React.FC = () => {
 
   return (
     <>
+      <Head>
+        <script src="https://unpkg.com/mp4-h264@1.0.7/build/mp4-encoder.js" />
+      </Head>
       <div className="flex md:flex-col md:divide-y md:divide-x-0 divide-x md:h-full text-gray-800">
         <MenuSection className="flex flex-col space-y-1 md:space-y-2 w-48 md:w-auto">
           <AspectRatioSelector

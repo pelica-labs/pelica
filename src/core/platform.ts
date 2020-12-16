@@ -1,4 +1,5 @@
 import { App } from "~/core/zustand";
+import { loadExt } from "~/lib/ext";
 import { theme } from "~/styles/tailwind";
 
 export type Platform = {
@@ -26,6 +27,7 @@ export type Keyboard = {
 
 export type System = {
   appleLike: boolean;
+  simd: boolean;
 };
 
 export type ScreenDimensions = {
@@ -64,6 +66,7 @@ export const platformInitialState: Platform = {
 
   system: {
     appleLike: false,
+    simd: false,
   },
 };
 
@@ -77,7 +80,7 @@ export const upscale = (pixelRatio: number): void => {
 export const platform = ({ mutate, get }: App) => ({
   ...platformInitialState,
 
-  initialize: () => {
+  initialize: async () => {
     get().platform.updateScreen(window.innerWidth, window.innerHeight);
 
     mutate((state) => {
@@ -87,6 +90,17 @@ export const platform = ({ mutate, get }: App) => ({
       state.platform.keyboard.available = !("ontouchstart" in document.documentElement);
 
       state.platform.system.appleLike = /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform);
+    });
+
+    get().platform.detectSimd();
+  },
+
+  detectSimd: async () => {
+    const { simd } = await loadExt();
+    const supportsSimd = await simd();
+
+    mutate((state) => {
+      state.platform.system.simd = supportsSimd;
     });
   },
 

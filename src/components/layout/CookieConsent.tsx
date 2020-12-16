@@ -1,6 +1,6 @@
 import React from "react";
 
-import useLocalStorage from "~/hooks/useLocalStorage";
+import { useLocalStorage } from "~/hooks/useLocalStorage";
 
 export const CookieConsent: React.FC = () => {
   const [cookieConsent, setCookieConsent] = useLocalStorage("cookie-consent", false);
