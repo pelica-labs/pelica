@@ -41,15 +41,14 @@ export const exports = ({ mutate, get }: App) => ({
   },
 
   downloadVideo: async (fileName: string) => {
-    const { simd, loadEncoder } = await loadExt();
+    const { loadEncoder } = await loadExt();
     const map = getMap();
+    const simd = get().platform.system.simd;
     const gl = map.getCanvas().getContext("webgl") as WebGLRenderingContext;
     const width: number = gl.drawingBufferWidth;
     const height: number = gl.drawingBufferHeight;
 
-    const supportsSIMD = await simd();
-
-    const Encoder = await loadEncoder({ simd: supportsSIMD });
+    const Encoder = await loadEncoder({ simd });
 
     const encoder = Encoder.create({
       width,
