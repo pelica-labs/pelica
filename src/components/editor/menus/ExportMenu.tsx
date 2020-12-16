@@ -98,7 +98,7 @@ export const ExportMenu: React.FC = () => {
     if (downloading) {
       setDownloading(false);
 
-      app.exports.download(
+      app.exports.downloadImage(
         imageData,
         [t("pelica"), getMapTitle(), format(Date.now(), "yyyy-MM-dd HH-mm-ss")].filter((text) => !!text).join(" · ")
       );
@@ -175,12 +175,25 @@ export const ExportMenu: React.FC = () => {
               onDownload();
             }}
           >
-            Download
+            Download image
             {downloading && (
               <div className="ml-4">
                 <BounceLoader color={theme.colors.orange[500]} size={10} />
               </div>
             )}
+          </Button>
+
+          <Button
+            className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-300 hover:bg-orange-200 text-xs uppercase py-2 justify-center w-full"
+            onClick={() => {
+              const fileName = [t("pelica"), getMapTitle(), format(Date.now(), "yyyy-MM-dd HH-mm-ss")]
+                .filter((text) => !!text)
+                .join(" · ");
+
+              app.exports.downloadVideo(fileName);
+            }}
+          >
+            Download video
           </Button>
 
           {shareFeature && (
