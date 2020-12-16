@@ -19,6 +19,8 @@ module.exports = withSourceMaps({
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.alias["@sentry/node"] = "@sentry/browser";
+
+      config.node.fs = "empty";
     }
 
     return config;

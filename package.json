@@ -32,6 +32,7 @@
     "formidable": "^1.2.2",
     "framer-motion": "^2.9.4",
     "fuse.js": "^6.4.2",
+    "h264-mp4-encoder": "^1.0.12",
     "http-status-codes": "^2.1.4",
     "i18next": "^19.8.2",
     "i18next-browser-languagedetector": "^6.0.1",
