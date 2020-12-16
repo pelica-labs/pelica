@@ -6,6 +6,7 @@ import { FreeCameraOptions, MercatorCoordinate } from "mapbox-gl";
 
 import { getMap } from "~/core/selectors";
 import { App } from "~/core/zustand";
+import { sleep } from "~/lib/promise";
 
 export type Breakpoint = {
   id: string;
@@ -84,7 +85,7 @@ export const scenes = ({ mutate, get }: App) => ({
     map.setBearing(start.bearing);
     map.setPitch(start.pitch);
 
-    // await sleep(1000);
+    await sleep(1000);
 
     await Promise.each(breakpoints, async (breakpoint, index) => {
       if (index === 0) {

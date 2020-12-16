@@ -63,9 +63,9 @@ export const MapEditor: React.FC<Props> = ({ map }) => {
   });
 
   useStoreSubscription(
-    (store) => getSyncableState(store),
-    debounce((map) => {
-      app.sync.saveState(map);
+    (store) => JSON.stringify(getSyncableState(store)),
+    debounce(() => {
+      app.sync.saveState(getSyncableState());
     }, 1000)
   );
 
