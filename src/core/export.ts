@@ -53,8 +53,8 @@ export const exports = ({ mutate, get }: App) => ({
     const encoder = Encoder.create({
       width,
       height,
-      fps: 60,
-      kbps: 64000,
+      fps: 30,
+      kbps: 16000,
       rgbFlipY: true,
     });
 
