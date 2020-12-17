@@ -5,15 +5,19 @@ import React, { useState } from "react";
 
 import { MapTitleInput } from "~/components/editor/controls/MapTitleInput";
 import { HotkeysModal } from "~/components/editor/HotkeysModal";
+import { LanguagesSubMenu } from "~/components/editor/LanguagesSubMenu";
 import { NavigationModal } from "~/components/editor/NavigationModal";
-import { DoubleCheckIcon, MenuIcon, RedoIcon, TrashIcon, UndoIcon } from "~/components/ui/Icon";
+import { DoubleCheckIcon, LanguageIcon, MenuIcon, RedoIcon, TrashIcon, UndoIcon } from "~/components/ui/Icon";
 import { app, useStore } from "~/core/app";
+import { Languages } from "~/core/languages";
 import { useHotkey } from "~/hooks/useHotkey";
 import { useLayout } from "~/hooks/useLayout";
 
 export const MapMenu: React.FC = () => {
+  const [showLanguagesMenu, setShowLanguagesMenu] = useState(false);
   const [showHotkeysModal, setShowHotkeysModal] = useState(false);
   const [showNavigationModal, setShowNavigationModal] = useState(false);
+  const language = useStore((store) => store.editor.language);
   const canSelectAll = useStore((store) => store.entities.items.length > 0);
   const canUndo = useStore((store) => store.history.actions.length > 0);
   const canRedo = useStore((store) => store.history.redoStack.length > 0);
@@ -66,7 +70,15 @@ export const MapMenu: React.FC = () => {
                 </Menu.Button>
               </span>
 
-              {open && (
+              {showLanguagesMenu && (
+                <LanguagesSubMenu
+                  onSelect={() => {
+                    setShowLanguagesMenu(false);
+                  }}
+                />
+              )}
+
+              {open && !showLanguagesMenu && (
                 <Menu.Items
                   static
                   className="fixed top-0 mt-10 mb-16 md:mb-0 md:bottom-auto z-50 left-0 md:left-auto right-0 md:w-56 md:mr-1 origin-top-right bg-white border md:rounded md:shadow outline-none py-1"
@@ -163,6 +175,27 @@ export const MapMenu: React.FC = () => {
                           <span className="flex items-center space-x-2">
                             <span className="text-sm">Clear canvas</span>
                             <TrashIcon className="w-3 h-3 text-gray-600" />
+                          </span>
+                        </a>
+                      )}
+                    </Menu.Item>
+
+                    <Menu.Item disabled={!canSelectAll}>
+                      {({ active, disabled }) => (
+                        <a
+                          className={classNames({
+                            "flex items-center justify-between px-2 py-1": true,
+                            "bg-orange-200": active,
+                            "hover:bg-orange-200 cursor-pointer": !disabled,
+                            "text-gray-400": disabled,
+                          })}
+                          onClick={() => {
+                            setShowLanguagesMenu(true);
+                          }}
+                        >
+                          <span className="flex items-center space-x-2">
+                            <span className="text-sm">Language: {Languages[language]}</span>
+                            <LanguageIcon className="w-3 h-3 text-gray-600" />
                           </span>
                         </a>
                       )}

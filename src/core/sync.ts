@@ -55,6 +55,10 @@ export const sync = ({ mutate }: App) => ({
         state.map.pitch = map.pitch;
       }
 
+      if (map.language) {
+        state.editor.language = map.language;
+      }
+
       if (map.style) {
         state.editor.style = map.style;
       }

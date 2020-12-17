@@ -40,6 +40,7 @@ import { applyPinchInteractions } from "~/map/interactions/pinch";
 import { applyResizeInteractions } from "~/map/interactions/resize";
 import { applyRightClickInteractions } from "~/map/interactions/rightClick";
 import { applyScrollInteractions } from "~/map/interactions/scroll";
+import { applyLanguage } from "~/map/languages";
 import { applyLayers } from "~/map/layers";
 import { applySources, MapSource, setSourceCluster } from "~/map/sources";
 import { styleToUrl } from "~/map/style";
@@ -106,6 +107,7 @@ export const Map: React.FC<Props> = ({ map: mapModel, readOnly = false }) => {
       applySources();
       applyLayers();
       applyTerrain();
+      applyLanguage();
       applyFeatures(getEntityFeatures(), [MapSource.Route, MapSource.Pin, MapSource.Text]);
 
       if (!readOnly) {
@@ -156,6 +158,16 @@ export const Map: React.FC<Props> = ({ map: mapModel, readOnly = false }) => {
     (store) => store.map.pitch,
     (pitch) => {
       getMap().setPitch(pitch);
+    }
+  );
+
+  /**
+   * Sync language
+   */
+  useStoreSubscription(
+    (store) => store.editor.language,
+    () => {
+      applyLanguage();
     }
   );
 

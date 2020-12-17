@@ -798,3 +798,57 @@ export const ThreeDIcon = icon(
     fill="currentColor"
   />
 );
+
+export const LanguageIcon = icon(
+  <>
+    <path
+      d="M48 112h288"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="32"
+    ></path>
+    <path
+      d="M192 64v48"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="32"
+    ></path>
+    <path
+      d="M272 448l96-224l96 224"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="32"
+    ></path>
+    <path
+      d="M301.5 384h133"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="32"
+    ></path>
+    <path
+      d="M281.3 112S257 206 199 277S80 384 80 384"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="32"
+    ></path>
+    <path
+      d="M256 336s-35-27-72-75s-56-85-56-85"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="32"
+    ></path>
+  </>,
+  512
+);

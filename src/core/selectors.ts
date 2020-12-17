@@ -156,6 +156,7 @@ export const getSyncableState = (state: State = getState()): MapModel => {
     bearing: state.map.bearing,
     pitch: state.map.pitch,
 
+    language: state.editor.language,
     style: state.editor.style,
     entities: state.entities.items,
   };

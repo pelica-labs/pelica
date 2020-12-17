@@ -2,6 +2,7 @@ import { Position } from "@turf/turf";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
 import { CoreEntity } from "~/core/entities";
+import { Languages } from "~/core/languages";
 import { dynamo } from "~/lib/aws";
 import { ID } from "~/lib/id";
 import { Style } from "~/map/style";
@@ -20,6 +21,7 @@ export type MapModel = {
   bearing?: number;
   pitch?: number;
 
+  language?: keyof typeof Languages;
   style?: Style;
   entities?: CoreEntity[];
 };

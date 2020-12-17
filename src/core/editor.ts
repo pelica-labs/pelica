@@ -9,10 +9,12 @@ import {
   ThreeDIcon,
 } from "~/components/ui/Icon";
 import { AspectRatio } from "~/core/aspectRatio";
+import { MapLanguage } from "~/core/languages";
 import { App } from "~/core/zustand";
 import { defaultStyle, Style } from "~/map/style";
 
 export type Editor = {
+  language: MapLanguage;
   mode: EditorMode;
   menuMode: EditorMenuMode | null;
   isMoving: boolean;
@@ -38,6 +40,7 @@ export const modeIcons = {
 };
 
 export const editorInitialState: Editor = {
+  language: "en",
   mode: "style",
   menuMode: null,
   isMoving: true,
@@ -58,6 +61,12 @@ export const editor = ({ mutate, get }: App) => ({
     history.push({
       name: "updateStyle",
       style,
+    });
+  },
+
+  setLanguage: (language: MapLanguage) => {
+    mutate((state) => {
+      state.editor.language = language;
     });
   },
 
