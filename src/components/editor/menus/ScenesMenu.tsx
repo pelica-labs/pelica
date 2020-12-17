@@ -1,6 +1,6 @@
 import { Menu } from "@headlessui/react";
 import classNames from "classnames";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
 import { WidthSlider } from "~/components/editor/controls/WidthSlider";
@@ -8,7 +8,7 @@ import { MenuSection, MenuSectionHeader } from "~/components/editor/menus/MenuSe
 import { StylePreview } from "~/components/saved-maps/StylePreview";
 import { Button } from "~/components/ui/Button";
 import { Heading } from "~/components/ui/Heading";
-import { CameraIcon, EyeIcon, PlayIcon, TimerIcon, TrashIcon, VerticalDotsIcon } from "~/components/ui/Icon";
+import { CameraIcon, EyeIcon, PlayIcon, StopIcon, TimerIcon, TrashIcon, VerticalDotsIcon } from "~/components/ui/Icon";
 import { app, getState, useStore } from "~/core/app";
 import { Breakpoint } from "~/core/scenes";
 import { getMap } from "~/core/selectors";
@@ -19,7 +19,12 @@ import { theme } from "~/styles/tailwind";
 
 export const ScenesMenu: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false);
+  const isPlayingRef = useRef(isPlaying);
   const breakpoints = useStore((store) => store.scenes.breakpoints);
+
+  useEffect(() => {
+    isPlayingRef.current = isPlaying;
+  }, [isPlaying]);
 
   const onCaptureBreakpoint = async () => {
     const state = getState();
@@ -57,7 +62,7 @@ export const ScenesMenu: React.FC = () => {
   const onPlay = async () => {
     setIsPlaying(true);
 
-    await app.scenes.play();
+    await app.scenes.play(() => isPlayingRef.current);
 
     setIsPlaying(false);
   };
@@ -68,13 +73,18 @@ export const ScenesMenu: React.FC = () => {
         <Heading>Scenes</Heading>
         <Button
           className="text-sm md:text-xs space-x-2"
-          disabled={breakpoints.length < 2 || isPlaying}
+          disabled={breakpoints.length < 2}
           onClick={() => {
-            onPlay();
+            if (isPlaying) {
+              setIsPlaying(false);
+            } else {
+              onPlay();
+            }
           }}
         >
-          <PlayIcon className="w-4 h-4" />
-          <span>{isPlaying ? "Playing" : "Play"}</span>
+          {isPlaying ? <StopIcon className="w-4 h-4" /> : <PlayIcon className="w-4 h-4" />}
+
+          <span>{isPlaying ? "Stop" : "Play"}</span>
         </Button>
       </MenuSectionHeader>
 
@@ -124,7 +134,7 @@ export const ScenesMenu: React.FC = () => {
                               {...provided.draggableProps}
                             >
                               {index !== 0 && !snapshot.isDragging && (
-                                <BreakpointDurationInput breakpoint={breakpoint} isDragging={snapshot.isDragging} />
+                                <BreakpointDurationInput breakpoint={breakpoint} />
                               )}
                               <div
                                 key={index}
