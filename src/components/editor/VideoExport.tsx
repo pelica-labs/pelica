@@ -76,7 +76,7 @@ export const VideoExport: React.FC<Props> = ({ map: mapModel }) => {
         <div className="fixed bottom-0 left-0 right-0 bg-white border-l-4 border-r-4 border-orange-400 p-2 z-50 flex flex-col text-gray-900 rounded-lg shadow m-8">
           <div className="flex justify-between items-center px-1">
             <div className="flex items-center space-x-2">
-              <span>Encoding video</span>
+              <span className="font-semibold tracking-wide leading-none">Encoding video</span>
               {!simd && (
                 <span className="text-sm text-gray-400">
                   (
@@ -106,8 +106,7 @@ export const VideoExport: React.FC<Props> = ({ map: mapModel }) => {
             </div>
             <div className="mt-1 flex justify-between w-full text-sm">
               <span>
-                {encodingStatus.framesCount}
-                <span>/ ~{encodingStatus.totalFrames} frames encoded</span>
+                {encodingStatus.framesCount} / ~{encodingStatus.totalFrames} frames encoded
               </span>
               <span>{percentProgress.toFixed(2)}%</span>
               {timeRemaining > 0 && (
