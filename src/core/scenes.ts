@@ -63,7 +63,7 @@ export const scenes = ({ mutate, get }: App) => ({
     });
   },
 
-  play: async () => {
+  play: async (shouldKeepGoing: () => boolean) => {
     const map = getMap(get());
     const breakpoints = get().scenes.breakpoints;
     const [start] = breakpoints;
@@ -130,7 +130,7 @@ export const scenes = ({ mutate, get }: App) => ({
         let animationTime = 0;
 
         const frame = (time: number) => {
-          if (animationTime >= getDuration(to)) {
+          if (animationTime >= getDuration(to) || !shouldKeepGoing()) {
             return resolve();
           }
 

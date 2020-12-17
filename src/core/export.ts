@@ -1,14 +1,24 @@
+import { sumBy } from "lodash";
+
 import { getMap } from "~/core/selectors";
 import { App } from "~/core/zustand";
 import { loadExt } from "~/lib/ext";
 
 type Exports = {
   exporting: boolean;
+  videoExport: boolean;
   imageData: string | null;
+};
+
+export type EncodingUpdate = {
+  status: "running" | "complete" | "interrupted";
+  framesCount: number;
+  totalFrames: number;
 };
 
 export const exportsInitialState: Exports = {
   exporting: false,
+  videoExport: false,
   imageData: null,
 };
 
@@ -40,7 +50,13 @@ export const exports = ({ mutate, get }: App) => ({
     });
   },
 
-  downloadVideo: async (fileName: string) => {
+  toggleVideoExport: () => {
+    mutate((state) => {
+      state.exports.videoExport = !state.exports.videoExport;
+    });
+  },
+
+  downloadVideo: async (fileName: string, onUpdate: (update: EncodingUpdate) => boolean) => {
     const { loadEncoder } = await loadExt();
     const map = getMap();
     const simd = get().platform.system.simd;
@@ -48,33 +64,58 @@ export const exports = ({ mutate, get }: App) => ({
     const width: number = gl.drawingBufferWidth;
     const height: number = gl.drawingBufferHeight;
 
+    let interrupted = false;
+
     const Encoder = await loadEncoder({ simd });
 
+    const frameRate = 30;
     const encoder = Encoder.create({
       width,
       height,
-      fps: 30,
-      kbps: 16000,
+      fps: frameRate,
+      kbps: 64000,
       rgbFlipY: true,
     });
 
+    console.log(width, height);
+
     const ptr = encoder.getRGBPointer();
 
-    const onFrame = () => {
-      const pixels = encoder.memory().subarray(ptr);
+    let framesCount = 0;
+    const sceneLength = sumBy(get().scenes.breakpoints, (breakpoint) => {
+      return breakpoint.duration || 4000;
+    });
+    const totalFrames = Math.round(sceneLength / (1000 / frameRate));
 
-      gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+    const onFrame = () => {
+      gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, encoder.memory().subarray(ptr));
 
       encoder.encodeRGBPointer();
+
+      framesCount += 1;
+
+      const keepGoing = onUpdate({ status: "running", framesCount, totalFrames });
+
+      if (!keepGoing) {
+        interrupted = true;
+      }
     };
 
     map.on("render", onFrame);
 
-    await get().scenes.play();
+    await get().scenes.play(() => !interrupted);
 
     map.off("render", onFrame);
 
     const mp4 = encoder.end();
+
+    if (interrupted) {
+      onUpdate({ status: "interrupted", framesCount, totalFrames });
+
+      return;
+    }
+
+    onUpdate({ status: "complete", framesCount, totalFrames: framesCount });
 
     const blob = new Blob([mp4], { type: "video/mp4" });
 

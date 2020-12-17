@@ -51,9 +51,10 @@ type Props = {
   map: MapModel;
 
   readOnly?: boolean;
+  disableInteractions?: boolean;
 };
 
-export const Map: React.FC<Props> = ({ map: mapModel, readOnly = false }) => {
+export const Map: React.FC<Props> = ({ map: mapModel, readOnly = false, disableInteractions = false }) => {
   const container = useRef<HTMLDivElement>(null);
   const wrapper = useRef<HTMLDivElement>(null);
   const aspectRatio = useStore((store) => store.editor.aspectRatio);
@@ -84,6 +85,7 @@ export const Map: React.FC<Props> = ({ map: mapModel, readOnly = false }) => {
       fadeDuration: 0,
       logoPosition: "bottom-right",
       preserveDrawingBuffer: true,
+      interactive: !disableInteractions,
     });
 
     app.map.initialize(map);
@@ -167,6 +169,19 @@ export const Map: React.FC<Props> = ({ map: mapModel, readOnly = false }) => {
     }
   );
 
+  useEffect(() => {
+    if (!container.current || !wrapper.current) {
+      return;
+    }
+
+    const dimensions = {
+      width: container.current.clientWidth,
+      height: container.current.clientHeight,
+    };
+
+    Object.assign(wrapper.current.style, computeMapDimensions(aspectRatio, dimensions));
+  }, [container.current, wrapper.current]);
+
   /**
    * Handle aspect ratio & resize
    */
@@ -178,6 +193,7 @@ export const Map: React.FC<Props> = ({ map: mapModel, readOnly = false }) => {
     }),
     ({ exporting, aspectRatio, screen }) => {
       const canvas = getMap().getCanvas();
+
       if (!canvas || !wrapper.current || !container.current) {
         return;
       }

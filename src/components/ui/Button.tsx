@@ -1,11 +1,14 @@
 import classnames from "classnames";
 import React, { ButtonHTMLAttributes } from "react";
 
+import { Tooltip, TooltipProps } from "~/components/ui/Tooltip";
+
 type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
   active?: boolean;
   rounded?: boolean;
   outlined?: boolean;
   shadow?: boolean;
+  tooltip?: TooltipProps;
 };
 
 export const Button: React.FC<Props> = ({
@@ -13,6 +16,7 @@ export const Button: React.FC<Props> = ({
   shadow = true,
   active = false,
   outlined = false,
+  tooltip,
   className,
   ...attributes
 }) => {
@@ -30,5 +34,11 @@ export const Button: React.FC<Props> = ({
     ["opacity-50 cursor-auto"]: attributes.disabled,
   });
 
-  return <button className={buttonClasses} {...attributes} />;
+  const button = <button className={buttonClasses} {...attributes} />;
+
+  if (tooltip) {
+    return <Tooltip {...tooltip}>{button}</Tooltip>;
+  }
+
+  return button;
 };

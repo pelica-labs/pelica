@@ -28,6 +28,7 @@ export const ExportMenu: React.FC = () => {
   const [copying, setCopying] = useState(false);
   const imageData = useStore((store) => store.exports.imageData);
   const aspectRatio = useStore((store) => store.editor.aspectRatio);
+  const canExportVideo = useStore((store) => store.scenes.breakpoints.length > 1);
   const layout = useLayout();
   const canvasDimensions = useStore((store) => store.map.dimensions);
   const ratio = aspectRatios[aspectRatio].ratio || [canvasDimensions.width, canvasDimensions.height];
@@ -40,11 +41,7 @@ export const ExportMenu: React.FC = () => {
   };
 
   const onDownloadVideo = () => {
-    const fileName = [t("pelica"), getMapTitle(), format(Date.now(), "yyyy-MM-dd HH-mm-ss")]
-      .filter((text) => !!text)
-      .join(" · ");
-
-    app.exports.downloadVideo(fileName);
+    app.exports.toggleVideoExport();
   };
 
   const onShare = () => {
@@ -191,15 +188,6 @@ export const ExportMenu: React.FC = () => {
             )}
           </Button>
 
-          <Button
-            className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-300 hover:bg-orange-200 text-xs uppercase py-2 justify-center w-full"
-            onClick={() => {
-              onDownloadVideo();
-            }}
-          >
-            Download video
-          </Button>
-
           {shareFeature && (
             <Button
               className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-300 hover:bg-orange-200 text-xs uppercase py-2 justify-center w-full"
@@ -232,6 +220,19 @@ export const ExportMenu: React.FC = () => {
               )}
             </Button>
           )}
+
+          <Button
+            className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-300 hover:bg-orange-200 text-xs uppercase py-2 justify-center w-full"
+            disabled={!canExportVideo}
+            tooltip={
+              canExportVideo ? undefined : { text: "Create scenes in order to export a video", placement: "below" }
+            }
+            onClick={() => {
+              onDownloadVideo();
+            }}
+          >
+            Download video
+          </Button>
         </MenuSection>
 
         <MenuSection className="flex flex-col space-y-3 w-64 md:w-auto">

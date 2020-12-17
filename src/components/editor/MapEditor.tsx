@@ -5,6 +5,7 @@ import { useDropzone } from "react-dropzone";
 import { ItineraryInput } from "~/components/editor/controls/ItineraryInput";
 import { HistoryButtons } from "~/components/editor/HistoryButtons";
 import { Sidebar } from "~/components/editor/Sidebar";
+import { VideoExport } from "~/components/editor/VideoExport";
 import { Alerts } from "~/components/layout/Alerts";
 import { GeolocationButton } from "~/components/map/GeolocationButton";
 import { Map } from "~/components/map/Map";
@@ -29,6 +30,7 @@ export const MapEditor: React.FC<Props> = ({ map }) => {
   const editorMode = useStore((store) => store.editor.mode);
   const currentCoordinates = useStore((store) => store.map.coordinates);
   const currentZoom = useStore((store) => store.map.zoom);
+  const videoExport = useStore((store) => store.exports.videoExport);
   const selectedItinerary = useStore((store) => getSelectedItinerary(store));
   const layout = useLayout();
   const dropzone = useDropzone({
@@ -82,6 +84,10 @@ export const MapEditor: React.FC<Props> = ({ map }) => {
       }
     }
   );
+
+  if (videoExport) {
+    return <VideoExport map={map} />;
+  }
 
   return (
     <div className="flex flex-col md:flex-row h-full justify-between bg-gray-200" {...dropzone.getRootProps()}>
