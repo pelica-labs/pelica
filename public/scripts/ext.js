@@ -8,6 +8,7 @@
 import loadEncoder from "https://unpkg.com/mp4-h264@1.0.7/build/mp4-encoder.js";
 import { simd } from "https://unpkg.com/wasm-feature-detect?module";
 
-window.extLoaded = true;
-window.loadEncoder = loadEncoder;
-window.simd = simd;
+window.ext = {
+  loadEncoder,
+  simd,
+};

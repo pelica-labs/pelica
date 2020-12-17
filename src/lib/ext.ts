@@ -10,25 +10,20 @@ type Ext = {
 
 declare global {
   interface Window {
-    extLoaded: boolean;
-    simd: Ext["simd"];
-    loadEncoder: Ext["loadEncoder"];
+    ext: Ext;
   }
 }
 
 export const loadExt = async (): Promise<Ext> => {
   return new Promise((resolve) => {
     const interval = setInterval(() => {
-      if (!window.extLoaded) {
+      if (!window.ext) {
         return;
       }
 
       clearInterval(interval);
 
-      resolve({
-        simd: window.simd,
-        loadEncoder: window.loadEncoder,
-      });
+      resolve(window.ext);
     });
   });
 };
