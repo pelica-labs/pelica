@@ -3,9 +3,8 @@ import HttpStatus from "http-status-codes";
 import { orderBy } from "lodash";
 import { NextApiHandler } from "next";
 
-import { MapModel } from "~/core/db";
+import { MapModel, paginate } from "~/core/db";
 import { getUserId, withApiSession } from "~/core/session";
-import { dynamo } from "~/lib/aws";
 
 export const fetchMaps = async (req: IncomingMessage): Promise<MapModel[]> => {
   const userId = await getUserId(req);
@@ -13,17 +12,15 @@ export const fetchMaps = async (req: IncomingMessage): Promise<MapModel[]> => {
     return [];
   }
 
-  const response = await dynamo
-    .scan({
-      TableName: "maps",
-      FilterExpression: "userId = :userId and attribute_not_exists(deletedAt)",
-      ExpressionAttributeValues: {
-        ":userId": userId,
-      },
-    })
-    .promise();
+  const items = await paginate<MapModel>({
+    TableName: "maps",
+    FilterExpression: "userId = :userId and attribute_not_exists(deletedAt)",
+    ExpressionAttributeValues: {
+      ":userId": userId,
+    },
+  });
 
-  return orderBy(response.Items, (map) => map.updatedAt, "desc") as MapModel[];
+  return orderBy(items, (map) => map.updatedAt, "desc") as MapModel[];
 };
 
 const ListMaps: NextApiHandler = withApiSession(async (req, res) => {

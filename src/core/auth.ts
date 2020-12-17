@@ -1,7 +1,7 @@
 import { IncomingMessage } from "http";
 import { User } from "next-auth";
 
-import { MapModel } from "~/core/db";
+import { MapModel, paginate } from "~/core/db";
 import { clearAnonymousSession, getAnonymousUserId } from "~/core/session";
 import { dynamo } from "~/lib/aws";
 
@@ -20,16 +20,13 @@ export const mergeAnonymousAccount = async (req: IncomingMessage, user: User): P
   /**
    * Fetch all maps belonging to the current anonymous user.
    */
-  const response = await dynamo
-    .scan({
-      TableName: "maps",
-      FilterExpression: "userId = :userId",
-      ExpressionAttributeValues: {
-        ":userId": anonymousUserId,
-      },
-    })
-    .promise();
-  const anonymousMaps = response.Items as MapModel[];
+  const anonymousMaps = await paginate<MapModel>({
+    TableName: "maps",
+    FilterExpression: "userId = :userId",
+    ExpressionAttributeValues: {
+      ":userId": anonymousUserId,
+    },
+  });
 
   await Promise.all(
     anonymousMaps.map(async (map) => {
