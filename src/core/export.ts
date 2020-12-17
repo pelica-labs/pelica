@@ -1,6 +1,6 @@
 import { sumBy } from "lodash";
 
-import { getMap } from "~/core/selectors";
+import { getBackgroundMap, getMap } from "~/core/selectors";
 import { App } from "~/core/zustand";
 import { loadExt } from "~/lib/ext";
 
@@ -58,7 +58,7 @@ export const exports = ({ mutate, get }: App) => ({
 
   downloadVideo: async (fileName: string, onUpdate: (update: EncodingUpdate) => boolean) => {
     const { loadEncoder } = await loadExt();
-    const map = getMap();
+    const map = getBackgroundMap();
     const simd = get().platform.system.simd;
     const gl = map.getCanvas().getContext("webgl") as WebGLRenderingContext;
     const width: number = gl.drawingBufferWidth;
@@ -103,7 +103,7 @@ export const exports = ({ mutate, get }: App) => ({
 
     map.on("render", onFrame);
 
-    await get().scenes.play(() => !interrupted);
+    await get().scenes.play({ background: true }, () => !interrupted);
 
     map.off("render", onFrame);
 

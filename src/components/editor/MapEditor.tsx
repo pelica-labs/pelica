@@ -85,10 +85,6 @@ export const MapEditor: React.FC<Props> = ({ map }) => {
     }
   );
 
-  if (videoExport) {
-    return <VideoExport map={map} />;
-  }
-
   return (
     <div className="flex flex-col md:flex-row h-full justify-between bg-gray-200" {...dropzone.getRootProps()}>
       <input {...dropzone.getInputProps()} />
@@ -109,6 +105,12 @@ export const MapEditor: React.FC<Props> = ({ map }) => {
 
         <div className="absolute bottom-0 mb-2 flex justify-center w-full z-10 pointer-events-none">
           <Alerts />
+
+          {videoExport && (
+            <div className="pointer-events-auto">
+              <VideoExport map={map} />
+            </div>
+          )}
         </div>
 
         {showHistoryButtons && (

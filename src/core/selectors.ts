@@ -18,6 +18,15 @@ export const getMap = (state: State = getState()): mapboxgl.Map => {
   return state.map.current;
 };
 
+export const getBackgroundMap = (state: State = getState()): mapboxgl.Map => {
+  if (!state.map.background) {
+    // Trust the map has been initialized. This simplifies a lot of code behind.
+    return (null as unknown) as mapboxgl.Map;
+  }
+
+  return state.map.background;
+};
+
 export const getAllEntities = (state: State = getState()): Entity[] => {
   return [...state.entities.items, ...state.entities.transientItems];
 };

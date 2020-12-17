@@ -1,7 +1,6 @@
-import { AnySourceData, GeoJSONSource, GeoJSONSourceRaw } from "mapbox-gl";
+import mapboxgl, { AnySourceData, GeoJSONSource, GeoJSONSourceRaw } from "mapbox-gl";
 
 import { getState } from "~/core/app";
-import { getMap } from "~/core/selectors";
 
 export enum MapSource {
   Pin = "pin",
@@ -36,8 +35,7 @@ const EmptyGeoJsonSource: AnySourceData = {
   },
 };
 
-export const applySources = (): void => {
-  const map = getMap();
+export const applySources = (map: mapboxgl.Map): void => {
   const state = getState();
 
   addSource(map, MapSource.Route);

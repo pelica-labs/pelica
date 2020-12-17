@@ -1,5 +1,6 @@
+import mapboxgl from "mapbox-gl";
+
 import { MAX_PIN_SIZE } from "~/core/pins";
-import { getMap } from "~/core/selectors";
 import { MapSource } from "~/map/sources";
 import { theme } from "~/styles/tailwind";
 
@@ -46,9 +47,7 @@ export enum MapLayer {
   Sky = "sky",
 }
 
-export const applyLayers = (): void => {
-  const map = getMap();
-
+export const applyLayers = (map: mapboxgl.Map): void => {
   addLayer(map, {
     id: MapLayer.Watermark,
     type: "symbol",

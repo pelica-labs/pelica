@@ -1,11 +1,9 @@
 import { throttle } from "lodash";
+import mapboxgl from "mapbox-gl";
 
 import { app } from "~/core/app";
-import { getMap } from "~/core/selectors";
 
-export const applyResizeInteractions = (): void => {
-  const map = getMap();
-
+export const applyResizeInteractions = (map: mapboxgl.Map): void => {
   map.on(
     "resize",
     throttle(() => {

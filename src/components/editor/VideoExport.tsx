@@ -7,7 +7,7 @@ import { Button } from "~/components/ui/Button";
 import { app, useStore } from "~/core/app";
 import { MapModel } from "~/core/db";
 import { EncodingUpdate } from "~/core/export";
-import { getMap, getMapTitle } from "~/core/selectors";
+import { getBackgroundMap, getMapTitle } from "~/core/selectors";
 
 type Props = {
   map: MapModel;
@@ -15,8 +15,11 @@ type Props = {
 
 export const VideoExport: React.FC<Props> = ({ map: mapModel }) => {
   const { t } = useTranslation();
-  const map = useStore((store) => getMap(store));
+  const map = useStore((store) => getBackgroundMap(store));
   const simd = useStore((store) => store.platform.system.simd);
+  const pixelRatio = useStore((store) => store.platform.screen.pixelRatio);
+  const mapDimensions = useStore((store) => store.map.dimensions);
+  const [showProgress, setShowProgress] = useState(true);
   const [startTime, setStartTime] = useState(0);
   const [ellapsedTime, setElaspedTime] = useState(0);
   const [encodingStatus, setEncodingStatus] = useState<EncodingUpdate>({
@@ -53,6 +56,7 @@ export const VideoExport: React.FC<Props> = ({ map: mapModel }) => {
       setStartTime(Date.now());
 
       app.exports.downloadVideo(fileName, (update) => {
+        console.log(update);
         setEncodingStatus(update);
 
         return encoding.current;
@@ -70,15 +74,24 @@ export const VideoExport: React.FC<Props> = ({ map: mapModel }) => {
 
   return (
     <>
-      <Map disableInteractions readOnly map={mapModel} />
-
-      {startTime !== 0 && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-l-4 border-r-4 border-orange-400 p-2 z-50 flex flex-col text-gray-900 rounded-lg shadow m-8">
+      <div
+        className="fixed"
+        style={{
+          top: 50000,
+          left: 50000,
+          width: mapDimensions.width / pixelRatio,
+          height: mapDimensions.height / pixelRatio,
+        }}
+      >
+        <Map background disableInteractions readOnly map={mapModel} />
+      </div>
+      {startTime !== 0 && showProgress && (
+        <div className="absolute bottom-0 left-0 right-0 bg-white border-l-4 border-r-4 border-orange-400 p-2 z-50 flex flex-col text-gray-900 rounded-lg shadow m-8">
           <div className="flex justify-between items-center px-1">
             <div className="flex items-center space-x-2">
-              <span className="font-semibold tracking-wide leading-none">Encoding video</span>
+              <span className="font-semibold tracking-wide leading-none text-sm">Encoding video</span>
               {!simd && (
-                <span className="text-sm text-gray-400">
+                <span className="text-xs text-gray-400">
                   (
                   <a className="underline" href="#">
                     Enable SIMD
@@ -87,8 +100,15 @@ export const VideoExport: React.FC<Props> = ({ map: mapModel }) => {
                 </span>
               )}
             </div>
-
-            {encoding.current && (
+            <div className="flex items-center space-x-2">
+              <Button
+                className="text-sm"
+                onClick={() => {
+                  setShowProgress(false);
+                }}
+              >
+                Hide
+              </Button>
               <Button
                 className="text-sm"
                 onClick={() => {
@@ -97,14 +117,14 @@ export const VideoExport: React.FC<Props> = ({ map: mapModel }) => {
               >
                 Cancel export
               </Button>
-            )}
+            </div>
           </div>
 
           <div className="w-full px-1 mt-4">
             <div className="mt-1 relative bg-gray-900 rounded h-2 shadow border border-orange-500">
               <div className="absolute h-full bg-orange-400 rounded" style={{ width: `${percentProgress}%` }} />
             </div>
-            <div className="mt-1 flex justify-between w-full text-sm">
+            <div className="mt-1 flex justify-between w-full text-xs">
               <span>
                 {encodingStatus.framesCount} / ~{encodingStatus.totalFrames} frames encoded
               </span>

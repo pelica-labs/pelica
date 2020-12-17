@@ -1,5 +1,6 @@
+import mapboxgl from "mapbox-gl";
+
 import { getState } from "~/core/app";
-import { getMap } from "~/core/selectors";
 import { SkyboxMode } from "~/core/terrain";
 import { MapLayer } from "~/map/layers";
 import { MapSource } from "~/map/sources";
@@ -28,8 +29,7 @@ const SunConfigurations: { [key in SkyboxMode]: SunConfiguration } = {
   },
 };
 
-export const applyTerrain = (): void => {
-  const map = getMap();
+export const applyTerrain = (map: mapboxgl.Map): void => {
   const state = getState();
 
   if (!map.getSource(MapSource.MapboxDem)) {

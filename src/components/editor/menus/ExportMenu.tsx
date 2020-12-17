@@ -28,7 +28,8 @@ export const ExportMenu: React.FC = () => {
   const [copying, setCopying] = useState(false);
   const imageData = useStore((store) => store.exports.imageData);
   const aspectRatio = useStore((store) => store.editor.aspectRatio);
-  const canExportVideo = useStore((store) => store.scenes.breakpoints.length > 1);
+  const hasBreakpoints = useStore((store) => store.scenes.breakpoints.length > 1);
+  const isExporting = useStore((store) => store.exports.videoExport);
   const layout = useLayout();
   const canvasDimensions = useStore((store) => store.map.dimensions);
   const ratio = aspectRatios[aspectRatio].ratio || [canvasDimensions.width, canvasDimensions.height];
@@ -223,9 +224,13 @@ export const ExportMenu: React.FC = () => {
 
           <Button
             className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-300 hover:bg-orange-200 text-xs uppercase py-2 justify-center w-full"
-            disabled={!canExportVideo}
+            disabled={!hasBreakpoints || isExporting}
             tooltip={
-              canExportVideo ? undefined : { text: "Create scenes in order to export a video", placement: "below" }
+              !hasBreakpoints
+                ? { text: "Create scenes in order to export a video", placement: "below" }
+                : isExporting
+                ? { text: "An export is already in progress", placement: "below" }
+                : undefined
             }
             onClick={() => {
               onDownloadVideo();

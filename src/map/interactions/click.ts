@@ -1,10 +1,10 @@
 import { Point } from "@turf/turf";
 import CheapRuler from "cheap-ruler";
 import { memoize, throttle } from "lodash";
-import { GeoJSONSource, MapMouseEvent, MapTouchEvent } from "mapbox-gl";
+import mapboxgl, { GeoJSONSource, MapMouseEvent, MapTouchEvent } from "mapbox-gl";
 
 import { app, getState } from "~/core/app";
-import { canSelect, getMap, getSelectedItinerary } from "~/core/selectors";
+import { canSelect, getSelectedItinerary } from "~/core/selectors";
 import { ID } from "~/lib/id";
 import { MapLayer } from "~/map/layers";
 import { MapSource } from "~/map/sources";
@@ -34,9 +34,7 @@ const handleSingleTouchEvent = (handler: TouchEventHandler): TouchEventHandler =
   };
 };
 
-export const applyClickInteractions = (): void => {
-  const map = getMap();
-
+export const applyClickInteractions = (map: mapboxgl.Map): void => {
   const onMouseEvent = throttle((event: MapMouseEvent) => {
     const state = getState();
 

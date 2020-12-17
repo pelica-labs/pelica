@@ -1,8 +1,8 @@
 import { Feature, Geometry } from "@turf/turf";
 import { isArray } from "lodash";
 import { GeoJSONSource } from "mapbox-gl";
+import mapboxgl from "mapbox-gl";
 
-import { getMap } from "~/core/selectors";
 import { ID } from "~/lib/id";
 import { MapSource } from "~/map/sources";
 
@@ -11,9 +11,7 @@ export type RawFeature = Feature<Geometry> & {
   source: MapSource;
 };
 
-export const applyFeatures = (features: RawFeature[], sources: MapSource[]): void => {
-  const map = getMap();
-
+export const applyFeatures = (map: mapboxgl.Map, features: RawFeature[], sources: MapSource[]): void => {
   sources.forEach((sourceId) => {
     const source = map.getSource(sourceId) as GeoJSONSource;
     if (!source) {

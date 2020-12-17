@@ -52,9 +52,15 @@ type Props = {
 
   readOnly?: boolean;
   disableInteractions?: boolean;
+  background?: boolean;
 };
 
-export const Map: React.FC<Props> = ({ map: mapModel, readOnly = false, disableInteractions = false }) => {
+export const Map: React.FC<Props> = ({
+  map: mapModel,
+  readOnly = false,
+  disableInteractions = false,
+  background: background = false,
+}) => {
   const container = useRef<HTMLDivElement>(null);
   const wrapper = useRef<HTMLDivElement>(null);
   const aspectRatio = useStore((store) => store.editor.aspectRatio);
@@ -67,8 +73,10 @@ export const Map: React.FC<Props> = ({ map: mapModel, readOnly = false, disableI
       return;
     }
 
-    app.platform.initialize();
-    app.sync.mergeState(mapModel);
+    if (!background) {
+      app.platform.initialize();
+      app.sync.mergeState(mapModel);
+    }
 
     const state = getState();
     const accessToken = getEnv("NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN", process.env.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN);
@@ -88,7 +96,11 @@ export const Map: React.FC<Props> = ({ map: mapModel, readOnly = false, disableI
       interactive: !disableInteractions,
     });
 
-    app.map.initialize(map);
+    if (background) {
+      app.map.initializeBackgroundMap(map);
+    } else {
+      app.map.initializeMap(map);
+    }
 
     map.on("load", async () => {
       map.getCanvas().classList.add("loaded");
@@ -105,495 +117,488 @@ export const Map: React.FC<Props> = ({ map: mapModel, readOnly = false, disableI
 
       map.resize();
 
-      applyWatermark();
-      applySources();
-      applyLayers();
-      applyTerrain();
-      applyLanguage();
-      applyFeatures(getEntityFeatures(), [MapSource.Route, MapSource.Pin, MapSource.Text]);
+      applyWatermark(map);
+      applySources(map);
+      applyLayers(map);
+      applyTerrain(map);
+      applyLanguage(map);
+      applyFeatures(map, getEntityFeatures(), [MapSource.Route, MapSource.Pin, MapSource.Text]);
 
       if (!readOnly) {
-        applyScrollInteractions();
-        applyPinchInteractions();
-        applyMoveInteractions();
-        applyHoverInteractions();
-        applyKeyboardInteractions();
-        applyClickInteractions();
-        applyRightClickInteractions();
-        applyResizeInteractions();
+        applyScrollInteractions(map);
+        applyPinchInteractions(map);
+        applyMoveInteractions(map);
+        applyHoverInteractions(map);
+        applyKeyboardInteractions(map);
+        applyClickInteractions(map);
+        applyRightClickInteractions(map);
+        applyResizeInteractions(map);
       }
 
-      applyImageMissingHandler();
+      applyImageMissingHandler(map);
     });
 
     return () => map.remove();
   }, []);
 
-  /**
-   * Sync coordinates
-   */
-  useStoreSubscription(
-    (store) => store.map.coordinates,
-    (coordinates) => {
-      getMap().setCenter(coordinates as [number, number]);
-    }
-  );
-
-  /**
-   * Sync bearing
-   */
-  useStoreSubscription(
-    (store) => store.map.bearing,
-    (bearing) => {
-      getMap().setBearing(bearing);
-    }
-  );
-
-  /**
-   * Sync pitch
-   */
-  useStoreSubscription(
-    (store) => store.map.pitch,
-    (pitch) => {
-      getMap().setPitch(pitch);
-    }
-  );
-
-  /**
-   * Sync language
-   */
-  useStoreSubscription(
-    (store) => store.editor.language,
-    () => {
-      applyLanguage();
-    }
-  );
-
-  useEffect(() => {
-    if (!container.current || !wrapper.current) {
-      return;
-    }
-
-    const dimensions = {
-      width: container.current.clientWidth,
-      height: container.current.clientHeight,
-    };
-
-    Object.assign(wrapper.current.style, computeMapDimensions(aspectRatio, dimensions));
-  }, [container.current, wrapper.current]);
-
-  /**
-   * Handle aspect ratio & resize
-   */
-  useStoreSubscription(
-    (store) => ({
-      exporting: store.exports.exporting,
-      aspectRatio: store.editor.aspectRatio,
-      screen: store.platform.screen,
-    }),
-    ({ exporting, aspectRatio, screen }) => {
-      const canvas = getMap().getCanvas();
-
-      if (!canvas || !wrapper.current || !container.current) {
-        return;
+  if (!background) {
+    /**
+     * Sync coordinates
+     */
+    useStoreSubscription(
+      (store) => store.map.coordinates,
+      (coordinates) => {
+        getMap().setCenter(coordinates as [number, number]);
       }
+    );
 
-      const dimensions = {
-        width: container.current.clientWidth,
-        height: container.current.clientHeight,
-      };
-
-      Object.assign(wrapper.current.style, computeMapDimensions(aspectRatio, dimensions));
-
-      if (exporting) {
-        upscale(screen.pixelRatio * computeResizingRatio(aspectRatio, dimensions));
-      } else {
-        upscale(screen.pixelRatio);
+    /**
+     * Sync bearing
+     */
+    useStoreSubscription(
+      (store) => store.map.bearing,
+      (bearing) => {
+        getMap().setBearing(bearing);
       }
+    );
 
-      // Queues this up for after all rerender occurs.
-      setTimeout(() => {
-        getMap().resize();
+    /**
+     * Sync pitch
+     */
+    useStoreSubscription(
+      (store) => store.map.pitch,
+      (pitch) => {
+        getMap().setPitch(pitch);
+      }
+    );
+
+    /**
+     * Sync language
+     */
+    useStoreSubscription(
+      (store) => store.editor.language,
+      () => {
+        applyLanguage(getMap());
+      }
+    );
+
+    /**
+     * Handle aspect ratio & resize
+     */
+    useStoreSubscription(
+      (store) => ({
+        exporting: store.exports.exporting,
+        aspectRatio: store.editor.aspectRatio,
+        screen: store.platform.screen,
+      }),
+      ({ exporting, aspectRatio, screen }) => {
+        const canvas = getMap().getCanvas();
+
+        if (!canvas || !wrapper.current || !container.current) {
+          return;
+        }
+
+        const dimensions = {
+          width: container.current.clientWidth,
+          height: container.current.clientHeight,
+        };
+
+        Object.assign(wrapper.current.style, computeMapDimensions(aspectRatio, dimensions));
 
         if (exporting) {
-          setTimeout(() => {
-            document.querySelector("#watermark")?.classList.toggle("hidden");
-            applyFeatures([getWatermarkOverlay(getMap().getBounds().getSouthWest().toArray())], [MapSource.Watermark]);
-
-            getMap().once("idle", () => {
-              app.exports.generateImage();
-
-              applyFeatures([], [MapSource.Watermark]);
-              document.querySelector("#watermark")?.classList.toggle("hidden");
-            });
-          });
+          upscale(screen.pixelRatio * computeResizingRatio(aspectRatio, dimensions));
+        } else {
+          upscale(screen.pixelRatio);
         }
-      });
-    }
-  );
 
-  /**
-   * Sync bounds
-   */
-  useStoreSubscription(
-    (store) => store.map.bounds,
-    (bounds) => {
-      getMap().fitBounds(bounds as LngLatBoundsLike, { padding: 10 });
-    }
-  );
+        // Queues this up for after all rerender occurs.
+        setTimeout(() => {
+          getMap().resize();
 
-  /**
-   * Sync place
-   */
-  useStoreSubscription(
-    (store) => store.map.place,
-    (place) => {
-      if (!place) {
-        return;
-      }
+          if (exporting) {
+            setTimeout(() => {
+              document.querySelector("#watermark")?.classList.toggle("hidden");
+              applyFeatures(
+                getMap(),
+                [getWatermarkOverlay(getMap().getBounds().getSouthWest().toArray())],
+                [MapSource.Watermark]
+              );
 
-      if (place.bbox) {
-        getMap().fitBounds(place.bbox as LngLatBoundsLike, { padding: 10 });
-      } else {
-        getMap().flyTo({
-          center: {
-            lng: place.center[0],
-            lat: place.center[1],
-          },
-          zoom: 14,
-          duration: 500,
+              getMap().once("idle", () => {
+                app.exports.generateImage();
+
+                applyFeatures(getMap(), [], [MapSource.Watermark]);
+                document.querySelector("#watermark")?.classList.toggle("hidden");
+              });
+            });
+          }
         });
       }
-    }
-  );
+    );
 
-  /**
-   * Sync style then reapply layers and entity features
-   */
-  useStoreSubscription(
-    (store) => store.editor.style,
-    (style) => {
-      const map = getMap();
+    /**
+     * Sync bounds
+     */
+    useStoreSubscription(
+      (store) => store.map.bounds,
+      (bounds) => {
+        getMap().fitBounds(bounds as LngLatBoundsLike, { padding: 10 });
+      }
+    );
 
-      map.setStyle(styleToUrl(style));
+    /**
+     * Sync place
+     */
+    useStoreSubscription(
+      (store) => store.map.place,
+      (place) => {
+        if (!place) {
+          return;
+        }
 
-      map.once("styledata", () => {
-        applySources();
-        applyLayers();
-        applyTerrain();
-
-        applyFeatures(getEntityFeatures(), [MapSource.Route, MapSource.Pin, MapSource.Text]);
-      });
-    }
-  );
-
-  /**
-   * Sync transient entities
-   */
-  useStoreSubscription(
-    (store) => ({ isRouteEditing: store.editor.isRouteEditing, selectedEntity: getSelectedEntity(store) }),
-    ({ isRouteEditing, selectedEntity }) => {
-      const transientItems: TransientEntity[] = [];
-      if (selectedEntity?.type === "Route" && !selectedEntity.itinerary && isRouteEditing) {
-        const points = selectedEntity.transientPoints.length ? selectedEntity.transientPoints : selectedEntity.points;
-
-        points.forEach((point, index) => {
-          transientItems.push({
-            id: 10 ** 6 + index,
-            type: "RouteVertex",
-            source: MapSource.RouteVertex,
-            coordinates: point,
-            style: selectedEntity.style,
-            routeId: selectedEntity.id,
-            pointIndex: index,
+        if (place.bbox) {
+          getMap().fitBounds(place.bbox as LngLatBoundsLike, { padding: 10 });
+        } else {
+          getMap().flyTo({
+            center: {
+              lng: place.center[0],
+              lat: place.center[1],
+            },
+            zoom: 14,
+            duration: 500,
           });
+        }
+      }
+    );
 
-          if (index) {
-            const edgeId = 10 ** 7 + index;
-            const edgeCenterId = 10 ** 8 + index;
+    /**
+     * Sync style then reapply layers and entity features
+     */
+    useStoreSubscription(
+      (store) => store.editor.style,
+      (style) => {
+        const map = getMap();
 
+        map.setStyle(styleToUrl(style));
+
+        map.once("styledata", () => {
+          applySources(map);
+          applyLayers(map);
+          applyTerrain(map);
+
+          applyFeatures(map, getEntityFeatures(), [MapSource.Route, MapSource.Pin, MapSource.Text]);
+        });
+      }
+    );
+
+    /**
+     * Sync transient entities
+     */
+    useStoreSubscription(
+      (store) => ({ isRouteEditing: store.editor.isRouteEditing, selectedEntity: getSelectedEntity(store) }),
+      ({ isRouteEditing, selectedEntity }) => {
+        const transientItems: TransientEntity[] = [];
+        if (selectedEntity?.type === "Route" && !selectedEntity.itinerary && isRouteEditing) {
+          const points = selectedEntity.transientPoints.length ? selectedEntity.transientPoints : selectedEntity.points;
+
+          points.forEach((point, index) => {
             transientItems.push({
-              id: edgeCenterId,
-              type: "RouteEdgeCenter",
-              source: MapSource.RouteEdgeCenter,
-              coordinates: computeCenter(points[index - 1], points[index]),
+              id: 10 ** 6 + index,
+              type: "RouteVertex",
+              source: MapSource.RouteVertex,
+              coordinates: point,
               style: selectedEntity.style,
               routeId: selectedEntity.id,
               pointIndex: index,
-              edgeId,
             });
 
-            transientItems.push({
-              id: edgeId,
-              type: "RouteEdge",
-              source: MapSource.RouteEdge,
-              routeId: selectedEntity.id,
-              style: selectedEntity.style,
-              fromIndex: index - 1,
-              from: selectedEntity.points[index - 1],
-              to: point,
-              centerId: edgeCenterId,
-            });
-          }
-        });
-      }
+            if (index) {
+              const edgeId = 10 ** 7 + index;
+              const edgeCenterId = 10 ** 8 + index;
 
-      app.entities.updateTransientFeatures(transientItems);
-    }
-  );
+              transientItems.push({
+                id: edgeCenterId,
+                type: "RouteEdgeCenter",
+                source: MapSource.RouteEdgeCenter,
+                coordinates: computeCenter(points[index - 1], points[index]),
+                style: selectedEntity.style,
+                routeId: selectedEntity.id,
+                pointIndex: index,
+                edgeId,
+              });
 
-  /**
-   * Sync entities to map
-   */
-  useStoreSubscription(
-    (store) => ({ entities: store.entities.items }),
-    () => {
-      applyFeatures(getEntityFeatures(), [MapSource.Route, MapSource.Pin, MapSource.Text]);
-    }
-  );
-
-  /**
-   * Sync transient entities to map
-   */
-  useStoreSubscription(
-    (store) => ({ entities: store.entities.transientItems }),
-    () => {
-      applyFeatures(getTransientEntityFeatures(), [
-        MapSource.RouteVertex,
-        MapSource.RouteEdge,
-        MapSource.RouteEdgeCenter,
-      ]);
-    }
-  );
-
-  /**
-   * Sync cluster option
-   */
-  useStoreSubscription(
-    (store) => store.pins.clusterPoints,
-    (clusterPoints) => {
-      const source = getMap().getSource(MapSource.Pin) as GeoJSONSource;
-      setSourceCluster(source, clusterPoints);
-
-      applyFeatures(getEntityFeatures(), [MapSource.Pin]);
-    }
-  );
-
-  /**
-   * Sync route stop
-   */
-  useStoreSubscription(
-    (store) => ({
-      entities: store.entities.items,
-      selectedIds: store.selection.ids,
-      editorMode: store.editor.mode,
-      isDrawing: store.routes.isDrawing,
-    }),
-    ({ editorMode, isDrawing }) => {
-      const selectedEntity = getSelectedEntity();
-
-      const features: RawFeature[] = [];
-      if (editorMode === "route" && !isDrawing && selectedEntity?.type === "Route" && selectedEntity.points.length) {
-        features.push(getRouteStopOverlay(selectedEntity));
-
-        if (selectedEntity.points.length > 2) {
-          features.push(getRouteStartOverlay(selectedEntity));
+              transientItems.push({
+                id: edgeId,
+                type: "RouteEdge",
+                source: MapSource.RouteEdge,
+                routeId: selectedEntity.id,
+                style: selectedEntity.style,
+                fromIndex: index - 1,
+                from: selectedEntity.points[index - 1],
+                to: point,
+                centerId: edgeCenterId,
+              });
+            }
+          });
         }
+
+        app.entities.updateTransientFeatures(transientItems);
       }
+    );
 
-      applyFeatures(features, [MapSource.RouteStop, MapSource.RouteStart]);
-    }
-  );
+    /**
+     * Sync entities to map
+     */
+    useStoreSubscription(
+      (store) => ({ entities: store.entities.items }),
+      () => {
+        applyFeatures(getMap(), getEntityFeatures(), [MapSource.Route, MapSource.Pin, MapSource.Text]);
+      }
+    );
 
-  /**
-   * Sync next point
-   */
-  useStoreSubscription(
-    (store) => ({
-      entities: store.entities.items,
-      selectedIds: store.selection.ids,
-      editorMode: store.editor.mode,
-      isDrawing: store.routes.isDrawing,
-      nextPoint: store.routes.nextPoint,
-    }),
-    ({ editorMode, isDrawing, nextPoint }) => {
-      const selectedEntity = getSelectedEntity();
+    /**
+     * Sync transient entities to map
+     */
+    useStoreSubscription(
+      (store) => ({ entities: store.entities.transientItems }),
+      () => {
+        applyFeatures(getMap(), getTransientEntityFeatures(), [
+          MapSource.RouteVertex,
+          MapSource.RouteEdge,
+          MapSource.RouteEdgeCenter,
+        ]);
+      }
+    );
 
-      const features: RawFeature[] = [];
-      if (editorMode === "route" && !isDrawing && selectedEntity?.type === "Route") {
-        if (selectedEntity.points.length) {
+    /**
+     * Sync cluster option
+     */
+    useStoreSubscription(
+      (store) => store.pins.clusterPoints,
+      (clusterPoints) => {
+        const source = getMap().getSource(MapSource.Pin) as GeoJSONSource;
+        setSourceCluster(source, clusterPoints);
+
+        applyFeatures(getMap(), getEntityFeatures(), [MapSource.Pin]);
+      }
+    );
+
+    /**
+     * Sync route stop
+     */
+    useStoreSubscription(
+      (store) => ({
+        entities: store.entities.items,
+        selectedIds: store.selection.ids,
+        editorMode: store.editor.mode,
+        isDrawing: store.routes.isDrawing,
+      }),
+      ({ editorMode, isDrawing }) => {
+        const selectedEntity = getSelectedEntity();
+
+        const features: RawFeature[] = [];
+        if (editorMode === "route" && !isDrawing && selectedEntity?.type === "Route" && selectedEntity.points.length) {
           features.push(getRouteStopOverlay(selectedEntity));
+
+          if (selectedEntity.points.length > 2) {
+            features.push(getRouteStartOverlay(selectedEntity));
+          }
         }
 
-        if (nextPoint) {
-          features.push(getNextPointOverlay(selectedEntity, nextPoint));
+        applyFeatures(getMap(), features, [MapSource.RouteStop, MapSource.RouteStart]);
+      }
+    );
+
+    /**
+     * Sync next point
+     */
+    useStoreSubscription(
+      (store) => ({
+        entities: store.entities.items,
+        selectedIds: store.selection.ids,
+        editorMode: store.editor.mode,
+        isDrawing: store.routes.isDrawing,
+        nextPoint: store.routes.nextPoint,
+      }),
+      ({ editorMode, isDrawing, nextPoint }) => {
+        const selectedEntity = getSelectedEntity();
+
+        const features: RawFeature[] = [];
+        if (editorMode === "route" && !isDrawing && selectedEntity?.type === "Route") {
+          if (selectedEntity.points.length) {
+            features.push(getRouteStopOverlay(selectedEntity));
+          }
+
+          if (nextPoint) {
+            features.push(getNextPointOverlay(selectedEntity, nextPoint));
+          }
         }
+
+        applyFeatures(getMap(), features, [MapSource.RouteNextPoint]);
       }
+    );
 
-      applyFeatures(features, [MapSource.RouteNextPoint]);
-    }
-  );
+    /**
+     * Sync text preview to map
+     */
+    useStoreSubscription(
+      (store) => ({
+        editorMode: store.editor.mode,
+        nextPoint: store.texts.nextPoint,
+        textStyle: store.texts.style,
+      }),
+      ({ editorMode, nextPoint, textStyle }) => {
+        const features: RawFeature[] = [];
+        if (editorMode === "text" && nextPoint) {
+          const feature = entityToFeature({
+            type: "Text",
+            id: "TEXT_PREVIEW",
+            source: MapSource.TextPreview,
+            coordinates: nextPoint,
+            style: textStyle,
+          }) as RawFeature;
 
-  /**
-   * Sync text preview to map
-   */
-  useStoreSubscription(
-    (store) => ({
-      editorMode: store.editor.mode,
-      nextPoint: store.texts.nextPoint,
-      textStyle: store.texts.style,
-    }),
-    ({ editorMode, nextPoint, textStyle }) => {
-      const features: RawFeature[] = [];
-      if (editorMode === "text" && nextPoint) {
-        const feature = entityToFeature({
-          type: "Text",
-          id: "TEXT_PREVIEW",
-          source: MapSource.TextPreview,
-          coordinates: nextPoint,
-          style: textStyle,
-        }) as RawFeature;
+          features.push(feature);
+        }
 
-        features.push(feature);
+        applyFeatures(getMap(), features, [MapSource.TextPreview]);
       }
+    );
 
-      applyFeatures(features, [MapSource.TextPreview]);
-    }
-  );
+    /**
+     * Sync pin preview to map
+     */
+    useStoreSubscription(
+      (store) => ({
+        editorMode: store.editor.mode,
+        nextPoint: store.pins.nextPoint,
+        pinStyle: store.pins.style,
+      }),
+      ({ editorMode, nextPoint, pinStyle }) => {
+        const features: RawFeature[] = [];
+        if (editorMode === "pin" && nextPoint) {
+          const feature = entityToFeature({
+            type: "Pin",
+            id: "PIN_PREVIEW",
+            source: MapSource.PinPreview,
+            coordinates: nextPoint,
+            style: pinStyle,
+          }) as RawFeature;
 
-  /**
-   * Sync pin preview to map
-   */
-  useStoreSubscription(
-    (store) => ({
-      editorMode: store.editor.mode,
-      nextPoint: store.pins.nextPoint,
-      pinStyle: store.pins.style,
-    }),
-    ({ editorMode, nextPoint, pinStyle }) => {
-      const features: RawFeature[] = [];
-      if (editorMode === "pin" && nextPoint) {
-        const feature = entityToFeature({
-          type: "Pin",
-          id: "PIN_PREVIEW",
-          source: MapSource.PinPreview,
-          coordinates: nextPoint,
-          style: pinStyle,
-        }) as RawFeature;
+          features.push(feature);
+        }
 
-        features.push(feature);
+        applyFeatures(getMap(), features, [MapSource.PinPreview]);
       }
+    );
 
-      applyFeatures(features, [MapSource.PinPreview]);
-    }
-  );
+    /**
+     * Sync selection overlays
+     */
+    useStoreSubscription(
+      (store) => ({
+        entities: store.entities.items,
+        editorMode: store.editor.mode,
+        selectedIds: store.selection.ids,
+        zoom: store.map.zoom,
+      }),
+      ({ editorMode, zoom }) => {
+        const selectedEntities = editorMode === "select" ? getSelectedEntities() : [];
 
-  /**
-   * Sync selection overlays
-   */
-  useStoreSubscription(
-    (store) => ({
-      entities: store.entities.items,
-      editorMode: store.editor.mode,
-      selectedIds: store.selection.ids,
-      zoom: store.map.zoom,
-    }),
-    ({ editorMode, zoom }) => {
-      const selectedEntities = editorMode === "select" ? getSelectedEntities() : [];
+        const features: RawFeature[] = [];
+        if (editorMode === "select") {
+          selectedEntities.forEach((entity) => {
+            if (entity.type === "Pin") {
+              features.push(getPinOverlay(entity));
+            }
 
-      const features: RawFeature[] = [];
-      if (editorMode === "select") {
-        selectedEntities.forEach((entity) => {
-          if (entity.type === "Pin") {
-            features.push(getPinOverlay(entity));
-          }
+            if (entity.type === "Route" && entity.points.length > 0) {
+              features.push(getRouteOverlay(entity));
+            }
 
-          if (entity.type === "Route" && entity.points.length > 0) {
-            features.push(getRouteOverlay(entity));
-          }
+            if (entity.type === "Text") {
+              features.push(getTextOverlay(entity, zoom));
+            }
+          });
+        }
 
-          if (entity.type === "Text") {
-            features.push(getTextOverlay(entity, zoom));
-          }
-        });
+        applyFeatures(getMap(), features, [MapSource.Overlay]);
       }
+    );
 
-      applyFeatures(features, [MapSource.Overlay]);
-    }
-  );
+    /**
+     * Sync selection area
+     */
+    useStoreSubscription(
+      (store) => ({
+        selectionArea: store.selection.area,
+      }),
+      ({ selectionArea }) => {
+        const features: RawFeature[] = [];
+        if (selectionArea) {
+          features.push(getSelectionAreaOverlay(selectionArea));
+        }
 
-  /**
-   * Sync selection area
-   */
-  useStoreSubscription(
-    (store) => ({
-      selectionArea: store.selection.area,
-    }),
-    ({ selectionArea }) => {
-      const features: RawFeature[] = [];
-      if (selectionArea) {
-        features.push(getSelectionAreaOverlay(selectionArea));
+        applyFeatures(getMap(), features, [MapSource.SelectionArea]);
       }
+    );
 
-      applyFeatures(features, [MapSource.SelectionArea]);
-    }
-  );
-
-  /**
-   * Sync 3D
-   */
-  useStoreSubscription(
-    (store) => store.terrain,
-    () => {
-      applyTerrain();
-    }
-  );
-
-  /**
-   * Sync cursor
-   */
-  useStoreSubscription(
-    (store) => ({
-      editorMode: store.editor.mode,
-      moving: store.editor.isMoving,
-      hoveredEntityId: store.dragAndDrop.hoveredEntityId,
-    }),
-    ({ editorMode, hoveredEntityId, moving }) => {
-      const containerClasses = getMap().getCanvasContainer().classList;
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      containerClasses.remove(...containerClasses.values());
-      containerClasses.add("mapboxgl-canvas-container");
-
-      if (moving) {
-        containerClasses.add("move");
-      } else if (editorMode === "pin" || editorMode === "text") {
-        containerClasses.add("place");
-      } else if (editorMode === "route" && hoveredEntityId !== "ROUTE_STOP") {
-        containerClasses.add("draw");
+    /**
+     * Sync 3D
+     */
+    useStoreSubscription(
+      (store) => store.terrain,
+      () => {
+        applyTerrain(getMap());
       }
-    }
-  );
+    );
 
-  /**
-   * Sync events
-   */
-  useStoreSubscription(
-    (store) => ({ editorMode: store.editor.mode, moving: store.editor.isMoving }),
-    ({ editorMode, moving }) => {
-      const setMinDragTouches = (min: number) => {
+    /**
+     * Sync cursor
+     */
+    useStoreSubscription(
+      (store) => ({
+        editorMode: store.editor.mode,
+        moving: store.editor.isMoving,
+        hoveredEntityId: store.dragAndDrop.hoveredEntityId,
+      }),
+      ({ editorMode, hoveredEntityId, moving }) => {
+        const containerClasses = getMap().getCanvasContainer().classList;
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        getMap().dragPan._touchPan._minTouches = min;
-      };
+        containerClasses.remove(...containerClasses.values());
+        containerClasses.add("mapboxgl-canvas-container");
 
-      if ((editorMode === "route" || editorMode === "select") && !moving) {
-        setMinDragTouches(2);
-      } else {
-        setMinDragTouches(1);
+        if (moving) {
+          containerClasses.add("move");
+        } else if (editorMode === "pin" || editorMode === "text") {
+          containerClasses.add("place");
+        } else if (editorMode === "route" && hoveredEntityId !== "ROUTE_STOP") {
+          containerClasses.add("draw");
+        }
       }
-    }
-  );
+    );
+
+    /**
+     * Sync events
+     */
+    useStoreSubscription(
+      (store) => ({ editorMode: store.editor.mode, moving: store.editor.isMoving }),
+      ({ editorMode, moving }) => {
+        const setMinDragTouches = (min: number) => {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          getMap().dragPan._touchPan._minTouches = min;
+        };
+
+        if ((editorMode === "route" || editorMode === "select") && !moving) {
+          setMinDragTouches(2);
+        } else {
+          setMinDragTouches(1);
+        }
+      }
+    );
+  }
 
   const onCopy = async () => {
     const state = getState();

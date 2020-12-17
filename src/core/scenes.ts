@@ -4,7 +4,7 @@ import { Promise } from "bluebird";
 import { get as lodashGet } from "lodash";
 import { FreeCameraOptions, MercatorCoordinate } from "mapbox-gl";
 
-import { getMap } from "~/core/selectors";
+import { getBackgroundMap, getMap } from "~/core/selectors";
 import { App } from "~/core/zustand";
 import { sleep } from "~/lib/promise";
 
@@ -26,6 +26,10 @@ export type Scenes = {
 
 export const scenesInitialState: Scenes = {
   breakpoints: [],
+};
+
+type PlayOptions = {
+  background?: boolean;
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -63,8 +67,8 @@ export const scenes = ({ mutate, get }: App) => ({
     });
   },
 
-  play: async (shouldKeepGoing: () => boolean) => {
-    const map = getMap(get());
+  play: async ({ background = false }: PlayOptions, shouldKeepGoing: () => boolean) => {
+    const map = background ? getBackgroundMap(get()) : getMap(get());
     const breakpoints = get().scenes.breakpoints;
     const [start] = breakpoints;
 

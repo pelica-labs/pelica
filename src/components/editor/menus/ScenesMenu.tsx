@@ -62,7 +62,7 @@ export const ScenesMenu: React.FC = () => {
   const onPlay = async () => {
     setIsPlaying(true);
 
-    await app.scenes.play(() => isPlayingRef.current);
+    await app.scenes.play({ background: false }, () => isPlayingRef.current);
 
     setIsPlaying(false);
   };
