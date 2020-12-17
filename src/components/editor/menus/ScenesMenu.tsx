@@ -123,7 +123,7 @@ export const ScenesMenu: React.FC = () => {
                               })}
                               {...provided.draggableProps}
                             >
-                              {index !== 0 && (
+                              {index !== 0 && !snapshot.isDragging && (
                                 <BreakpointDurationInput breakpoint={breakpoint} isDragging={snapshot.isDragging} />
                               )}
                               <div
@@ -160,11 +160,7 @@ export const ScenesMenu: React.FC = () => {
   );
 };
 
-type SceneBreakpointProps = {
-  breakpoint: Breakpoint;
-};
-
-const SceneBreakpoint: React.FC<SceneBreakpointProps> = ({ breakpoint }) => {
+const SceneBreakpoint: React.FC<{ breakpoint: Breakpoint }> = ({ breakpoint }) => {
   const style = useStore((store) => store.editor.style);
 
   const url = staticImage({
@@ -259,19 +255,11 @@ const SceneBreakpoint: React.FC<SceneBreakpointProps> = ({ breakpoint }) => {
   );
 };
 
-const BreakpointDurationInput: React.FC<{ breakpoint: Breakpoint; isDragging: boolean }> = ({
-  breakpoint,
-  isDragging,
-}) => {
+const BreakpointDurationInput: React.FC<{ breakpoint: Breakpoint }> = ({ breakpoint }) => {
   const [showInput, setShowInput] = useState<boolean>(!!breakpoint.duration);
 
   return (
-    <div
-      className={classNames("my-1 h-12 border-gray-500 border-r p-2 justify-end items-center", {
-        hidden: isDragging,
-        flex: !isDragging,
-      })}
-    >
+    <div className="my-1 h-12 border-gray-500 border-r p-2 flex justify-end items-center">
       {showInput && (
         <div className="w-full flex items-center">
           <span className="w-16 text-xs mr-2">{(breakpoint.duration || 4000) / 1000} s</span>
