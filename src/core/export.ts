@@ -68,7 +68,7 @@ export const exports = ({ mutate, get }: App) => ({
 
     const Encoder = await loadEncoder({ simd });
 
-    const frameRate = 30;
+    const frameRate = 60;
     const encoder = Encoder.create({
       width,
       height,
@@ -82,10 +82,10 @@ export const exports = ({ mutate, get }: App) => ({
     const ptr = encoder.getRGBPointer();
 
     let framesCount = 0;
-    const sceneLength = sumBy(get().scenes.breakpoints, (breakpoint) => {
+    const sceneLength = sumBy(get().scenes.breakpoints.slice(1), (breakpoint) => {
       return breakpoint.duration || 4000;
     });
-    const totalFrames = Math.round(sceneLength / (1000 / frameRate));
+    const totalFrames = Math.round(sceneLength / (1000 / frameRate)) + 4;
 
     const onFrame = () => {
       gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, encoder.memory().subarray(ptr));
@@ -103,7 +103,7 @@ export const exports = ({ mutate, get }: App) => ({
 
     map.on("render", onFrame);
 
-    await get().scenes.play({ background: true }, () => !interrupted);
+    await get().scenes.play({ background: true, frameRate }, () => !interrupted);
 
     map.off("render", onFrame);
 

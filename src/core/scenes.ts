@@ -30,6 +30,7 @@ export const scenesInitialState: Scenes = {
 
 type PlayOptions = {
   background?: boolean;
+  frameRate?: number;
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -67,7 +68,9 @@ export const scenes = ({ mutate, get }: App) => ({
     });
   },
 
-  play: async ({ background = false }: PlayOptions, shouldKeepGoing: () => boolean) => {
+  play: async (options: PlayOptions, shouldKeepGoing: () => boolean) => {
+    const { background = false, frameRate } = options;
+
     const map = background ? getBackgroundMap(get()) : getMap(get());
     const breakpoints = get().scenes.breakpoints;
     const [start] = breakpoints;
@@ -147,7 +150,7 @@ export const scenes = ({ mutate, get }: App) => ({
 
           // mapbox types are broken
           map.setFreeCameraOptions(({ position, orientation } as unknown) as FreeCameraOptions);
-          animationTime += 1000 / (time - lastTime);
+          animationTime += 1000 / (frameRate ?? time - lastTime);
           lastTime = time;
           window.requestAnimationFrame(frame);
         };
