@@ -6,6 +6,7 @@ import BounceLoader from "react-spinners/BounceLoader";
 
 import { AspectRatioSelector } from "~/components/editor/controls/AspectRatioSelector";
 import { MenuSection, MenuSectionHeader } from "~/components/editor/menus/MenuSection";
+import { BetaChip } from "~/components/ui/BetaChip";
 import { Button } from "~/components/ui/Button";
 import { BuyMeACoffeeButton } from "~/components/ui/BuyMeACoffeeButton";
 import { Heading } from "~/components/ui/Heading";
@@ -223,7 +224,7 @@ export const ExportMenu: React.FC = () => {
           )}
 
           <Button
-            className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-300 hover:bg-orange-200 text-xs uppercase py-2 justify-center w-full"
+            className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-300 hover:bg-orange-200 text-xs uppercase py-2 justify-center w-full space-x-2"
             disabled={!hasBreakpoints || isExporting}
             tooltip={
               !hasBreakpoints
@@ -236,7 +237,8 @@ export const ExportMenu: React.FC = () => {
               onDownloadVideo();
             }}
           >
-            Download video
+            <span>Download video</span>
+            <BetaChip />
           </Button>
         </MenuSection>
 
@@ -247,21 +249,17 @@ export const ExportMenu: React.FC = () => {
           <div className="flex-col md:space-y-1">
             <div className="text-xs flex justify-between">
               <span className="flex-1 mr-4">Format</span>
-              <span>JPEG</span>
+              <span>JPEG / MP4</span>
             </div>
-            {ratio && (
-              <>
-                <div className="text-xs flex justify-between">
-                  <span className="flex-1 mr-4">Resolution</span>
-                  <span>
-                    {ratio[0].toFixed(0)}
-                    <span className="text-gray-500 mx-px">×</span>
-                    {ratio[1].toFixed(0)}
-                    <span className="text-gray-500 ml-1">px</span>
-                  </span>
-                </div>
-              </>
-            )}
+            <div className="text-xs flex justify-between">
+              <span className="flex-1 mr-4">Resolution</span>
+              <span>
+                {ratio[0].toFixed(0)}
+                <span className="text-gray-500 mx-px">×</span>
+                {ratio[1].toFixed(0)}
+                <span className="text-gray-500 ml-1">px</span>
+              </span>
+            </div>
           </div>
         </MenuSection>
 
