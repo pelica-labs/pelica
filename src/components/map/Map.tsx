@@ -216,7 +216,9 @@ export const Map: React.FC<Props> = ({
 
         // Queues this up for after all rerender occurs.
         setTimeout(() => {
-          getMap().resize();
+          if (!background) {
+            getMap().resize();
+          }
 
           if (exporting) {
             setTimeout(() => {

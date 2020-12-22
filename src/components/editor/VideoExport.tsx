@@ -25,7 +25,7 @@ export const VideoExport: React.FC<Props> = ({ map: mapModel }) => {
   const [encodingStatus, setEncodingStatus] = useState<EncodingUpdate>({
     framesCount: 0,
     totalFrames: 1,
-    status: "running",
+    status: "idle",
   });
   const encoding = useRef(true);
   const percentProgress = Math.min(100, (encodingStatus.framesCount / encodingStatus.totalFrames) * 100);
@@ -56,7 +56,6 @@ export const VideoExport: React.FC<Props> = ({ map: mapModel }) => {
       setStartTime(Date.now());
 
       app.exports.downloadVideo(fileName, (update) => {
-        console.log(update);
         setEncodingStatus(update);
 
         return encoding.current;
@@ -65,7 +64,7 @@ export const VideoExport: React.FC<Props> = ({ map: mapModel }) => {
   }, [map]);
 
   useEffect(() => {
-    if (encodingStatus.status === "running") {
+    if (encodingStatus.status === "running" || encodingStatus.status === "idle") {
       return;
     }
 
@@ -126,7 +125,9 @@ export const VideoExport: React.FC<Props> = ({ map: mapModel }) => {
             </div>
             <div className="mt-1 flex justify-between w-full text-xs">
               <span>
-                {encodingStatus.framesCount} / ~{encodingStatus.totalFrames} frames encoded
+                {encodingStatus.status === "idle"
+                  ? "Warming up..."
+                  : `                ${encodingStatus.framesCount} / ~${encodingStatus.totalFrames} frames encoded`}
               </span>
               <span>{percentProgress.toFixed(2)}%</span>
               {timeRemaining > 0 && (

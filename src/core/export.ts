@@ -11,7 +11,7 @@ type Exports = {
 };
 
 export type EncodingUpdate = {
-  status: "running" | "complete" | "interrupted";
+  status: "idle" | "running" | "complete" | "interrupted";
   framesCount: number;
   totalFrames: number;
 };
@@ -77,8 +77,6 @@ export const exports = ({ mutate, get }: App) => ({
       rgbFlipY: true,
     });
 
-    console.log(width, height);
-
     const ptr = encoder.getRGBPointer();
 
     let framesCount = 0;
@@ -88,7 +86,12 @@ export const exports = ({ mutate, get }: App) => ({
     const totalFrames = Math.round(sceneLength / (1000 / frameRate)) + 4;
 
     const onFrame = () => {
-      gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, encoder.memory().subarray(ptr));
+      // console.log(width, height);
+      const frame = encoder.memory().subarray(ptr);
+
+      // console.log(frame);
+
+      gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, frame);
 
       encoder.encodeRGBPointer();
 
@@ -116,6 +119,17 @@ export const exports = ({ mutate, get }: App) => ({
     }
 
     onUpdate({ status: "complete", framesCount, totalFrames: framesCount });
+
+    if (mp4.length === 156) {
+      get().alerts.trigger({
+        timeout: 20000,
+        color: "red",
+        message:
+          "We're sorry, something went wrong during the encoding.\nVideo export is still is beta and has known issues when using a custom aspect ratio.",
+      });
+
+      return;
+    }
 
     const blob = new Blob([mp4], { type: "video/mp4" });
 
