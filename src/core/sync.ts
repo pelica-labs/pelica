@@ -1,4 +1,8 @@
+import { initialState } from "~/core/app";
 import { MapModel } from "~/core/db";
+import { editorInitialState } from "~/core/editor";
+import { mapInitialState } from "~/core/map";
+import { terrainInitialState } from "~/core/terrain";
 import { App } from "~/core/zustand";
 import { ID } from "~/lib/id";
 
@@ -30,50 +34,32 @@ export const sync = ({ mutate }: App) => ({
     });
   },
 
+  reset: () => {
+    mutate((state) => {
+      Object.assign(state, initialState);
+    });
+  },
+
   mergeState: (map: MapModel) => {
     mutate((state) => {
       state.sync.id = map.id;
       state.sync.userId = map.userId;
 
-      if (map.name) {
-        state.sync.name = map.name;
-      }
+      state.sync.name = map.name ?? null;
 
-      if (map.coordinates) {
-        state.map.coordinates = map.coordinates;
-      }
+      state.map.coordinates = map.coordinates ?? mapInitialState.coordinates;
+      state.map.zoom = map.zoom ?? mapInitialState.zoom;
+      state.map.bearing = map.bearing ?? mapInitialState.bearing;
+      state.map.pitch = map.pitch ?? mapInitialState.pitch;
 
-      if (map.zoom) {
-        state.map.zoom = map.zoom;
-      }
+      state.editor.language = map.language ?? editorInitialState.language;
+      state.editor.style = map.style ?? editorInitialState.style;
 
-      if (map.bearing) {
-        state.map.bearing = map.bearing;
-      }
+      state.entities.items = map.entities ?? [];
 
-      if (map.pitch) {
-        state.map.pitch = map.pitch;
-      }
+      state.scenes.breakpoints = map.breakpoints ?? [];
 
-      if (map.language) {
-        state.editor.language = map.language;
-      }
-
-      if (map.style) {
-        state.editor.style = map.style;
-      }
-
-      if (map.entities) {
-        state.entities.items = map.entities;
-      }
-
-      if (map.breakpoints) {
-        state.scenes.breakpoints = map.breakpoints;
-      }
-
-      if (map.terrain) {
-        Object.assign(state.terrain, map.terrain);
-      }
+      Object.assign(state.terrain, map.terrain ?? terrainInitialState);
     });
   },
 

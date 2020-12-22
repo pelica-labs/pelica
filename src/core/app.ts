@@ -134,6 +134,8 @@ export const subscribe = <T extends State, StateSlice>(
 
 export const getState = (): State => useStore.getState();
 
+export const initialState = getState();
+
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 export const app: Readonly<Actions> = mapValues(getState(), (service, name) => {

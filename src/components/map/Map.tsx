@@ -74,6 +74,7 @@ export const Map: React.FC<Props> = ({
     }
 
     if (!background) {
+      app.sync.reset();
       app.platform.initialize();
       app.sync.mergeState(mapModel);
     }
@@ -138,7 +139,9 @@ export const Map: React.FC<Props> = ({
       applyImageMissingHandler(map);
     });
 
-    return () => map.remove();
+    return () => {
+      map.remove();
+    };
   }, []);
 
   if (!background) {
