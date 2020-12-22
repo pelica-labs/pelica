@@ -17,6 +17,7 @@ import { getSerializableState } from "~/core/selectors";
 import { initAnalytics, logEvent, logPageView } from "~/lib/analytics";
 import { i18n } from "~/lib/i18n";
 import { setupModals } from "~/lib/modals";
+import { redirectToHttps } from "~/lib/redirect";
 
 Sentry.init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
@@ -56,6 +57,7 @@ setupModals();
 
 class App extends NextApp {
   componentDidMount(): void {
+    redirectToHttps();
     initAnalytics();
   }
 
