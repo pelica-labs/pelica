@@ -79,6 +79,7 @@ export const history = ({ mutate }: App) => ({
       state.entities.items = [];
       state.entities.transientItems = [];
       state.selection.clear();
+      state.scenes.breakpoints = [];
     });
   },
 });

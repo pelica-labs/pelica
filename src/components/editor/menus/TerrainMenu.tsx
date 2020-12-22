@@ -7,16 +7,16 @@ import { SkyboxSelector } from "~/components/editor/controls/SkyboxSelector";
 import { WidthSlider } from "~/components/editor/controls/WidthSlider";
 import { MenuSection, MenuSectionHeader } from "~/components/editor/menus/MenuSection";
 import { Heading } from "~/components/ui/Heading";
-import { SkyboxMode } from "~/core/3d";
 import { app, useStore } from "~/core/app";
+import { SkyboxMode } from "~/core/terrain";
 import { useLayout } from "~/hooks/useLayout";
 import { theme } from "~/styles/tailwind";
 
-export const ThreeDMenu: React.FC = () => {
-  const enabled = useStore((store) => store.threeD.enabled);
-  const exageration = useStore((store) => store.threeD.exageration);
-  const skyboxMode = useStore((store) => store.threeD.skyboxMode) as SkyboxMode;
-  const skyColor = useStore((store) => store.threeD.skyColor);
+export const TerrainMenu: React.FC = () => {
+  const enabled = useStore((store) => store.terrain.enabled);
+  const exageration = useStore((store) => store.terrain.exageration);
+  const skyboxMode = useStore((store) => store.terrain.skyboxMode) as SkyboxMode;
+  const skyColor = useStore((store) => store.terrain.skyColor);
   const layout = useLayout();
 
   return (
@@ -40,7 +40,7 @@ export const ThreeDMenu: React.FC = () => {
                 "relative inline-flex flex-shrink-0 h-4 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer w-7 focus:outline-none focus:ring"
               )}
               onChange={() => {
-                app.threeD.toggle();
+                app.terrain.toggle();
               }}
             >
               {({ checked }) => (
@@ -65,10 +65,10 @@ export const ThreeDMenu: React.FC = () => {
             min={1}
             value={exageration}
             onChange={(exageration) => {
-              app.threeD.setExageration(exageration);
+              app.terrain.setExageration(exageration);
             }}
             onChangeComplete={(exageration) => {
-              app.threeD.setExageration(exageration);
+              app.terrain.setExageration(exageration);
             }}
           />
         </div>
@@ -83,21 +83,20 @@ export const ThreeDMenu: React.FC = () => {
           <SkyboxSelector
             value={skyboxMode}
             onChange={(skyboxMode) => {
-              app.threeD.setSkybox(skyboxMode);
+              app.terrain.setSkybox(skyboxMode);
             }}
           />
-
-          <div className="mt-4 px-1">
-            <ColorPicker
-              value={skyColor}
-              onChange={(color) => {
-                app.threeD.setSkyColor(color);
-              }}
-              onChangeComplete={(color) => {
-                app.threeD.setSkyColor(color);
-              }}
-            />
-          </div>
+        </div>
+        <div className="mt-4">
+          <ColorPicker
+            value={skyColor}
+            onChange={(color) => {
+              app.terrain.setSkyColor(color);
+            }}
+            onChangeComplete={(color) => {
+              app.terrain.setSkyColor(color);
+            }}
+          />
         </div>
       </MenuSection>
     </>

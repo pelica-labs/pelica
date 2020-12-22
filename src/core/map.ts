@@ -11,6 +11,7 @@ import { RawFeature } from "~/map/features";
 
 export type Map = {
   current: mapboxgl.Map | null;
+  background: mapboxgl.Map | null;
 
   coordinates: Position;
 
@@ -32,6 +33,7 @@ export type Map = {
 
 export const mapInitialState: Map = {
   current: null,
+  background: null,
 
   coordinates: [2.3522219, 48.856614],
 
@@ -55,12 +57,18 @@ export const mapInitialState: Map = {
 export const map = ({ mutate, get }: App) => ({
   ...mapInitialState,
 
-  initialize: (map: mapboxgl.Map) => {
+  initializeMap: (map: mapboxgl.Map) => {
     mutate((state) => {
       state.map.current = map;
     });
 
     get().map.updateCanvasSize();
+  },
+
+  initializeBackgroundMap: (map: mapboxgl.Map) => {
+    mutate((state) => {
+      state.map.background = map;
+    });
   },
 
   move: (coordinates: Position, zoom: number, bearing: number, pitch: number) => {

@@ -1,5 +1,6 @@
+import mapboxgl from "mapbox-gl";
+
 import { getState } from "~/core/app";
-import { getMap } from "~/core/selectors";
 
 const layers = [
   "country-label",
@@ -17,8 +18,7 @@ const layers = [
   "ferry-aerialway-label",
 ];
 
-export const applyLanguage = (): void => {
-  const map = getMap();
+export const applyLanguage = (map: mapboxgl.Map): void => {
   const language = getState().editor.language;
 
   layers.forEach((layer) => {

@@ -18,6 +18,15 @@ export const getMap = (state: State = getState()): mapboxgl.Map => {
   return state.map.current;
 };
 
+export const getBackgroundMap = (state: State = getState()): mapboxgl.Map => {
+  if (!state.map.background) {
+    // Trust the map has been initialized. This simplifies a lot of code behind.
+    return (null as unknown) as mapboxgl.Map;
+  }
+
+  return state.map.background;
+};
+
 export const getAllEntities = (state: State = getState()): Entity[] => {
   return [...state.entities.items, ...state.entities.transientItems];
 };
@@ -103,7 +112,7 @@ export const getTransientEntityFeatures = (state: State = getState()): RawFeatur
 };
 
 export const canSelect = (state: State = getState()): boolean => {
-  return ["select", "move", "style", "export"].includes(state.editor.mode);
+  return ["select", "move", "style", "export", "3d", "scenes"].includes(state.editor.mode);
 };
 
 export const getMapTitle = (state: State = getState()): string | undefined => {
@@ -159,5 +168,14 @@ export const getSyncableState = (state: State = getState()): MapModel => {
     language: state.editor.language,
     style: state.editor.style,
     entities: state.entities.items,
+
+    breakpoints: state.scenes.breakpoints,
+
+    terrain: {
+      enabled: state.terrain.enabled,
+      exageration: state.terrain.exageration,
+      skyColor: state.terrain.skyColor,
+      skyboxMode: state.terrain.skyboxMode,
+    },
   };
 };

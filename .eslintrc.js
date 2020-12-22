@@ -14,9 +14,10 @@ module.exports = {
       version: "detect",
     },
   },
-  plugins: ["simple-import-sort"],
+  plugins: ["simple-import-sort", "prefer-arrow"],
   rules: {
     "simple-import-sort/sort": "warn",
+    "prefer-arrow/prefer-arrow-functions": "warn",
     "prettier/prettier": "warn",
     "react/prop-types": "off",
     "react/no-unescaped-entities": "off",

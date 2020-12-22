@@ -5,6 +5,7 @@ import { useDropzone } from "react-dropzone";
 import { ItineraryInput } from "~/components/editor/controls/ItineraryInput";
 import { HistoryButtons } from "~/components/editor/HistoryButtons";
 import { Sidebar } from "~/components/editor/Sidebar";
+import { VideoExport } from "~/components/editor/VideoExport";
 import { Alerts } from "~/components/layout/Alerts";
 import { GeolocationButton } from "~/components/map/GeolocationButton";
 import { Map } from "~/components/map/Map";
@@ -29,6 +30,7 @@ export const MapEditor: React.FC<Props> = ({ map }) => {
   const editorMode = useStore((store) => store.editor.mode);
   const currentCoordinates = useStore((store) => store.map.coordinates);
   const currentZoom = useStore((store) => store.map.zoom);
+  const videoExport = useStore((store) => store.exports.videoExport);
   const selectedItinerary = useStore((store) => getSelectedItinerary(store));
   const layout = useLayout();
   const dropzone = useDropzone({
@@ -63,9 +65,9 @@ export const MapEditor: React.FC<Props> = ({ map }) => {
   });
 
   useStoreSubscription(
-    (store) => getSyncableState(store),
-    debounce((map) => {
-      app.sync.saveState(map);
+    (store) => JSON.stringify(getSyncableState(store)),
+    debounce(() => {
+      app.sync.saveState(getSyncableState());
     }, 1000)
   );
 
@@ -103,6 +105,12 @@ export const MapEditor: React.FC<Props> = ({ map }) => {
 
         <div className="absolute bottom-0 mb-2 flex justify-center w-full z-10 pointer-events-none">
           <Alerts />
+
+          {videoExport && (
+            <div className="pointer-events-auto">
+              <VideoExport map={map} />
+            </div>
+          )}
         </div>
 
         {showHistoryButtons && (

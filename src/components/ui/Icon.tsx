@@ -10,6 +10,7 @@ export type IconProps = SVGAttributes<SVGElement> & {
 export type Icon = React.FC<IconProps>;
 
 const icon = (path: JSX.Element, size = 24): Icon => {
+  /* eslint-disable-next-line prefer-arrow/prefer-arrow-functions */
   return function Icon({ ...props }) {
     return (
       <svg {...props} viewBox={`0 0 ${size}, ${size}`} xmlns="http://www.w3.org/2000/svg">
@@ -20,6 +21,7 @@ const icon = (path: JSX.Element, size = 24): Icon => {
 };
 
 export const iconFromDangerousSvgString = (svgString: string, width: number, height: number): Icon => {
+  /* eslint-disable-next-line prefer-arrow/prefer-arrow-functions */
   return function Icon({ ...props }) {
     return (
       <svg
@@ -33,6 +35,7 @@ export const iconFromDangerousSvgString = (svgString: string, width: number, hei
 };
 
 export const iconFromImgUrl = (src: string, width: number, height: number): Icon => {
+  /* eslint-disable-next-line prefer-arrow/prefer-arrow-functions */
   return function Icon({ ...props }) {
     return (
       <svg {...props} viewBox={`0 0 ${width} ${height}`} xmlns="http://www.w3.org/2000/svg">
@@ -851,4 +854,47 @@ export const LanguageIcon = icon(
     ></path>
   </>,
   512
+);
+
+export const FilmIcon = icon(
+  <path
+    d="M4 4h1v2h2V4h9v2h2V4h1v17h-1v-2h-2v2H7v-2H5v2H4V4zm3 3H5v3h2V7zm0 4H5v3h2v-3zm0 4H5v3h2v-3zm9 3h2v-3h-2v3zm0-4h2v-3h-2v3zm0-4h2V7h-2v3zM8 5v7h7V5H8zm0 8v7h7v-7H8z"
+    fill="currentColor"
+  />
+);
+
+export const CameraIcon = icon(
+  <path
+    d="M12 10l-.94 2.06L9 13l2.06.94L12 16l.94-2.06L15 13l-2.06-.94L12 10m8-5h-3.17L15 3H9L7.17 5H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2m0 14H4V7h4.05l.59-.65L9.88 5h4.24l1.24 1.35l.59.65H20v12M12 8a5 5 0 0 0-5 5a5 5 0 0 0 5 5a5 5 0 0 0 5-5a5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3a3 3 0 0 1 3-3a3 3 0 0 1 3 3a3 3 0 0 1-3 3z"
+    fill="currentColor"
+  />
+);
+
+export const PlayIcon = icon(
+  <path
+    d="M12 20c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8m0-18A10 10 0 0 0 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m-2 14.5l6-4.5l-6-4.5v9z"
+    fill="currentColor"
+  />
+);
+
+export const EyeIcon = icon(
+  <path
+    d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0z"
+    fill="currentColor"
+  />
+);
+
+export const TimerIcon = icon(
+  <path
+    d="M4.94 6.35c-.39-.39-.39-1.03 0-1.42a.996.996 0 0 1 1.41 0l6.72 5.38l.35.28c.78.78.78 2.05 0 2.83c-.78.78-2.05.78-2.83 0l-.28-.35l-5.37-6.72M12 20a8 8 0 0 0 8-8c0-2.21-.9-4.21-2.34-5.66l1.41-1.41A9.969 9.969 0 0 1 22 12a10 10 0 0 1-10 10A10 10 0 0 1 2 12h2a8 8 0 0 0 8 8m0-19a2 2 0 0 1 2 2a2 2 0 0 1-2 2a2 2 0 0 1-2-2a2 2 0 0 1 2-2z"
+    fill="currentColor"
+  ></path>,
+  24
+);
+
+export const StopIcon = icon(
+  <path
+    d="M12 2A10 10 0 0 0 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m0 2c4.41 0 8 3.59 8 8s-3.59 8-8 8s-8-3.59-8-8s3.59-8 8-8M9 9v6h6V9"
+    fill="currentColor"
+  />
 );

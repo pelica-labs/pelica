@@ -1,6 +1,7 @@
-import { SkyboxMode } from "~/core/3d";
+import mapboxgl from "mapbox-gl";
+
 import { getState } from "~/core/app";
-import { getMap } from "~/core/selectors";
+import { SkyboxMode } from "~/core/terrain";
 import { MapLayer } from "~/map/layers";
 import { MapSource } from "~/map/sources";
 
@@ -28,23 +29,22 @@ const SunConfigurations: { [key in SkyboxMode]: SunConfiguration } = {
   },
 };
 
-export const applyTerrain = (): void => {
-  const map = getMap();
+export const applyTerrain = (map: mapboxgl.Map): void => {
   const state = getState();
 
   if (!map.getSource(MapSource.MapboxDem)) {
     map.addSource(MapSource.MapboxDem, {
       type: "raster-dem",
-      url: "mapbox://mapbox.mapbox-terrain-dem-v1",
+      url: "mapbox://mapbox.terrain-rgb",
       tileSize: 512,
       maxzoom: 14,
     });
   }
 
-  if (state.threeD.enabled) {
+  if (state.terrain.enabled) {
     map.setTerrain({
       source: MapSource.MapboxDem,
-      exaggeration: state.threeD.exageration / 100,
+      exaggeration: state.terrain.exageration / 100,
     });
   } else {
     map.setTerrain(null);
@@ -54,7 +54,7 @@ export const applyTerrain = (): void => {
     map.removeLayer(MapLayer.Sky);
   }
 
-  const sunConfiguration = SunConfigurations[state.threeD.skyboxMode as SkyboxMode];
+  const sunConfiguration = SunConfigurations[state.terrain.skyboxMode as SkyboxMode];
 
   map.addLayer({
     id: MapLayer.Sky,
@@ -65,7 +65,7 @@ export const applyTerrain = (): void => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       "sky-type": "atmosphere",
-      "sky-atmosphere-color": state.threeD.skyColor,
+      "sky-atmosphere-color": state.terrain.skyColor,
       "sky-atmosphere-sun": sunConfiguration.position,
       "sky-atmosphere-sun-intensity": sunConfiguration.intensity,
     },

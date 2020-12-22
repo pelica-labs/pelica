@@ -3,6 +3,8 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
 import { CoreEntity } from "~/core/entities";
 import { Languages } from "~/core/languages";
+import { Breakpoint } from "~/core/scenes";
+import { Terrain } from "~/core/terrain";
 import { dynamo } from "~/lib/aws";
 import { ID } from "~/lib/id";
 import { Style } from "~/map/style";
@@ -24,6 +26,10 @@ export type MapModel = {
   language?: keyof typeof Languages;
   style?: Style;
   entities?: CoreEntity[];
+
+  terrain?: Terrain;
+
+  breakpoints?: Breakpoint[];
 };
 
 export type ImageModel = {

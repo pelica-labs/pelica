@@ -25,6 +25,7 @@ class Document extends NextDocument {
         <body>
           <Main />
           <NextScript />
+          <script src="/scripts/ext.js" type="module"></script>
         </body>
       </Html>
     );

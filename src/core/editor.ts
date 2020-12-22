@@ -1,12 +1,13 @@
 import {
+  FilmIcon,
   HandIcon,
+  MountainIcon,
   MousePointerIcon,
   PencilIcon,
   PinIcon,
   RouteIcon,
   StyleIcon,
   TextIcon,
-  ThreeDIcon,
 } from "~/components/ui/Icon";
 import { AspectRatio } from "~/core/aspectRatio";
 import { MapLanguage } from "~/core/languages";
@@ -24,7 +25,7 @@ export type Editor = {
   aspectRatio: AspectRatio;
 };
 
-export type EditorMode = "select" | "move" | "route" | "itinerary" | "pin" | "text" | "style" | "3d";
+export type EditorMode = "select" | "move" | "route" | "itinerary" | "pin" | "text" | "style" | "3d" | "scenes";
 
 export type EditorMenuMode = "export" | "share";
 
@@ -36,7 +37,8 @@ export const modeIcons = {
   "pin": PinIcon,
   "text": TextIcon,
   "style": StyleIcon,
-  "3d": ThreeDIcon,
+  "3d": MountainIcon,
+  "scenes": FilmIcon,
 };
 
 export const editorInitialState: Editor = {

@@ -3,7 +3,7 @@ import { theme } from "~/styles/tailwind";
 
 export type SkyboxMode = "day" | "night" | "sunrise" | "sunset";
 
-export type ThreeD = {
+export type Terrain = {
   enabled: boolean;
   exageration: number;
 
@@ -11,7 +11,7 @@ export type ThreeD = {
   skyboxMode: SkyboxMode;
 };
 
-export const threeDInitialState: ThreeD = {
+export const terrainInitialState: Terrain = {
   enabled: false,
   exageration: 150,
 
@@ -20,30 +20,30 @@ export const threeDInitialState: ThreeD = {
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const threeD = ({ mutate }: App) => ({
-  ...threeDInitialState,
+export const terrain = ({ mutate }: App) => ({
+  ...terrainInitialState,
 
   toggle: () => {
     mutate((state) => {
-      state.threeD.enabled = !state.threeD.enabled;
+      state.terrain.enabled = !state.terrain.enabled;
     });
   },
 
   setExageration: (exageration: number) => {
     mutate((state) => {
-      state.threeD.exageration = exageration;
+      state.terrain.exageration = exageration;
     });
   },
 
   setSkyColor: (skyColor: string) => {
     mutate((state) => {
-      state.threeD.skyColor = skyColor;
+      state.terrain.skyColor = skyColor;
     });
   },
 
   setSkybox: (skybox: SkyboxMode) => {
     mutate((state) => {
-      state.threeD.skyboxMode = skybox;
+      state.terrain.skyboxMode = skybox;
     });
   },
 });

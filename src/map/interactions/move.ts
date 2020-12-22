@@ -1,9 +1,8 @@
+import mapboxgl from "mapbox-gl";
+
 import { app } from "~/core/app";
-import { getMap } from "~/core/selectors";
 
-export const applyMoveInteractions = (): void => {
-  const map = getMap();
-
+export const applyMoveInteractions = (map: mapboxgl.Map): void => {
   const onMoveEnd = () => {
     app.map.move(map.getCenter().toArray(), map.getZoom(), map.getBearing(), map.getPitch());
     app.map.updateFeatures(map.getCenter().toArray());

@@ -1,8 +1,8 @@
-import { FeatureIdentifier, MapLayerMouseEvent } from "mapbox-gl";
+import mapboxgl, { FeatureIdentifier, MapLayerMouseEvent } from "mapbox-gl";
 
 import { app, getState } from "~/core/app";
 import { RouteEdge } from "~/core/routes";
-import { canSelect, getEntity, getMap } from "~/core/selectors";
+import { canSelect, getEntity } from "~/core/selectors";
 import { ID } from "~/lib/id";
 import { MapLayer } from "~/map/layers";
 import { MapSource } from "~/map/sources";
@@ -33,9 +33,7 @@ const selectOnlyHoverableLayers = [
   MapLayer.RouteEdgeCenter,
 ];
 
-const toggleHover = (feature: FeatureIdentifier | mapboxgl.MapboxGeoJSONFeature, value: boolean) => {
-  const map = getMap();
-
+const toggleHover = (map: mapboxgl.Map, feature: FeatureIdentifier | mapboxgl.MapboxGeoJSONFeature, value: boolean) => {
   map.setFeatureState(feature, {
     hover: value,
   });
@@ -57,9 +55,7 @@ const toggleHover = (feature: FeatureIdentifier | mapboxgl.MapboxGeoJSONFeature,
   }
 };
 
-export const applyHoverInteractions = (): void => {
-  const map = getMap();
-
+export const applyHoverInteractions = (map: mapboxgl.Map): void => {
   const onMouseLeave = () => {
     setTimeout(() => {
       const state = getState();
@@ -88,7 +84,11 @@ export const applyHoverInteractions = (): void => {
     // remove hover
     if (!feature) {
       if (state.dragAndDrop.hoveredEntityId && state.dragAndDrop.hoveredEntitySource) {
-        toggleHover({ id: state.dragAndDrop.hoveredEntityId, source: state.dragAndDrop.hoveredEntitySource }, false);
+        toggleHover(
+          map,
+          { id: state.dragAndDrop.hoveredEntityId, source: state.dragAndDrop.hoveredEntitySource },
+          false
+        );
         app.dragAndDrop.endHover();
       }
       return;
@@ -104,7 +104,7 @@ export const applyHoverInteractions = (): void => {
       state.dragAndDrop.hoveredEntityId !== feature.id &&
       state.dragAndDrop.hoveredEntitySource
     ) {
-      toggleHover({ id: state.dragAndDrop.hoveredEntityId, source: state.dragAndDrop.hoveredEntitySource }, false);
+      toggleHover(map, { id: state.dragAndDrop.hoveredEntityId, source: state.dragAndDrop.hoveredEntitySource }, false);
       app.dragAndDrop.endHover();
     }
 
@@ -114,7 +114,7 @@ export const applyHoverInteractions = (): void => {
 
     app.dragAndDrop.startHover(feature.id as ID, feature.source);
 
-    toggleHover(feature, true);
+    toggleHover(map, feature, true);
   };
 
   map.on("mousemove", onFeatureHover);

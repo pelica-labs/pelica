@@ -6,7 +6,7 @@ export const useClickOutside = <T extends HTMLElement>(callback: EventListener):
 
   const eventType = isTouchEvent ? "touchend" : "click";
 
-  function handleEvent(event: Event) {
+  const handleEvent = (event: Event) => {
     if (event.type === "click" && isTouchEvent) {
       return;
     }
@@ -18,7 +18,7 @@ export const useClickOutside = <T extends HTMLElement>(callback: EventListener):
     if (!container.current.contains(event.target as Node)) {
       callback(event);
     }
-  }
+  };
 
   useEffect(() => {
     document.addEventListener(eventType, handleEvent, true);
