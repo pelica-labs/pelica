@@ -25,7 +25,7 @@ export const MenuBar: React.FC = () => {
     <div
       className={classNames({
         "relative flex justify-between items-center h-12 px-2 w-full": true,
-        "bg-gray-800 text-white": layout.horizontal,
+        "bg-gray-800": layout.horizontal,
       })}
     >
       <div className="flex-1 flex items-center space-x-1 relative">
@@ -36,6 +36,7 @@ export const MenuBar: React.FC = () => {
             "hover:bg-gray-600 border-gray-600 hover:border-gray-600": editorMenuMode === "share",
             "bg-orange-200 hover:bg-orange-300 border-orange-300 hover:border-orange-400 text-gray-800":
               editorMenuMode === "export",
+            "text-white": layout.horizontal,
           })}
           onClick={() => {
             app.editor.setEditorMenuMode("export");
@@ -50,6 +51,7 @@ export const MenuBar: React.FC = () => {
             "hover:bg-gray-600 border-gray-600 hover:border-gray-600": editorMenuMode !== "share",
             "bg-orange-200 hover:bg-orange-300 border-orange-300 hover:border-orange-400 text-gray-800":
               editorMenuMode === "share",
+            "text-white": layout.horizontal,
           })}
           onClick={() => {
             app.editor.setEditorMenuMode("share");

@@ -6,7 +6,12 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 
-export const Navbar: React.FC = () => {
+type Props = {
+  title?: string;
+  href?: string;
+};
+
+export const Navbar: React.FC<Props> = ({ title, href }) => {
   const [creating, setCreating] = useState(false);
   const router = useRouter();
   const [session] = useSession();
@@ -30,6 +35,12 @@ export const Navbar: React.FC = () => {
             <Image alt="Pelica logo" height={48} src="/images/icon-512.png" width={48} />
           </a>
         </Link>
+
+        {title && (
+          <Link passHref href={href ?? "/"}>
+            <a className="ml-2 font-medium">Pelica · {title}</a>
+          </Link>
+        )}
       </div>
 
       {router.pathname === "/app" ? (

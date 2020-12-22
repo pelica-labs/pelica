@@ -100,7 +100,7 @@ export const platform = ({ mutate, get }: App) => ({
     const supportsSimd = await simd();
 
     mutate((state) => {
-      state.platform.system.simd = supportsSimd;
+      console.log(supportsSimd);
     });
   },
 

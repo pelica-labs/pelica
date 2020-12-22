@@ -92,7 +92,7 @@ export const VideoExport: React.FC<Props> = ({ map: mapModel }) => {
               {!simd && (
                 <span className="text-xs text-gray-400">
                   (
-                  <a className="underline" href="#">
+                  <a className="underline" href="/help/simd" rel="noreferrer" target="_blank">
                     Enable SIMD
                   </a>{" "}
                   for faster performances)
@@ -127,7 +127,7 @@ export const VideoExport: React.FC<Props> = ({ map: mapModel }) => {
               <span>
                 {encodingStatus.status === "idle"
                   ? "Warming up..."
-                  : `                ${encodingStatus.framesCount} / ~${encodingStatus.totalFrames} frames encoded`}
+                  : `${encodingStatus.framesCount} / ~${encodingStatus.totalFrames} frames encoded`}
               </span>
               <span>{percentProgress.toFixed(2)}%</span>
               {timeRemaining > 0 && (
