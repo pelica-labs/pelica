@@ -48,15 +48,9 @@ export const Footer: React.FC = () => {
               <Link passHref href="/">
                 <a className="hover:underline">Home</a>
               </Link>
-              <a
-                className="hover:underline"
-                href="#"
-                onClick={() => {
-                  signIn("google");
-                }}
-              >
-                Sign in
-              </a>
+              <Link passHref href="/help">
+                <a className="hover:underline">Help Center</a>
+              </Link>
               <Link passHref href="/terms">
                 <a className="hover:underline">Terms of Service</a>
               </Link>
