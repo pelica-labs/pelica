@@ -48,7 +48,7 @@ export const VideoExport: React.FC<Props> = ({ map: mapModel }) => {
       return;
     }
 
-    map.once("idle", () => {
+    map.once("load", () => {
       const fileName = [t("pelica"), getMapTitle(), format(Date.now(), "yyyy-MM-dd HH-mm-ss")]
         .filter((text) => !!text)
         .join(" · ");
