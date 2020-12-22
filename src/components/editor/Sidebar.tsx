@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import React, { useEffect, useRef, useState } from "react";
+import { ExportButton } from "~/components/editor/ExportButton";
 
 import { MapMenu } from "~/components/editor/MapMenu";
 import { MenuBar } from "~/components/editor/MenuBar";
@@ -81,6 +82,7 @@ export const Sidebar: React.FC = () => {
             <MiniToolbar />
           </div>
           <div className="fixed z-10 top-0 right-0 flex bg-opacity-50 bg-gray-700 py-1 pl-1 pr-2 space-x-1 rounded-bl shadow-2xl">
+            <ExportButton/>
             <MapMenu />
             <UserMenu />
           </div>
