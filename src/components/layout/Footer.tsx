@@ -1,4 +1,3 @@
-import { signIn } from "next-auth/client";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";

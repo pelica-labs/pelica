@@ -17,9 +17,12 @@ const Simd: NextPage = () => {
           <Copy.Title>Enabling SIMD for faster video exports</Copy.Title>
 
           <Copy.Paragraph>
-            WebAssembly SIMD is an experimental web feature that can be used to increase computational speeds in the
-            browser. For Pelica, it can especially be used to make video exports about{" "}
-            <span className="font-medium">2 times faster</span>.
+            WebAssembly{" "}
+            <Copy.Link href="https://en.wikipedia.org/wiki/SIMD" target="_blank">
+              SIMD
+            </Copy.Link>{" "}
+            is an experimental web feature that can be used to increase computational speeds in the browser. For Pelica,
+            it can especially be used to make video exports about <span className="font-medium">2 times faster</span>.
           </Copy.Paragraph>
 
           <Copy.Paragraph>
