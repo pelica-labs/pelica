@@ -1,5 +1,6 @@
 import React from "react";
 
+import { MenuBar } from "~/components/editor/MenuBar";
 import { ButtonLabel } from "~/components/ui/ButtonLabel";
 import {
   FilmIcon,
@@ -46,13 +47,15 @@ export const Toolbar: React.FC = () => {
     app.editor.setEditorMode("3d");
   });
   const ScenesHotkey = useHotkey({ key: "c" }, () => {
-    app.editor.setEditorMode("scenes");
+    if (layout.horizontal) {
+      app.editor.setEditorMode("scenes");
+    }
   });
 
   const tooltipPlacement = layout.horizontal ? "left" : "above";
 
   return (
-    <div className="flex md:flex-col md:space-y-1 p-1">
+    <div className="flex md:flex-col md:space-y-1 p-1 w-full">
       <IconButton
         active={editorMode === "move"}
         className="flex flex-col w-full group"
@@ -227,26 +230,34 @@ export const Toolbar: React.FC = () => {
         <ButtonLabel className="text-2xs hidden md:inline-block" hotkey="d" label="3D" />
       </IconButton>
 
-      <IconButton
-        active={editorMode === "scenes"}
-        className="flex flex-col w-full group"
-        id="toolbar-scenes"
-        tooltip={{
-          placement: tooltipPlacement,
-          text: (
-            <div className="flex items-center">
-              <span className="mr-4 leading-none">Scenes</span>
-              <ScenesHotkey />
-            </div>
-          ),
-        }}
-        onClick={() => {
-          app.editor.setEditorMode("scenes");
-        }}
-      >
-        <FilmIcon className="w-8 h-8 md:w-6 md:h-6" />
-        <ButtonLabel className="text-2xs hidden md:inline-block" hotkey="c" label="Scenes" />
-      </IconButton>
+      {layout.horizontal && (
+        <IconButton
+          active={editorMode === "scenes"}
+          className="flex flex-col w-full group"
+          id="toolbar-scenes"
+          tooltip={{
+            placement: tooltipPlacement,
+            text: (
+              <div className="flex items-center">
+                <span className="mr-4 leading-none">Scenes</span>
+                <ScenesHotkey />
+              </div>
+            ),
+          }}
+          onClick={() => {
+            app.editor.setEditorMode("scenes");
+          }}
+        >
+          <FilmIcon className="w-8 h-8 md:w-6 md:h-6" />
+          <ButtonLabel className="text-2xs hidden md:inline-block" hotkey="c" label="Scenes" />
+        </IconButton>
+      )}
+
+      {layout.vertical && (
+        <div className="ml-auto">
+          <MenuBar />
+        </div>
+      )}
     </div>
   );
 };

@@ -18,6 +18,7 @@ import { MiniToolbar } from "~/components/editor/MiniToolbar";
 import { Toolbar } from "~/components/editor/Toolbar";
 import { UserMenu } from "~/components/editor/UserMenu";
 import { useStore } from "~/core/app";
+import { getMap } from "~/core/selectors";
 import { useDimensions } from "~/hooks/useDimensions";
 import { useLayout } from "~/hooks/useLayout";
 
@@ -29,6 +30,7 @@ export const Sidebar: React.FC = () => {
   const sidebarRef = useRef<HTMLDivElement>(null);
   const sidebarDimensions = useDimensions(sidebarRef);
   const toolbarRef = useRef<HTMLDivElement>(null);
+  const hideSidebar = layout.vertical && editorMode === "move";
 
   useEffect(() => {
     sidebarRef.current?.scrollTo({ left: 0 });
@@ -40,6 +42,12 @@ export const Sidebar: React.FC = () => {
 
     setShowToolbar(editorMode === "move");
   }, [editorMode, layout.horizontal]);
+
+  useEffect(() => {
+    if (hideSidebar) {
+      getMap().resize();
+    }
+  }, [hideSidebar]);
 
   return (
     <div className="relative flex items-end">
@@ -83,7 +91,7 @@ export const Sidebar: React.FC = () => {
         ref={sidebarRef}
         className={classNames({
           "relative flex md:pt-0 md:pb-0 divide-x md:divide-x-0 md:flex-col md:space-x-0 md:divide-y border-gray-300 md:border-none h-40 bg-white text-gray-800 md:w-64 md:h-full overflow-y-auto min-w-full pt-3 z-50": true,
-          "hidden": layout.vertical && editorMode === "move",
+          "hidden": hideSidebar,
         })}
         style={{
           ...(layout.vertical && {
