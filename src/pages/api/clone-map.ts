@@ -22,7 +22,7 @@ const CloneMap: NextApiHandler = withApiSession(async (req, res) => {
     })
     .promise();
 
-  if (!map.Item || map.Item.userId !== userId) {
+  if (!map.Item) {
     return res.status(HttpStatus.NOT_FOUND).json({
       error: "Map not found",
       id,
@@ -37,6 +37,7 @@ const CloneMap: NextApiHandler = withApiSession(async (req, res) => {
       Item: {
         ...map.Item,
         id: newId,
+        userId,
         createdAt: Date.now(),
         updatedAt: Date.now(),
       },
