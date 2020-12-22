@@ -73,11 +73,19 @@ export const availableStyles: Style[] = [
     id: "ckgchqgiiafj51as4cvslzvkx",
     owner: "bstnfrmry",
     name: "Plany",
+    author: {
+      name: "Sarah Mamy",
+      twitter: "srhm2",
+    },
   },
   {
     id: "ckgchoht11nzt19pgjjny8xyh",
     owner: "bstnfrmry",
     name: "Whaam!",
+    author: {
+      name: "Amy Lee Walton",
+      twitter: "amyleew",
+    },
   },
   {
     id: "ckfs2xnc51k7019pm8f1wpgnc",
@@ -88,16 +96,28 @@ export const availableStyles: Style[] = [
     id: "ckfs2x9kt1qk619t8fy34voej",
     owner: "bstnfrmry",
     name: "Cali Terrain",
+    author: {
+      name: "Amy Lee Walton",
+      twitter: "amyleew",
+    },
   },
   {
     id: "ckfs2tqt33lgm1arh4yqkqbql",
     owner: "bstnfrmry",
-    name: "North Star",
+    name: "North Star", 
+    author: {
+      name: "Nathaniel Slaughter",
+      twitter:"mapbox"
+    },
   },
   {
     id: "ckgz0ard77h9v19pa5otqzbig",
     owner: "bstnfrmry",
     name: "Le Shine",
+    author: {
+      name: "Nathaniel Slaughter",
+      twitter:"mapbox"
+    },
   },
   {
     id: "ckht4trv31rup19o8sl2eyvh3",
@@ -116,11 +136,19 @@ export const availableStyles: Style[] = [
     owner: "bstnfrmry",
     name: "Slopes",
     hash: "L3SPb4%L~qM{?bRkNGof?HRjD$M|",
+    author: {
+      name: "Amy Lee Walton",
+      twitter: "amyleew",
+    },
   },
   {
     id: "ckgcic5yl0sfu1ap3d89uu5jm",
     owner: "bstnfrmry",
     name: "Decimal",
+    author: {
+      name: "Tristen Brown",
+      twitter: "fallsemo",
+    },
   },
   {
     id: "ckht65lu40kq619mr5dxz1zie",
