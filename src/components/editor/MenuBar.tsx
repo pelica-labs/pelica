@@ -1,11 +1,11 @@
 import classNames from "classnames";
 import React from "react";
 
+import { ExportButton } from "~/components/editor/ExportButton";
 import { MapMenu } from "~/components/editor/MapMenu";
 import { SyncIndicator } from "~/components/editor/SyncIndicator";
 import { UserMenu } from "~/components/editor/UserMenu";
 import { ButtonLabel } from "~/components/ui/ButtonLabel";
-import { ExportButton } from "~/components/editor/ExportButton";
 import { app, useStore } from "~/core/app";
 import { useHotkey } from "~/hooks/useHotkey";
 import { useLayout } from "~/hooks/useLayout";
@@ -29,7 +29,7 @@ export const MenuBar: React.FC = () => {
       })}
     >
       <div className="flex-1 flex items-center space-x-1 relative">
-        <ExportButton/>
+        <ExportButton />
         <button
           className={classNames({
             "group flex items-center rounded py-1 px-2 border focus:outline-none": true,

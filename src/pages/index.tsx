@@ -43,8 +43,8 @@ const Carousel: React.FC = () => {
         autoPlay
         loop
         muted
-        poster="/images/index/frame.jpg"
         className="relative w-full mt-6 overflow-hidden rounded-lg border-2 border-gray-600 border-opacity-25"
+        poster="/images/index/frame.jpg"
       >
         <source src="/images/index/demo.mp4" type="video/mp4" />
       </video>
