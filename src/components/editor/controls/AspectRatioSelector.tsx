@@ -32,7 +32,7 @@ export const AspectRatioSelector: React.FC<Props> = ({ value, onChange }) => {
           </Listbox.Label>
           <div className="relative">
             <span className="inline-block w-full rounded-md shadow-sm mt-1">
-              <Listbox.Button className="relative w-full rounded-md border border-gray-300 bg-white py-1 text-left focus:outline-none focus:ring rounded transition ease-in-out duration-150 sm:text-sm sm:leading-5">
+              <Listbox.Button className="relative w-full rounded-md border bg-white py-1 text-left focus:outline-none focus:ring rounded transition ease-in-out duration-150 sm:text-sm sm:leading-5">
                 <div className="flex items-center gap-3 px-2 w-full h-full md:h-10">
                   <AspectRatioOption configuration={configuration} />
 

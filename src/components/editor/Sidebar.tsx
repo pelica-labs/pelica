@@ -55,7 +55,7 @@ export const Sidebar: React.FC = () => {
       {sidebarDimensions && (
         <div
           ref={toolbarRef}
-          className="fixed z-50 bottom-0 md:bottom-auto flex justify-between md:flex-col bg-white border border-gray-300 overflow-x-auto md:rounded md:shadow"
+          className="fixed z-50 bottom-0 md:bottom-auto flex justify-between md:flex-col bg-white border overflow-x-auto md:rounded md:shadow"
           style={{
             top: layout.horizontal ? 48 : "initial",
             right: layout.horizontal ? sidebarDimensions.width + 6 : 0,
@@ -92,7 +92,7 @@ export const Sidebar: React.FC = () => {
       <div
         ref={sidebarRef}
         className={classNames({
-          "relative flex md:pt-0 md:pb-0 divide-x md:divide-x-0 md:flex-col md:space-x-0 md:divide-y border-gray-300 md:border-none h-40 bg-white text-gray-800 md:w-64 md:h-full overflow-y-auto min-w-full pt-3 z-50": true,
+          "relative flex md:pt-0 md:pb-0 divide-x md:divide-x-0 md:flex-col md:space-x-0 md:divide-y border-t md:border-t-0 h-40 bg-white text-gray-800 md:w-64 md:h-full overflow-y-auto min-w-full pt-3 z-50": true,
           "hidden": hideSidebar,
         })}
         style={{
@@ -102,7 +102,7 @@ export const Sidebar: React.FC = () => {
         }}
       >
         {layout.horizontal && <MenuBar />}
-        <div className="flex divide-x md:divide-x-0 md:flex-col md:space-x-0 md:divide-y bg-white text-gray-800 md:w-64 md:h-full overflow-y-auto md:shadow-md">
+        <div className="flex divide-x md:divide-x-0 md:flex-col md:space-x-0 md:divide-y bg-white md:border-l text-gray-800 md:w-64 md:h-full overflow-y-auto md:shadow-md">
           {editorMenuMode === "export" && <ExportMenu />}
           {editorMenuMode === "share" && <ShareMenu />}
           {!editorMenuMode && (

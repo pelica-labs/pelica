@@ -858,7 +858,7 @@ export const LanguageIcon = icon(
 
 export const FilmIcon = icon(
   <path
-    d="M4 4h1v2h2V4h9v2h2V4h1v17h-1v-2h-2v2H7v-2H5v2H4V4zm3 3H5v3h2V7zm0 4H5v3h2v-3zm0 4H5v3h2v-3zm9 3h2v-3h-2v3zm0-4h2v-3h-2v3zm0-4h2V7h-2v3zM8 5v7h7V5H8zm0 8v7h7v-7H8z"
+    d="M8 17v3h8v-7H8v4zm-2-2v-2H4v-2h2V9H4v6h2zm0 2H4v1a2 2 0 0 0 2 2v-3zm14-2V9h-2v2h2v2h-2v2h2zm0 2h-2v3a2 2 0 0 0 2-2v-1zm-4-8V4H8v7h8V9zm4-2V6a2 2 0 0 0-2-2v3h2zM6 7V4a2 2 0 0 0-2 2v1h2zm0-5h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
     fill="currentColor"
   />
 );
