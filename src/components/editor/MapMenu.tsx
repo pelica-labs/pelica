@@ -7,7 +7,7 @@ import { MapTitleInput } from "~/components/editor/controls/MapTitleInput";
 import { HotkeysModal } from "~/components/editor/HotkeysModal";
 import { LanguagesSubMenu } from "~/components/editor/LanguagesSubMenu";
 import { NavigationModal } from "~/components/editor/NavigationModal";
-import { DoubleCheckIcon, LanguageIcon, MenuIcon, RedoIcon, TrashIcon, UndoIcon } from "~/components/ui/Icon";
+import { CopyIcon, DoubleCheckIcon, LanguageIcon, MenuIcon, RedoIcon, TrashIcon, UndoIcon } from "~/components/ui/Icon";
 import { app, useStore } from "~/core/app";
 import { Languages } from "~/core/languages";
 import { useHotkey } from "~/hooks/useHotkey";
@@ -17,6 +17,7 @@ export const MapMenu: React.FC = () => {
   const [showLanguagesMenu, setShowLanguagesMenu] = useState(false);
   const [showHotkeysModal, setShowHotkeysModal] = useState(false);
   const [showNavigationModal, setShowNavigationModal] = useState(false);
+  const mapId = useStore((store) => store.sync.id);
   const language = useStore((store) => store.editor.language);
   const canSelectAll = useStore((store) => store.entities.items.length > 0);
   const canUndo = useStore((store) => store.history.actions.length > 0);
@@ -34,6 +35,23 @@ export const MapMenu: React.FC = () => {
   const SelectAllHotkey = useHotkey({ key: "a", meta: true }, () => {
     app.selection.selectAll();
   });
+
+  const onCloneMap = async () => {
+    const res = await fetch("/api/clone-map", {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: mapId,
+      }),
+    });
+
+    const json = await res.json();
+
+    window.open(`${window.location.origin}/app/${json.id}`, "_blank")?.focus();
+  };
 
   return (
     <div className="flex items-center justify-center">
@@ -179,6 +197,31 @@ export const MapMenu: React.FC = () => {
                         </a>
                       )}
                     </Menu.Item>
+
+                    <div className="border-t my-1" />
+
+                    <Menu.Item>
+                      {({ active, disabled }) => (
+                        <a
+                          className={classNames({
+                            "flex items-center justify-between px-2 py-1": true,
+                            "bg-orange-200": active,
+                            "hover:bg-orange-200 cursor-pointer": !disabled,
+                            "text-gray-400": disabled,
+                          })}
+                          onClick={() => {
+                            onCloneMap();
+                          }}
+                        >
+                          <span className="flex items-center space-x-2">
+                            <span className="text-sm">Duplicate this map</span>
+                            <CopyIcon className="w-3 h-3 text-gray-600" />
+                          </span>
+                        </a>
+                      )}
+                    </Menu.Item>
+
+                    <div className="border-t my-1" />
 
                     <Menu.Item disabled={!canSelectAll}>
                       {({ active, disabled }) => (
