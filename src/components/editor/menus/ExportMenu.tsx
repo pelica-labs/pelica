@@ -251,7 +251,7 @@ export const ExportMenu: React.FC = () => {
           <div className="flex-col md:space-y-1">
             <div className="text-xs flex justify-between">
               <span className="flex-1 mr-4">Format</span>
-              <span>JPEG / MP4</span>
+              <span>PNG / MP4</span>
             </div>
             <div className="text-xs flex justify-between">
               <span className="flex-1 mr-4">Resolution</span>

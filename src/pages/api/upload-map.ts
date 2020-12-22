@@ -47,7 +47,7 @@ const UploadMap: NextApiHandler = async (req, res) => {
 
   const { id, name, image, size } = await parseUpload(req);
   const proxyPath = `${req.headers.host}/map/${id}`;
-  const path = generateFilePrefix("maps") + id + ".jpeg";
+  const path = generateFilePrefix("maps") + id + ".png";
 
   const existingImage = await dynamo
     .get({
@@ -73,7 +73,7 @@ const UploadMap: NextApiHandler = async (req, res) => {
       Bucket: bucket,
       Key: path,
       Body: fs.createReadStream(image.path),
-      ContentType: "image/jpeg",
+      ContentType: "image/png",
     })
     .promise();
 

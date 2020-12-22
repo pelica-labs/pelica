@@ -45,7 +45,7 @@ export const exports = ({ mutate, get }: App) => ({
     const canvas = getMap(get()).getCanvas();
 
     mutate((state) => {
-      state.exports.imageData = canvas.toDataURL("image/jpeg", 0.9);
+      state.exports.imageData = canvas.toDataURL("image/png");
       state.exports.exporting = false;
     });
   },
