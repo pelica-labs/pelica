@@ -19,3 +19,26 @@ export const dataUrlToBlob = (dataUrl: string): Blob => {
 
   return new Blob(byteArrays, { type: contentType });
 };
+
+export const dataUrlToImageData = (dataUrl: string): Promise<ImageData> => {
+  return new Promise((resolve) => {
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+
+    if (!context) {
+      return;
+    }
+
+    const image = new Image();
+
+    image.addEventListener("load", () => {
+      canvas.width = image.width;
+      canvas.height = image.height;
+      context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+      resolve(context.getImageData(0, 0, canvas.width, canvas.height));
+    });
+
+    image.src = dataUrl;
+  });
+};
