@@ -30,6 +30,7 @@ jobs:
         envkey_NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
         envkey_GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
         envkey_GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+        envkey_SLACK_ACCESS_TOKEN: ${{ secrets.SLACK_ACCESS_TOKEN }}
 
     - name: Build Docker image
       run: docker build --tag pelicalabs/pelica:latest .

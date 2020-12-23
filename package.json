@@ -16,6 +16,7 @@
     "@mapbox/polyline": "^1.1.1",
     "@sentry/react": "^5.27.2",
     "@sentry/tracing": "^5.27.2",
+    "@slack/web-api": "^5.14.0",
     "@turf/turf": "^5.1.6",
     "@types/react-modal": "^3.10.6",
     "@zeit/next-source-maps": "^0.0.3",

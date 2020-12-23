@@ -1,11 +1,12 @@
 import { NextApiHandler } from "next";
-import NextAuth from "next-auth";
+import NextAuth, { User } from "next-auth";
 import DynamoDbAdapter from "next-auth-dynamodb";
 import Providers from "next-auth/providers";
 
 import { mergeAnonymousAccount } from "~/core/auth";
 import { withApiSession } from "~/core/session";
 import { getEnv } from "~/lib/config";
+import { notifyUserCreated } from "~/lib/slack";
 
 const Handler: NextApiHandler = withApiSession((req, res) =>
   NextAuth(req, res, {
@@ -24,6 +25,12 @@ const Handler: NextApiHandler = withApiSession((req, res) =>
         await mergeAnonymousAccount(req, user);
 
         return session;
+      },
+    },
+
+    events: {
+      createUser: async (user: User) => {
+        notifyUserCreated(user);
       },
     },
   })
