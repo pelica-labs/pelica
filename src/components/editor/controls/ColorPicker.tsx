@@ -34,10 +34,31 @@ type Props = {
   value: string;
   onChange: (value: string) => void;
   onChangeComplete: (value: string) => void;
+
+  opacity?: number;
+  onAlphaChange?: (value: number) => void;
+  onAlphaChangeComplete?: (value: number) => void;
+
+  disabled?: boolean;
+  allowAlpha?: boolean;
+  showRecentColors?: boolean;
+  initialColors?: string[];
 };
 
-export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete }) => {
+export const ColorPicker: React.FC<Props> = ({
+  value,
+  onChange,
+  onChangeComplete,
+  opacity = 1,
+  onAlphaChange,
+  onAlphaChangeComplete,
+  disabled = false,
+  allowAlpha = false,
+  showRecentColors = true,
+  initialColors = defaultColors,
+}) => {
   const [color, setColor] = useState(value);
+  const [alpha, setAlpha] = useState(opacity);
   const [showExtendedPicker, setShowExtendedPicker] = useState(false);
   const layout = useLayout();
   const [recentColors, setRecentColors] = useAsyncStorage<string[]>(`recentColors`, []);
@@ -59,7 +80,7 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete
     setColor(value);
   }, [showExtendedPicker]);
 
-  const orderedRecentColors = orderBy(recentColors.slice(0, MAX_COLORS - defaultColors.length), (color) => {
+  const orderedRecentColors = orderBy(recentColors.slice(0, MAX_COLORS - initialColors.length), (color) => {
     return tinycolor(color).toHsl().h;
   });
 
@@ -68,11 +89,11 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete
       <div className="flex flex-col">
         <TwitterPicker
           color={color}
-          colors={defaultColors}
+          colors={initialColors}
           styles={{
             default: {
               card: { boxShadow: "none", height: "100%", marginBottom: 2 },
-              swatch: { width: size, height: size },
+              swatch: { width: size, height: size, cursor: disabled ? "not-allowed" : "pointer" },
               hash: { display: "none" },
               input: { display: "none" },
               body: {
@@ -89,12 +110,18 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete
           onChange={(event) => {
             setColor(event.hex);
             onChange(event.hex);
+
+            setAlpha(1);
+            onAlphaChange?.(1);
           }}
           onChangeComplete={(event) => {
             onChangeComplete(event.hex);
+
+            setAlpha(1);
+            onAlphaChangeComplete?.(1);
           }}
         />
-        {orderedRecentColors.length > 0 && (
+        {showRecentColors && orderedRecentColors.length > 0 && (
           <div className="pt-2 border-t border-gray-100">
             <TwitterPicker
               color={color}
@@ -102,7 +129,7 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete
               styles={{
                 default: {
                   card: { boxShadow: "none", height: "100%" },
-                  swatch: { width: size, height: size },
+                  swatch: { width: size, height: size, cursor: disabled ? "not-allowed" : "pointer" },
                   hash: { display: "none" },
                   input: { display: "none" },
                   body: {
@@ -119,11 +146,17 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete
               onChange={(event) => {
                 setColor(event.hex);
                 onChange(event.hex);
+
+                setAlpha(1);
+                onAlphaChange?.(1);
               }}
               onChangeComplete={(event) => {
                 onChangeComplete(event.hex);
 
                 setRecentColors(uniq([event.hex, ...recentColors]));
+
+                setAlpha(1);
+                onAlphaChangeComplete?.(1);
               }}
             />
           </div>
@@ -133,6 +166,7 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete
       <div className="flex flex-col h-full justify-between pb-2">
         <Button
           className="ml-1 py-px px-px"
+          disabled={disabled}
           onClick={() => {
             setShowExtendedPicker(true);
           }}
@@ -140,10 +174,11 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete
           <PlusIcon className="w-4 h-4 md:w-3 md:h-3" />
         </Button>
 
-        {recentColors.length > 0 && (
+        {showRecentColors && recentColors.length > 0 && (
           <Tooltip placement="left" text="Clear recently used colors">
             <Button
               className="ml-1 py-px px-px"
+              disabled={disabled}
               onClick={() => {
                 setRecentColors([]);
               }}
@@ -160,14 +195,24 @@ export const ColorPicker: React.FC<Props> = ({ value, onChange, onChangeComplete
           className="fixed md:absolute mb-2 md:mb-0 z-10 mt-6 bottom-0 md:bottom-auto md:right-0 mr-3"
         >
           <ChromePicker
-            disableAlpha
-            color={color}
+            color={tinycolor(color).setAlpha(alpha).toHslString()}
+            disableAlpha={!allowAlpha}
             onChange={(event) => {
               setColor(event.hex);
               onChange(event.hex);
+
+              if (event.rgb.a) {
+                setAlpha(event.rgb.a);
+                onAlphaChange?.(event.rgb.a);
+              }
             }}
             onChangeComplete={(event) => {
               onChangeComplete(event.hex);
+
+              if (event.rgb.a) {
+                setAlpha(event.rgb.a);
+                onAlphaChangeComplete?.(event.rgb.a);
+              }
             }}
           />
         </div>

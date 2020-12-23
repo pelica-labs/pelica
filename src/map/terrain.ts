@@ -1,9 +1,10 @@
 import mapboxgl from "mapbox-gl";
 
-import { getState } from "~/core/app";
+import { app, getState } from "~/core/app";
 import { SkyboxMode } from "~/core/terrain";
 import { MapLayer } from "~/map/layers";
 import { MapSource } from "~/map/sources";
+import { theme } from "~/styles/tailwind";
 
 type SunConfiguration = {
   position: [number, number];
@@ -30,7 +31,13 @@ const SunConfigurations: { [key in SkyboxMode]: SunConfiguration } = {
 };
 
 export const applyTerrain = (map: mapboxgl.Map): void => {
+  app.terrain.checkForBuildingsAvailability();
+
   const state = getState();
+
+  /*
+   * Terrain
+   */
 
   if (!map.getSource(MapSource.MapboxDem)) {
     map.addSource(MapSource.MapboxDem, {
@@ -50,6 +57,35 @@ export const applyTerrain = (map: mapboxgl.Map): void => {
     map.setTerrain(null);
   }
 
+  /*
+   * Buildings
+   */
+
+  if (map.getLayer(MapLayer.Buildings)) {
+    map.removeLayer(MapLayer.Buildings);
+  }
+
+  if (state.terrain.buildingsAvailable && state.terrain.buildingsEnabled) {
+    map.addLayer(
+      {
+        "id": MapLayer.Buildings,
+        "source": "composite",
+        "source-layer": MapSource.Buildings,
+        "type": "fill-extrusion",
+        "paint": {
+          "fill-extrusion-color": state.terrain.buildingsColor,
+          "fill-extrusion-height": ["get", "height"],
+          "fill-extrusion-opacity": state.terrain.buildingsOpacity,
+        },
+      },
+      MapLayer.WaterwayLabel
+    );
+  }
+
+  /*
+   * Sky
+   */
+
   if (map.getLayer(MapLayer.Sky)) {
     map.removeLayer(MapLayer.Sky);
   }
@@ -65,7 +101,7 @@ export const applyTerrain = (map: mapboxgl.Map): void => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       "sky-type": "atmosphere",
-      "sky-atmosphere-color": state.terrain.skyColor,
+      "sky-atmosphere-color": theme.colors.blue[800],
       "sky-atmosphere-sun": sunConfiguration.position,
       "sky-atmosphere-sun-intensity": sunConfiguration.intensity,
     },

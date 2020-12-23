@@ -95,6 +95,7 @@ export const Map: React.FC<Props> = ({
       logoPosition: "bottom-right",
       preserveDrawingBuffer: true,
       interactive: !disableInteractions,
+      antialias: true,
     });
 
     if (background) {

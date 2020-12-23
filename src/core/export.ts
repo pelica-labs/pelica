@@ -86,10 +86,7 @@ export const exports = ({ mutate, get }: App) => ({
     const totalFrames = Math.round(sceneLength / (1000 / frameRate)) + 4;
 
     const onFrame = () => {
-      // console.log(width, height);
       const frame = encoder.memory().subarray(ptr);
-
-      // console.log(frame);
 
       gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, frame);
 

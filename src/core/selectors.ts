@@ -171,11 +171,6 @@ export const getSyncableState = (state: State = getState()): MapModel => {
 
     breakpoints: state.scenes.breakpoints,
 
-    terrain: {
-      enabled: state.terrain.enabled,
-      exageration: state.terrain.exageration,
-      skyColor: state.terrain.skyColor,
-      skyboxMode: state.terrain.skyboxMode,
-    },
+    terrain: state.terrain,
   };
 };

@@ -25,6 +25,7 @@ export enum MapSource {
 
   // Mapbox
   MapboxDem = "mapbox-dem",
+  Buildings = "building",
 }
 
 const EmptyGeoJsonSource: AnySourceData = {

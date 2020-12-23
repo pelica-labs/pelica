@@ -45,6 +45,7 @@ export enum MapLayer {
   // Mapbox
   WaterwayLabel = "waterway-label",
   Sky = "sky",
+  Buildings = "buildings",
 }
 
 export const applyLayers = (map: mapboxgl.Map): void => {
