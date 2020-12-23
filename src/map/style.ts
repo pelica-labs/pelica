@@ -104,10 +104,10 @@ export const availableStyles: Style[] = [
   {
     id: "ckfs2tqt33lgm1arh4yqkqbql",
     owner: "bstnfrmry",
-    name: "North Star", 
+    name: "North Star",
     author: {
       name: "Nathaniel Slaughter",
-      twitter:"mapbox"
+      twitter: "mapbox",
     },
   },
   {
@@ -116,7 +116,7 @@ export const availableStyles: Style[] = [
     name: "Le Shine",
     author: {
       name: "Nathaniel Slaughter",
-      twitter:"mapbox"
+      twitter: "mapbox",
     },
   },
   {
