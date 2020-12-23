@@ -30,6 +30,8 @@ jobs:
         envkey_NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
         envkey_GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
         envkey_GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+        envkey_FACEBOOK_CLIENT_ID: ${{ secrets.FACEBOOK_CLIENT_ID }}
+        envkey_FACEBOOK_CLIENT_SECRET: ${{ secrets.FACEBOOK_CLIENT_SECRET }}
         envkey_SLACK_ACCESS_TOKEN: ${{ secrets.SLACK_ACCESS_TOKEN }}
 
     - name: Build Docker image

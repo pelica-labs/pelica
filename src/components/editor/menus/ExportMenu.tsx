@@ -11,7 +11,7 @@ import { Button } from "~/components/ui/Button";
 import { BuyMeACoffeeButton } from "~/components/ui/BuyMeACoffeeButton";
 import { Heading } from "~/components/ui/Heading";
 import { CopyIcon } from "~/components/ui/Icon";
-import { GoogleButton } from "~/components/ui/SocialButtons";
+import { FacebookButton, GoogleButton } from "~/components/ui/SocialButtons";
 import { app, getState, useStore } from "~/core/app";
 import { aspectRatios } from "~/core/aspectRatio";
 import { getMapTitle } from "~/core/selectors";
@@ -277,6 +277,13 @@ export const ExportMenu: React.FC = () => {
                 className="mt-2 w-full"
                 onClick={() => {
                   signIn("google");
+                }}
+              />
+
+              <FacebookButton
+                className="mt-2 w-full"
+                onClick={() => {
+                  signIn("facebook");
                 }}
               />
             </div>

@@ -9,7 +9,7 @@ import { Navbar } from "~/components/layout/Navbar";
 import { MapPreview, MapPreviewLoading } from "~/components/saved-maps/MapPreview";
 import { Container } from "~/components/ui/Container";
 import { MapPlusIcon } from "~/components/ui/Icon";
-import { GoogleButton } from "~/components/ui/SocialButtons";
+import { FacebookButton, GoogleButton } from "~/components/ui/SocialButtons";
 import { MapModel } from "~/core/db";
 import { theme } from "~/styles/tailwind";
 
@@ -48,11 +48,18 @@ const Maps: NextPage<Props> = () => {
               <span className="text-sm">Create a Pelica account to save your maps and access them from anywhere.</span>
             </div>
 
-            <GoogleButton
-              onClick={() => {
-                signIn("google");
-              }}
-            />
+            <div className="flex flex-col space-y-1">
+              <GoogleButton
+                onClick={() => {
+                  signIn("google");
+                }}
+              />
+              <FacebookButton
+                onClick={() => {
+                  signIn("facebook");
+                }}
+              />
+            </div>
           </div>
         )}
 

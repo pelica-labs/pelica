@@ -15,6 +15,10 @@ const Handler: NextApiHandler = withApiSession((req, res) =>
         clientId: getEnv("GOOGLE_CLIENT_ID", process.env.GOOGLE_CLIENT_ID),
         clientSecret: getEnv("GOOGLE_CLIENT_SECRET", process.env.GOOGLE_CLIENT_SECRET),
       }),
+      Providers.Facebook({
+        clientId: process.env.FACEBOOK_CLIENT_ID,
+        clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+      }),
     ],
     adapter: DynamoDbAdapter,
 

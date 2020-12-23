@@ -6,7 +6,7 @@ import Link from "next/link";
 import React from "react";
 
 import { UserIcon } from "~/components/ui/Icon";
-import { GoogleButton } from "~/components/ui/SocialButtons";
+import { FacebookButton, GoogleButton } from "~/components/ui/SocialButtons";
 
 export const UserMenu: React.FC = () => {
   const [session, loading] = useSession();
@@ -48,11 +48,18 @@ export const UserMenu: React.FC = () => {
                       Account
                     </span>
 
-                    <div className="px-2 w-full">
+                    <div className="px-2 w-full flex flex-col space-y-2">
                       <GoogleButton
                         className="w-full"
                         onClick={() => {
                           signIn("google");
+                        }}
+                      />
+
+                      <FacebookButton
+                        className="w-full"
+                        onClick={() => {
+                          signIn("facebook");
                         }}
                       />
                     </div>

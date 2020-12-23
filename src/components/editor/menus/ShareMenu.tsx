@@ -7,7 +7,7 @@ import { Button } from "~/components/ui/Button";
 import { BuyMeACoffeeButton } from "~/components/ui/BuyMeACoffeeButton";
 import { Heading } from "~/components/ui/Heading";
 import { CopyIcon } from "~/components/ui/Icon";
-import { GoogleButton } from "~/components/ui/SocialButtons";
+import { FacebookButton, GoogleButton } from "~/components/ui/SocialButtons";
 import { app } from "~/core/app";
 import { getMapTitle, getMapUrl } from "~/core/selectors";
 import { useBrowserFeatures } from "~/hooks/useBrowserFeatures";
@@ -98,6 +98,13 @@ export const ShareMenu: React.FC = () => {
                 className="mt-2 w-full"
                 onClick={() => {
                   signIn("google");
+                }}
+              />
+
+              <FacebookButton
+                className="mt-2 w-full"
+                onClick={() => {
+                  signIn("facebook");
                 }}
               />
             </div>

@@ -14,7 +14,12 @@ module.exports = withSourceMaps({
     defaultLocale: "en",
   },
   images: {
-    domains: ["api.mapbox.com", "lh3.googleusercontent.com", "pelica.s3.eu-west-3.amazonaws.com"],
+    domains: [
+      "api.mapbox.com",
+      "lh3.googleusercontent.com", // Google CDN
+      "platform-lookaside.fbsbx.com", // Facebook CDN
+      "pelica.s3.eu-west-3.amazonaws.com",
+    ],
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {
