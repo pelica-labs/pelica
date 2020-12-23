@@ -26,7 +26,7 @@ export const MiniToolbar: React.FC = () => {
   const RootModeIcon = rootMode ? modeIcons[rootMode] : null;
 
   return (
-    <div className="flex border border-b-0 rounded-tr p-1 items-center divide-x bg-gray-100 border-gray-300">
+    <div className="flex border-t border-r rounded-tr p-1 items-center divide-x bg-gray-100">
       <IconButton
         className="rounded-full"
         onClick={() => {
