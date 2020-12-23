@@ -44,7 +44,24 @@ export const UserMenu: React.FC = () => {
                   className="fixed top-0 mt-10 mb-16 md:mt-10 md:mb-0 md:bottom-auto z-50 left-0 md:left-auto right-0 md:w-56 md:mr-1 origin-top-right bg-white border md:rounded md:shadow outline-none py-1"
                 >
                   <div className="flex flex-col">
-                    <span className="my-2 px-2 text-gray-500 font-light tracking-wide leading-none uppercase text-xs">
+                    <Menu.Item>
+                      {({ active }) => (
+                        <Link href="/app">
+                          <a
+                            className={classNames({
+                              "text-gray-800 text-sm px-2 py-1 hover:bg-orange-200": true,
+                              "bg-orange-200": active,
+                            })}
+                          >
+                            Saved maps
+                          </a>
+                        </Link>
+                      )}
+                    </Menu.Item>
+
+                    <div className="border-t my-1" />
+
+                    <span className="mt-2 mb-2 px-2 text-gray-500 font-light tracking-wide leading-none uppercase text-xs">
                       Account
                     </span>
 
