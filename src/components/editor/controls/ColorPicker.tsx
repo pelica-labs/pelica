@@ -7,6 +7,7 @@ import tinycolor from "tinycolor2";
 import { Button } from "~/components/ui/Button";
 import { PipetteIcon, PlusIcon, TrashIcon } from "~/components/ui/Icon";
 import { Tooltip } from "~/components/ui/Tooltip";
+import { getState } from "~/core/app";
 import { getMap } from "~/core/selectors";
 import { useAsyncStorage } from "~/hooks/useAsyncStorage";
 import { useClickOutside } from "~/hooks/useClickOutside";
@@ -93,6 +94,7 @@ export const ColorPicker: React.FC<Props> = ({
       return;
     }
 
+    const state = getState();
     const map = getMap();
     const canvas3d = map.getCanvas();
     const context3d = canvas3d.getContext("webgl") as WebGLRenderingContext;
@@ -107,7 +109,6 @@ export const ColorPicker: React.FC<Props> = ({
     });
 
     const getColor = (x: number, y: number): string | null => {
-      console.log(x, y);
       const sample = context?.getImageData(x - SAMPLE_SIZE / 2, y - SAMPLE_SIZE / 2, SAMPLE_SIZE, SAMPLE_SIZE);
       if (sample) {
         const sampleCanvas = document.createElement("canvas");
@@ -130,21 +131,23 @@ export const ColorPicker: React.FC<Props> = ({
     };
 
     const onMouseMove = throttle((event: MapMouseEvent) => {
-      const color = getColor(event.point.x, event.point.y);
+      const pixelRatio = state.platform.screen.pixelRatio;
+      const color = getColor(event.point.x * pixelRatio, event.point.y * pixelRatio);
 
       if (color) {
         setColor(color);
         onChange(color);
         onAlphaChange?.(1);
       }
-    }, 200);
+    }, 100);
 
     const onMouseClick = (event: MapMouseEvent) => {
       event.preventDefault();
       event.originalEvent.preventDefault();
       event.originalEvent.stopPropagation();
 
-      const color = getColor(event.point.x, event.point.y);
+      const pixelRatio = state.platform.screen.pixelRatio;
+      const color = getColor(event.point.x * pixelRatio, event.point.y * pixelRatio);
 
       if (color) {
         onChangeComplete(color);
@@ -246,18 +249,8 @@ export const ColorPicker: React.FC<Props> = ({
       </div>
 
       <div className="flex flex-col h-full justify-between pb-2">
-        <div className="flex flex-col space-y-1 ml-1">
-          <Button
-            className="py-px px-px"
-            disabled={disabled}
-            onClick={() => {
-              setShowExtendedPicker(true);
-            }}
-          >
-            <PlusIcon className="w-4 h-4 md:w-3 md:h-3" />
-          </Button>
-
-          <Tooltip placement="left" text="Copy a color from the map">
+        <div className="flex flex-row space-x-1 ml-1">
+          <Tooltip placement="left" text="Sample a color from the map">
             <Button
               active={isSamplingColor}
               className="py-px px-px"
@@ -269,12 +262,22 @@ export const ColorPicker: React.FC<Props> = ({
               <PipetteIcon className="w-4 h-4 md:w-3 md:h-3" />
             </Button>
           </Tooltip>
+
+          <Button
+            className="py-px px-px"
+            disabled={disabled}
+            onClick={() => {
+              setShowExtendedPicker(true);
+            }}
+          >
+            <PlusIcon className="w-4 h-4 md:w-3 md:h-3" />
+          </Button>
         </div>
 
         {showRecentColors && recentColors.length > 0 && (
           <Tooltip placement="left" text="Clear recently used colors">
             <Button
-              className="ml-1 py-px px-px"
+              className="ml-auto py-px px-px"
               disabled={disabled}
               onClick={() => {
                 setRecentColors([]);
