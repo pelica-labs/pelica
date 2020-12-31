@@ -59,7 +59,7 @@ export const Map: React.FC<Props> = ({
   map: mapModel,
   readOnly = false,
   disableInteractions = false,
-  background: background = false,
+  background = false,
 }) => {
   const container = useRef<HTMLDivElement>(null);
   const wrapper = useRef<HTMLDivElement>(null);
