@@ -1,7 +1,8 @@
 import { signIn, useSession } from "next-auth/client";
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { EmbedModal } from "~/components/editor/EmbedModal";
 import { MenuSection, MenuSectionHeader } from "~/components/editor/menus/MenuSection";
 import { Button } from "~/components/ui/Button";
 import { BuyMeACoffeeButton } from "~/components/ui/BuyMeACoffeeButton";
@@ -17,8 +18,8 @@ export const ShareMenu: React.FC = () => {
   const { t } = useTranslation();
   const [session, loading] = useSession();
   const layout = useLayout();
-
   const { shareFeature } = useBrowserFeatures();
+  const [showEmbedModal, setShowEmbedModal] = useState(false);
 
   const onShare = () => {
     navigator.share({
@@ -45,8 +46,19 @@ export const ShareMenu: React.FC = () => {
     window.open(url, "_blank")?.focus();
   };
 
+  const onEmbed = () => {
+    setShowEmbedModal(true);
+  };
+
   return (
     <>
+      <EmbedModal
+        isOpen={showEmbedModal}
+        onRequestClose={() => {
+          setShowEmbedModal(false);
+        }}
+      />
+
       <div className="flex md:flex-col md:divide-y md:divide-x-0 divide-x md:h-full text-gray-800">
         <MenuSection className="flex flex-col space-y-3 w-40 md:w-auto">
           {layout.vertical && (
@@ -84,6 +96,15 @@ export const ShareMenu: React.FC = () => {
               Copy Map URL
             </Button>
           )}
+
+          <Button
+            className="bg-orange-100 text-gray-800 border border-orange-200 hover:border-orange-100 hover:bg-orange-200 text-xs uppercase py-2 justify-center w-full"
+            onClick={() => {
+              onEmbed();
+            }}
+          >
+            Embed in web page
+          </Button>
         </MenuSection>
 
         {!session && !loading && (

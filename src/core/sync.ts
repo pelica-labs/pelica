@@ -44,7 +44,6 @@ export const sync = ({ mutate }: App) => ({
     mutate((state) => {
       state.sync.id = map.id;
       state.sync.userId = map.userId;
-
       state.sync.name = map.name ?? null;
 
       state.map.coordinates = map.coordinates ?? mapInitialState.coordinates;
