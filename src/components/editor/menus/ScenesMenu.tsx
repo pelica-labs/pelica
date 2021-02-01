@@ -43,7 +43,7 @@ export const ScenesMenu: React.FC = () => {
     // the mapbox types are not great..
     const { position, orientation } = (state.map.current.getFreeCameraOptions() as unknown) as {
       position: { x: number; y: number; z: number };
-      orientation: number[];
+      orientation: [number, number, number, number];
     };
 
     app.scenes.addBreakpoint({
